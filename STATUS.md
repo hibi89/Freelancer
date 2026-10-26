@@ -78,3 +78,7 @@ No active recurring watch/notification/scheduled search is created.
 - Derived artifact generated in this conversation as `Freelancer_KPI_Loom_Ready_v3_1.zip`: pass **85,783 assertion evaluations, 7/7 fault injections**, ZIP manifest hashes and 3-page PDF footer validation; **user's browser playback, true Loom link, job-specific customer rules still UNVERIFIED**. Chromium headless screenshot attempt timed out; do not report browser fail as site failure.
 - All work is synthetic portfolio preparation. No proposal was submitted, no payment or subscription, no voice recording generated. See [docs/LOOM_U001_RECORDING.md](docs/LOOM_U001_RECORDING.md).
 - Owner next: download/extract v3.1 ZIP, open `dashboard.html`, confirm visual rendering; then record genuine Screen Only Loom under 2 minutes. Account ID verification remains an independent blocker to applying.
+
+## 2026-10-27 account checkout screenshot
+- User's Upwork purchase-choice screenshot displays Starter $15 for 100 Connects and Plus $9.99 first month (then displayed $19.99). Both mention a temporary 50-Connect bonus, unconfirmed at checkout. Comparison and renewal safeguards documented in docs/UPWORK_ONE_MONTH_TRIAL.md.
+- No payment, Loom recording, or proposal submission confirmed. Recheck account verification and job status before spending.
