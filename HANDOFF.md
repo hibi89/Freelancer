@@ -27,3 +27,10 @@
 
 ## Acceptance for next work unit
 A current verified job page; checked sample; safe custom proposal; actual constraints and Connects needed; user can decide to apply at known cost. Then update STATUS/HANDOFF.
+
+## Current task override — 2026-10-27 (read this before earlier steps)
+1. Exact handoff: [docs/APPLICATION_U001.md](docs/APPLICATION_U001.md); sample v2 created in ChatGPT (not in GitHub). Need owner confirmation they extracted v2 ZIP and opened dashboard.html, then guide Loom screen-only recording in Korean one click at a time.
+2. Before asking owner to pay/connect/apply, recheck client listing in authenticated Upwork. Public search displays original required **ACTIONABLE**, honest rate/hours, <=2min Loom with one applicant judgment, $15-22/h, paid shortlist test. Do not assert still open based only on cached public snippet.
+3. Owner's rate $17, availability **10h/wk proposed only**, should verify ability before sending. Their spoken English is weak; use extremely short plain-English script and async-first jobs. Never represent generated AI audio as own spoken English.
+4. Technical demo QA complete except browser visual check on the owner's actual PC. ZIP contents and v2 validation in linked doc. Important: corrected false all-channel ROAS aggregate to paid-channel only.
+5. Save real Loom link and actual proposal submission receipt if provided. No payments or job outcomes are currently recorded.
