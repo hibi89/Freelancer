@@ -40,3 +40,13 @@ A current verified job page; checked sample; safe custom proposal; actual constr
 - **NEXT OWNER STEP (one only):** open Upwork target job, click `Apply now` and inspect **actual required Connects number** and account eligibility, **without buying or submitting anything**. If owner prefers, first open the v3 ZIP/dashboard. Ask for screenshot to verify cost.
 - Official: $0.15/Connect; most direct applications need Connects; no mandatory paid monthly subscription; exceptions include direct job invitations and conditional Connects rewards. Owner screenshot 0 Connects, so normal application likely needs a purchase, exact required quantity not verified.
 - Once cost verified, decide whether job is attractive enough to spend. Continue Loom and proposal prep only with realistic voice/English constraints. No purchases/submissions autonomously.
+
+
+## 2026-10-27 — NEW CHAT PRIORITY (latest)
+Owner said '여기까지만 해놓고 새채팅방 들어갈게' and wants no more work now. Saved all pending facts:
+1. **Read these first:** [docs/TROUBLESHOOTING_LOG.md](docs/TROUBLESHOOTING_LOG.md) for incident history, seven fault-injection tests, fail-closed packaging, remaining client QA gaps; [docs/UPWORK_ONE_MONTH_TRIAL.md](docs/UPWORK_ONE_MONTH_TRIAL.md) for optional one-month paid test and cancellation safeguards; [docs/APPLICATION_U001.md](docs/APPLICATION_U001.md) for a proposal paragraph that reports corrected synthetic ROAS numerator, independent QA gate and client-specific workflow adaptation **without falsely promising zero defects**.
+2. **FIRST STEP IN NEW CHAT:** show user how to verify actual U-001 Connects required and paid Plus checkout/renewal costs, with no charge. Reverify public status/terms; previous public job could close.
+3. **Then:** check v3 ZIP downloaded to Windows, and dashboard opens. In previous ChatGPT conversation artifact is named `Freelancer_KPI_Application_QA_v3.zip`; if not accessible in new chat, request ZIP upload; no artifacts were actually committed to GitHub.
+4. **Then:** prepare accessible Loom 2min video with genuine applicant explanation plus `ACTIONABLE` proposal; verify user's spoken English comfort; rate $17/h, weekly hours only if owner approves.
+5. The one-month trial is under consideration, **not paid or subscribed**. If user explicitly chooses it, after checking cost help with plan and cancellation prior to renewal. Keep application spending user-approved. No autonomous billing.
+6. Avoid forcing user to reread long technical requirements; give **one immediate step at a time**. 
