@@ -54,3 +54,16 @@ The latest owner-downloadable bundle is **`Freelancer_KPI_Application_QA_v3.zip`
 - Actual metrics unaffected: synthetic mock data July–September, Q3 net $192,975.16; true paid-channel ROAS 2.623x. No real client validation.
 - **Connects:** official unit price $0.15, purchased in bundles/custom amounts; user last had 0 Connects. Specific bid cost unknown until clicking Apply now (do not submit). Paid monthly subscription not compulsory. Without free bonus/invitation or sufficient Connects, normal proposal requires buying some. No purchase recommended yet.
 - Still need client-specific formulas, real client design, live-status check, human visual confirmation and 2-minute Loom; no application was sent.
+
+
+## FINAL APPLICATION NOTE — QA, incident handling and honest promise (2026-10-27)
+Complete and cross-reference: [TROUBLESHOOTING_LOG.md](TROUBLESHOOTING_LOG.md) and [QUALITY_GATE.md](QUALITY_GATE.md). Original defect/repair chronology and all seven fault injections are recorded there. Detailed incident log is **for our operating record**; don't dump private internal failure history or massive reports into a job bid without a reason. Emphasize concrete measurable safeguards in a short proposal.
+
+**Recommended optional QA paragraph, after showing actual report + judgment call:**
+> I use an independent Python QA gate to recalculate KPIs from source files, check the paid-revenue attribution and dynamic target formulas, and reconcile tables across CSV, dashboard, and PDF. In this synthetic demo I identified and fixed an early ROAS numerator mismatch and added seven deliberate-failure tests. The report builder stops if validation fails. If selected for the paid test, I will adapt the calculations and QA checks to your official KPI definitions, dynamic targets and design system, and review exceptions before any delivery.
+
+**Never promise:** '100% error-free output', 'guaranteed no errors', an enterprise-certified auditing service, having delivered this exact process to an existing client, or suitability for real customer data without scope and privacy approvals.
+
+**Still required before applying:** verify current listing and eligibility, actual Connects fee and paid plan price, buyer's video requirement, owner can credibly offer 10h/week, and personal Loom <= 2 min. No application, payment or paid contract currently confirmed.
+
+**One-month membership trial:** owner is considering Freelancer Plus for one month. This is a proposal, not a purchase. See [UPWORK_ONE_MONTH_TRIAL.md](UPWORK_ONE_MONTH_TRIAL.md). 
