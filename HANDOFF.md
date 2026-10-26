@@ -71,3 +71,8 @@ Owner said '여기까지만 해놓고 새채팅방 들어갈게' and wants no mo
 - **Exact script, demo facts, filming steps, risks**: [docs/LOOM_U001_RECORDING.md](docs/LOOM_U001_RECORDING.md).
 - **Immediate next owner action (one only):** download/extract v3.1 ZIP and open `dashboard.html` in Windows browser; report `열렸다` or screenshot. Then guide actual Loom desktop Screen Only / microphone-on recording with applicant's own narration and check link playback (<2min). Job-specific eligibility/Connects, account ID, bid and any Plus subscription remain unapproved and must be handled separately.
 - Source of current documentation: original repo main `f0ef642` before these new notes. Confirm latest commit SHA after write. No deployed web app/Vercel applies.
+
+## LATEST owner priority override — 2026-10-27 KST
+- **U-001 is PASS / NO BID by explicit owner decision.** Logged-in screenshot displayed **13 required Connects**; competition and eligibility effort were not attractive to the owner. Do not resume this bid, Loom, or instruct purchasing Plus for U-001 unless user reopens it. This is not a claim job was filled.
+- Reusable synthetic KPI v3.1 artifacts and audit history remain available for other opportunities; not proof of client work. The prior Loom workflow is **not an active task**.
+- **Current strategy:** no buying Connects/Plus pending a more promising, tightly scoped job and user approval. Search real low-competition asynchronous Python/n8n/Excel/KPI work with transparent AI policy; verify public opening, deliverables, Korea eligibility, fees, workload. User has not confirmed ID verification or payment; avoid assuming account changed.
