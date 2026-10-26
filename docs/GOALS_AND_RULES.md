@@ -15,3 +15,9 @@
 - Every advertised revenue figure needs direct evidence of deposit and fees; separate gross, platform fee, transfer costs, taxes and net.
 - Benchmark $17/hr as initial Upwork profile price, allow per-proposal adjustment.
 - Never promise finding instant work or a monthly minimum by a set date.
+
+## 2026-10-27 owner strategy override — Upwork on hold
+- Owner chose to **deprioritize Upwork indefinitely** after reviewing competition, Connects costs and unattractive job economics. This is an explicit change in current priorities, not a permanent technical ban.
+- **Primary work lane now:** market and package small, honest and testable Kmong/local Korean-market services using existing Python, n8n, PDF, data cleaning, automation, KPI/demo capabilities. Compare true per-order labor, expected revisions, platform fees and realistic demand before publication. Never assert guaranteed sales.
+- **Do not** seek new Upwork leads, ask for Loom video, solicit Plus/Connects purchase, or continue Upwork verification unless the owner reopens the topic. Payment/subscription status remains unverified; don't assume any Plus charge happened.
+- Preserve reusable KPI demo assets with clear synthetic labeling (2,806 simulated orders, 184 ad-spend rows); never describe them as paying-client results.
