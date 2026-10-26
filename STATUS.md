@@ -39,3 +39,10 @@ Last coordinated: **2026-10-27 KST**. Initial bootstrap based on user conversati
 5. Vet AI-allowed lower-friction paid jobs in parallel; save verified leads; aim first paid contract.
 
 No active recurring watch/notification/scheduled search is created.
+
+## 2026-10-27 update — KPI demo v2 created (current chat)
+- Checked publicly indexed U-001 Upwork posting and recorded requirements in [docs/APPLICATION_U001.md](docs/APPLICATION_U001.md). **Logged-in live job availability, Connects, applicant eligibility still pending**.
+- Built new `Freelancer_KPI_Application_Ready_v2.zip` in ChatGPT, not in this GitHub repository. Owner must download ZIP from current chat.
+- Tested 9 dynamic cost-derived targets; PDF 3 pages rendered successfully; source reconciliation and paid-only ROAS guard passed. Sep Meta 1.773x actual vs 2.287x break-even, -$1,738.33 post-ad contribution. It is a retrospective simulated break-even metric, not client's design/rules.
+- Draft English Loom script and tailored Upwork proposal saved in ZIP and copied into docs/APPLICATION_U001.md.
+- **Pending owner action: download ZIP, extract, open dashboard.html, reply with screenshot or '열렸다'.** No Loom submitted, application sent, Connects purchased, contract won or revenue verified.
