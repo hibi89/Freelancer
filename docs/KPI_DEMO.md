@@ -52,3 +52,11 @@ Job: https://www.upwork.com/freelance-jobs/apply/Build-Actionable-commerce-KPI-R
 - Never pass client source data or secrets to external AI tools without authorization. Client instructions and actual case test determine feasibility.
 
 **Immediate improvement for candidacy:** build a dynamic-target example using a transparently specified synthetic calculation (not inventing client formula), include an actual-vs-target chart in PDF/dashboard, and make a simple repeatability SOP. Then practice <=2m Loom and user approval before spending Connects.
+
+## 2026-10-27 — completed demo upgrade (v2)
+**Actual outputs created** in chat and downloadable as `Freelancer_KPI_Application_Ready_v2.zip`. 3-page PDF, HTML dynamic target card/table, calculated target JSON and CSV, Windows rebuild script, English Loom short script and proposal draft.
+- Source-checked 9 dynamic (month/channel) break-even target rows from original raw synthetic CSV; PDF 3 pages; basic file QA PASS.
+- September Meta ROAS 1.773x vs cost-derived target 2.287x; post-ad contribution -$1,738.33. Paid-only September aggregate ROAS 2.375x. Never divide total store revenue by paid ad spend for paid ROAS.
+- Repro instructions and important client-formula caveat stored in [docs/APPLICATION_U001.md](docs/APPLICATION_U001.md).
+- **Important limitation:** workbook has old monthly KPI table; new target benchmarks are included in the dedicated HTML/PDF/CSV instead. Browser visual verification on owner's Windows remains pending.
+- Application not submitted; Loom not recorded. Ask owner to **open dashboard.html only first**.
