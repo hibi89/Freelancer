@@ -47,3 +47,10 @@ The exact ZIP is in the **2026-10-27 ChatGPT conversation** with a download link
 3. Check current Upwork account readiness (identity profile, Connects, job open), then seek explicit approval and submit only when everything is ready.
 
 **NOT DONE:** user hasn't confirmed opening v2 ZIP/HTML; Loom is not recorded; proposal isn't submitted; no money spent; no job won. The minimum cost and job availability are not verified inside logged-in Upwork.
+
+## Update — QA gating v3 (2026-10-27)
+The latest owner-downloadable bundle is **`Freelancer_KPI_Application_QA_v3.zip`**, replacing v2. Detailed engineering verification is in [QUALITY_GATE.md](QUALITY_GATE.md).
+- PASS: 85,783 assertion evaluations, 7/7 injected failures detected (duplicate order, wrong net revenue, missing ad spend, inflated ROAS, forged target, HTML tamper, broken PDF). PDF reviewed visually and key workbook values spot checked.
+- Actual metrics unaffected: synthetic mock data July–September, Q3 net $192,975.16; true paid-channel ROAS 2.623x. No real client validation.
+- **Connects:** official unit price $0.15, purchased in bundles/custom amounts; user last had 0 Connects. Specific bid cost unknown until clicking Apply now (do not submit). Paid monthly subscription not compulsory. Without free bonus/invitation or sufficient Connects, normal proposal requires buying some. No purchase recommended yet.
+- Still need client-specific formulas, real client design, live-status check, human visual confirmation and 2-minute Loom; no application was sent.
