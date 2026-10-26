@@ -46,3 +46,9 @@ No active recurring watch/notification/scheduled search is created.
 - Tested 9 dynamic cost-derived targets; PDF 3 pages rendered successfully; source reconciliation and paid-only ROAS guard passed. Sep Meta 1.773x actual vs 2.287x break-even, -$1,738.33 post-ad contribution. It is a retrospective simulated break-even metric, not client's design/rules.
 - Draft English Loom script and tailored Upwork proposal saved in ZIP and copied into docs/APPLICATION_U001.md.
 - **Pending owner action: download ZIP, extract, open dashboard.html, reply with screenshot or '열렸다'.** No Loom submitted, application sent, Connects purchased, contract won or revenue verified.
+
+## 2026-10-27: Connects clarification and fail-closed KPI QA v3
+- Upwork official rules: most direct job proposals require Connects; $0.15/Connect, bundle/custom purchase options; **no mandatory Plus subscription**. Invitations to apply can be answered with no Connects. Last owner screenshot showed 0 Connects; required quantity for **this job** still unknown until logged-in application view. No Connects bought.
+- Created `Freelancer_KPI_Application_QA_v3.zip` in current ChatGPT chat, with audit_kpi.py, build scripts, 7 fault-injection tests, QA JSON/manifest, revised demo outputs. **Not committed as binary to GitHub.**
+- Static CSV/JSON/HTML/PDF independent reconciliation: PASS **85,783 assertions** (not independent test count); 7/7 deliberate corruptions FAIL; regenerated release ZIP only on PASS. PDF page 3 visually inspected, workbook core figures separately spot-checked. See [QUALITY_GATE.md](docs/QUALITY_GATE.md).
+- Not yet proof of zero bugs, actual customer metrics or production-grade acceptance. User must still download/open v3 ZIP, verify design, record Loom and inspect real bid cost. No paid applications/fees initiated.
