@@ -31,3 +31,10 @@ References:
 - **Revenue:** only actual completed work/payment counts; no guarantee of first sale.
 
 Next immediate action on new chat: show actual Upwork Plus checkout price and monthly renewal, and exact U-001 Connects needed **without purchase**; evaluate versus a standalone Connects pack.
+
+## 2026-10-27 — account screenshot price comparison
+- Account screen shows Starter: $15 one time, 100 Connects; Plus: first month $9.99 discounted from $19.99, recurring $19.99 monthly. Both cards mention a limited-time additional 50 Connects. Actual checkout bonuses and totals remain unverified.
+- Conditional recommendation: Plus offers a better first-month price ($5.01 less), provided owner is eligible, filming/application materials are ready, and current checkout confirms the promotion. No purchase occurred.
+- Cancellation must be completed before renewal at midnight UTC. Prefer canceling at least one day early. A single paid job could recover the subscription, but neither selection nor profit is guaranteed.
+- Distinguish required account ID verification from the optional 35-Connect verified-profile badge. Official policy: https://support.upwork.com/hc/en-us/articles/360010609234-How-to-get-the-identity-verification-badge
+- Loom video still needs the applicant to perform genuine screen recording and narration; no recording/submission completed. See docs/LOOM_U001_RECORDING.md.
