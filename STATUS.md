@@ -82,3 +82,8 @@ No active recurring watch/notification/scheduled search is created.
 ## 2026-10-27 account checkout screenshot
 - User's Upwork purchase-choice screenshot displays Starter $15 for 100 Connects and Plus $9.99 first month (then displayed $19.99). Both mention a temporary 50-Connect bonus, unconfirmed at checkout. Comparison and renewal safeguards documented in docs/UPWORK_ONE_MONTH_TRIAL.md.
 - No payment, Loom recording, or proposal submission confirmed. Recheck account verification and job status before spending.
+
+## Owner application decision — 2026-10-27 KST
+- U-001 client-side screenshot showed **13 Connects to submit**. User expressly chose to **pass** due to perceived low chance of selection. This is **owner declined**, not a closed listing or verified rejection.
+- Stop planning application-specific Loom for U-001; reusable v3.1 mock KPI case study remains available, with no evidence of a recording or proposal submission. Upwork Plus purchase deferred; no payment confirmed.
+- Focus on fresh, vetted small paid contracts; require confirmed account eligibility and known per-bid cost before proposing spend. See docs/LEADS.md.
