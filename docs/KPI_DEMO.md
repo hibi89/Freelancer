@@ -30,3 +30,25 @@
 - Codex can render a captioned MP4 if local video tooling exists, but a generated MP4 is **not automatically a Loom recording**; platform and client's instructions determine the final format.
 
 **Status:** Demo artifact creation previously reported; local independent verification, Loom recording, actual bid **pending**.
+
+
+## 2026-10-27: Job-spec gap analysis (public original text rechecked)
+Job: https://www.upwork.com/freelance-jobs/apply/Build-Actionable-commerce-KPI-Reports-With-Long-Term-Steady-Work_~022113293406837226152/
+
+**Actual demand, per original posting:**
+- DVISIONMEDIA e-commerce agency. Build weekly/monthly/quarterly KPI reports, with AI (Claude for heavy lifting; ChatGPT or similar also explicitly accepted for portfolio proof).
+- Each KPI evaluated against a **dynamic target calculated from that brand's own numbers**, never a typed static target.
+- Every section ends in numeric-evidence-backed action; exact client-provided design system, KPI logic and targets.
+- Document workflows so agency staff can reproduce them, with direct client materials: formulas, target definitions, design system, walkthrough video.
+- Show reporting/AI proof, accurate instruction-following, reliable weekly availability. Paid trial only if shortlisted; before building give own time estimate.
+- Apply with ACTIONABLE as first word, state hourly rate & weekly hours, Loom <=2m showing an AI-built report and ONE personally reasoned judgment. Live job status/terms still must be checked before actually applying.
+
+**Inspected artifacts in this chat (current runtime):**
+- Report PDF `Ecommerce_KPI_Sample/Executive_KPI_Report.pdf`: two pages, 2,806 mock orders, $192,975 net sales, 2.62x aggregate paid ROAS, 23.5% contribution margin.
+- Synthetic order-level and spend CSVs and `build_sample.py`; reproducible deterministic seeded data calculations. `2min_demo_script.txt` present.
+- Report has formulas/metrics and three evidenced recommendations (Meta ROAS Aug 2.46x -> Sep 1.77x; Google Aug 2.98x -> Sep 3.16x), plus synthetic/attribution disclaimers.
+- **Important gap:** no per-KPI customer-data-derived target with actual-vs-target display; no client-specific brand design/template; no documented robust repeatable weekly/monthly/quarterly workflow with client data; no proof customer acceptance. Current mock report is an honest application DEMO, NOT the exact paid deliverable.
+- GPT-6 + Python can implement transformations, targets, report layout and repeatable SOP once the customer's definitions, authentic source data and template are supplied; human QA essential for metric semantics, attribution, privacy, and strategic claims. No accuracy/client acceptance guarantee.
+- Never pass client source data or secrets to external AI tools without authorization. Client instructions and actual case test determine feasibility.
+
+**Immediate improvement for candidacy:** build a dynamic-target example using a transparently specified synthetic calculation (not inventing client formula), include an actual-vs-target chart in PDF/dashboard, and make a simple repeatability SOP. Then practice <=2m Loom and user approval before spending Connects.
