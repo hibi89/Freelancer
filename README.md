@@ -32,3 +32,10 @@ This is a **private operating notebook**, not an official Upwork agency, client 
 - Client work / income: **no paid contract or payment verified by this repo**. Do not claim zero lifetime earnings.
 
 Keep personal ID, date of birth, street address, phone, credentials, screenshots containing PII, client content and proprietary sources **out of this repository**, even though it is private.
+
+
+## New handoff addendum — 2026-10-27
+- [Troubleshooting & preventable-error register](docs/TROUBLESHOOTING_LOG.md): all observed synthetic KPI defects, corrected formulas, 7/7 injected negative tests, production-limitations, fail-closed delivery response and the factual client-facing QA statement.
+- [Upwork 1-month Plus experiment](docs/UPWORK_ONE_MONTH_TRIAL.md): verify current price, compare with Basic+Connects, cap spend, retain cancellation deadline before recurring billing. Not yet purchased or started.
+- [U-001 current proposal packet](docs/APPLICATION_U001.md): includes client-facing quality-assurance paragraph, caveats and outstanding Loom/Connects checks.
+- After user enters a new chat, the assistant should read [HANDOFF.md](HANDOFF.md) and continue with the actual Connects/Plus checkout price **before** any payment or submission.
