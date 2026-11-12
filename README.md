@@ -1,4 +1,6 @@
-# PRODUCT 2 — RAG Studio + SMAX² + PREP 기업 AI 지식·데이터 검색
+# CITEVAULT AX — RAG Studio + SMAX²/PREP 기업 AI 지식검색
+
+**상품명: CITEVAULT AX · 근거형 기업 AI 지식·데이터 검색 · 기술: RAG Studio + SMAX²/PREP + SQL/BM25**
 **크몽 기업 맞춤형 · 2026-11-13 KST · Private · 설계 전용 · RELEASE HOLD**
 
 - **완성 목표:** 고객 PDF/DOCX/TXT/MD 및 승인된 Excel/CSV/업무 DB를 로컬에서 **SMAX²/PREP로 정형화→RAG Studio로 검색·정확한 SQL 집계→문서 원문 근거 표시→필요 시 로컬 LLM으로 답변**한다. 근거가 없거나 충돌하면 보류한다. 고객/역할별 접근 통제와 설치·복구까지 납품.

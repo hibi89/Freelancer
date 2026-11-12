@@ -1,4 +1,6 @@
-# RAG Studio AX Enterprise — FINAL BLUEPRINT v1.0
+# CITEVAULT AX — RAG Studio AX Enterprise / FINAL BLUEPRINT v1.0
+
+> **상품명: CITEVAULT AX** · 근거형 기업 AI 지식·데이터 검색. 원래 제품명·저장소는 유지.
 **2026-11-13 KST · 100% 완성도 판정 정본 · 기업 맞춤 구축용 · 본 설계만으로 구현/판매 인정 불가**
 
 ## 0. 고객 문제·제품 경계

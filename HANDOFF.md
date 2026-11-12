@@ -1,4 +1,6 @@
-# HANDOFF — RAG Studio 기업형 (10항, 2026-11-13 KST)
+# CITEVAULT AX — HANDOFF — RAG Studio 기업형 (10항, 2026-11-13 KST)
+
+> **상품명: CITEVAULT AX** · 근거형 기업 AI 지식·데이터 검색. 원래 제품명·저장소는 유지.
 1. 목표: Private PREP/SMAX²→승인된 AX패키지→RAG Studio BM25/dense/SQL+문서→근거 검증→선택형 로컬 모델+기업 ACL.
 2. 완료: 상세 FINAL_BLUEPRINT, TECHNOLOGY_MAP, ACCEPTANCE_AND_ROADMAP, COMMERCIAL_AND_SECURITY 문서 작성. 원본 저장소 기능 변경 없음.
 3. 테스트: 이번 브랜치 제품 테스트 NOT_RUN; 기존 해총 역사적 CI #43231121679(Linux 633PASS 2SKIP; Windows 634PASS 1SKIP) 별도 기록. 정확 develop/feature 포함 관계 미검증.
