@@ -1,6 +1,6 @@
-# STATUS — Freelancer 상품 설계 허브
-- 2026-11-13 KST: 기존 Upwork/구직 운영 자료의 현행 트리 제거 및 크몽 기업형 상품 3개 문서 전용 전환 지시.
-- 원본 `main` 백업 복구 기준 커밋: `d47239f961fc895592147c2afa969ecf64f2bd00` (Git history retained; not force-pushed).
-- 대상: `product/hae-la-automation`, `product/rag-enterprise-knowledge`, `product/rea-website-rebuild`.
-- **본 변경은 문서/분기 작업**: 소프트웨어 신규 기능 0, 제품 테스트 0, 실고객 납품 0, Vercel/Production 미적용, `RELEASE HOLD`.
-- 브랜치별 정확한 새 SHA·파일 원격 재확인 결과를 완료 후 이 허브와 각 브랜치 인수인계에서 확인한다.
+# STATUS — HAE+LA 크몽 기업형 상품 (2026-11-13 KST)
+- 이번 변경: 100% 최종설계·기술 인벤토리·완성률/인수테스트·상품/보안 문서 등록. **제품 코드는 0개 수정, 제품 테스트 0회, 배포 0회.**
+- 원본 `hibi89/HAE@feature/axflow-mvp` HEAD 조회 `1de81c2fc1fb671fd20603b64e1be76b6d36aad5`; 독립 LA `feature/lightning-azent` HEAD `9fce9e2f13fdfd9e0768fa8ad4675a3762863201`. 조회 기준이며 코드 CI 통과 보증 아님.
+- HAE 이전 공식 기록: 엔지니어링 **85% 잠정**, Actions #42990527614 Python 양OS 264 PASS/2 FAIL/7 SKIP·Node UI24 PASS, 전체 CI FAILURE; 새로운 사업형 최종설계 범위 수용률 **재산정 안 됨**.
+- 미검증: 실제 외부 API/OAuth, DBVORA 실 서비스, full package parity, nondeveloper Win10/11, 고객 사용권/납품/영수증/가격 수요.
+- RELEASE HOLD. 설치/판매 허가와 제품 100% 달성 아님. 상용 배포 대상 Vercel `N/A`.
