@@ -1,4 +1,6 @@
-# PRODUCT 3 — REA_WEB + Fable 5.1 + Astra P4 웹사이트 분석·독립 재구축
+# SITECRAFT AX — REA_WEB + Fable 5.1 + Astra P4 웹사이트 분석·재구축
+
+**상품명: SITECRAFT AX · 허가형 웹사이트 진단·독립 재구축 · 기술: REA_WEB + Fable 5.1 + Astra P4 + Playwright + REA Pro**
 **크몽 기업형 리뉴얼 · 2026-11-13 KST · Private · 최종 설계 전용 · RELEASE HOLD**
 
 - **제품 정체성:** 고객이 정당한 분석·개발 권한을 가진 기존 웹사이트를 **Fable 5.1/실 Chromium으로 관찰→Astra P4로 출처·기능·상태 명세화→인간 검토/승인→REA Pro FastAPI/SQLite 기반 독립 웹앱 제작→전후 브라우저 검증→납품**.

@@ -1,4 +1,6 @@
-# REA_WEB — WEBSITE ANALYSIS & INDEPENDENT REBUILD / FINAL BLUEPRINT v1.0
+# SITECRAFT AX — REA_WEB Website Analysis & Independent Rebuild / FINAL BLUEPRINT v1.0
+
+> **상품명: SITECRAFT AX** · 허가형 웹사이트 진단·독립 재구축. 원래 기술명·원본 저장소는 유지.
 **기준 2026-11-13 KST · 고객용 100% 완료 정본 · 디자인/기능 저작권·실서비스 검증 전 RELEASE HOLD**
 
 ## 0. 정체성·고객 결과

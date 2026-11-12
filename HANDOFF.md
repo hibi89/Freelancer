@@ -1,4 +1,6 @@
-# HANDOFF — REA_WEB 기업형 웹사이트 재구축 (10항)
+# SITECRAFT AX — HANDOFF — REA_WEB 기업형 웹사이트 재구축 (10항)
+
+> **상품명: SITECRAFT AX** · 허가형 웹사이트 진단·독립 재구축. 원래 기술명·원본 저장소는 유지.
 1. 목표/기술: REA_WEB + Fable5.1 static/record 계약 + Playwright browser 관찰 + Astra P4 증거 + 사람 승인 + REA Pro FastAPI/SQLite 독립 앱·검증.
 2. 완료: `docs/FINAL_BLUEPRINT.md`, `TECHNOLOGY_MAP.md`, `ACCEPTANCE_AND_ROADMAP.md`, `COMMERCIAL_AND_SECURITY.md` 설계. 원본 제품 코드/서비스 미수정.
 3. 테스트: 이 branch 제품 테스트 0; 역사적 원본 P85 Actions #43273324679 Win/Linux 각 52PASS/0FAIL/1WARN, 정확 source SHA `1c3390fa...`, 합성 범위에 한정.
