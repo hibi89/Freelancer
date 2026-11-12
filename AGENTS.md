@@ -1,3 +1,5 @@
+> **[OWNER-FINAL-BLUEPRINT-100 | 2026-11-13 KST · 사용자 확정]** 최종완성률은 **사용자 최종설계도 전체 100%**를 기준으로만 계산한다. AI 총괄/담당자의 임의 축소·가중치 조정·MVP/합성 CI/내부 기술 85·95%를 최종완성률로 전용 금지. REQ별 구현 경로·정확 SHA 실행 검증·미구현·미검증·사용자 승인 가중치 추적표를 갖춰 산정하고, 미비하면 공식 `UNASSESSED(재산정 대기)`. 기존 내부 점수/마커·등록이력·판매 HOLD 보존. 크몽 상품 원장은 해총 `kmong-productization`에 증빙과 함께 최신화. [공통 정본](https://github.com/hibi89/hackathon-command-center-2026/blob/kmong-productization/docs/strategy/FINAL_BLUEPRINT_COMPLETION_STANDARD_20261113.md). 문서 갱신 자체는 제품 완료나 배포가 아님.
+
 # AGENTS — 3대 크몽 상품 설계 저장소
 - GitHub 비공개 저장소 `hibi89/Freelancer` 의 `main`은 전체 색인, `product/*` 3개 브랜치는 각 상품 설계의 소유자다. 실제 제품 구현/테스트/배포의 정본은 독립 원본 저장소다.
 - 사용자 `ㄱ` 지시 시 담당 브랜치의 `HANDOFF.md → STATUS.md → AGENTS.md → REQUIREMENTS.md → docs/FINAL_BLUEPRINT.md → 원본 제품의 최신 문서/코드`를 확인하고 다음 안전한 단위를 수행한다.
