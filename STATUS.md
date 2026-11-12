@@ -1,15 +1,7 @@
-# STATUS — Freelancer 3상품 허브
-**2026-11-13 KST · Private · 설계 문서 갱신 완료 · 제품 출고 RELEASE HOLD**
-
-| 단계 | 검증된 결과 |
-|---|---|
-| 원본 보호 | 이전 `main` HEAD `d47239f961fc895592147c2afa969ecf64f2bd00` 보존(이력에 남음) |
-| 현재 트리 정리 | 새 `main` 최초 commit `2f0528b0e9e945538e32bd0974078c579595cee8`, 이전 구직 파일 모두 현재 트리에서 제거 |
-| HAE 제품 브랜치 | `product/hae-la-automation@58f810ec869d721468d3e2ce3aef02aae76ff7c8` |
-| RAG 제품 브랜치 | `product/rag-enterprise-knowledge@8da3e433e92cdbda4eb96902b1a562c6d9f7e45c` |
-| REA 제품 브랜치 | `product/rea-website-rebuild@ba3ee24e23617259ef932359bfa7bcd07539ce2a` |
-| 작성·검증 | 브랜치마다 10개 문서 파일, 최종설계 원격 읽기, 커밋 Author/Committer `hibi89` 확인 |
-| 제품 구현/배포 | 변경 0, 제품 테스트 0, Vercel Production 미적용 |
-| 판매 상태 | 실제 고객/권리/보안/설치/증빙 검증까지 RELEASE HOLD |
-
-**기술 상세:** [docs/PRODUCT_INDEX.md](docs/PRODUCT_INDEX.md). 본 저장소에서 개발률 100%를 별도 산정하지 않는다. 원본 HAE/RAG/REA의 역사적 엔지니어링 추정치/CI는 제품 브랜치 STATUS·ACCEPTANCE에서 확인.
+# STATUS — PROOFQA AX (2026-11-13 KST)
+- **신규 판매상품 상태: 상세 최종설계 작성, 기능 통합 미착수/미검증, RELEASE HOLD.**
+- 기술: `ai-code-checker`+Graphify+agent-browser+Cloudflare security-audit-skill 방법론. 해총 원안과 동일.
+- 원본 Code Checker 개발 브랜치 조회 SHA `64744eebd109ebbdfd6dafca23ec23329cc3ee77`; 기존 제품 해총 엔지니어링 95% 잠정·실 Win10/11 고객/보안 재배포 출고 HOLD.
+- 외부 저장소 기능/라이선스는 문서 조사; 실제 3개 adapter, 고객권한, 샌드박스, 원본 실테스트, 보고서 pipeline **NOT_RUN**.
+- 이번 상품 브랜치에서 **코드 구현 0, 테스트 0, 새 CI 0, 배포 0**. `UNASSESSED` (표준형 신제품 점수 미산정).
+- 해당 제품 개발 지시 후 실제 소스 기능 구현·독립 검증 전에는 해총 기존 CodeChecker의 95%를 이 상품에 승계 금지.
