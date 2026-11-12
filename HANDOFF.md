@@ -1,11 +1,11 @@
-# HANDOFF — 허브 재개
-1. 목표/기술: 프리랜서 구직 저장소를 비공개 크몽 3개 고가 기업형 상품의 설계 허브로 변경.
-2. 완료 범위: 현재 트리 문서 정리, 세 브랜치별 독립 BLUEPRINT/TECHNOLOGY/ACCEPTANCE/COMMERCIAL 문서 구성; 현재 HEAD 확인 필수.
-3. 테스트: 문서 구조/원격 읽기만 수행. 제품 코드 테스트는 `NOT_RUN`.
-4. 출시: 각 실제 제품 원본 저장소별 `RELEASE HOLD`; 이 허브는 코드 런타임이 아님.
-5. 위험: 이전 업워크 문서는 현행 트리에서는 사라지지만 Git history에는 남음. 원본 소스와 파일 저장소는 변경하지 않는다.
-6. 저장소: `hibi89/Freelancer` Private, `main`과 제품 브랜치 3개, 원본 HEAD `d47239f961fc895592147c2afa969ecf64f2bd00`.
-7. 배포: Production/Vercel `N/A`, 실행 명령 없음.
-8. 백업: 이전 HEAD를 기록하고 Git 이력을 보존. 시크릿/고객 자료 없음.
-9. 우선: 세 브랜치의 설계와 실제 제품 repo HEAD 비교 → 라이선스/기술 틈 확인 → 사용자 승인하에 제품별 최소 개발·검증 진행.
-10. 일시/검증: 2026-11-13 KST; 정확한 최종 문서 SHA와 브랜치 상태는 별도 재조회 기준.
+# HANDOFF — 크몽 3대 상품 설계 저장소 (10항)
+1. **목표/확정 기술:** Private `hibi89/Freelancer`를 HAE+Lightning Azent+DBVORA, RAG Studio+SMAX²/PREP, REA_WEB+Fable5.1/Astra P4 3개 기업형 상품 설계 허브로 전환.
+2. **완료/근거:** 기존 Upwork/구직 문서를 현재 트리에서 없애고 3개 `product/*` 브랜치 생성, 상세 BLUEPRINT/TECHNOLOGY/ACCEPTANCE/COMMERCIAL 및 README/REQUIREMENTS/STATUS/HANDOFF 작성. 독립 제품 코드 무수정.
+3. **테스트:** GitHub Tree/파일/author SHA 읽기 검증 PASS(3 branch, 각각10파일; legacy 0). 실제 소프트웨어 테스트 0회·CI 0회·고객/브라우저 실서비스 0회.
+4. **진행/대기/차단:** 설계 문서 완료, 실제 판매/고객 설치/보안·권리 승인 미검증, `RELEASE HOLD`.
+5. **오류/시도/대안:** slash가 포함된 branch를 Git Trees URL ref로 직접 넘긴 첫 재조회는 400. **commit SHA로 Git Tree 조회하여 개선·재검증 성공**. 반복 금지. 강제 이력 정리는 고객 자료/복구권 위험이 있어 미실시.
+6. **저장소/브랜치/SHA:** `hibi89/Freelancer` Private / `main` 이전 `d47239f`→새 정리 커밋 `2f0528b`; `product/hae-la-automation@58f810ec`, `product/rag-enterprise-knowledge@8da3e43`, `product/rea-website-rebuild@ba3ee24`. 세부: `docs/PRODUCT_INDEX.md`.
+7. **Production/실행:** 이 저장소는 문서 전용이므로 Vercel/배포/실행 명령 없음. 코드 실행은 각 원본 프로젝트 HAE/RAG_STUDIO/REA_Web에서 별도 수행.
+8. **원본/백업/권한:** 이전 소스 트리 Git commit `d47239f...` 복구 가능(강제 push 없음). HAE·LA·DBVORA/SMAX/PREP/RAG/Fable/Astra/REA 소스·시크릿·고객자료·Vercel 계정/결제 불변. `docs/REPOSITORY_RECOVERY.md` 확인.
+9. **다음 작업/완료 기준/승인:** 사용자가 각 상품 개발을 명시 지시할 때 해당 product branch의 HANDOFF→STATUS→AGENTS→REQUIREMENTS→BLUEPRINT→실제 원본 repo 최신 순으로 읽고 현재 소스·테스트·CI 비교 후 승인 범위 내 구현/검증. 가격·상용권·사용자 자료/실계정·고객 납품은 별도 승인.
+10. **갱신/기준:** 2026-11-13 KST. 문서 GitHub 원격 Tree 및 BLUEPRINT 직접 재조회, Author/Committer hibi89 확인. 허브 최종 HEAD는 이번 인수인계 문서 갱신 직후 재조회값 사용.

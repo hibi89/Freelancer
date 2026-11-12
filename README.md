@@ -1,14 +1,16 @@
 # Freelancer — 크몽 3대 기업형 상품 총괄
-**기준: 2026-11-13 KST · 저장소 Private · 문서 전용 · RELEASE HOLD**
+**2026-11-13 KST · Private · 기획/검증 문서 전용 · RELEASE HOLD**
 
-기존 Upwork/프리랜서 구직 보좌관 자료를 현재 트리에서 전면 제거하고, **3개 고객 납품 상품의 독립 최종설계 본부**로 전환한다. 본 저장소는 통합 배포 소스가 아니다. 실제 개발 기준 코드는 아래 원본 제품 저장소에 둔다.
+기존 Freelancer Upwork/구직 자료는 현행 Git 트리에서 제거하고, 크몽 3개 독립 상품의 **최종설계 기준 저장소**로 전환했다. **소스코드 구현은 각각의 기존 제품 저장소**에서 수행한다.
 
-| 제품 전용 브랜치 | 상품 | 원본 개발 코드 | 표준형 가설 |
+| 상품별 브랜치 | 기술 조합 | 100% 기준 문서 | 표준형 가설 |
 |---|---|---|---:|
-| `product/hae-la-automation` | HAE + Lightning Azent 기업 업무 자동화 | `hibi89/HAE`, `hibi89/DBVORA` | 1,990,000원 |
-| `product/rag-enterprise-knowledge` | RAG Studio + SMAX²/PREP 사내 지식·데이터 AI | `hibi89/RAG_STUDIO`, `hibi89/SMAX`, `hibi89/prep` | 2,990,000원 |
-| `product/rea-website-rebuild` | REA_WEB + Fable 5.1 + Astra P4 웹사이트 분석·재구축 | `hibi89/REA_Web` | 1,890,000원 |
+| [product/hae-la-automation](https://github.com/hibi89/Freelancer/tree/product/hae-la-automation) | HAE+Lightning Azent+DBVORA+선택 SOVIA | [HAE 최종설계](https://github.com/hibi89/Freelancer/blob/product/hae-la-automation/docs/FINAL_BLUEPRINT.md) | **199만원** |
+| [product/rag-enterprise-knowledge](https://github.com/hibi89/Freelancer/tree/product/rag-enterprise-knowledge) | RAG Studio+SMAX²+PREP+SQLite/검색+선택 로컬LLM | [RAG 최종설계](https://github.com/hibi89/Freelancer/blob/product/rag-enterprise-knowledge/docs/FINAL_BLUEPRINT.md) | **299만원** |
+| [product/rea-website-rebuild](https://github.com/hibi89/Freelancer/tree/product/rea-website-rebuild) | REA_WEB+Fable5.1+Astra P4+Playwright+REA Pro | [REA 최종설계](https://github.com/hibi89/Freelancer/blob/product/rea-website-rebuild/docs/FINAL_BLUEPRINT.md) | **189만원** |
 
-각 브랜치의 `docs/FINAL_BLUEPRINT.md`가 **최종상품 100%의 정본**이다. `docs/TECHNOLOGY_MAP.md`, `docs/ACCEPTANCE_AND_ROADMAP.md`, `docs/COMMERCIAL_AND_SECURITY.md`가 세부 기술·단계별 수용·견적/보안을 정의한다. `STATUS.md`, `HANDOFF.md`는 확인된 상태와 다음 작업만 기록한다.
+[3개 상품·검증된 커밋 색인](docs/PRODUCT_INDEX.md) · [이전 구직 파일 복구](docs/REPOSITORY_RECOVERY.md)
 
-**작업 경계:** 본 저장소는 기획·계약·상품 설계 전용. 원본 제품 코드 복제, 자동 병합, 외부 API 사용, 고객 데이터 반입, 유료 결제, 출시·배포는 하지 않는다. 기존 상용화 전 `RELEASE HOLD`를 유지한다. 과거 기록의 파일 삭제가 Git 이력 영구삭제를 의미하지 않으며 복구 방법은 [docs/REPOSITORY_RECOVERY.md](docs/REPOSITORY_RECOVERY.md)에 있다.
+각 브랜치의 `docs/FINAL_BLUEPRINT.md`는 **최종상품 100% 완성의 설계 기준**이다. `docs/TECHNOLOGY_MAP.md`, `docs/ACCEPTANCE_AND_ROADMAP.md`, `docs/COMMERCIAL_AND_SECURITY.md`, `REQUIREMENTS.md`, `STATUS.md`, `HANDOFF.md`를 함께 읽는다.
+
+**주의:** 이 저장소는 상용 서비스나 제품 실행기가 아니며 현재 판매/Production `RELEASE HOLD`. 모든 가격은 검증 전 견적 가설, 제품 구현·실 고객 권리·보안·계약/과세형태는 원본 별도 검증 대상이다. 예전 구직 파일은 현재 트리에서 지웠지만 Git 이력은 비강제 이관으로 보존한다.
