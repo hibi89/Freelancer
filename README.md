@@ -1,14 +1,9 @@
-# Freelancer — 크몽 3대 기업형 상품 총괄
-**기준: 2026-11-13 KST · 저장소 Private · 문서 전용 · RELEASE HOLD**
+# PRODUCT 3 — REA_WEB + Fable 5.1 + Astra P4 웹사이트 분석·독립 재구축
+**크몽 기업형 리뉴얼 · 2026-11-13 KST · Private · 최종 설계 전용 · RELEASE HOLD**
 
-기존 Upwork/프리랜서 구직 보좌관 자료를 현재 트리에서 전면 제거하고, **3개 고객 납품 상품의 독립 최종설계 본부**로 전환한다. 본 저장소는 통합 배포 소스가 아니다. 실제 개발 기준 코드는 아래 원본 제품 저장소에 둔다.
-
-| 제품 전용 브랜치 | 상품 | 원본 개발 코드 | 표준형 가설 |
-|---|---|---|---:|
-| `product/hae-la-automation` | HAE + Lightning Azent 기업 업무 자동화 | `hibi89/HAE`, `hibi89/DBVORA` | 1,990,000원 |
-| `product/rag-enterprise-knowledge` | RAG Studio + SMAX²/PREP 사내 지식·데이터 AI | `hibi89/RAG_STUDIO`, `hibi89/SMAX`, `hibi89/prep` | 2,990,000원 |
-| `product/rea-website-rebuild` | REA_WEB + Fable 5.1 + Astra P4 웹사이트 분석·재구축 | `hibi89/REA_Web` | 1,890,000원 |
-
-각 브랜치의 `docs/FINAL_BLUEPRINT.md`가 **최종상품 100%의 정본**이다. `docs/TECHNOLOGY_MAP.md`, `docs/ACCEPTANCE_AND_ROADMAP.md`, `docs/COMMERCIAL_AND_SECURITY.md`가 세부 기술·단계별 수용·견적/보안을 정의한다. `STATUS.md`, `HANDOFF.md`는 확인된 상태와 다음 작업만 기록한다.
-
-**작업 경계:** 본 저장소는 기획·계약·상품 설계 전용. 원본 제품 코드 복제, 자동 병합, 외부 API 사용, 고객 데이터 반입, 유료 결제, 출시·배포는 하지 않는다. 기존 상용화 전 `RELEASE HOLD`를 유지한다. 과거 기록의 파일 삭제가 Git 이력 영구삭제를 의미하지 않으며 복구 방법은 [docs/REPOSITORY_RECOVERY.md](docs/REPOSITORY_RECOVERY.md)에 있다.
+- **제품 정체성:** 고객이 정당한 분석·개발 권한을 가진 기존 웹사이트를 **Fable 5.1/실 Chromium으로 관찰→Astra P4로 출처·기능·상태 명세화→인간 검토/승인→REA Pro FastAPI/SQLite 기반 독립 웹앱 제작→전후 브라우저 검증→납품**.
+- **기술 조합:** `Fable 5.1` + `Playwright Chromium/Edge` + `Astra P4 evidence/requirements` + `Human Approval Workbench` + `REA Pro app_builder (Python/FastAPI/SQLite/HTML/CSS/JS)` + `Pillow visual diff / pytest / Windows QA`.
+- **소스 원본:** `hibi89/REA_Web@feature/website-analysis-rebuild` 및 pinned `import/fable51-bbe72c0`, `import/astra-p4-b3166b6`, 기존 Pro 생성 코어. 기존 CSV/Excel→HTML 도구는 `hibi89/data2web_studio`의 **별도 상품**으로 유지.
+- **가격 가설:** BASIC 890,000원 / STANDARD **1,890,000원** / PREMIUM 3,490,000원. 페이지/기능/디자인/DB·호스팅별 계약 별도.
+- **주의:** 공개 URL만으로 원본 소스·서버 로직·사용권을 획득하지 못하며, 픽셀 복제/무허가 crawling/타인 콘텐츠 복제 상품이 아니다. 실제 고객 사이트·Windows10/11 실기기·상용 재배포/배포 권리는 미검증.
+- 문서: [최종설계](docs/FINAL_BLUEPRINT.md), [기술 전체](docs/TECHNOLOGY_MAP.md), [단계·테스트](docs/ACCEPTANCE_AND_ROADMAP.md), [견적·보안](docs/COMMERCIAL_AND_SECURITY.md).
