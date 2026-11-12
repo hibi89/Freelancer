@@ -1,16 +1,18 @@
-# Freelancer — 크몽 3대 기업형 상품 총괄
-**2026-11-13 KST · Private · 기획/검증 문서 전용 · RELEASE HOLD**
+# Freelancer — 크몽 상품화 5종 최종설계 허브
+**2026-11-13 KST · Private · 설계/검증 문서 전용 · RELEASE HOLD**
 
-기존 Freelancer Upwork/구직 자료는 현행 Git 트리에서 제거하고, 크몽 3개 독립 상품의 **최종설계 기준 저장소**로 전환했다. **소스코드 구현은 각각의 기존 제품 저장소**에서 수행한다.
+과거 업워크·구직 운영 문서는 현행 트리에서 제외되고 Git 이력으로 복구 가능하다. 이 저장소에는 **각 상품 최종완성률 100%의 정본 설계**를 `product/*`의 **독립 5개 브랜치**로 보관한다. **실제 제품 코드는 원래의 GitHub 저장소에서만 수정·검증·출시한다.**
 
-| 상품별 브랜치 | 기술 조합 | 100% 기준 문서 | 표준형 가설 |
+| 상품 | 전용 브랜치 | 기술 조합 | 표준형 견적 가설 |
 |---|---|---|---:|
-| [product/hae-la-automation](https://github.com/hibi89/Freelancer/tree/product/hae-la-automation) | HAE+Lightning Azent+DBVORA+선택 SOVIA | [HAE 최종설계](https://github.com/hibi89/Freelancer/blob/product/hae-la-automation/docs/FINAL_BLUEPRINT.md) | **199만원** |
-| [product/rag-enterprise-knowledge](https://github.com/hibi89/Freelancer/tree/product/rag-enterprise-knowledge) | RAG Studio+SMAX²+PREP+SQLite/검색+선택 로컬LLM | [RAG 최종설계](https://github.com/hibi89/Freelancer/blob/product/rag-enterprise-knowledge/docs/FINAL_BLUEPRINT.md) | **299만원** |
-| [product/rea-website-rebuild](https://github.com/hibi89/Freelancer/tree/product/rea-website-rebuild) | REA_WEB+Fable5.1+Astra P4+Playwright+REA Pro | [REA 최종설계](https://github.com/hibi89/Freelancer/blob/product/rea-website-rebuild/docs/FINAL_BLUEPRINT.md) | **189만원** |
+| HAE 기업 자동화 | [product/hae-la-automation](https://github.com/hibi89/Freelancer/tree/product/hae-la-automation) | HAE + Lightning Azent + DBVORA + 선택 SOVIA | 199만원 |
+| RAG 기업 AI 검색 | [product/rag-enterprise-knowledge](https://github.com/hibi89/Freelancer/tree/product/rag-enterprise-knowledge) | RAG Studio + SMAX²/PREP + SQL/BM25 + 선택 로컬 LLM | 299만원 |
+| REA_WEB 웹사이트 재구축 | [product/rea-website-rebuild](https://github.com/hibi89/Freelancer/tree/product/rea-website-rebuild) | REA_WEB + Fable5.1 + Astra P4 + Playwright + REA Pro | 189만원 |
+| **PROOFQA AX** 개발품 납품 검수 | [product/proofqa-ax-delivery-audit](https://github.com/hibi89/Freelancer/tree/product/proofqa-ax-delivery-audit) | AI Code Checker + Graphify + agent-browser + Cloudflare 보안 감사 방법론 | **39만원** |
+| **ONTOINSIGHT AX** Excel/CSV 인텔리전스 | [product/ontoinsight-ax-data-analytics](https://github.com/hibi89/Freelancer/tree/product/ontoinsight-ax-data-analytics) | AI AutoML Analyst + NVIDIA Auto Ontology 개념 + 선택 SMAX²/PREP | **34.9만원** |
 
-[3개 상품·검증된 커밋 색인](docs/PRODUCT_INDEX.md) · [이전 구직 파일 복구](docs/REPOSITORY_RECOVERY.md)
+[상품별 정확 SHA·문서/검증 범위 통합 색인](docs/PRODUCT_INDEX.md) · [과거 구직 자료 복구](docs/REPOSITORY_RECOVERY.md)
 
-각 브랜치의 `docs/FINAL_BLUEPRINT.md`는 **최종상품 100% 완성의 설계 기준**이다. `docs/TECHNOLOGY_MAP.md`, `docs/ACCEPTANCE_AND_ROADMAP.md`, `docs/COMMERCIAL_AND_SECURITY.md`, `REQUIREMENTS.md`, `STATUS.md`, `HANDOFF.md`를 함께 읽는다.
+각 브랜치는 `docs/FINAL_BLUEPRINT.md`에 상세 시스템 구조·100% 고객 사용자 동선·모듈/데이터 계약·보안/원본/장애 처리·최종 인수 기준을 기록한다. `docs/TECHNOLOGY_MAP.md`는 전체 기술, `docs/ACCEPTANCE_AND_ROADMAP.md`는 **50→70→85→95→100** 단계, `docs/COMMERCIAL_AND_SECURITY.md`는 판매·라이선스·견적/고객 정보 보호를 정의한다. 각 상품은 별도 `README/REQUIREMENTS/STATUS/HANDOFF`가 있다.
 
-**주의:** 이 저장소는 상용 서비스나 제품 실행기가 아니며 현재 판매/Production `RELEASE HOLD`. 모든 가격은 검증 전 견적 가설, 제품 구현·실 고객 권리·보안·계약/과세형태는 원본 별도 검증 대상이다. 예전 구직 파일은 현재 트리에서 지웠지만 Git 이력은 비강제 이관으로 보존한다.
+**사실 경계:** PROOFQA AX·ONTOINSIGHT AX는 2026-11-13 기준 **신규 조합의 통합 구현·고객 검수·판매는 미착수**. 기존 Code Checker/AutoML의 역사적 엔지니어링 진행률을 신규 상품에 합산하지 않는다. 가격/브랜드/경쟁성능은 검증 전 가설이며 판매·배포는 HOLD.

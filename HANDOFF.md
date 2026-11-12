@@ -1,11 +1,11 @@
-# HANDOFF — 크몽 3대 상품 설계 저장소 (10항)
-1. **목표/확정 기술:** Private `hibi89/Freelancer`를 HAE+Lightning Azent+DBVORA, RAG Studio+SMAX²/PREP, REA_WEB+Fable5.1/Astra P4 3개 기업형 상품 설계 허브로 전환.
-2. **완료/근거:** 기존 Upwork/구직 문서를 현재 트리에서 없애고 3개 `product/*` 브랜치 생성, 상세 BLUEPRINT/TECHNOLOGY/ACCEPTANCE/COMMERCIAL 및 README/REQUIREMENTS/STATUS/HANDOFF 작성. 독립 제품 코드 무수정.
-3. **테스트:** GitHub Tree/파일/author SHA 읽기 검증 PASS(3 branch, 각각10파일; legacy 0). 실제 소프트웨어 테스트 0회·CI 0회·고객/브라우저 실서비스 0회.
-4. **진행/대기/차단:** 설계 문서 완료, 실제 판매/고객 설치/보안·권리 승인 미검증, `RELEASE HOLD`.
-5. **오류/시도/대안:** slash가 포함된 branch를 Git Trees URL ref로 직접 넘긴 첫 재조회는 400. **commit SHA로 Git Tree 조회하여 개선·재검증 성공**. 반복 금지. 강제 이력 정리는 고객 자료/복구권 위험이 있어 미실시.
-6. **저장소/브랜치/SHA:** `hibi89/Freelancer` Private / `main` 이전 `d47239f`→새 정리 커밋 `2f0528b`; `product/hae-la-automation@58f810ec`, `product/rag-enterprise-knowledge@8da3e43`, `product/rea-website-rebuild@ba3ee24`. 세부: `docs/PRODUCT_INDEX.md`.
-7. **Production/실행:** 이 저장소는 문서 전용이므로 Vercel/배포/실행 명령 없음. 코드 실행은 각 원본 프로젝트 HAE/RAG_STUDIO/REA_Web에서 별도 수행.
-8. **원본/백업/권한:** 이전 소스 트리 Git commit `d47239f...` 복구 가능(강제 push 없음). HAE·LA·DBVORA/SMAX/PREP/RAG/Fable/Astra/REA 소스·시크릿·고객자료·Vercel 계정/결제 불변. `docs/REPOSITORY_RECOVERY.md` 확인.
-9. **다음 작업/완료 기준/승인:** 사용자가 각 상품 개발을 명시 지시할 때 해당 product branch의 HANDOFF→STATUS→AGENTS→REQUIREMENTS→BLUEPRINT→실제 원본 repo 최신 순으로 읽고 현재 소스·테스트·CI 비교 후 승인 범위 내 구현/검증. 가격·상용권·사용자 자료/실계정·고객 납품은 별도 승인.
-10. **갱신/기준:** 2026-11-13 KST. 문서 GitHub 원격 Tree 및 BLUEPRINT 직접 재조회, Author/Committer hibi89 확인. 허브 최종 HEAD는 이번 인수인계 문서 갱신 직후 재조회값 사용.
+# HANDOFF — Freelancer 5상품 크몽 설계 허브 (10항, 2026-11-13 KST)
+1. **목표·용도·확정기술:** Private Freelancer 문서 저장소에서 기존 3종 HAE+LA/RAG+SMAX/REA+Fable-Astra와 신규 **PROOFQA AX**(CodeChecker+Graphify+agent-browser+Cloudflare 보안 검증 방법), **ONTOINSIGHT AX**(AutoML+NVIDIA Auto Ontology 개념+데이터/KPI/ML) 5개 독립 최종상품 기준을 유지.
+2. **완료/변경/결정 근거:** 기존 3 branch·설계 불변. 신규 product 브랜치 2개 생성, 각 FINAL_BLUEPRINT/기술/30 또는 36 테스트/50→100/상품·보안 문서 작성. PROOFQA는 구조·동작·근거 교차검증, ONTOINSIGHT는 경량 ontology-lite/수치 검증·누수방지 선택. 전체 NVIDIA Stack/자동 고객 소스 실행은 초기에 배제.
+3. **테스트/성공·실패:** 새 GitHub branch 두 HEAD·Git Trees 각각12 blob·문서 원격 재읽기 확인 PASS. 실제 제품 기능/CI·Windows/고객 보안·판매 0회 NOT_RUN. 기존 CodeChecker/AutoML 역사 CI는 신규 상품 검증과 구분.
+4. **상태:** 두 신규 패키지 **기획 완료, 기능 통합 미착수/완성률 UNASSESSED/RELEASE HOLD**, 기존 3개 제품도 상용출시 HOLD. 등록/판매가·고객 인수 전 기술 라이선스·증빙 별도 검증.
+5. **오류·원인·시도·재시도 금지:** 신규 브랜치 큰 통합 서비스는 정적 탐지만으로 웹·보안 결론을 확정할 수 없고, 매출 의미·join·target leakage 위험. 외부 Graphify/skill의 패키지/버전·비밀정보 전송 옵션과 NVIDIA NIM 비용은 검토/사전 승인. 무한 CI/force push·무단 원본 수정 금지.
+6. **저장소/브랜치/정확 SHA:** `hibi89/Freelancer` Private, `main` 기존 `b80423da5...`, 새 `product/proofqa-ax-delivery-audit@54b718f5d5520fae912d1fcc2e70a87ebd8f173c`, `product/ontoinsight-ax-data-analytics@afda6eac0802d50cbcd44eb0b99d3daeffbf0922`, 기존 세 SHA는 `docs/PRODUCT_INDEX.md`에 기재.
+7. **Production/프로젝트/환경:** 이 저장소는 실행 불필요한 기획 Repo; Vercel Production 미적용. 실제 Python3.11+ CodeChecker·AutoML 소스/브라우저/OSS 종속성은 각각 원본 repo에서 검증 후 제품화.
+8. **원본/백업/인증 관리/금지:** 구직 원본 SHA `d47239f...` Git history 복구 가능, 기존 3 브랜치/코드 및 해총 기존16종 완성률 불변. 고객 코드/PII/키/업무자료/원본 DB는 GitHub·외부 모델로 무단 송신 금지.
+9. **다음 우선순위·절차/승인:** 신규 상품 각 `HANDOFF→STATUS→AGENTS→REQUIREMENTS→FINAL_BLUEPRINT→원본 CodeChecker/AutoML source·tests`→실행 가능 범위 설계 재확인→사용자 제품 개발 승인→최소 adapter/semantic contract 구현→CI/OS/실고객/라이선스→크몽 판매 승인. 해총 `[작업중]`는 기능 착수 시 사용자 규칙에 따라.
+10. **갱신 KST·확인 범위·커밋 기준:** 2026-11-13 KST, GitHub READ/CREATE/UPDATE/검증. 이번 문서 최신 hub SHA는 수정 후 GitHub main 원격 ref 확인값 사용, 제품 코드 TEST/Production 미실행.

@@ -1,7 +1,10 @@
-# REQUIREMENTS — 3개 상품 문서 구조
-1. 정확히 **3개 제품 브랜치**에 각 상품의 100% 최종설계·세부 기술 스택·실행 데이터 흐름·모듈/계약·보안/라이선스·장애복구·중복실행·테스트·50/70/85/95/100 단계·판매 범위를 작성한다.
-2. HAE 상품: HAE UI/정책 + Lightning Azent 독립 실행 엔진 + SQLite 실행/업무 DB + DBVORA + 고객 승인형 OAuth/API. REA_APP·SOVIA는 별도 검증/선택 범위.
-3. RAG 상품: RAG Studio + SMAX²/PREP 데이터 정형화 + 버전 고정 AX 패키지 + 문서 BM25/선택 Dense + SQL·문서 근거 + 소스 인용 + 승인/권한 + 로컬 설치. SOVIA 선택.
-4. REA 상품: 허가받은 기존 웹사이트 → Fable5.1/Playwright 관찰 → Astra P4 증거 → 사람 명세 승인 → REA Pro 독립 앱 생성 → 실브라우저 비교/출고. DATA2WEB와 분리.
-5. 고객 파일, 모델 사용권, 원본 소스 저작권, 데이터 처리범위, 결제/계정 권한은 실고객별로 확인. 100% 복제·모든 서비스 범용 자동화·무근거 AI 확답·완전 보안 보증 금지.
-6. 각 상품 표준형 추정 기준가: HAE 199만원, RAG 299만원, REA 189만원. 비용·지원·실거래/수요는 검증 전 가설.
+# REQUIREMENTS — Freelancer 5대 상품의 최종설계 기준
+1. 총 **5개** 제품 전용 브랜치: HAE+LA, RAG+SMAX/PREP, REA+Fable/Astra, PROOFQA AX, ONTOINSIGHT AX. 각 브랜치에 FINAL_BLUEPRINT/TECHNOLOGY_MAP/ACCEPTANCE_AND_ROADMAP/COMMERCIAL_AND_SECURITY와 STATUS/HANDOFF 저장.
+2. 공통: 개발 기능과 계획을 분리, 전체 100% 기준·50/70/85/95 단계, 고객 자료 권리/라이선스/개인정보/실 Windows 설치·검수, 원본 불변·장애/재시도/재현/데이터 정합성, 구독·API비 별도 표시.
+3. HAE: HAE 정책/승인 + LA 결정적 실행 + SQLite 분리 + DBVORA 자산/복구 + 선택 SOVIA; Google OAuth 고객형 미검증.
+4. RAG: RAG Studio 문서·SQL 근거 + PREP/SMAX 데이터 정형화 + 기업 권한/생성 답변 보류, 로컬 모델 선택형.
+5. REA: 고객 허가 사이트 Fable/Playwright 관찰→Astra 증거→고객 승인→Pro 독립 웹앱 생성→브라우저 비교; DATA2WEB와 별도.
+6. **PROOFQA AX**: AI Code Checker 정적 검사 + Graphify code/SQL graph + agent-browser 실 사이트 E2E + Cloudflare security-audit-skill의 독립 검증 방법론. 코드를 무단 실행하지 않고 확인/미검증/기각 결론에 정확 증거 연결.
+7. **ONTOINSIGHT AX**: AI AutoML Analyst + NVIDIA Auto Ontology **개념 참고**의 의미·관계/KPI 계약 + Excel/CSV 안전 ingest+SMAX/PREP 선택형, leakage-safe AutoML + 수치 재검증·근거형 보고서.
+8. 상품명 PROOFQA/ONTOINSIGHT는 상표 검토 전 내부명. 제3자 GitHub OSS는 정확한 버전/라이선스/NOTICE/상용 배포 조건 검토 전 내장·판매 금지. 외부 기업 제휴/보안 인증 주장 금지.
+9. 해총 기존 16종 진척과 신규 결합 상품 진척률은 독립. 신규 2개는 현재 `UNASSESSED`, 코딩/통합 미착수, `RELEASE HOLD`.
