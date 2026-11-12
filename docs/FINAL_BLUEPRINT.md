@@ -1,8 +1,10 @@
-# HAE + Lightning Azent 기업 업무 자동화 — FINAL BLUEPRINT v1.0
+# AZENTFLOW AX — HAE + Lightning Azent 기업 업무 자동화 / FINAL BLUEPRINT v1.0
+
+> **상품명: AZENTFLOW AX** · 승인형 기업 업무 자동화 · 기술 원본은 HAE + Lightning Azent + DBVORA; 기존 기술 이름/저장소는 변경하지 않는다.
 **2026-11-13 KST · 상품 완료 100% 판정 정본 · 설계 문서, 코드 구현 보고서 아님**
 
 ## 0. 제품 정의와 고객 가치
-- 제품 이름: **HAE Enterprise Workflow Automation**. HAE = Humanized Automation Ecosystem; LA = Lightning Azent.
+- 제품 이름: **AZENTFLOW AX (HAE Enterprise Workflow Automation)**. HAE = Humanized Automation Ecosystem; LA = Lightning Azent.
 - 고객: 반복 엑셀 정리, 파일 집계, DB/Sheets 보고, 승인형 메일 전달을 반복하는 1인 사업자·소규모 팀. 통화 최소화, 지원 템플릿과 고객이 승인한 범위만 납품.
 - 구매 결과물: 설치 가능한 로컬 관리 화면·실행기, 정확히 계약한 워크플로, 실행/실패/재시도 보고서, 원본 보존·백업 방법, 인수테스트 결과.
 - 목표 지표: 재현 가능한 업무 단계, 실패 시 복구 가능성, 중복 실행 시 비즈니스 쓰기 중복 없음(지원된 로컬 SQLite에 한정), 무승인 실행 0건, 비밀/고객행 로그 유출 0건, 계약한 처리시간/데이터 정합성. 생산성 개선 수치는 고객 실측 전 가설.

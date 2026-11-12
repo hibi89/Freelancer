@@ -1,4 +1,6 @@
-# HAE 기업 자동화 제품 확정 요구사항
+# AZENTFLOW AX — HAE 기업 자동화 제품 확정 요구사항
+
+> **상품명: AZENTFLOW AX** · 승인형 기업 업무 자동화 · 기술 원본은 HAE + Lightning Azent + DBVORA; 기존 기술 이름/저장소는 변경하지 않는다.
 제품 완료의 유일한 기준은 [docs/FINAL_BLUEPRINT.md](docs/FINAL_BLUEPRINT.md)의 계약과 [수용표](docs/ACCEPTANCE_AND_ROADMAP.md)다.
 1. 한국어 작업 설명·프리셋/고객 파일→버전 고정 계획(IR)→위험·비용·대상 시스템 파악→미리보기/승인→실행→감사/복구.
 2. HAE의 UI/정책/비밀정보/연동 어댑터와 LA의 결정적 실행·원장·중복 제어 분리, 버전 명시 `HAE→LA` 계약.

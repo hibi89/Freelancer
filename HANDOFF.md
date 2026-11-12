@@ -1,4 +1,6 @@
-# HANDOFF — HAE+LA 크몽 상품 (10항, 2026-11-13 KST)
+# AZENTFLOW AX — HANDOFF — HAE+LA 크몽 상품 (10항, 2026-11-13 KST)
+
+> **상품명: AZENTFLOW AX** · 승인형 기업 업무 자동화 · 기술 원본은 HAE + Lightning Azent + DBVORA; 기존 기술 이름/저장소는 변경하지 않는다.
 1. 목표: HAE UI/정책 + Lightning Azent 독립 실행 + SQLite 원장/비즈니스 DB + DBVORA 읽기/복구·선택 SOVIA. 한국어 지원 업무 자동화 기업용 표준 납품.
 2. 완료: FINAL_BLUEPRINT/TECHNOLOGY_MAP/ACCEPTANCE_AND_ROADMAP/COMMERCIAL_AND_SECURITY 설계 문서만 구성. 기존 원본 제품은 무수정.
 3. 테스트: 이 브랜치 제품 테스트 0/0/0; 기존 HAE 역사적 CI #42990527614 양OS Python 264PASS 2FAIL 7SKIP, Node UI24PASS. 전체 FAIL; 상세 검증 docs 참조.

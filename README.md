@@ -1,4 +1,6 @@
-# PRODUCT 1 — HAE + Lightning Azent 기업 업무 자동화
+# AZENTFLOW AX — HAE + Lightning Azent 기업 업무 자동화
+
+**공식 내부 상품명: AZENTFLOW AX | 고객 설명: 승인형 기업 업무 자동화 | 핵심 조합: HAE + Lightning Azent + DBVORA**
 **판매 채널: 크몽 · 설계 기준 2026-11-13 KST · Private · RELEASE HOLD**
 
 - **최종 목표:** 비개발자가 한국어로 업무를 설명하고 데이터/연동 대상을 선택하면 HAE가 실행 가능한 계획과 위험·비용을 제시한다. 고객이 승인하면 **Lightning Azent(LA)**가 실행·재시도·중복 방지·복구·감사를 담당한다. 지원 업무 DB는 **SQLite** 우선, DB 구조·백업 관제는 별도 **DBVORA**가 책임진다.
