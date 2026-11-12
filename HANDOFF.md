@@ -1,11 +1,11 @@
-# HANDOFF — 허브 재개
-1. 목표/기술: 프리랜서 구직 저장소를 비공개 크몽 3개 고가 기업형 상품의 설계 허브로 변경.
-2. 완료 범위: 현재 트리 문서 정리, 세 브랜치별 독립 BLUEPRINT/TECHNOLOGY/ACCEPTANCE/COMMERCIAL 문서 구성; 현재 HEAD 확인 필수.
-3. 테스트: 문서 구조/원격 읽기만 수행. 제품 코드 테스트는 `NOT_RUN`.
-4. 출시: 각 실제 제품 원본 저장소별 `RELEASE HOLD`; 이 허브는 코드 런타임이 아님.
-5. 위험: 이전 업워크 문서는 현행 트리에서는 사라지지만 Git history에는 남음. 원본 소스와 파일 저장소는 변경하지 않는다.
-6. 저장소: `hibi89/Freelancer` Private, `main`과 제품 브랜치 3개, 원본 HEAD `d47239f961fc895592147c2afa969ecf64f2bd00`.
-7. 배포: Production/Vercel `N/A`, 실행 명령 없음.
-8. 백업: 이전 HEAD를 기록하고 Git 이력을 보존. 시크릿/고객 자료 없음.
-9. 우선: 세 브랜치의 설계와 실제 제품 repo HEAD 비교 → 라이선스/기술 틈 확인 → 사용자 승인하에 제품별 최소 개발·검증 진행.
-10. 일시/검증: 2026-11-13 KST; 정확한 최종 문서 SHA와 브랜치 상태는 별도 재조회 기준.
+# HANDOFF — RAG Studio 기업형 (10항, 2026-11-13 KST)
+1. 목표: Private PREP/SMAX²→승인된 AX패키지→RAG Studio BM25/dense/SQL+문서→근거 검증→선택형 로컬 모델+기업 ACL.
+2. 완료: 상세 FINAL_BLUEPRINT, TECHNOLOGY_MAP, ACCEPTANCE_AND_ROADMAP, COMMERCIAL_AND_SECURITY 문서 작성. 원본 저장소 기능 변경 없음.
+3. 테스트: 이번 브랜치 제품 테스트 NOT_RUN; 기존 해총 역사적 CI #43231121679(Linux 633PASS 2SKIP; Windows 634PASS 1SKIP) 별도 기록. 정확 develop/feature 포함 관계 미검증.
+4. 상태: 설계 전용; 기업 사용권/계정/실물 Windows·로컬 모델/상용 출고 미검증, RELEASE HOLD.
+5. 오류/장애: 개발용 localhost 인증을 기업 IAM으로 혼동하면 안 됨, unapproved `REVIEW_HOLD` 패키지 자동 승인 금지, 모델 없는 fallback 필요.
+6. 원본: `hibi89/RAG_STUDIO@develop e63e539`, `hibi89/SMAX` Private, `hibi89/prep` Private, 상품문서 `hibi89/Freelancer@product/rag-enterprise-knowledge`.
+7. 실행: Node 22 계열; 기존 RAG 원본 `npm test`, synthetic demo/Windows doc picker. Production/Vercel N/A. 외부 업로드 기본 불허.
+8. 보존/권한: 고객 문서·키/모델 권리/Private SMAX 코드 외부 복제 금지, 원본 소스 모두 그대로. 승인 후 별도 기업 수용 파일 사용.
+9. 다음: 최신 RAG 정확 CI source→develop diff, PREP/SMAX 계약→기업 권한/문서 수명주기→모델 벤치→실 PC/고객형 인수→최종 승인.
+10. 시점/검증: 2026-11-13 KST GitHub ref/기존 문서 읽기. 실제 고객 실증/판매/소프트웨어 테스트 이 브랜치에서 미수행; 최종 commit SHA는 이후 readback.

@@ -1,14 +1,9 @@
-# Freelancer — 크몽 3대 기업형 상품 총괄
-**기준: 2026-11-13 KST · 저장소 Private · 문서 전용 · RELEASE HOLD**
+# PRODUCT 2 — RAG Studio + SMAX² + PREP 기업 AI 지식·데이터 검색
+**크몽 기업 맞춤형 · 2026-11-13 KST · Private · 설계 전용 · RELEASE HOLD**
 
-기존 Upwork/프리랜서 구직 보좌관 자료를 현재 트리에서 전면 제거하고, **3개 고객 납품 상품의 독립 최종설계 본부**로 전환한다. 본 저장소는 통합 배포 소스가 아니다. 실제 개발 기준 코드는 아래 원본 제품 저장소에 둔다.
-
-| 제품 전용 브랜치 | 상품 | 원본 개발 코드 | 표준형 가설 |
-|---|---|---|---:|
-| `product/hae-la-automation` | HAE + Lightning Azent 기업 업무 자동화 | `hibi89/HAE`, `hibi89/DBVORA` | 1,990,000원 |
-| `product/rag-enterprise-knowledge` | RAG Studio + SMAX²/PREP 사내 지식·데이터 AI | `hibi89/RAG_STUDIO`, `hibi89/SMAX`, `hibi89/prep` | 2,990,000원 |
-| `product/rea-website-rebuild` | REA_WEB + Fable 5.1 + Astra P4 웹사이트 분석·재구축 | `hibi89/REA_Web` | 1,890,000원 |
-
-각 브랜치의 `docs/FINAL_BLUEPRINT.md`가 **최종상품 100%의 정본**이다. `docs/TECHNOLOGY_MAP.md`, `docs/ACCEPTANCE_AND_ROADMAP.md`, `docs/COMMERCIAL_AND_SECURITY.md`가 세부 기술·단계별 수용·견적/보안을 정의한다. `STATUS.md`, `HANDOFF.md`는 확인된 상태와 다음 작업만 기록한다.
-
-**작업 경계:** 본 저장소는 기획·계약·상품 설계 전용. 원본 제품 코드 복제, 자동 병합, 외부 API 사용, 고객 데이터 반입, 유료 결제, 출시·배포는 하지 않는다. 기존 상용화 전 `RELEASE HOLD`를 유지한다. 과거 기록의 파일 삭제가 Git 이력 영구삭제를 의미하지 않으며 복구 방법은 [docs/REPOSITORY_RECOVERY.md](docs/REPOSITORY_RECOVERY.md)에 있다.
+- **완성 목표:** 고객 PDF/DOCX/TXT/MD 및 승인된 Excel/CSV/업무 DB를 로컬에서 **SMAX²/PREP로 정형화→RAG Studio로 검색·정확한 SQL 집계→문서 원문 근거 표시→필요 시 로컬 LLM으로 답변**한다. 근거가 없거나 충돌하면 보류한다. 고객/역할별 접근 통제와 설치·복구까지 납품.
+- **기술 조합:** `SMAX² (데이터 표준화)` + `PREP (사용자 매핑/품질)` + `AX_DATA_PACKAGE_V0 (검증/권리 패키지)` + `RAG Studio Node.js + SQLite + BM25/RRF + 선택 Dense/E5 ONNX` + `PDF.js/Mammoth` + `승인형 로컬 LLM(선택)` + `SOVIA(선택적 감사)`.
+- **소스 정본:** `hibi89/RAG_STUDIO`, Private `hibi89/SMAX`, Private `hibi89/prep`. 이 상품 브랜치는 코드 복제/전사 고객자료가 아닌 상업용 요구·아키텍처·검증 기준을 관리한다.
+- **가격 가설:** BASIC 1,490,000원 / STANDARD **2,990,000원** / PREMIUM 5,990,000원, 계정·모델/서버·자료량 별도.
+- **주의:** 기존 RAG Studio의 셀프설치 개인용 계획(149,000원대)과 이 상품의 **기업 맞춤 구축/설치·검수 서비스**는 별도 상품이며 동일 범위가 아니다. 현재 사용권 승인·실 고객 권한분리·실 Windows 설치 미검증. `RELEASE HOLD`.
+- 문서: [100% 최종 설계](docs/FINAL_BLUEPRINT.md), [모든 기술](docs/TECHNOLOGY_MAP.md), [50→100 수용](docs/ACCEPTANCE_AND_ROADMAP.md), [패키지/보안](docs/COMMERCIAL_AND_SECURITY.md).
