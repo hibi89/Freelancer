@@ -1,13 +1,13 @@
-# Freelancer — 크몽 상품화 5종 최종설계 허브
+# Freelancer — 크몽 브랜드 5종 최종설계 허브
 **2026-11-13 KST · Private · 설계/검증 문서 전용 · RELEASE HOLD**
 
 과거 업워크·구직 운영 문서는 현행 트리에서 제외되고 Git 이력으로 복구 가능하다. 이 저장소에는 **각 상품 최종완성률 100%의 정본 설계**를 `product/*`의 **독립 5개 브랜치**로 보관한다. **실제 제품 코드는 원래의 GitHub 저장소에서만 수정·검증·출시한다.**
 
 | 상품 | 전용 브랜치 | 기술 조합 | 표준형 견적 가설 |
 |---|---|---|---:|
-| HAE 기업 자동화 | [product/hae-la-automation](https://github.com/hibi89/Freelancer/tree/product/hae-la-automation) | HAE + Lightning Azent + DBVORA + 선택 SOVIA | 199만원 |
-| RAG 기업 AI 검색 | [product/rag-enterprise-knowledge](https://github.com/hibi89/Freelancer/tree/product/rag-enterprise-knowledge) | RAG Studio + SMAX²/PREP + SQL/BM25 + 선택 로컬 LLM | 299만원 |
-| REA_WEB 웹사이트 재구축 | [product/rea-website-rebuild](https://github.com/hibi89/Freelancer/tree/product/rea-website-rebuild) | REA_WEB + Fable5.1 + Astra P4 + Playwright + REA Pro | 189만원 |
+| **AZENTFLOW AX** — HAE 기업 자동화 | [product/hae-la-automation](https://github.com/hibi89/Freelancer/tree/product/hae-la-automation) | HAE + Lightning Azent + DBVORA + 선택 SOVIA | 199만원 |
+| **CITEVAULT AX** — RAG 기업 AI 검색 | [product/rag-enterprise-knowledge](https://github.com/hibi89/Freelancer/tree/product/rag-enterprise-knowledge) | RAG Studio + SMAX²/PREP + SQL/BM25 + 선택 로컬 LLM | 299만원 |
+| **SITECRAFT AX** — REA_WEB 웹사이트 재구축 | [product/rea-website-rebuild](https://github.com/hibi89/Freelancer/tree/product/rea-website-rebuild) | REA_WEB + Fable5.1 + Astra P4 + Playwright + REA Pro | 189만원 |
 | **PROOFQA AX** 개발품 납품 검수 | [product/proofqa-ax-delivery-audit](https://github.com/hibi89/Freelancer/tree/product/proofqa-ax-delivery-audit) | AI Code Checker + Graphify + agent-browser + Cloudflare 보안 감사 방법론 | **39만원** |
 | **ONTOINSIGHT AX** Excel/CSV 인텔리전스 | [product/ontoinsight-ax-data-analytics](https://github.com/hibi89/Freelancer/tree/product/ontoinsight-ax-data-analytics) | AI AutoML Analyst + NVIDIA Auto Ontology 개념 + 선택 SMAX²/PREP | **34.9만원** |
 

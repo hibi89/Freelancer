@@ -3,9 +3,9 @@
 
 | 제품 | branch | 검증된 최종 HEAD | BLUEPRINT 본문 | Git Tree blob |
 |---|---|---|---:|---:|
-| HAE + Lightning Azent | `product/hae-la-automation` | `58f810ec869d721468d3e2ce3aef02aae76ff7c8` | 8,053자 | 10 |
-| RAG + SMAX²/PREP | `product/rag-enterprise-knowledge` | `8da3e433e92cdbda4eb96902b1a562c6d9f7e45c` | 9,229자 | 10 |
-| REA + Fable/Astra | `product/rea-website-rebuild` | `ba3ee24e23617259ef932359bfa7bcd07539ce2a` | 10,693자 | 10 |
+| **AZENTFLOW AX** — HAE + Lightning Azent | `product/hae-la-automation` | `a578aee2300ae053bafe5cdaf1dd8e23385ff47b` | 8,053자 | 10 |
+| **CITEVAULT AX** — RAG + SMAX²/PREP | `product/rag-enterprise-knowledge` | `acf4936670bf1205f648d0dff5ca7e48b62fa83a` | 9,229자 | 10 |
+| **SITECRAFT AX** — REA + Fable/Astra | `product/rea-website-rebuild` | `6e2346c3b9d50dea1bde8d5ecb47b47f1567f774` | 10,693자 | 10 |
 | **PROOFQA AX** | `product/proofqa-ax-delivery-audit` | `54b718f5d5520fae912d1fcc2e70a87ebd8f173c` | **10,490자** | **12** |
 | **ONTOINSIGHT AX** | `product/ontoinsight-ax-data-analytics` | `afda6eac0802d50cbcd44eb0b99d3daeffbf0922` | **11,805자** | **12** |
 
@@ -21,3 +21,9 @@
 - 새 PRODUCT 브랜치 문서 변경은 기존 Code Checker·AutoML 코드/데이터/배포를 변경하지 않음. 실제 신규 adapter/Excel/온톨로지/브라우저·샌드박스 구현/통합 테스트/고객 수용·상용 판매는 모두 **NOT_RUN/UNASSESSED**.
 - 과거 원본 Upwork 기록은 Git history SHA `d47239f961fc895592147c2afa969ecf64f2bd00`로 조회/선택적 복구 가능; 영구 삭제 미실시.
 - 상용 가격/상품명/고객 비용·수요/OSS_NOTICE/법적 데이터 처리/세금 증빙 미검증, **RELEASE HOLD**. 새 기획 진척률을 기존 제품 퍼센트에서 복사하지 않는다.
+
+## 3개 기존 기업형 상품의 공식 내부 브랜드 (2026-11-13 KST)
+- **AZENTFLOW AX**: HAE + Lightning Azent + DBVORA, `product/hae-la-automation/docs/BRAND_POSITIONING.md` (브랜치 내 실제 경로 참조).
+- **CITEVAULT AX**: RAG Studio + SMAX²/PREP, `product/rag-enterprise-knowledge/docs/BRAND_POSITIONING.md`.
+- **SITECRAFT AX**: REA_WEB + Fable 5.1 + Astra P4 + REA Pro, `product/rea-website-rebuild/docs/BRAND_POSITIONING.md`.
+- 새 명칭은 내부에서 사용하며 상표 검색/서비스명 충돌·도메인 확보 미검증. 명칭 변경은 소프트웨어 개발률·출시율에 영향을 주지 않는다. 기존 `product/*` 브랜치는 모두 유지한다.
