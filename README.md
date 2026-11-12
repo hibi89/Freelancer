@@ -1,41 +1,14 @@
-# Freelancer — AI-Assisted Freelance Operations
+# Freelancer — 크몽 3대 기업형 상품 총괄
+**기준: 2026-11-13 KST · 저장소 Private · 문서 전용 · RELEASE HOLD**
 
-> **Role:** 프리랜서 보좌관 (Freelance Assistant) — independent from the hackathon/project overall coordinator (해총).
->
-> **Resume phrase for a new ChatGPT conversation:** `[프리랜서보좌관] GitHub hibi89/Freelancer 최신 상태 확인하고 일감·지원·포트폴리오 작업 이어가셈`
->
-> **Quick continue:** `ㄱ` means read the latest repository state, select the next actionable *safe* task and execute it, then record evidence/next steps. It does NOT authorize spending, sending proposals, paying fees, publishing private assets, or changing external account settings.
+기존 Upwork/프리랜서 구직 보좌관 자료를 현재 트리에서 전면 제거하고, **3개 고객 납품 상품의 독립 최종설계 본부**로 전환한다. 본 저장소는 통합 배포 소스가 아니다. 실제 개발 기준 코드는 아래 원본 제품 저장소에 둔다.
 
-## Read in this order
-1. [CHAT_BOOTSTRAP.md](CHAT_BOOTSTRAP.md) — restart routine.
-2. [STATUS.md](STATUS.md) — most recent verified versus reported state.
-3. [HANDOFF.md](HANDOFF.md) — precise next action, blockers and owner tasks.
-4. [AGENTS.md](AGENTS.md) — boundaries and operating rules.
-5. [docs/GOALS_AND_RULES.md](docs/GOALS_AND_RULES.md) — priorities and KPIs.
-6. [docs/UPWORK_PROFILE.md](docs/UPWORK_PROFILE.md) — profile state and constraints.
-7. [docs/PORTFOLIO.md](docs/PORTFOLIO.md) — evidence-backed work.
-8. [docs/LEADS.md](docs/LEADS.md) — actual job opportunities and verification status.
-9. [docs/KPI_DEMO.md](docs/KPI_DEMO.md) — first targeted job application and demo.
-10. [docs/APPLICATION_WORKFLOW.md](docs/APPLICATION_WORKFLOW.md) — proposals and checks.
-11. [docs/INCOME_TRACKER.md](docs/INCOME_TRACKER.md) — verified receipts, not estimates.
+| 제품 전용 브랜치 | 상품 | 원본 개발 코드 | 표준형 가설 |
+|---|---|---|---:|
+| `product/hae-la-automation` | HAE + Lightning Azent 기업 업무 자동화 | `hibi89/HAE`, `hibi89/DBVORA` | 1,990,000원 |
+| `product/rag-enterprise-knowledge` | RAG Studio + SMAX²/PREP 사내 지식·데이터 AI | `hibi89/RAG_STUDIO`, `hibi89/SMAX`, `hibi89/prep` | 2,990,000원 |
+| `product/rea-website-rebuild` | REA_WEB + Fable 5.1 + Astra P4 웹사이트 분석·재구축 | `hibi89/REA_Web` | 1,890,000원 |
 
-## Purpose
-Find legitimate remote, primarily async/text-based work where AI-assisted tools are explicitly allowed or client-approved. Prioritize the owner's first paid client, then **KRW 500,000–600,000+ monthly** alongside ongoing independent software development and hackathon participation.
+각 브랜치의 `docs/FINAL_BLUEPRINT.md`가 **최종상품 100%의 정본**이다. `docs/TECHNOLOGY_MAP.md`, `docs/ACCEPTANCE_AND_ROADMAP.md`, `docs/COMMERCIAL_AND_SECURITY.md`가 세부 기술·단계별 수용·견적/보안을 정의한다. `STATUS.md`, `HANDOFF.md`는 확인된 상태와 다음 작업만 기록한다.
 
-This is a **private operating notebook**, not an official Upwork agency, client marketplace, background agent, automatically running job scraper or profit guarantee. AI produces drafts and tests; the owner approves applications, costs, agreements and delivery.
-
-## Starting facts (2026-10-27 KST)
-- Upwork profile created; last user screenshots displayed **80% complete, private visibility, 0 Connects**, $17/hr profile rate; whether identity verification/public listing is complete **not yet verified**.
-- Two Upwork portfolio projects reported completed by owner: self-hosted n8n Reliability Lab and Python AutoML Analyst.
-- One targeted KPI-reporting opportunity; sample synthetic e-commerce dashboard/PDF/workbook generated in ChatGPT. Actual download/storage in owner's durable workspace, Loom video, final validation and application **not yet confirmed**.
-- GitHub portfolio: https://github.com/hibi89/self-hosted-n8n-reliability-lab and https://github.com/hibi89/AI_AutoML_Analyst
-- Client work / income: **no paid contract or payment verified by this repo**. Do not claim zero lifetime earnings.
-
-Keep personal ID, date of birth, street address, phone, credentials, screenshots containing PII, client content and proprietary sources **out of this repository**, even though it is private.
-
-
-## New handoff addendum — 2026-10-27
-- [Troubleshooting & preventable-error register](docs/TROUBLESHOOTING_LOG.md): all observed synthetic KPI defects, corrected formulas, 7/7 injected negative tests, production-limitations, fail-closed delivery response and the factual client-facing QA statement.
-- [Upwork 1-month Plus experiment](docs/UPWORK_ONE_MONTH_TRIAL.md): verify current price, compare with Basic+Connects, cap spend, retain cancellation deadline before recurring billing. Not yet purchased or started.
-- [U-001 current proposal packet](docs/APPLICATION_U001.md): includes client-facing quality-assurance paragraph, caveats and outstanding Loom/Connects checks.
-- After user enters a new chat, the assistant should read [HANDOFF.md](HANDOFF.md) and continue with the actual Connects/Plus checkout price **before** any payment or submission.
+**작업 경계:** 본 저장소는 기획·계약·상품 설계 전용. 원본 제품 코드 복제, 자동 병합, 외부 API 사용, 고객 데이터 반입, 유료 결제, 출시·배포는 하지 않는다. 기존 상용화 전 `RELEASE HOLD`를 유지한다. 과거 기록의 파일 삭제가 Git 이력 영구삭제를 의미하지 않으며 복구 방법은 [docs/REPOSITORY_RECOVERY.md](docs/REPOSITORY_RECOVERY.md)에 있다.
