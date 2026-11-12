@@ -1,16 +1,12 @@
-# Freelancer — 크몽 3대 기업형 상품 총괄
-**2026-11-13 KST · Private · 기획/검증 문서 전용 · RELEASE HOLD**
+# ONTOINSIGHT AX — AI Excel·CSV 데이터 인텔리전스
+**2026-11-13 KST · 내부 상품명(상표 조사 전) · 설계 전용 · RELEASE HOLD**
 
-기존 Freelancer Upwork/구직 자료는 현행 Git 트리에서 제거하고, 크몽 3개 독립 상품의 **최종설계 기준 저장소**로 전환했다. **소스코드 구현은 각각의 기존 제품 저장소**에서 수행한다.
+> 해총에 기록된 「AI 엑셀·CSV 매출·고객 데이터 분석 서비스」를 독립 상품화한 브랜치. **AI AutoML Analyst** 기반 로컬 분석 엔진에 **NVIDIA Auto Ontology의 의미/관계/출처 검증 개념**을 참고하고, 고객이 승인한 표준화·컬럼 의미/업무지표 정의·통계·ML 평가·설명 가능한 실행 결과를 결합한다. Auto Ontology 원본 코드를 실제로 이식했다고 주장하지 않는다.
 
-| 상품별 브랜치 | 기술 조합 | 100% 기준 문서 | 표준형 가설 |
-|---|---|---|---:|
-| [product/hae-la-automation](https://github.com/hibi89/Freelancer/tree/product/hae-la-automation) | HAE+Lightning Azent+DBVORA+선택 SOVIA | [HAE 최종설계](https://github.com/hibi89/Freelancer/blob/product/hae-la-automation/docs/FINAL_BLUEPRINT.md) | **199만원** |
-| [product/rag-enterprise-knowledge](https://github.com/hibi89/Freelancer/tree/product/rag-enterprise-knowledge) | RAG Studio+SMAX²+PREP+SQLite/검색+선택 로컬LLM | [RAG 최종설계](https://github.com/hibi89/Freelancer/blob/product/rag-enterprise-knowledge/docs/FINAL_BLUEPRINT.md) | **299만원** |
-| [product/rea-website-rebuild](https://github.com/hibi89/Freelancer/tree/product/rea-website-rebuild) | REA_WEB+Fable5.1+Astra P4+Playwright+REA Pro | [REA 최종설계](https://github.com/hibi89/Freelancer/blob/product/rea-website-rebuild/docs/FINAL_BLUEPRINT.md) | **189만원** |
+**목표 납품물:** 승인된 고객 Excel/CSV 파일 → 열/금액/날짜/고객 ID 의미 매핑 → 정제·품질 리포트 → KPI/통계/차트 → 적합한 경우에만 누수방지 ML 예측 → 원본 연결 근거·오류/보류 표시 → 재실행 가능한 HTML/PDF/Excel/JSON/ZIP 인수 패키지.
 
-[3개 상품·검증된 커밋 색인](docs/PRODUCT_INDEX.md) · [이전 구직 파일 복구](docs/REPOSITORY_RECOVERY.md)
-
-각 브랜치의 `docs/FINAL_BLUEPRINT.md`는 **최종상품 100% 완성의 설계 기준**이다. `docs/TECHNOLOGY_MAP.md`, `docs/ACCEPTANCE_AND_ROADMAP.md`, `docs/COMMERCIAL_AND_SECURITY.md`, `REQUIREMENTS.md`, `STATUS.md`, `HANDOFF.md`를 함께 읽는다.
-
-**주의:** 이 저장소는 상용 서비스나 제품 실행기가 아니며 현재 판매/Production `RELEASE HOLD`. 모든 가격은 검증 전 견적 가설, 제품 구현·실 고객 권리·보안·계약/과세형태는 원본 별도 검증 대상이다. 예전 구직 파일은 현재 트리에서 지웠지만 Git 이력은 비강제 이관으로 보존한다.
+- 실제 코드 원본: [hibi89/AI_AutoML_Analyst](https://github.com/hibi89/AI_AutoML_Analyst) / 개발 기능 브랜치 `feature/kmong-p6e50-owner-delivery-20261112`.
+- 선택적 사내 기술: `SMAX²/PREP`(검증된 데이터 매핑/정규화 계약)·`DBVORA`(향후 고객 DB 자산 관제). 공개 분석 서비스에서는 **비공개 소스 무단 복제 금지**.
+- 제3자 연구 기준: [NVIDIA/auto-ontology](https://github.com/NVIDIA/auto-ontology), Apache-2.0; '온톨로지/비즈니스 의미 계약'을 참조하며 회사의 NVIDIA 공식 파트너·인증 상품이 아님.
+- 문서: [최종설계](docs/FINAL_BLUEPRINT.md), [전체 기술](docs/TECHNOLOGY_MAP.md), [품질·ML 검수 시나리오](docs/DATA_CONTRACT_AND_TESTS.md), [50→100](docs/ACCEPTANCE_AND_ROADMAP.md), [크몽·권리/가격](docs/COMMERCIAL_AND_SECURITY.md).
+- 모든 가격·성능·정확성/고객 매출 증가의 효과는 실측 전 가설. 확정 계약/판매 전 고객·Windows/라이선스·정산·출고 검증 필요.
