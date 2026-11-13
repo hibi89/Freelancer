@@ -85,6 +85,41 @@ export class SyntheticVaultStateStore {
       this.#writeAudit(doc.tenantId,event,epoch);
     });
   }
+  /** The operator's local synthetic user registry; no plain passwords are stored. */
+  loadAccount(userId){
+    if(!stringId(userId))return null;
+    if(!this.#db)fail('DATABASE_CLOSED');
+    const row=this.#db.prepare('SELECT record,disabled FROM users WHERE user_id=?').get(userId);
+    return row&&row.disabled===0?parseRecord(row.record):null;
+  }
+  createUser(account,tenantId,epoch){
+    if(!stringId(account?.userId)||!stringId(account?.tenantId)||
+      account.tenantId!==tenantId||!stringId(tenantId))fail('USER_INVALID');
+    this.#transaction(()=>{
+      if(this.#db.prepare('SELECT user_id FROM users WHERE user_id=?').get(account.userId))
+        fail('USER_EXISTS');
+      if(this.#db.prepare('SELECT COUNT(*) AS n FROM users').get().n>=100)fail('USER_LIMIT');
+      this.#db.prepare('INSERT INTO users(user_id,tenant_id,record,disabled) VALUES(?,?,?,0)')
+        .run(account.userId,tenantId,JSON.stringify(account));
+      this.#writeAudit(tenantId,'USER_CREATED',epoch);
+    });
+  }
+  replaceUserAccess(account,tenantId,epoch){
+    if(!stringId(account?.userId)||!stringId(account?.tenantId)||
+       account.tenantId!==tenantId||!stringId(tenantId))fail('USER_INVALID');
+    this.#transaction(()=>{
+      const current=this.#db.prepare('SELECT record,disabled FROM users WHERE user_id=? AND tenant_id=?')
+        .get(account.userId,tenantId);
+      if(!current||current.disabled!==0)fail('USER_NOT_FOUND');
+      const existing=parseRecord(current.record);
+      if(existing.admin)fail('USER_ROLE_BLOCKED');
+      if(account.salt!==existing.salt||account.password_scrypt!==existing.password_scrypt||
+        account.admin!==false)fail('USER_CREDENTIALS_MUTATED');
+      this.#db.prepare('UPDATE users SET record=? WHERE user_id=? AND tenant_id=?')
+        .run(JSON.stringify(account),account.userId,tenantId);
+      this.#writeAudit(tenantId,'USER_ACCESS_CHANGED',epoch);
+    });
+  }
   accountEnabled(userId){
     if(!stringId(userId))return false;
     return this.#db.prepare('SELECT disabled FROM users WHERE user_id=?').get(userId)?.disabled===0;
