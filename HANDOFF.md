@@ -1,3 +1,16 @@
+# BID AX P85 acceptance readiness HANDOFF — 2026-11-13 KST (10 required items)
+1. **Goal/use/stack:** Local public tender preparation assistant, Python3.11+ SQLite/Tkinter, full R01–R21 design. User target final 85%; approved scoring weights not available.
+2. **Implemented/decision:** Existing offline P85 ledger/transport/GUI unchanged; new synthetic 100 tender/5 page interrupted resume and 10 fake review audit/backup tests, manually gated Ubuntu/Windows cross-platform CI blueprint. Local B vs hosted A retained for privacy/cost; no paid workflow automatically triggered.
+3. **Tests:** Linux Python3.13.5 94/94 PASS; compileall, Python3.11 syntax AST parse on 20 files, standalone .pyz CLI help PASS. Windows+Ubuntu Python CI three jobs **NOT RUN** (manual-only), actual Python3.11 runtime NOT RUN; real government API/100 notices/10 human cases NOT RUN.
+4. **State:** Engineering P85 regression coverage improved; official full final 85% **NOT PROVEN**, official UNASSESSED, [작업중] stays, RELEASE HOLD, unpublished Kmong.
+5. **Errors/pivot:** Initial local test incorrectly provided keyword-only request_id as positional; fixed immediately, re-ran entire suite 94 PASS. Mock tests do not validate real legal qualification or official API contract; do not repeat invented successes.
+6. **Repository/branch/SHA:** Private hibi89/Freelancer product/bid-ax-public-procurement, prior stable baseline 78247ce6132fc1af2b05cd7fb65729711355caf6. Changed tests/test_p85_offline_volume.py, .github/workflows/bid-ax-manual-acceptance.yml, docs/P85_CROSS_PLATFORM_ACCEPTANCE_PLAN_20261113.md, STATUS/HANDOFF. Read live remote HEAD for final SHA.
+7. **Production/commands/environment:** python -Werror::ResourceWarning -m unittest discover -s tests -q. Offline CLI/GUI and unreleased Python .pyz; no Windows EXE, installer, signed delivery or Vercel Production. Manual workflow may consume private Github Actions billable minutes; not executed pending approval.
+8. **Originals/backup/security:** Existing customer SQLite DB, secrets/keys, other Freelancer product branches, excluded BID OWL and central catalogue unchanged. Use create-only SQLite restore; Git normal revert from baseline, no force push.
+9. **Next priorities/approval:** With approval review Actions budget then manually dispatch workflow on product branch and inspect 3 independent job results. Independently validate official current API terms/raw response, 100 real notices, 10 human qualification reviews, Win10/11 UI/EXE and security, Korean PDF and customer pilot, approved R01-R21 weights before official 85 or launch.
+10. **KST/verification scope:** 2026-11-13 KST; Linux mock/synthetic only. Real Python3.11/Windows, live external procurement, independent customer, legal terms and sale remain UNVERIFIED. Updated GitHub source + docs SHA separately confirm.
+---
+
 # BID AX P85 보안 후속 인수인계 — 2026-11-13 KST (10항)
 
 1. 목표/최종설계: 사용자 목표 최종 85%; 독립 R01–R21 전체 설계, Python3.11+·SQLite·Tkinter 로컬형.
