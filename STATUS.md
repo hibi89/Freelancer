@@ -1,3 +1,11 @@
+## [2026-11-13 KST] AZENTFLOW AX — 85 합성 기술 게이트 PASS / 공식 최종완성률 UNASSESSED
+
+- 사용자 목표 70→85: 최종설계 `docs/ACCEPTANCE_AND_ROADMAP.md`상 **3개의 독립 합성 업무 경로, DBVORA 프로토콜 모의, 감사/승인/영수증, 제한형 스케줄·재시작, Ubuntu/Windows CI** 항목을 실제 엔진으로 검증. HAE 기능 SHA `a640666db7a1bf2011c5d2abc944f13199ce455f`의 `apps/ax-flow/tests/test_azentflow_p85_acceptance.py` 7개 + 선행 P50/P70 10개.
+- [GitHub Actions #43382552489](https://github.com/hibi89/HAE/actions/runs/43382552489): **P85 Ubuntu 7/7, Windows 7/7 PASS**. 기존 P50/P70 3/3+7/7 유지, Node UI simulated race 24 PASS 양OS. Python 전체 각 **290회 중 281 PASS/2 FAIL/7 SKIP**, *전체 CI FAILURE* (기존 `hae-integrated.pyz` 및 `HAE-Windows-offline.zip`의 current-source parity 2건). CI GREEN이나 상용 배포 성공으로 표기 금지.
+- **확인 범위:** 합성 고객 CSV 2건 import, 금액 조건부 2건 import, 읽기 전용 1건 조회/사업 DB write0; DBVORA localhost `p0-01.v1` 모의 GET만, unsupported 버전/연결끊김 감지, LA audit/redacted 승인 receipt과 재호출 중복0, 독립 CLI schedule 2tick + 새 프로세스 1tick 이어가기. 전체 제품 사용자 실 사용·DBVORA 실제 서비스·실 OS 재부팅·Google OAuth/Chrome·Edge·설치 미검증.
+- [P85 실 검증 기록](docs/P85_ACCEPTANCE_EVIDENCE_20261113.md). 첫 코드 `39d9b4f6...` 테스트 응답필드 참조 오류 1건, `a640666db7a1bf2011c5d2abc944f13199ce455f` 교정해 양 OS 7/7. 소스/데이터·권한·출고물 무변경(테스트 신규 파일만); LA SHA별 pin된 CI는 추가 필요.
+- **판정 분리:** `P85 synthetic technical acceptance PASS` / 공식 **최종완성률 `UNASSESSED`** (사용자 100% 전체 정본에 따른 승인 가중치·독립 전수검증 미완) / `[작업중]` 유지 / **RELEASE HOLD·크몽 미등록**. 다음 85→95 full CI 0 FAIL, 안전 번들 parity 복원·실 DBVORA/Windows·외부 공급자 고객형 검증. Production/Vercel N/A.
+
 ## [2026-11-13 약 15:21 KST] AZENTFLOW AX — 70% 기술 단계 PASS / 공식 최종완성률 UNASSESSED
 
 - 최종설계 `docs/ACCEPTANCE_AND_ROADMAP.md` 50→70 핵심: 독립 LA CLI 실행/재개, 계획·입력 digest, 2개 상이한 업무 워크플로, loopback UI preview, 승인 없는 쓰기 0, 동시성·속도·입력 상한. 합성 코드 실증 **Windows 7/7 + Ubuntu 7/7 PASS**.
