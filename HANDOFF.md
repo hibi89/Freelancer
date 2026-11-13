@@ -1,3 +1,18 @@
+# HANDOFF — 2026-11-14 KST AXNODE × WORKNOVA Desk 분산 배포 사용 사례 (10항)
+
+1. **목표/기술:** 사용자 실기기 WORKNOVA Desk PyInstaller `onedir` EXE 의존 파일 분리 문제를 AXNODE 독자 `.axnode` 분산 참조·지연 조회·검증·복구 설계의 구체적 사용자 사례로 추가. A안 유지.
+2. **완료/결정 근거:** `docs/FINAL_BLUEPRINT.md §12`에 동작 원리와 W01~W08 수용 매트릭스 추가; `STATUS.md` 현재 공개 상태/작업 이력 정리. 파일 단독 이동으로 무조건 실행되는 것이 아니라 OS DLL 의존·로컬 서명 스테이징 필요. 데이터는 실행물과 분리. 기존 R01~R29, 가중치 승인 대기 상태, 제품 기능/점수 불변.
+3. **테스트·미검증:** GitHub 문서 읽기/쓰기·정확 SHA 확인만 수행. 사용자 WORKNOVA GUI 표시 증거는 실제 `onedir` Windows 창 렌더링 한정. W01~W08 = **0 실행 / NOT_RUN**. 이전 AXNODE POC 19 PASS는 과거 별도 로컬 시제품 증거이고 본 브랜치의 EXE/NAS/HTTPS 실행 검증이 아님.
+4. **상태:** 요구 구체화 문서 완료, AXNODE 분산 로더/원격 실행/WORKNOVA 결합 **미구현**; 공식 `UNASSESSED`, `RELEASE HOLD`, 크몽 `미등록`, `[작업중]` 자동 표시/정식 점수 인상 없음.
+5. **오류·재시도 금지·대안:** PyInstaller `onedir` EXE만 옮겨 의존 파일 없이 동작한다는 추정 금지. `onefile`도 내부 파일 추출하므로 원격 무설치 실행 보장이 아님. 네트워크 상실·USB/NAS 부재 시 캐시 없는 필수 단계는 PENDING/FAIL로 표시; 네이티브 DLL 검증 없는 원격 실행, SQLite WAL NAS 멀티PC 직공유 금지. 안전한 로컬 비실행 데이터 조회 POC부터 시작.
+6. **Repo·branch·SHA:** `hibi89/Freelancer@product/axnode-sector-runtime` (현재 PUBLIC), 문서 전 HEAD `bda856370a00c05f28081581b397e90103e080c7`, 변경 `docs/FINAL_BLUEPRINT.md`, `STATUS.md`, `HANDOFF.md`. 기존 `main`, 타 product 브랜치 및 중앙 원장·WORKNOVA 브랜치 불변.
+7. **Production/환경:** AXNODE 서비스·Vercel 미적용, Windows POC GUI/분산 통합 미실행. WORKNOVA 네이티브 Tk GUI 시각 확인은 별개 실제 Windows 로컬 실행 증거; 제품 상용 설치/원격 배포 아님.
+8. **원본/백업·비밀:** 이전 SHA로 문서 복구 가능. 고객 SQLite 장부/원본 파일/운영 ACL/패키지·민감정보 변경 0; 원격 전송·권한 승격·유료 서비스 0. GitHub PUBLIC에 비밀/실고객 자료 업로드 금지.
+9. **다음 순서·완료 기준:** W01 로컬 폴더·드라이브 합성 자료 E2E→W02 USB/NAS 연결 중단·캐시→W03 안전 HTTPS→W04 부분 오프라인→W05 체크포인트→W06 WORKNOVA 합성 결과동일성→W07 비용·시간/RAM 측정→W08 타 Win10/11 독립 실행. R01~R29 기본 수용과 별도로 점수 올리지 않음. 외부 데이터/비밀/원본·권한/비용 변경 전 승인.
+10. **기록 시각·검증 범위:** 2026-11-14 KST. 정확 GitHub HEAD/커밋/파일 readback은 커밋 후 재확인 예정. 문서-only, CI·새 Windows 분산 실증·Production NOT_RUN.
+
+---
+
 # HANDOFF — AXNODE 전용 브랜치 (10항, 2026-11-13 KST)
 
 1. **목표·용도·확정 기술:** 사용자 승인 **A안**, 독자 `.axnode` 바이너리(64-byte header/섹터 주소표의 POC에서 출발), 중앙 제어 그래프·기능 섹터·외부 로컬/NAS/원격 참조·지연 실행·복구. 사용자는 GitHub 저장소/브랜치를 여러 개 만드는 것이 아니라 단일 파일이 여러 섹터 역할을 가지는 개념을 확정.
