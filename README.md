@@ -96,3 +96,15 @@ Tests: `PYTHONPATH=. python -m unittest discover -s tests -q` and Linux-only `PY
 ## Native Windows QA (not yet run)
 
 Run from the complete source checkout on an owned Windows 10/11 machine with Python 3.11+ Tk: `py -3 -B tools\\windows_acceptance.py`. This one-command synthetic test uses a disposable temporary LOCALAPPDATA, no real customer DB, no admin, network or policy bypass, and checks PowerShell installation/upgrade/uninstall/data preservation. On Linux it deliberately fails, so results must not be confused with real Windows success. See `docs/P85_WINDOWS_GAP_20261114.md`. This is not a signed EXE or commercial approval.
+
+
+## Optional encrypted backup (WD-09/WD-13 partial, 2026-11-14)
+
+The offline desktop application now offers separately installed `cryptography`-backed AES-256-GCM authenticated **backup files**, with scrypt passphrase derivation, a fresh random salt and nonce, hidden CLI password prompt, and Tk GUI controls. This does not encrypt the **active** SQLite database, grant authenticated roles or secure a compromised host. The optional dependency is not bundled, and no hosted server, paid service, TTF font or password is shipped. Use at your own discretion; keep a separately protected checksum and a secure backup copy.
+
+```
+python -m worknova_desk --db existing.sqlite backup-encrypted --out NEW.wndesk
+python -m worknova_desk --db existing.sqlite restore-encrypted-new --encrypted-file NEW.wndesk --new-db FRESH.sqlite --sha256 SAVED_BACKUP_SHA256
+```
+
+Restoration only creates a new plaintext SQLite database after authenticated decryption and integrity/audit validation; an existing file is never overwritten. Passphrases of 12+ characters are required and are not stored. Losing the passphrase makes backup recovery impossible. The feature requires a local, separately installed `cryptography` (locally tested v46.0.4); standard Python runtime still supports all earlier workflows without it. Actual Windows10/11 user-scope install, signed self-contained EXE, Microsoft Word/print, OS ACL and customer acceptance remain NOT VERIFIED. Details: `docs/P85_ENCRYPTED_BACKUP_20261114.md`.

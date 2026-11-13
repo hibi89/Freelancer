@@ -52,3 +52,10 @@ P85 OFFLINE BACKUP RECOVERY REHEARSAL (no cloud, explicit opt-in)
   recovery, encryption, cloud backup, banking receipts or legal acceptance.
 - Backups contain sensitive customer data; protect via OS account encryption and
   owner-controlled offline storage. On POSIX, newly created backups use mode 0600.
+
+
+OPTIONAL OFFLINE ENCRYPTED BACKUP (not live-database encryption):
+  Requires locally installed optional cryptography package (not bundled).
+  python -m worknova_desk --db PATH backup-encrypted --out NEW_BACKUP.wndesk
+  python -m worknova_desk --db PATH restore-encrypted-new --encrypted-file FILE.wndesk --new-db NEW.sqlite --sha256 SAVED_SHA256
+  Passphrase entered privately, never through argv; keep separate owner-protected copy. Restored SQLite is plaintext. Native Windows/Word/ACL NOT RUN.

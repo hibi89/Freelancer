@@ -49,3 +49,14 @@ Updated 2026-11-13 KST · Private `hibi89/Freelancer@product/worknova-desk-local
 ## Rollback
 
 Previous verified code `85a2a115d32d3378544ae68bb453466499aebcb8` in Git history. Do not touch owner databases, backups, main branch, PayPal source, other product statuses or licenses. Package v3 requires its paired v3 integrity verifier, do not mix with v2. Preserve source/test evidence exact SHA in central KMONG registry and `HANDOFF.md`.
+
+
+---
+
+## 2026-11-14 P85 optional encrypted-backup development evidence
+
+- User target is verified 85% of **the full WD-01..WD-14 final product**, **NOT** an engineering milestone. Formal weighted rate remains **UNASSESSED / P85 NOT CERTIFIED**. Keep KMONG **[작업중]** and **RELEASE HOLD**, no sale/deployment.
+- New source `worknova_desk/secure_backup.py`, CLI concealed backup/recovery password prompts, Tk GUI backup/restore controls, optional `cryptography` AES-256-GCM+scrypt, non-overwrite restoration, SHA pin, integrity/audit checks, strict portable allowlist. Active DB remains **unencrypted**.
+- **Actual Linux Python3.13.5 full unittest 141/141 PASS, 0 FAIL, 0 SKIP** (previous 125 + new 16), actual Linux Tk8.6 Xvfb **5/5 GUI scripts PASS**. Compileall PASS. New disposable portable ZIP: 15 hash-verified files, extracted CLI init+verify PASS, tampered file fail-closed. Existing suite still emits `ResourceWarning` for unclosed SQLite connections; a clean resource-leak audit has NOT passed.
+- Native Windows acceptance runner intentionally exits code3 on Linux, thus Win10/11 installer/PowerShell/Defender/Word/PDF/unsigned EXE/OS ACL/real customer/legal acceptance **NOT RUN**. Private GitHub runner included-usage balance could not be verified; no fee-risk workflow invoked.
+- Previous code parent `0b5354c20b1eaf1b3354432ee92f24aedbce03a4`; new exact source SHA and verification need GitHub readback. No existing customer DB, main branch, PayPal code, external security control, secrets or pricing modified.

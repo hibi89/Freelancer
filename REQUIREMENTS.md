@@ -60,3 +60,10 @@ Canonical whole-product design: `docs/FINAL_BLUEPRINT.md` (WD-01 through WD-14).
 - WD-09: explicit `rehearse-restore` using an operator-selected *separate* existing private workspace; SHA256-pinned new-path restore and six-table snapshot check, temporary files deleted, source database not changed; Python Linux regression executed. New POSIX backups use owner-only 0600. No real Win10/11 ACL/power-loss proof.
 - WD-13: offline source manifest format v3 includes `worknova_desk/recovery.py` in its strict 13-file allowlist. Older v2 packages remain separate rollback artifacts; a v3 package must only be checked with its paired v3 verifier. No signed standalone EXE.
 - The WD-01..WD-14 full final blueprint, unapproved 100-point rubric, UNASSESSED official score, `[작업중]` and RELEASE HOLD remain unchanged.
+
+
+## P85 follow-up — offline optional encrypted backup (no final scope change)
+
+- WD-09/WD-13 partial: authenticated backup using AES-256-GCM, scrypt, random salt/nonce, non-overwriting restore into a NEW SQLite file, wrong-password/tamper/bad-format failure isolation.
+- Encrypt **backup only**; the live ledger remains plaintext, optional cryptography is NOT distributed, OS permissions and multi-role authentication remain required for release.
+- Never transmit secrets or customer files, put password in CLI argv, overwrite backups, or infer native Windows success from Linux tests. Final WD-01..14 weighting remains unapproved and formal rate UNASSESSED.
