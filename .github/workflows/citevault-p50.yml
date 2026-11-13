@@ -14,6 +14,10 @@ on:
       - enterprise/p70-local-review.mjs
       - tests/p70-local-review.test.mjs
       - enterprise/p85-vault.mjs
+      - scripts/p85-operator-demo.mjs
+      - tests/p85-operator-ui.test.mjs
+      - tests/p85-operator-users.test.mjs
+      - enterprise/p85-ui.mjs
       - enterprise/p85-native-extract.mjs
       - tests/p85-journey.test.mjs
       - scripts/p85-synthetic-demo.mjs
@@ -77,8 +81,12 @@ jobs:
           node --check enterprise/p85-loopback.mjs
           node --check enterprise/p85-state-store.mjs
           node --check enterprise/p85-signed-provenance.mjs
+          node --check enterprise/p85-ui.mjs
+          node --check scripts/p85-operator-demo.mjs
       - name: Run real local credentials, tenant isolation and lifecycle regression
-        run: node --test tests/p85-vault.test.mjs tests/p85-loopback.test.mjs tests/p85-state-store.test.mjs tests/p85-signed-provenance.test.mjs
+        run: node --test tests/p85-vault.test.mjs tests/p85-loopback.test.mjs tests/p85-state-store.test.mjs tests/p85-signed-provenance.test.mjs tests/p85-operator-users.test.mjs tests/p85-operator-ui.test.mjs
+      - name: Verify offline operator login, UI, scoped search and revocation
+        run: node scripts/p85-operator-demo.mjs --self-test
   p85-native-evidence:
     name: P85 actual PDF/DOCX native citations / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
