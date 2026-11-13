@@ -1,3 +1,5 @@
+> [2026-11-14 BID AX v2 최신] 사용자 확정 최종설계 R01–R29 29개, 목표 85%. 3모듈 오프라인 소스 GitHub 반영 후 local 136 PASS / 신규 API 계획기는 인증키 없이 네트워크 0. **공식 최종완성률 UNASSESSED**, 목표 미인증 [작업중], RELEASE HOLD. 새 기능 SHA `2a9852bcb47a271a4119f67dfcaf8ec35ae2a632`; 실 정부 API·Windows·승인된 100점 가중치 없음. docs/P85_V2_CURRENT_ACCEPTANCE_20261114.md 및 HANDOFF/STATUS를 먼저 확인.
+
 > [2026-11-13 BID AX v2 사용자 확정 변경] 최신 최종설계는 R01–R29 총29개(기존21 보존 + 온비드/법원8 추가); docs/FINAL_BLUEPRINT.md 및 docs/BID_AX_EXPANSION_REASSESSMENT_20261113.md 정본. 아래 R01–R21 표기는 역사 이력. 공식 UNASSESSED, 목표85% [작업중], 출시 HOLD.
 
 > [BID_AX_P85_SECURITY_FOLLOWUP_20261113] R01–R21 전체 최종설계 85% 목표는 **미달성/미산정**; [작업중]·RELEASE HOLD 유지. 기능 SHA `9a895ad6ac6d47941d0cf5c5a3ec908e4a298947`는 완료배치 사후변조 차단·네트워크 인증키 오류 방어, 로컬 90 PASS/0 FAIL. 실제 고객/Windows/공식 API 미검증. [후속 근거](docs/P85_SECURITY_FOLLOWUP_20261113.md).

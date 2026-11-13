@@ -1,3 +1,11 @@
+## [2026-11-14 KST] BID AX v2 원격 3모듈 구현 동기화·온비드 계획기 PASS
+- 최종설계 전체 R01–R29 29개, 사용자 목표 85%. **공식 최종완성률 UNASSESSED / 85% 달성 미입증 / [작업중] 유지 / RELEASE HOLD / 크몽 미등록.**
+- 기존 로컬 전용이던 온비드·법원경매 코드/테스트 GitHub 반영 완료 (기능 `0b407a9edc36`, **8/8 원격 동일성**). 무료 API 메타데이터 기반 키 없는 계획기 추가 (`2a9852bcb47a271a4119f67dfcaf8ec35ae2a632`, **4/4 원격 동일성**). 실제 API·원문/고객 키 호출 없음.
+- Linux Python3.13.5 기존130 + 6 신규 = **136 PASS/0 FAIL/0 SKIP**; compileall, Python3.11 AST22, 비출시 pyz CLI E2E PASS. Python3.11 실런타임/Win10·11/EXE·수동 GitHub OS CI는 **미실행**; 실 공고100/인간10 및 판매/첨부 권리도 **미검증**.
+- 정본/차단 근거 [P85 최신 수용표](docs/P85_V2_CURRENT_ACCEPTANCE_20261114.md) · [R01–29 추적](docs/BID_AX_EXPANSION_REASSESSMENT_20261113.md). 기존 BID OWL/타 상품/원천29·판매19 이력/고객 데이터 불변.
+
+---
+
 ## [2026-11-13 KST] BID AX v2 R22–R29 오프라인 기능 구현·검증 후속 — GitHub 코드 동기화 대기
 - 사용자 명시 목표: 최종설계 85%. 기존 R01–R29 전부 유지. 공식 완성률 **UNASSESSED / 85% 미입증 / [작업중] / RELEASE HOLD / 크몽 미등록**.
 - **현재 작업환경 로컬 시제품만**: bidax/onbid.py(온비드 정규화된 권한 있는 로컬 JSON, 독립 상품/조건/결과 원장·변조/중복/구버전 보호·REVIEW_HOLD), bidax/court.py(명시적 동의 받은 TXT/PDF 로컬 파일의 해시·문서별 인간 검토·PDF 내용 미추출), CLI 4명령, GUI 4동작, 합성 예시·테스트. 실제 3모듈 핵심 오프라인 검증 수행.

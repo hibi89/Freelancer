@@ -1,3 +1,20 @@
+> **[2026-11-14 v2 3모듈 현재 상태]** 나라장터 오프라인 사전검토 + 온비드 공매 정규화 로컬 JSON 자료 원장 + 고객 동의 법원경매 PDF/TXT 해시·검토. 실제 API 자동 호출·법적 적합 판정·Windows EXE/판매 없음. 전체 최종 R01–29 공식 완성률 UNASSESSED, 85% 목표 [작업중], 출시 HOLD.
+>
+> 추가 사용 예시 (독립 로컬 SQLite, 가상 데이터):
+>
+> ```bash
+> python -m bidax.cli --db ./bidax-local.db onbid-import examples/onbid_assets_synthetic.json
+> python -m bidax.cli --db ./bidax-local.db onbid-import examples/onbid_results_synthetic.json
+> python -m bidax.cli --db ./bidax-local.db onbid-report
+> python -m bidax.cli --db ./bidax-local.db court-import ./authorized-document.pdf --case-id 2026타경999 --source-note "소유자 허가를 받은 문서" --consent
+> python -m bidax.cli --db ./bidax-local.db court-report 2026타경999
+> python -m bidax.cli --db ./bidax-local.db onbid-plan result_detail ./params.json
+> ```
+>
+> `onbid-plan`은 API 키·HTTP가 없는 비실행 계획을 반환합니다. 실 이용권 확인 전 자동수집을 활성화하지 않습니다. [최신 검증 상태](docs/P85_V2_CURRENT_ACCEPTANCE_20261114.md).
+>
+> ---
+
 > **P85 후속 보안 점검 (2026-11-13)**: 완료된 공고 배치 SHA 변조 탐지, API 승인 boolean True 검증, 비밀 포함 urllib 예외 redaction 및 타임아웃 재시도. 로컬 회귀 90 PASS(합성), [근거](docs/P85_SECURITY_FOLLOWUP_20261113.md). 공식 최종완성률 UNASSESSED·출시 HOLD.
 
 # BID AX — offline public procurement preparation (prototype)

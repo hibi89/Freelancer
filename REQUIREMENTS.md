@@ -1,3 +1,11 @@
+## [2026-11-14] R01–R29 v2 실제 3모듈 수용 범위 (최신)
+- R22–R26 일부: 온비드 로컬 JSON 원장(물건/결과/변경/출처/변조), 공식 API 15157220/15157252/15157254 **키 없는 비실행 조회계획**, 온비드 실 API 사용/원문·페이지/권리·고객 수용 아직 0.
+- R27–R29 일부: 고객 동의 기반 로컬 PDF/TXT 문서해시, TXT 키워드·체크리스트(법적 판정 금지), 3모듈 GUI/DB 분리. 법원 일반 API, 원문 PDF 추출/악성검사/고객 법률자격 수용 없음.
+- 기존 R01–R21 보존, 최종설계 29개 요구. Linux Python3.13.5 합성·mock **136 PASS**와 기능 SHA `2a9852bcb47a271a4119f67dfcaf8ec35ae2a632` 원격 12개 파일 동일성. 실제 Win10/11/파이썬3.11 런타임/실 API·100건·인간10건/독립 상용권 미확인.
+- 공식 `UNASSESSED`, 85% `[작업중]`, `RELEASE HOLD` 보존. [상세](docs/P85_V2_CURRENT_ACCEPTANCE_20261114.md).
+
+---
+
 # BID AX — requirements and acceptance (full product = 100%)
 
 - R01-R04: official original source/permission and change-aware collection; region/kind/period; user-owned key/quotas; failures/retries/rate limiting; original evidence.

@@ -1,3 +1,17 @@
+# BID AX v2 — 2026-11-14 KST 최신 인수인계 (필수 10항)
+1. 목표·확정 요구·기술: 고객 PC 오프라인 BID AX; 나라장터+온비드 공매+사용자 적법 확보 법원경매 원문. Python3.11+ SQLite/Tk, R01–R29 전체 최종설계, 사용자 목표 85%.
+2. 완료·결정: 온비드 자료/결과 독립 원장, 법원 TXT/PDF 해시/동의, GUI/CLI, 키 없는 공식 API 3종 요청 검증계획. 개인정보·인증키 외부 유출 방지/고정 서버비 0 목표로 로컬형 유지.
+3. 테스트: Linux Python3.13.5 **136/136 PASS**, compileall PASS, Python3.11 AST 22 PASS (실런타임 아님), 비출시 pyz 실제 onbid-plan PASS. GitHub 기능 8/8+4/4 정확 원격 일치. GitHub Python OS CI/Win실기/실 API/실고객 미실행.
+4. 완료/진행/차단: 오프라인 3모듈 기술 기능 구현·반영 성공. 공식 최종 85% **미입증**, 공식 UNASSESSED, [작업중] 유지/RELEASE HOLD/크몽 미등록. R01–29 승인 가중치 없음.
+5. 실패/원인·회피: 예전 로컬 3모듈 기능 GitHub에 미반영되어 진척을 과장할 위험 → 원격에 반영·본문 12/12 대조로 해소. 여전히 실API 키·권리/고객 Windows 불가·Private Actions 과금 위험으로 무승인 실행 금지. 합성 데이터를 실제 정부 입찰로 보고하지 않음.
+6. 저장소/브랜치/SHA·경로: 비공개 hibi89/Freelancer@product/bid-ax-public-procurement. 기능 SHA `2a9852bcb47a271a4119f67dfcaf8ec35ae2a632`, 코드 bidax/{onbid,court,onbid_plan,cli,desktop}.py, 테스트 test_p85_expansion.py/test_onbid_plan.py, 상세 docs/P85_V2_CURRENT_ACCEPTANCE_20261114.md. 문서 HEAD는 원격 readback으로 확인.
+7. Production/URL/실행·환경: `python -Werror::ResourceWarning -m unittest discover -s tests -q`; `python -m bidax.cli --db ./local.db gui`, `onbid-import`, `court-import --consent`, `onbid-plan`. 기존 Python pyz 비출시. Vercel/웹 Production 미적용, 실제 Windows EXE 미생성.
+8. 원본·백업·보안: 과거 정상 HEAD `1b7b2ef0c00162905b4d0f4116933f682311fb0f`, Git 일반 revert; 사용자 원본DB·타 Freelancer 제품·BID OWL 수정 없음, 로컬 백업/복원 create-only, 비밀/고객자료/원본 API 키 GitHub 전송 0.
+9. 다음 우선순위·완료기준·승인: 무료 API 본인 활용신청/권리/서비스키와 실 응답 확인→실 공고100·인간 자격검토10→정확 파서·취소수정/첨부·역할권한·Windows10/11·서명/설치·PDF/고객 수용→R01–29 승인 가중치 전수 검증→85%/판매 판정. 유료 CI·실 데이터/키 전송·출시·권한 변경 사전 승인.
+10. 갱신 시점/검증 범위: 2026-11-14 KST, local Linux Python3.13.5·합성/mocked data; API 메타 출처 data.go.kr 15129394/15157220/15157252/15157254와 법원 이용안내. 실 고객/OS/API/권리/CI 미확인, docs 기준 커밋은 원격 확인 후 기록.
+
+---
+
 # BID AX v2 85% 목표 — 오프라인 엔진 로컬 개발 후 원격 코드 동기화 대기 (2026-11-13 KST)
 1. 목표·용도·확정 요구: 나라장터+온비드 무료 공식 API + 고객 동의 법원경매 오프라인 자료 분석, R01–R29/29개 최종설계 85% 목표, Python/SQLite/Tkinter.
 2. 개발 내용·이유: 오프라인 온비드 원장·증분 이력·물건/결과 조인, 법원 TXT 키워드/해시·PDF 비추출·동의 CLI/GUI 및 합성 예시 구현. 로컬 방식은 서버 비용·기밀 위험이 낮으며, API 실연동/실문서 OCR을 완료한 것은 아님.
