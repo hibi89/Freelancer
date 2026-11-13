@@ -51,7 +51,8 @@ test('P85 integrated document+SQL journey is always REVIEW_HOLD without customer
  assert.equal(out.sql_evidence.provisional_revenue_krw,'157000');
  assert.equal(out.sql_evidence.units,'7');assert.equal(out.sql_evidence.orders,3);
  assert.equal(out.sql_evidence.approval,'NOT_GRANTED');assert.equal(out.sql_evidence.ax_package_created,false);
- assert.equal(out.sql_evidence.evidence.length,3);assert.equal(out.document_evidence[0].source_unit,'paragraph');
+ assert.equal(out.sql_evidence.evidence.length,3);
+ assert.equal(out.document_evidence[0].source_unit,'paragraph');
  assert.equal(out.network_calls,0);
 });
 test('actual PDF+DOCX and SQL are combined in one local request',t=>{
