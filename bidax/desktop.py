@@ -57,6 +57,25 @@ class LocalController:
         with OnbidStore(self.database) as store:
             return store.report()
 
+    def portfolio_report(self) -> dict:
+        from .portfolio import portfolio_report
+        return portfolio_report(self.database)
+
+    def onbid_filter(self, *, property_type: str | None = None,
+                     max_bid_krw: int | None = None, min_failed_rounds: int | None = None) -> dict:
+        from .portfolio import filter_onbid
+        return filter_onbid(self.database, property_type=property_type,
+                            max_bid_krw=max_bid_krw, min_failed_rounds=min_failed_rounds)
+
+    def onbid_watchlist(self) -> dict:
+        from .portfolio import watchlist
+        return watchlist(self.database)
+
+    def onbid_watch(self, property_id: str, condition_id: str, state: str, note: str) -> dict:
+        from .portfolio import watch_onbid
+        return watch_onbid(self.database, property_id=property_id, condition_id=condition_id,
+                            state=state, note=note, request_id=str(uuid4()))
+
     def import_court(self, path: str | Path, case_id: str, source_note: str, *, consent: bool) -> dict:
         from .court import CourtStore
         with CourtStore(self.database) as store:
@@ -278,4 +297,36 @@ def launch(database: str | Path) -> None:
                ("DB 백업", save_backup), ("새 DB로 복원", restore)]
     for label, action in actions:
         ttk.Button(tools, text=label, command=lambda fn=action: handle(fn)).pack(side="left", padx=3, pady=4)
+    def save_interest():
+        prop = simpledialog.askstring("온비드 관심물건", "로컬 온비드 물건관리번호", parent=root)
+        if not prop:
+            return
+        cond = simpledialog.askstring("온비드 공매조건", "공매조건번호", parent=root)
+        if not cond:
+            return
+        state_text = simpledialog.askstring("사람의 관심 상태", "관심 / 검토 보류 / 관심 해제", parent=root)
+        if not state_text:
+            return
+        memo = simpledialog.askstring("원문 확인 메모", "직접 검토 계획을 기록하세요", parent=root)
+        if not memo:
+            return
+        if not messagebox.askyesno("기록 확인", "온비드 로컬 사본에 대한 관심 메모만 기록합니다. 실제 권리/가격/낙찰 상태를 보증하지 않습니다. 진행합니까?"):
+            return
+        return controller.onbid_watch(prop.strip(), cond.strip(), state_text.strip(), memo)
+
+    def search_onbid():
+        max_value = simpledialog.askstring("온비드 최소입찰가 필터", "검색할 최대 최저입찰가(원, 공란이면 전체)", parent=root)
+        if max_value is None:
+            return
+        max_krw = int(max_value) if max_value.strip() else None
+        return controller.onbid_filter(max_bid_krw=max_krw)
+
+    menu = tk.Menu(root)
+    auction_menu = tk.Menu(menu, tearoff=0)
+    auction_menu.add_command(label="3개 출처 통합 현황", command=lambda: handle(controller.portfolio_report))
+    auction_menu.add_command(label="온비드 관심목록", command=lambda: handle(controller.onbid_watchlist))
+    auction_menu.add_command(label="온비드 관심 상태 기록", command=lambda: handle(save_interest))
+    auction_menu.add_command(label="온비드 가격 필터", command=lambda: handle(search_onbid))
+    menu.add_cascade(label="공매·경매 로컬 관리", menu=auction_menu)
+    root.config(menu=menu)
     root.mainloop()

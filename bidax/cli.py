@@ -81,6 +81,18 @@ def main(argv=None):
     preview.add_argument("--consent", action="store_true")
     court_rep = sub.add_parser("court-report", help="local-only human-review checklist")
     court_rep.add_argument("case_id")
+    portfolio = sub.add_parser("portfolio-report", help="three-source offline summary; no legal conclusion")
+    filt = sub.add_parser("onbid-filter", help="local filters for known Onbid asset records")
+    filt.add_argument("--property-type", choices=("부동산", "동산", "차량", "기타"))
+    filt.add_argument("--max-bid-krw", type=int)
+    filt.add_argument("--min-failed-rounds", type=int)
+    watch = sub.add_parser("onbid-watch", help="append human-curated Onbid interest/review status")
+    watch.add_argument("property_id")
+    watch.add_argument("condition_id")
+    watch.add_argument("state", choices=("관심", "검토 보류", "관심 해제"))
+    watch.add_argument("note")
+    watch.add_argument("--request-id", default=None, help="stable UUID for retry-safe replay")
+    sub.add_parser("onbid-watchlist", help="audited Onbid preferences and source staleness")
     gui = sub.add_parser("gui", help="launch offline desktop GUI (Tkinter)")
     args = p.parse_args(argv)
 
@@ -94,6 +106,20 @@ def main(argv=None):
         with OnbidStore(args.db) as store:
             result = (store.import_snapshot(read_local_json(args.json_file))
                       if args.command == "onbid-import" else store.report())
+    elif args.command in {"portfolio-report", "onbid-filter", "onbid-watch", "onbid-watchlist"}:
+        from .portfolio import filter_onbid, portfolio_report, watch_onbid, watchlist
+        if args.command == "portfolio-report":
+            result = portfolio_report(args.db)
+        elif args.command == "onbid-filter":
+            result = filter_onbid(args.db, property_type=args.property_type,
+                                  max_bid_krw=args.max_bid_krw,
+                                  min_failed_rounds=args.min_failed_rounds)
+        elif args.command == "onbid-watch":
+            result = watch_onbid(args.db, property_id=args.property_id,
+                                condition_id=args.condition_id, state=args.state,
+                                note=args.note, request_id=args.request_id or str(uuid4()))
+        else:
+            result = watchlist(args.db)
     elif args.command == "court-preview":
         from .court import preview_document
         result = preview_document(args.file, case_id=args.case_id, user_consent=args.consent,
