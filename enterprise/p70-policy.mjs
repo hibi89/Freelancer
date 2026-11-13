@@ -167,3 +167,29 @@ export function assessSyntheticMapping({source,plan}) {
     promotion:'BLOCKED',network_calls:0
   });
 }
+
+
+/** Synthetic-only scope for the original RAG selected-document API.
+ * Must never be used as proof of real authentication, IAM or enterprise ACL.
+ * Unrequested forbidden and unknown document IDs share the same response.
+ */
+export function authorizeSyntheticDocumentScope({principal,catalog,now_utc,requested_ids}) {
+  const p=verifyPrincipal(principal);
+  if(!Array.isArray(catalog)||catalog.length<1||catalog.length>64||
+     !validTime(now_utc)||!uniqueIds(requested_ids,8)||
+     requested_ids.length<1)refuse('REQUEST_INVALID');
+  const seen=new Set(),all=catalog.map(d=>{
+    verifyDocument(d);
+    const key=d.tenant_id+':'+d.id;
+    if(seen.has(key))refuse('CATALOG_DUPLICATE');
+    seen.add(key);
+    return d;
+  });
+  const allowed=all.filter(d=>policyAllows(p,d,Date.parse(now_utc)));
+  if(requested_ids.some(id=>!allowed.some(d=>d.id===id)))
+    return Object.freeze({status:'FORBIDDEN_OR_NOT_FOUND',document_ids:Object.freeze([]),
+      enterprise_identity_verified:false});
+  return Object.freeze({status:'SYNTHETIC_SCOPE_ONLY',
+    document_ids:Object.freeze([...requested_ids]),
+    enterprise_identity_verified:false});
+}
