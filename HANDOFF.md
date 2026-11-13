@@ -1,5 +1,20 @@
 # CITEVAULT AX — HANDOFF — RAG Studio 기업형 (10항, 2026-11-13 KST)
 
+## [2026-11-13 KST] CITEVAULT AX P85 실 PDF/DOCX 증거 통합 — 최신 10항 인수인계
+
+1. **목표·용도·확정요구·기술:** 최종설계 전체 100% 대비 사용자 85% 요청. 기업로컬 근거형 RAG/정확 SQL, PREP/SMAX source-rights/승인 AX, 실 직원 인증/권한·문서 버전·재색인, PDF/DOCX/TXT/MD 출처, 한국어 모델·Win/Linux. **공식 UNASSESSED**, 목표 미검증.
+2. **실제 완료·설계/변경 근거:** 원본 RAG `loadPackage` 전체 선로딩으로 기업 ACL 후처리는 위험. 두 방식 비교(원본 pinned RAG 통합 vs 격리된 바이트 기반 파서) 후, 이번 로컬 실행은 ACL·SHA 검증 뒤 별도 Node/Python 오프라인 PDF 페이지·DOCX 문단 추출로 구현. 원본 RAG/parser/SMAX/PREP 그대로 보존. 신설 `enterprise/p85-native-extract.py`/`.mjs`, `tests/p85-native-fixture.py`/`p85-native-integration.test.mjs`, `tests/requirements-p85-native.txt`, `p85-vault.mjs` 최소 수정.
+3. **테스트·성공/실패/미검증:** Linux Node22.16.0/Python3.11 실제 native PDF/DOCX synthetic **13PASS/0FAIL/0SKIP**, 기존 P85 SQLite·HTTP 58PASS 포함 P50/P70/P85 combined **108 TOTAL/105PASS/0FAIL/3SKIP** (3 pin RAG SQL/BM25/SMAX checker 미실행). 실제 PDF 2pages, Korean DOCX paragraph1/2, 복합 검색, 7/14일 충돌 HOLD, 무권한 비밀 PDF/원본 SHA 변조·심볼릭 링크 거절, SQLite 재시작 검증. GitHub 6개 파일 정확 Git blob SHA 대조 PASS. `docs/P85_NATIVE_EVIDENCE_20261113.md`.
+4. **완료·진행·대기·차단:** 합성 Native PDF/DOCX parser+기존 P85 local ACL/SQLite lifecycle 부분 구현. Original RAG `p512/p538/p540/p549` hosted 실 실행 불명, 실제 RAG SQL/prod approval, 직원 IdP, 실 한국어 모델/고객 Win10/11 인수/Gold 없음. **[작업중], RELEASE HOLD**.
+5. **오류 근거·시도·재시도 금지·대안:** container `github.com` DNS 실패→핀 원본 체크아웃 불가. 같은 명령 무의미 반복 금지. 원본 패키지 후처리 ACL 누출 위험→별도 원문 선인증/sha 검증 후 외부 파서에 바이트만 제공. 새 PDF/DOCX 인용은 독립 파서 증거이지 원본 RAG P512 PASS 아님. Python/pypdf/ZIP 취약 문서 전체 샌드박스 미검증, 반드시 고객 실사용 전에 별도 평가.
+6. **저장소·브랜치·SHA/경로:** `hibi89/Freelancer@product/rag-enterprise-knowledge`; 작업 전 `6fb66efd14dd95dd64ebfb1305ef872478ff1524` (안전 복구 기준), RAG 원본 pinned `c5867b3951f51bfa97cadd1aad8fb13e9cf9e604`. 신규 exact blobs vault `762321a71736f4ebeee73b28c7834a5ae876be66`; Python `05f2d7fd371fc22bb1313c0e47d710653ed270ff`; adapter `fbd40284ee42c237608ec0aef649ceeef1fc77b6`; fixture `0847f627c7b21eec4654471b734c47f12385de39`; tests `4d6aec409468c531149f3e626f7f8509854f2b59`; pinned requirements `5cc9a2a8939678546aa55ad1ce6fd1369ceefb43`. GitHub source readbacks exact, 최종 HEAD 이 문서 후 확인.
+7. **Production/Vercel URL·실행 환경:** Linux Node22/Python3.11 local-only; CI `p85-native-evidence` Ubuntu24.04/Windows2022 matrix/requirements; `node --test tests/p85-native-integration.test.mjs`. Production/Vercel 미적용, 고객 계정/외부 API/권한·환경변수/요금 변경 0.
+8. **원본·백업·인증·수정금지:** 제품 이전 Git SHA 복구점, 기존 RAG/SMAX/PREP/고객 원본 수정 없음, 합성 실제 PDF/DOCX는 임시 폴더에서만 생성·삭제, 원본 판매/법적 승인으로 간주 금지. GitHub 고객 실문서/비밀 업로드 없음.
+9. **다음 우선순위/완료조건/승인사항:** 실제 original pinned RAG hosted CI P512/P538/P540/P549 job logs→원본 PDF/DOCX+read-only SQLite SQL+SMAX/승인 AX 연결 실제 검증→고객 실 직원 IAM/권한·보안 변경/원본 데이터 접수는 승인 후만→검증된 한국어 실제 모델/권리/Gold→Win10/11 실사용/패키지/백업/복구→사용자 확정 전체 설계 REQ·가중치로 공식 85 재산정. GitHub Actions 정의만으로 합격 판정 금지.
+10. **시각/기준 SHA/검증 범위:** 2026-11-13 KST, 로컬 105PASS/3SKIP, 제품 Git source SHA exact 6개, native 2-page PDF+Korean DOCX 실제 수행. Hosted Actions·Windows 실환경·원본 RAG checkout/기업 권리계정/실모델/85% 공식 **미검증**. 세부 근거 `docs/P85_NATIVE_EVIDENCE_20261113.md`.
+
+
+
 ## [2026-11-13 KST] CITEVAULT AX P85 영속화 후속 — 10항 인수인계
 
 1. **목표·기술/확정요구:** CITEVAULT AX 최종설계 전체 85% 사용자 목표. RAG Studio SQL/PDF/DOCX 증거, PREP/SMAX 권리 승인, 실제 기업 인증·조직/문서 ACL, 버전/폐기/재색인, 한국어 로컬 모델, Windows+Linux CI. **공식 UNASSESSED/85 미확정**.
