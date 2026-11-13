@@ -118,7 +118,7 @@ export class LocalSyntheticVault {
     for(const d0 of documents){const d=checkDoc(d0),key=d.tenantId+':'+d.id;
       if(this.#docs.has(key))DENY('DUPLICATE_DOCUMENT');this.#docs.set(key,d);}
   }
-  #record(code,tenantId){if(this.#stateStore)this.#stateStore.auditEvent(tenantId,code,this.#clock());
+  #record(code,tenantId,alreadyPersisted=false){if(this.#stateStore&&!alreadyPersisted)this.#stateStore.auditEvent(tenantId,code,this.#clock());
     this.#audit.push(Object.freeze({event:code,epoch_ms:this.#clock(),tenantId}));
     if(this.#audit.length>1000)this.#audit.shift();}
   login(userId,password) {
@@ -189,11 +189,11 @@ export class LocalSyntheticVault {
       const key=d.tenantId+':'+d.id+':'+d.version;
       next.set(key,Object.freeze(readDocument(this.#root,d)));count++;}
     // Persist generation before in-memory mutation; no original files changed.
-    if(this.#stateStore)this.#stateStore.setGeneration(this.#generation+1);
+    if(this.#stateStore)this.#stateStore.setGeneration(this.#generation+1,p.tenantId,'REINDEX',this.#clock());
     // atomic in-memory cache generation, never mutates original files
     for(const key of this.#cache.keys())if(key.startsWith(p.tenantId+':'))this.#cache.delete(key);
     for(const [key,value] of next)this.#cache.set(key,value);
-    this.#generation++;this.#record('REINDEX',p.tenantId);
+    this.#generation++;this.#record('REINDEX',p.tenantId,!!this.#stateStore);
     return Object.freeze({status:'REINDEXED',document_count:count,generation:this.#generation});
   }
   replaceVersion(token,docId,newVersion,sha256){
@@ -201,27 +201,27 @@ export class LocalSyntheticVault {
     if(!id(newVersion)||newVersion===d.version||typeof sha256!=='string'||!SHA.test(sha256))DENY('VERSION_INVALID');
     const next=checkDoc({...d,version:newVersion,sha256});
     readDocument(this.#root,next); // exact source bytes checked before activating
-    if(this.#stateStore)this.#stateStore.saveDocumentWithGeneration(next,this.#generation);
+    if(this.#stateStore)this.#stateStore.saveDocumentWithGeneration(next,this.#generation,'VERSION_CHANGED',this.#clock());
     this.#docs.set(p.tenantId+':'+docId,next);
     this.#cache.delete(p.tenantId+':'+docId+':'+d.version);
-    this.#generation++;this.#record('VERSION_CHANGED',p.tenantId);
+    this.#generation++;this.#record('VERSION_CHANGED',p.tenantId,!!this.#stateStore);
     return Object.freeze({status:'VERSION_ACTIVATED',version:newVersion,generation:this.#generation});
   }
   retire(token,docId){const p=this.#admin(token),d=this.#get(p,docId);
     const next=Object.freeze({...d,active:false});
-    if(this.#stateStore)this.#stateStore.saveDocumentWithGeneration(next,this.#generation);
+    if(this.#stateStore)this.#stateStore.saveDocumentWithGeneration(next,this.#generation,'DOC_RETIRED',this.#clock());
     this.#docs.set(p.tenantId+':'+docId,next);
     for(const key of this.#cache.keys())if(key.startsWith(p.tenantId+':'+docId+':'))this.#cache.delete(key);
-    this.#generation++;this.#record('DOC_RETIRED',p.tenantId);
+    this.#generation++;this.#record('DOC_RETIRED',p.tenantId,!!this.#stateStore);
     return Object.freeze({status:'RETIRED',generation:this.#generation});
   }
   revokeAccount(token,userId){
     const admin=this.#admin(token),target=this.#accounts.get(userId);
     if(!id(userId)||!target||target.tenantId!==admin.tenantId||userId===admin.userId)DENY('NOT_FOUND');
-    if(this.#stateStore)this.#stateStore.disableAccount(userId,admin.tenantId);
+    if(this.#stateStore)this.#stateStore.disableAccount(userId,admin.tenantId,'USER_REVOKED',this.#clock());
     this.#disabled.add(userId);
     for(const [key,s] of this.#sessions)if(s.userId===userId)this.#sessions.delete(key);
-    this.#record('USER_REVOKED',admin.tenantId);
+    this.#record('USER_REVOKED',admin.tenantId,!!this.#stateStore);
     return Object.freeze({status:'REVOKED'});
   }
   audit(token){const p=this.#admin(token);
