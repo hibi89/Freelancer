@@ -1,5 +1,6 @@
 """Local-only command line; the operator owns and protects the SQLite database."""
 import argparse
+import getpass
 import json
 import sys
 from pathlib import Path
@@ -11,6 +12,7 @@ from .lifecycle import rename_customer, delete_unused_customer
 from .delivery_evidence import attach_file, verify_file, list_evidence
 from .recovery import rehearse_restore
 from .privacy import export_customer_summary
+from .secure_backup import encrypted_backup, encrypted_restore_new
 
 
 def main(argv=None):
@@ -65,12 +67,20 @@ def main(argv=None):
     check = cmd("checkpoint-verify", ("file", True))
     check.add_argument("--expected-file-sha256", help="Previously saved checkpoint SHA256; guard against replaced JSON")
     cmd("backup", ("out", True))
+    cmd("backup-encrypted", ("out", True))
+    encrypted_restore = cmd("restore-encrypted-new", ("encrypted_file", True), ("new_db", True))
+    encrypted_restore.add_argument("--sha256", help="Optional separately retained encrypted-file digest")
     cmd("migrate-v1", ("backup_out", True))
     cmd("restore-new", ("backup_file", True), ("new_db", True), ("sha256", True))
     cmd("rehearse-restore", ("workspace_dir", True))
     args = parser.parse_args(argv)
     desk = None
     try:
+        if args.command == "restore-encrypted-new":
+            password = getpass.getpass("Encrypted backup passphrase (never stored): ")
+            result = encrypted_restore_new(args.encrypted_file, args.new_db, password, expected_sha256=args.sha256)
+            print(json.dumps({"ok": True, "result": result}, ensure_ascii=False, sort_keys=True))
+            return 0
         if args.command == "restore-new":
             result = restore_new(args.backup_file, args.new_db, args.sha256)
             print(json.dumps({"ok": True, "result": result}, ensure_ascii=False, sort_keys=True))
@@ -127,6 +137,12 @@ def main(argv=None):
         elif c == "checkpoint-new": value = create_checkpoint(desk, args.out)
         elif c == "checkpoint-verify": value = verify_checkpoint(desk, args.file, expected_file_sha256=args.expected_file_sha256)
         elif c == "backup": value = {"backup_sha256": desk.backup(args.out)}
+        elif c == "backup-encrypted":
+            password = getpass.getpass("Choose backup passphrase (12+ characters; never stored): ")
+            confirmation = getpass.getpass("Repeat backup passphrase: ")
+            if password != confirmation:
+                raise DeskError("passphrase confirmation mismatch")
+            value = encrypted_backup(desk, args.out, password)
         elif c == "migrate-v1": value = {"backup_sha256": desk.migrate_v1(args.backup_out), "schema_version": desk.schema_version}
         elif c == "rehearse-restore": value = rehearse_restore(desk, args.workspace_dir)
         print(json.dumps({"ok": True, "result": value}, ensure_ascii=False, sort_keys=True))

@@ -16,6 +16,7 @@ from .documents import export_document
 from .lifecycle import rename_customer, delete_unused_customer
 from .delivery_evidence import attach_file, verify_file
 from .privacy import export_customer_summary
+from .secure_backup import encrypted_backup, encrypted_restore_new
 
 
 def parse_rows(lines: str, *, kind: str) -> list[dict]:
@@ -86,7 +87,7 @@ class WorknovaGUI:
           ("현황 DOCX",self.contract_docx), ("견적 PDF (폰트지정)",self.quote_pdf),
           ("거래처 수정",self.rename_selected_customer), ("미사용 거래처 삭제",self.delete_selected_customer),
           ("납품 파일 해시 등록",self.attach_selected_evidence), ("납품 파일 해시 검증",self.verify_selected_evidence),
-          ("거래처 요약 JSON",self.export_selected_customer_summary))):
+          ("거래처 요약 JSON",self.export_selected_customer_summary), ("암호화 백업",self.encrypted_backup), ("암호화 장부 복원",self.encrypted_restore))):
             ttk.Button(button_rows[idx//6],text=title,command=lambda f=fn:self.action(f)).pack(side="left",padx=2,pady=3)
         self.message=tk.StringVar(value="대상 항목을 선택하세요. 확인 후에만 실제 변경됩니다.")
         ttk.Label(self.root,textvariable=self.message).pack(anchor="w",padx=10,pady=5)
@@ -184,6 +185,30 @@ class WorknovaGUI:
         if not file: raise DeskError("요약 내보내기 취소")
         self.confirmed("견적·수금 금액과 장부 식별자가 포함됩니다. 제3자에게 보내기 전에 검토하세요. 로컬 파일로 저장할까요?")
         return export_customer_summary(self.desk,customer,file)
+
+    def _passphrase(self, prompt):
+        value=simpledialog.askstring("백업 암호", prompt, show="*", parent=self.root)
+        if value is None:raise DeskError("취소했습니다")
+        return value
+    def encrypted_backup(self):
+        path=filedialog.asksaveasfilename(title="새 암호화 백업 파일 (별도 보관)",
+            defaultextension=".wndesk", filetypes=[("WORKNOVA encrypted", "*.wndesk")], parent=self.root)
+        if not path:raise DeskError("백업 취소")
+        password=self._passphrase("12자 이상 암호를 입력하세요 (암호 분실 시 복원 불가)")
+        if password != self._passphrase("백업 암호를 다시 입력하세요"):
+            raise DeskError("암호가 일치하지 않습니다")
+        self.confirmed("현재 장부 원본은 암호화되지 않습니다. 별도 암호화 백업을 생성할까요?")
+        return encrypted_backup(self.desk,path,password)
+    def encrypted_restore(self):
+        source=filedialog.askopenfilename(title="검증할 암호화 백업 선택",
+            filetypes=[("WORKNOVA encrypted", "*.wndesk")], parent=self.root)
+        if not source:raise DeskError("복원 취소")
+        dest=filedialog.asksaveasfilename(title="기존 DB를 덮어쓰지 않는 새 복원 경로",
+            defaultextension=".sqlite", filetypes=[("SQLite", "*.sqlite")], parent=self.root)
+        if not dest:raise DeskError("복원 취소")
+        self.confirmed("기존 장부는 변경하지 않고 새 평문 SQLite를 생성합니다. 새 파일의 OS 접근 권한을 확인하세요.")
+        password=self._passphrase("암호화 백업의 암호를 입력하세요")
+        return encrypted_restore_new(source,dest,password)
 
     def quote_items(self):return parse_rows(self.question("견적 품목","한 줄마다: 품목|수량|단가(원)\n예: 디자인|2|150000"),kind="quote")
     def vat(self):return messagebox.askyesno("부가세 확인","견적에 10% 부가세를 가산합니까?\n(세무 적합성은 사용자 판단)",parent=self.root)

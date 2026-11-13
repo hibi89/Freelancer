@@ -22,6 +22,7 @@ EXPECTED = frozenset({
     "worknova_desk/lifecycle.py",
     "worknova_desk/recovery.py",
     "worknova_desk/privacy.py",
+    "worknova_desk/secure_backup.py",
     "launch.cmd", "install_local.ps1", "README_OFFLINE.txt", "verify_portable.py",
 })
 FORMAT = "worknova-p85-portable-v3"

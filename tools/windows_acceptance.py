@@ -120,6 +120,33 @@ def _accept() -> list[dict]:
              cwd=app, env=env, label='Synthetic ledger integrity')
         protected_digest = _sha(db)
         checks.append(_ok('Synthetic ledger and audit verification'))
+        # Optional backup encryption. If dependency absent, report SKIP rather than PASS.
+        try:
+            import cryptography
+        except ImportError:
+            checks.append({'check': 'AES-GCM encrypted backup/restore', 'status': 'SKIP',
+                           'detail': 'optional local cryptography not installed'})
+        else:
+            from worknova_desk.core import Desk
+            from worknova_desk.secure_backup import encrypted_backup, encrypted_restore_new
+            sealed = work/'synthetic-encrypted.wndesk'
+            decrypted = work/'synthetic-decrypted.sqlite'
+            live=Desk(db,allow_create=False)
+            try:
+                token=encrypted_backup(live,sealed,'synthetic-throwaway-secret-1234')
+            finally:
+                live.close()
+            encrypted_restore_new(sealed,decrypted,'synthetic-throwaway-secret-1234',
+                                  expected_sha256=token['sha256'])
+            if _sha(db) != protected_digest:
+                raise RuntimeError('Encrypted roundtrip changed synthetic source ledger')
+            decrypted_db=Desk(decrypted,allow_create=False)
+            try:
+                if decrypted_db.verify_audit() < 1:
+                    raise RuntimeError('Encrypted roundtrip lost synthetic audit')
+            finally:
+                decrypted_db.close()
+            checks.append(_ok('AES-GCM encrypted backup/restore, temporary fixture only'))
 
         scratch = work/'recovery-scratch'
         scratch.mkdir(mode=0o700)
