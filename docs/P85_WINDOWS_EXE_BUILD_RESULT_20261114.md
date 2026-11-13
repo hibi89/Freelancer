@@ -1,3 +1,20 @@
+## 2026-11-14 KST — Windows 네이티브 EXE 정상 종료 및 격리 SQLite 파일 생성 PASS (사용자 PowerShell)
+
+앞서 제공된 실제 Windows EXE 초기 Tk GUI 스크린샷에 이어, 사용자가 창 X 종료 후 PowerShell 프로세스 대기 결과를 전달하였다.
+
+- 프로세스 시작: `System.Diagnostics.ProcessStartInfo`, `UseShellExecute = false`, `FileName = $candidate`, `WorkingDirectory = Split-Path $candidate -Parent`
+- 고객 자료 방지: 자식 EXE 프로세스 환경변수 `EnvironmentVariables["LOCALAPPDATA"] = $qaRoot`, `$qaRoot`는 사용자 PC의 새 `TEMP/worknova-gui-qa-<GUID>` 폴더
+- 종료 대기: `$p.WaitForExit()` 정상 반환
+- 사용자 콘솔 결과: **`ExitCode : 0`**, **`TestDatabaseExists : True`**, `TestFolder`는 해당 새 임시 격리 폴더
+- 검사 대상: `Join-Path $qaRoot "WORKNOVA Desk\\Data\\desk.sqlite"`
+- 위 값은 사용자가 보내준 Windows 출력에 근거한 결과이며, 원격에서 바이너리나 SQLite 원본 파일을 직접 열어 검증한 것이 아니다. 실제 사용자명과 QA 임시 폴더 GUID는 GitHub 증거에 기록하지 않는다.
+
+**이번에 추가로 실증된 게이트:** 실제 EXE의 Tk 메인 창 표시 → GUI 종료코드 0 → 원래 OS 프로필이 아닌 자식 전용 임시 LOCALAPPDATA에 새로운 `desk.sqlite` **파일 존재**. 이는 데이터 생성 경로와 정상 종료의 실 Windows 스모크 검증 PASS이며, GUI와 사용자 계정 기본 위치를 사용하지 않은 시험이다.
+
+**여전히 미검증:** 생성한 SQLite 파일의 `PRAGMA integrity_check`, 스키마/실제 거래처 CRUD, EXE 재실행 후 데이터 지속성, 확장 onedir 파일 복사·Python 없는 머신 구동, 실제 Windows ACL·상시 DB 암호화·Defender/서명·Word PDF 라이선스/폰트 임베딩·실구매자/환불·법률·접근성. 생성 파일의 존재가 완전 업무 기능 정상이나 판매 가능성을 뜻하지 않는다. 빌드에 사용된 원래 ZIP의 정확 Git commit SHA도 미수집이다.
+
+**WD 평가 유지:** WD-11·WD-13의 네이티브 Windows 초도 GUI/로컬 DB 파일 생성·종료 *부분 수용 증거* 강화. 사용자 승인 WD-01~14 총100점 각 항목 완전 수용에 한하여 배점 인정하며 **정식 0/100(코드 구현률 0 아님)**, 목표85 미달, **[작업중]/RELEASE HOLD/미등록** 유지. 별도 비용·OS 보안 변경·실사용 고객자료 조회/업로드 없음.
+
 ## 2026-11-14 KST 사용자 제공 실제 Windows EXE 메인 GUI 스크린샷
 
 사용자가 같은 PowerShell 격리 실행 절차의 후속 화면을 전달했으며, **WORKNOVA Desk — 로컬 계약·납품 장부**라는 제목의 실제 Tk 창이 열린 것을 시각적으로 확인했다. 화면에 다음 구성요소가 표시된다.
