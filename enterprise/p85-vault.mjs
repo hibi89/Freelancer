@@ -38,7 +38,7 @@ function checkDoc(d) {
     ||!list(d.groups)||!list(d.projects)||(!d.groups.length&&!d.projects.length)
     ||!Number.isInteger(d.classification)||d.classification<0||d.classification>3
     ||typeof d.sha256!=='string'||!SHA.test(d.sha256)||d.reviewState!=='SYNTHETIC_APPROVED'
-    ||d.active!==true) DENY('CATALOG_INVALID');
+    ||typeof d.active!=='boolean') DENY('CATALOG_INVALID');
   return Object.freeze({...d,groups:Object.freeze([...d.groups]),projects:Object.freeze([...d.projects])});
 }
 function checkedRoot(root) {
@@ -100,9 +100,16 @@ function conflict(chunks,question){
 }
 export class LocalSyntheticVault {
   #root; #accounts; #docs; #sessions=new Map(); #clock; #audit=[]; #cache=new Map();
-  #tries=new Map(); #generation=0;
-  constructor({root,accounts,documents,clock=()=>Date.now()}) {
+  #tries=new Map(); #generation=0; #disabled=new Set(); #stateStore=null;
+  constructor({root,accounts,documents,clock=()=>Date.now(),stateStore=null}) {
     this.#root=checkedRoot(root);
+    if(stateStore!==null){
+      if(typeof stateStore.loadOrInitialize!=='function'||typeof stateStore.saveDocumentWithGeneration!=='function')DENY('STATE_STORE_INVALID');
+      const saved=stateStore.loadOrInitialize({accounts,documents});
+      accounts=saved.accounts;documents=saved.documents;
+      this.#disabled=new Set(saved.disabled);this.#generation=saved.generation;
+      this.#stateStore=stateStore;
+    }
     if(!Array.isArray(accounts)||!accounts.length||accounts.length>100||
        !Array.isArray(documents)||!documents.length||documents.length>256||typeof clock!=='function')DENY('CONFIG_INVALID');
     this.#accounts=new Map();this.#docs=new Map();this.#clock=clock;
@@ -111,7 +118,8 @@ export class LocalSyntheticVault {
     for(const d0 of documents){const d=checkDoc(d0),key=d.tenantId+':'+d.id;
       if(this.#docs.has(key))DENY('DUPLICATE_DOCUMENT');this.#docs.set(key,d);}
   }
-  #record(code,tenantId){this.#audit.push(Object.freeze({event:code,epoch_ms:this.#clock(),tenantId}));
+  #record(code,tenantId){if(this.#stateStore)this.#stateStore.auditEvent(tenantId,code,this.#clock());
+    this.#audit.push(Object.freeze({event:code,epoch_ms:this.#clock(),tenantId}));
     if(this.#audit.length>1000)this.#audit.shift();}
   login(userId,password) {
     const a=this.#accounts.get(userId),t=this.#clock(),tries=this.#tries.get(userId)||{count:0,until:0};
@@ -120,7 +128,7 @@ export class LocalSyntheticVault {
     const salt=a?.salt||dummySalt,expected=a?.password_scrypt||'0'.repeat(64);
     const valid=typeof password==='string'&&password.length<=128&&
       same(crypto.scryptSync(password,Buffer.from(salt,'hex'),32).toString('hex'),expected);
-    if(!valid){const count=tries.count+1;this.#tries.set(userId,{count:count>=5?0:count,until:count>=5?t+60000:0});
+    if(!valid||this.#disabled.has(userId)||(this.#stateStore&&!this.#stateStore.accountEnabled(userId))){const count=tries.count+1;this.#tries.set(userId,{count:count>=5?0:count,until:count>=5?t+60000:0});
       this.#record('LOGIN_DENIED',a?.tenantId??null);DENY('ACCESS_DENIED');}
     this.#tries.delete(userId);
     const token=crypto.randomBytes(32).toString('hex'),expiry=t+15*60*1000;
@@ -131,14 +139,16 @@ export class LocalSyntheticVault {
     if(typeof token!=='string'||!(/^[a-f0-9]{64}$/u).test(token))DENY('UNAUTHENTICATED');
     const key=hash(token),s=this.#sessions.get(key);
     if(!s||s.expires<=this.#clock()){this.#sessions.delete(key);DENY('UNAUTHENTICATED');}
-    const p=this.#accounts.get(s.userId);if(!p)DENY('UNAUTHENTICATED');return p;
+    const p=this.#accounts.get(s.userId);if(!p||this.#disabled.has(s.userId)||
+      (this.#stateStore&&!this.#stateStore.accountEnabled(s.userId)))DENY('UNAUTHENTICATED');return p;
   }
   logout(token){const p=this.#principal(token);this.#sessions.delete(hash(token));this.#record('LOGOUT',p.tenantId);}
   #allow(p,d){return p.tenantId===d.tenantId&&d.active&&p.clearance>=d.classification&&
     (!d.groups.length||d.groups.some(x=>p.groups.includes(x)))&&
     (!d.projects.length||d.projects.some(x=>p.projects.includes(x)));}
   #get(p,docId){if(!id(docId))DENY('INVALID_DOCUMENT_ID');
-    const d=this.#docs.get(p.tenantId+':'+docId);
+    const loaded=this.#stateStore?this.#stateStore.documentMetadata(p.tenantId,docId):this.#docs.get(p.tenantId+':'+docId);
+    const d=loaded?checkDoc(loaded):null;
     if(!d||!this.#allow(p,d))DENY('NOT_FOUND');return d;}
   source(token,docId){const p=this.#principal(token),d=this.#get(p,docId);
     const citations=readDocument(this.#root,d);this.#record('SOURCE_READ',p.tenantId);
@@ -149,8 +159,9 @@ export class LocalSyntheticVault {
        !Number.isInteger(limit)||limit<1||limit>10||
        (collection!==null&&!id(collection))||
        (documentIds!==null&&(!list(documentIds,8)||documentIds.length===0)))DENY('QUERY_INVALID');
+    const allDocs=this.#stateStore?this.#stateStore.listDocuments(p.tenantId).map(checkDoc):[...this.#docs.values()];
     const selection=documentIds===null?
-      [...this.#docs.values()].filter(d=>this.#allow(p,d)&&
+      allDocs.filter(d=>this.#allow(p,d)&&
         (collection===null||d.collection===collection)):
       documentIds.map(x=>this.#get(p,x)); // complete ACL pass before any I/O
     if(documentIds!==null&&collection!==null&&selection.some(d=>d.collection!==collection))DENY('NOT_FOUND');
@@ -173,9 +184,12 @@ export class LocalSyntheticVault {
   }
   #admin(token){const p=this.#principal(token);if(!p.admin)DENY('NOT_AUTHORIZED');return p;}
   reindex(token){const p=this.#admin(token),next=new Map();let count=0;
-    for(const d of this.#docs.values()){if(d.tenantId!==p.tenantId||!d.active)continue;
+    const allDocs=this.#stateStore?this.#stateStore.listDocuments(p.tenantId).map(checkDoc):[...this.#docs.values()];
+    for(const d of allDocs){if(d.tenantId!==p.tenantId||!d.active)continue;
       const key=d.tenantId+':'+d.id+':'+d.version;
       next.set(key,Object.freeze(readDocument(this.#root,d)));count++;}
+    // Persist generation before in-memory mutation; no original files changed.
+    if(this.#stateStore)this.#stateStore.setGeneration(this.#generation+1);
     // atomic in-memory cache generation, never mutates original files
     for(const key of this.#cache.keys())if(key.startsWith(p.tenantId+':'))this.#cache.delete(key);
     for(const [key,value] of next)this.#cache.set(key,value);
@@ -187,16 +201,30 @@ export class LocalSyntheticVault {
     if(!id(newVersion)||newVersion===d.version||typeof sha256!=='string'||!SHA.test(sha256))DENY('VERSION_INVALID');
     const next=checkDoc({...d,version:newVersion,sha256});
     readDocument(this.#root,next); // exact source bytes checked before activating
+    if(this.#stateStore)this.#stateStore.saveDocumentWithGeneration(next,this.#generation);
     this.#docs.set(p.tenantId+':'+docId,next);
     this.#cache.delete(p.tenantId+':'+docId+':'+d.version);
     this.#generation++;this.#record('VERSION_CHANGED',p.tenantId);
     return Object.freeze({status:'VERSION_ACTIVATED',version:newVersion,generation:this.#generation});
   }
   retire(token,docId){const p=this.#admin(token),d=this.#get(p,docId);
-    this.#docs.set(p.tenantId+':'+docId,Object.freeze({...d,active:false}));
+    const next=Object.freeze({...d,active:false});
+    if(this.#stateStore)this.#stateStore.saveDocumentWithGeneration(next,this.#generation);
+    this.#docs.set(p.tenantId+':'+docId,next);
     for(const key of this.#cache.keys())if(key.startsWith(p.tenantId+':'+docId+':'))this.#cache.delete(key);
     this.#generation++;this.#record('DOC_RETIRED',p.tenantId);
     return Object.freeze({status:'RETIRED',generation:this.#generation});
   }
-  audit(token){const p=this.#admin(token);return Object.freeze(this.#audit.filter(x=>x.tenantId===p.tenantId).map(({event,epoch_ms})=>({event,epoch_ms})));}
+  revokeAccount(token,userId){
+    const admin=this.#admin(token),target=this.#accounts.get(userId);
+    if(!id(userId)||!target||target.tenantId!==admin.tenantId||userId===admin.userId)DENY('NOT_FOUND');
+    if(this.#stateStore)this.#stateStore.disableAccount(userId,admin.tenantId);
+    this.#disabled.add(userId);
+    for(const [key,s] of this.#sessions)if(s.userId===userId)this.#sessions.delete(key);
+    this.#record('USER_REVOKED',admin.tenantId);
+    return Object.freeze({status:'REVOKED'});
+  }
+  audit(token){const p=this.#admin(token);
+    if(this.#stateStore)return Object.freeze(this.#stateStore.events(p.tenantId));
+    return Object.freeze(this.#audit.filter(x=>x.tenantId===p.tenantId).map(({event,epoch_ms})=>({event,epoch_ms})));} 
 }
