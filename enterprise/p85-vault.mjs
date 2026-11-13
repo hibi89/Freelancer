@@ -130,7 +130,7 @@ export class LocalSyntheticVault {
     this.#audit.push(Object.freeze({event:code,epoch_ms:this.#clock(),tenantId}));
     if(this.#audit.length>1000)this.#audit.shift();}
   login(userId,password) {
-    const a=this.#accounts.get(userId),t=this.#clock(),tries=this.#tries.get(userId)||{count:0,until:0};
+    const a=this.#stateStore?this.#stateStore.loadAccount(userId):this.#accounts.get(userId),t=this.#clock(),tries=this.#tries.get(userId)||{count:0,until:0};
     if(tries.until>t)DENY('ACCESS_DENIED');
     const dummySalt='00000000000000000000000000000000';
     const salt=a?.salt||dummySalt,expected=a?.password_scrypt||'0'.repeat(64);
@@ -147,7 +147,8 @@ export class LocalSyntheticVault {
     if(typeof token!=='string'||!(/^[a-f0-9]{64}$/u).test(token))DENY('UNAUTHENTICATED');
     const key=hash(token),s=this.#sessions.get(key);
     if(!s||s.expires<=this.#clock()){this.#sessions.delete(key);DENY('UNAUTHENTICATED');}
-    const p=this.#accounts.get(s.userId);if(!p||this.#disabled.has(s.userId)||
+    const p=this.#stateStore?this.#stateStore.loadAccount(s.userId):this.#accounts.get(s.userId);
+    if(!p||this.#disabled.has(s.userId)||
       (this.#stateStore&&!this.#stateStore.accountEnabled(s.userId)))DENY('UNAUTHENTICATED');return p;
   }
   logout(token){const p=this.#principal(token);this.#sessions.delete(hash(token));this.#record('LOGOUT',p.tenantId);}
@@ -244,8 +245,40 @@ export class LocalSyntheticVault {
     this.#generation++;this.#record('DOC_RETIRED',p.tenantId,!!this.#stateStore);
     return Object.freeze({status:'RETIRED',generation:this.#generation});
   }
+  /** Operator-controlled *local* employee accounts, not verified corporate IAM. */
+  provisionUser(token,{userId,password,groups,projects,clearance}){
+    const admin=this.#admin(token);
+    if(!id(userId)||!list(groups)||!list(projects)||!groups.length||!projects.length||
+       !Number.isInteger(clearance)||clearance<1||clearance>admin.clearance||
+       !groups.every(x=>admin.groups.includes(x))||
+       !projects.every(x=>admin.projects.includes(x)))DENY('ACCOUNT_SCOPE_INVALID');
+    const account=createSyntheticAccount({userId,tenantId:admin.tenantId,
+      groups,projects,clearance,admin:false,password});
+    if(this.#stateStore)this.#stateStore.createUser(account,admin.tenantId,this.#clock());
+    else {
+      if(this.#accounts.has(userId)||this.#accounts.size>=100)DENY('ACCOUNT_EXISTS');
+    }
+    this.#accounts.set(userId,checkAccount(account));
+    this.#record('USER_CREATED',admin.tenantId,!!this.#stateStore);
+    return Object.freeze({status:'USER_CREATED',user_id:userId,tenant_id:admin.tenantId});
+  }
+  /** Existing sessions reread roles from SQLite on every request. */
+  changeUserAccess(token,userId,{groups,projects,clearance}){
+    const admin=this.#admin(token);
+    if(!id(userId)||!list(groups)||!list(projects)||!groups.length||!projects.length||
+       !Number.isInteger(clearance)||clearance<1||clearance>admin.clearance||
+       !groups.every(x=>admin.groups.includes(x))||
+       !projects.every(x=>admin.projects.includes(x)))DENY('ACCOUNT_SCOPE_INVALID');
+    const old=this.#stateStore?this.#stateStore.loadAccount(userId):this.#accounts.get(userId);
+    if(!old||old.tenantId!==admin.tenantId||old.admin)DENY('NOT_FOUND');
+    const next=checkAccount({...old,groups:[...groups],projects:[...projects],clearance});
+    if(this.#stateStore)this.#stateStore.replaceUserAccess(next,admin.tenantId,this.#clock());
+    this.#accounts.set(userId,next);
+    this.#record('USER_ACCESS_CHANGED',admin.tenantId,!!this.#stateStore);
+    return Object.freeze({status:'USER_ACCESS_CHANGED',user_id:userId});
+  }
   revokeAccount(token,userId){
-    const admin=this.#admin(token),target=this.#accounts.get(userId);
+    const admin=this.#admin(token),target=this.#stateStore?this.#stateStore.loadAccount(userId):this.#accounts.get(userId);
     if(!id(userId)||!target||target.tenantId!==admin.tenantId||userId===admin.userId)DENY('NOT_FOUND');
     if(this.#stateStore)this.#stateStore.disableAccount(userId,admin.tenantId,'USER_REVOKED',this.#clock());
     this.#disabled.add(userId);
