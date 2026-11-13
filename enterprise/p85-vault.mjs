@@ -190,6 +190,16 @@ export class LocalSyntheticVault {
     return Object.freeze({...shared,status:scored.length?'SEARCH_ONLY':'INSUFFICIENT_EVIDENCE',
       evidence:scored.slice(0,limit).map(x=>x.c)});
   }
+  /** Enforce server-side fixed synthetic dataset scope before opening CSV bytes. */
+  authorizeSyntheticDataset(token,{tenantId,groups,projects,clearance}){
+    const p=this.#principal(token);
+    if(!id(tenantId)||!list(groups)||!list(projects)||
+       !Number.isInteger(clearance)||clearance<0||clearance>3)DENY('SCOPE_INVALID');
+    if(p.tenantId!==tenantId||p.clearance<clearance||
+       (groups.length>0&&!groups.some(x=>p.groups.includes(x)))||
+       (projects.length>0&&!projects.some(x=>p.projects.includes(x))))DENY('NOT_FOUND');
+    return true;
+  }
   #admin(token){const p=this.#principal(token);if(!p.admin)DENY('NOT_AUTHORIZED');return p;}
   reindex(token){const p=this.#admin(token),next=new Map();let count=0;
     const allDocs=this.#stateStore?this.#stateStore.listDocuments(p.tenantId).map(checkDoc):[...this.#docs.values()];
