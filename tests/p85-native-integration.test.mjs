@@ -76,14 +76,14 @@ test('P85 actual PDF/DOCX native-bytes ACL suite',async t=>{
       assert.throws(()=>v.source(login(v),'manualPdf'),{code:'SOURCE_DIGEST_MISMATCH'});
     }finally{fs.writeFileSync(original,backup);}
   });
-  await t.test('DOCX hardlink and symlink rejected before parser',()=>{
+  await t.test('DOCX hardlink and symlink rejected before parser',ctx=>{
     const source=path.join(root,paths.rulesDocx),alias=path.join(root,'alias.docx');
     fs.linkSync(source,alias);
     try{const v=vault();assert.throws(()=>v.source(login(v),'rulesDocx'),{code:'UNSAFE_SOURCE'});}
     finally{fs.rmSync(alias,{force:true});}
     const backup=source+'.back';fs.renameSync(source,backup);
-    try{fs.symlinkSync(backup,source);const v=vault();
-      assert.throws(()=>v.source(login(v),'rulesDocx'),{code:'UNSAFE_SOURCE'});
+    try{try{fs.symlinkSync(backup,source);}catch(e){ctx.diagnostic('OS symlink permission unavailable: '+e.code);return;}
+      const v=vault();assert.throws(()=>v.source(login(v),'rulesDocx'),{code:'UNSAFE_SOURCE'});
     }finally{fs.rmSync(source,{force:true});fs.renameSync(backup,source);}
   });
   await t.test('corrupt PDF and DOCX bytes cannot be treated as evidence',()=>{
