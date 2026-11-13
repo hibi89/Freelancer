@@ -149,3 +149,19 @@ test('HTTP failed source review returns 409 without leaking source paths',async 
   body:JSON.stringify({question:QUERY,documentIds:['rulesDocx']})});
  assert.equal(response.status,409);assert.deepEqual(await response.json(),{error:'REVIEW_HOLD'});
 });
+test('fixed sales scope cannot be mutated after journey creation',t=>{
+ const f=make(t),token=f.login('bob',BOB);
+ const scope={tenantId:'orgA',groups:['sales'],projects:['quality'],clearance:1};
+ const j=createSyntheticReviewJourney({vault:f.vault,salesDirectory:f.sales,salesScope:scope});
+ scope.groups[0]='engineering';scope.clearance=0;scope.projects[0]='quality';
+ assert.throws(()=>j.assess(token,QUERY,{documentIds:['rulesDocx']}),{code:'NOT_FOUND'});
+});
+test('empty group or project SQL scopes fail closed',t=>{
+ const f=make(t),token=f.login('alice',ALICE);
+ for(const scope of [
+  {tenantId:'orgA',groups:[],projects:['quality'],clearance:1},
+  {tenantId:'orgA',groups:['sales'],projects:[],clearance:1},
+  {tenantId:'orgA',groups:['sales'],projects:['quality'],clearance:0}
+ ]){const j=createSyntheticReviewJourney({vault:f.vault,salesDirectory:f.sales,salesScope:scope});
+  assert.throws(()=>j.assess(token,QUERY,{documentIds:['rulesDocx']}),{code:'SCOPE_INVALID'});}
+});
