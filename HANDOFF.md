@@ -1,3 +1,14 @@
+## 2026-11-13 KST — SITECRAFT AX P70 design-to-code handoff 10 fields
+1. Goal/technology: original SITECRAFT final blueprint P70 distinct local synthetic search/filter/detail reference website observation→Astra human-review→Pro independent app browser parity; official 100point user final design unchanged.
+2. Completion/choice: REA_Web product-specific P70 module + tests + workflow + docs, uses existing original verified Fable static/Astra P4/Playwright/Pro, SHA/3 digest gate, atomic no-overwrite batch. Existing REA_Web main/website analysis, pinned engines and DATA2WEB preserved.
+3. Test command/results: python -m pytest -q tests/test_sitecraft_ax_p70.py tests/test_sitecraft_ax_p50.py tests/test_website_p70.py tests/test_website_rebuild_p50.py tests/test_orchestrator.py; exact SHA cf2c1171d92408af20bae1d4d037583f900e6e4f; https://github.com/hibi89/REA_Web/actions/runs/43377441817 Ubuntu+Windows each 82PASS/0FAIL/1WARN, 2/2 SUCCESS.
+4. Completion/pending: internal P70 synthetic engineering validated. Official overall final-design percentage UNASSESSED; [작업중] stays until user's numeric 100-point target independently demonstrated; P85/P95/P100 not accepted, RELEASE HOLD.
+5. Error/alternatives: 0 CI FAIL, 1 deprecation warning/OS. Live Fable Record and customer external site/consent absent; never treat synthetic test approval as verified client rights; no illegal copy/source scraping or unapproved deployment.
+6. Repos/branches/SHA: code hibi89/REA_Web@feature/sitecraft-ax-p70-20261113 source cf2c1171d92408af20bae1d4d037583f900e6e4f docs HEAD 4639eabb8c9cb43bded6826c68fb3385571d2c95; product planning hibi89/Freelancer@product/rea-website-rebuild.
+7. Production/env: Python3.11 FastAPI/SQLite, Playwright Chromium, frozen Fable and Astra, GitHub Actions ubuntu24.04/windows2025. No Vercel/Production deployment.
+8. Original/backups/security: original REA_Web@feature/website-analysis-rebuild SHA 82fb8da349de72f45eeaf15f7e997c2d449cf488 preserved, P50 branch docs SHA 55413aa5ba1eb293aa1f29b34fa9589bb27f39b8. No real customer files, tokens, accounts, public URL requests.
+9. Next priority: user-approved P85 synthetic multi-step desktop/mobile, responsive/visual mismatch, hardening and cross-OS; real client material or paid AI/hosting requires separate approval; official score requires 100point accepted requirement-by-requirement coverage.
+10. KST 2026-11-13, verified exact remote GitHub SHA, job logs and Windows+Ubuntu CI. Customer/real external/physical Win10-11/commercial license/customer deploy not verified. Existing older handoff preserved below.
 ## 2026-11-13 KST — SITECRAFT AX P50 10항 인수인계
 1. 목표/기술: 사용자가 확정한 SITECRAFT 100% 상세설계의 P50 합성 로컬 HTML→실 frozen Fable static→Astra P4 REVIEW_REQUIRED→고객 승인 합성 CSV→Pro 독립 FastAPI/SQLite 엔지니어링 게이트.
 2. 완료/결정: REA_Web 격리 feature/sitecraft-ax-p50-20261113에 진입점·테스트·CI·기술문서 신규 4파일. URL/권한/해시/출고 HOLD/무덮어쓰기 방어, 원본 소스 변경 없음.

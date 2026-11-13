@@ -1,3 +1,8 @@
+### 2026-11-13 SITECRAFT AX P70 independent stage acceptance — official UNASSESSED
+
+Actual P70 source `hibi89/REA_Web@feature/sitecraft-ax-p70-20261113` exact CI SHA `cf2c1171d92408af20bae1d4d037583f900e6e4f`; [Actions P70](https://github.com/hibi89/REA_Web/actions/runs/43377441817) Ubuntu24.04 and Windows2025 each **82PASS/0FAIL/1WARN**, **2/2 SUCCESS**. Three distinct synthetic references (catalog/search, inventory/filter, directory/detail) are SHA-pinned local inputs, observed via real Chromium before/after; Astra P4 observed evidence is reviewed with three synthetic digest receipts, original frozen Fable static GET + Pro FastAPI/SQLite builds three independent apps and runs actual generated-browser action parity. Atomic new-folder-only publication and forged rights/path/hash/duplicate/partial delivery rejects are tested. P50 & original P70 regressions are included.
+
+**This verifies the design's P70 synthetic engineering acceptance stage, not an official 70 percent of the entire final design.** Final-design score remains UNASSESSED pending owner-approved 100point weighting+requirements trace. SITECRAFT [작업중] remains and RELEASE HOLD. No live customer sites/real Fable headed Record/Win10-11 physical customer UAT or Vercel/Production.
 ### 2026-11-13 — SITECRAFT 독립 P50 합성 기술 CI 검증
 
 검증 기능 SHA a5c5a718dc33778fb1df59c601feee57944603db, https://github.com/hibi89/REA_Web/actions/runs/43375663779 Ubuntu+Windows 각 50PASS/0FAIL/1WARN, 2/2 SUCCESS. Strict local contract→실 frozen Fable static GET→Astra REVIEW_REQUIRED→허가된 합성 CSV 기반 REA Pro FastAPI/SQLite 새 앱 API 수용. 원본 보존 및 경로·URL·해시 거부 확인. 공식 100점 최종설계 수치 UNASSESSED(합성 P50 단계 점수 승계 금지), 중앙 [작업중]·RELEASE HOLD 유지. 실제 고객/실 사이트·동적 Fable --record·운영 배포 미검증.
