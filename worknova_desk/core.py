@@ -437,15 +437,29 @@ class Desk:
                 f"<tbody>{rows}</tbody></table></body></html>")
 
     def verify_audit(self) -> int:
+        """Check hash-link integrity *and* deleted audit-tail/gap evidence.
+
+        Checking only SHA links misses deletion of the final event (its predecessor
+        remains a valid chain), or removal of the entire audit table contents.
+        SQLite AUTOINCREMENT retains the historical high-water mark in
+        sqlite_sequence on normal DELETE. This is a local damage detector, not
+        external signing: a privileged attacker can rewrite sqlite_sequence.
+        """
         previous = "0" * 64
         count = 0
         for row in self.db.execute("SELECT * FROM audit_events ORDER BY seq"):
+            count += 1
+            if row["seq"] != count:
+                raise DeskError(f"audit sequence gap at event {row['seq']}")
             calculated = hashlib.sha256((previous + "|" + row["ts"] + "|" + row["actor"] + "|" +
                                          row["action"] + "|" + row["payload_json"]).encode()).hexdigest()
             if row["previous_hash"] != previous or row["digest"] != calculated:
                 raise DeskError(f"audit chain mismatch at event {row['seq']}")
             previous = calculated
-            count += 1
+        watermark = self.db.execute(
+            "SELECT seq FROM sqlite_sequence WHERE name='audit_events'").fetchone()
+        if (count and watermark is None) or (watermark is not None and watermark[0] != count):
+            raise DeskError("audit high-water sequence mismatch: possible deleted final event")
         integrity = self.db.execute("PRAGMA integrity_check").fetchone()[0]
         if integrity != "ok" or self.db.execute("PRAGMA foreign_key_check").fetchone():
             raise DeskError("SQLite integrity/foreign key check failed")

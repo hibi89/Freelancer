@@ -54,13 +54,23 @@ def create_checkpoint(desk: Desk, destination: str | Path) -> dict:
     if len(content) > 65536:
         raise DeskError("checkpoint too large")
     created = False
+    fd = None
     try:
-        with path.open("xb") as f:
-            created = True
+        # The checkpoint contains business-state hashes/counts. They are not
+        # plaintext customer records, but still private commercial metadata.
+        # Never rely on a permissive process umask for file permissions.
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        created = True
+        with os.fdopen(fd, "wb") as f:
+            fd = None
             f.write(content)
             f.flush()
             os.fsync(f.fileno())
+    except FileExistsError:
+        raise DeskError("checkpoint destination already exists") from None
     except Exception:
+        if fd is not None:
+            os.close(fd)
         if created:
             path.unlink(missing_ok=True)
         raise

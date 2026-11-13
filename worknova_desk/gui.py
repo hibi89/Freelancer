@@ -260,6 +260,10 @@ class WorknovaGUI:
             font=filedialog.askopenfilename(title='상업적으로 사용 가능한 한글 TTF를 본인이 지정하세요',
                                  filetypes=[('TrueType font','*.ttf')],parent=self.root)
             if not font:raise DeskError('한글 PDF 폰트 선택 취소')
+            # Selection is not evidence that the customer has commercial font
+            # embedding rights. Require a separate explicit owner assertion.
+            self.confirmed('선택한 TTF 글꼴의 상업용 PDF 임베딩 권리가 본인에게 있는지 확인하셨습니까?'
+                           '\n권리가 불명확하면 취소하고 라이선스를 확인하세요.')
         return export_document(self.desk,kind,identifier,filename,format=format,pdf_font=font)
 
     def backup(self):
