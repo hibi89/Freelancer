@@ -54,7 +54,7 @@ def validate_notice(raw: object) -> dict:
     if not isinstance(raw, dict):
         raise ValueError("notice must be object")
     required = {"notice_no", "revision", "title", "category", "issuer", "deadline", "source_url", "regions", "license_codes", "required_documents"}
-    unknown = set(raw) - (required | {"budget_min_krw", "published_at"})
+    unknown = set(raw) - (required | {"budget_min_krw", "published_at", "provenance_state", "unverified_clauses", "raw_snapshot_sha256"})
     missing = required - set(raw)
     if missing or unknown:
         raise ValueError(f"notice fields missing={sorted(missing)} unknown={sorted(unknown)}")
@@ -75,6 +75,17 @@ def validate_notice(raw: object) -> dict:
         if type(b) is not int or b < 0:
             raise ValueError("budget_min_krw must be nonnegative integer")
         result["budget_min_krw"] = b
+    if "provenance_state" in raw:
+        if raw["provenance_state"] not in {"OFFICIAL_SNAPSHOT_UNVERIFIED", "OFFLINE_NORMALIZED"}:
+            raise ValueError("unsupported provenance_state")
+        result["provenance_state"] = raw["provenance_state"]
+    if "unverified_clauses" in raw:
+        result["unverified_clauses"] = _strings(raw["unverified_clauses"], "unverified_clauses")
+    if "raw_snapshot_sha256" in raw:
+        value = raw["raw_snapshot_sha256"]
+        if not isinstance(value, str) or len(value) != 64 or any(ch not in "0123456789abcdef" for ch in value):
+            raise ValueError("raw_snapshot_sha256 must be lowercase SHA256")
+        result["raw_snapshot_sha256"] = value
     return result
 
 
@@ -132,6 +143,8 @@ class BidLedger:
         self.conn.execute("CREATE INDEX IF NOT EXISTS notice_events_lookup ON notice_events(notice_no,id DESC)")
         self.conn.execute("CREATE TABLE IF NOT EXISTS manual_reviews (id INTEGER PRIMARY KEY, notice_no TEXT NOT NULL, fingerprint TEXT NOT NULL, reviewer TEXT NOT NULL, decision TEXT NOT NULL, note TEXT NOT NULL, reviewed_at TEXT NOT NULL, request_id TEXT NOT NULL UNIQUE)")
         self.conn.execute("CREATE INDEX IF NOT EXISTS manual_reviews_lookup ON manual_reviews(notice_no,id DESC)")
+        self.conn.execute("CREATE TABLE IF NOT EXISTS profile_events (id INTEGER PRIMARY KEY, company TEXT NOT NULL, fingerprint TEXT NOT NULL, payload TEXT NOT NULL, saved_at TEXT NOT NULL, UNIQUE(company, fingerprint))")
+        self.conn.execute("CREATE INDEX IF NOT EXISTS profile_events_lookup ON profile_events(company,id DESC)")
         self.conn.commit()
 
     def __enter__(self):
@@ -159,6 +172,14 @@ class BidLedger:
         result = self.conn.execute("PRAGMA quick_check").fetchone()
         if not result or result[0] != "ok":
             raise ValueError("SQLite integrity check failed")
+        for payload, fingerprint in self.conn.execute("SELECT payload, fingerprint FROM profile_events"):
+            if hashlib.sha256(payload.encode("utf-8")).hexdigest() != fingerprint:
+                raise ValueError("Profile fingerprint mismatch; restore verified backup")
+            try:
+                if validate_profile(json.loads(payload)) != json.loads(payload):
+                    raise ValueError("Invalid profile payload in ledger")
+            except (TypeError, ValueError) as exc:
+                raise ValueError("Invalid profile payload in ledger") from exc
         for payload, fingerprint in self.conn.execute("SELECT payload, fingerprint FROM notice_events"):
             if hashlib.sha256(payload.encode("utf-8")).hexdigest() != fingerprint:
                 raise ValueError("Notice fingerprint mismatch; stop and restore verified backup")
@@ -168,6 +189,46 @@ class BidLedger:
                     raise ValueError("Notice contract mismatch")
             except (TypeError, ValueError) as exc:
                 raise ValueError("Invalid notice payload in ledger") from exc
+
+    def save_profile(self, raw: object, saved_at: datetime | None = None) -> dict:
+        """Append changed customer profile versions; no secret material is required."""
+        checked = validate_profile(raw)
+        payload = _canonical(checked)
+        fingerprint = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+        moment = saved_at or datetime.now(KST)
+        if moment.tzinfo is None or moment.utcoffset() is None:
+            raise ValueError("saved_at needs timezone offset")
+        self.verify_integrity()
+        with self.conn:
+            cursor = self.conn.execute(
+                "INSERT OR IGNORE INTO profile_events(company,fingerprint,payload,saved_at) VALUES(?,?,?,?)",
+                (checked["company"], fingerprint, payload, moment.astimezone(KST).isoformat()))
+        return {"company": checked["company"], "fingerprint": fingerprint,
+                "new_version": bool(cursor.rowcount), "local_only": True}
+
+    def list_profiles(self) -> list[dict]:
+        self.verify_integrity()
+        rows = self.conn.execute(
+            "SELECT p.company,p.fingerprint,p.saved_at FROM profile_events p "
+            "WHERE p.id=(SELECT MAX(q.id) FROM profile_events q WHERE q.company=p.company) "
+            "ORDER BY p.company").fetchall()
+        return [dict(zip(("company", "fingerprint", "saved_at"), row)) for row in rows]
+
+    def get_profile(self, company: str) -> dict:
+        self.verify_integrity()
+        row = self.conn.execute(
+            "SELECT payload FROM profile_events WHERE company=? ORDER BY id DESC LIMIT 1",
+            (_text(company, "company"),)).fetchone()
+        if row is None:
+            raise KeyError("stored company profile not found")
+        return json.loads(row[0])
+
+    def profile_history(self, company: str) -> list[dict]:
+        self.verify_integrity()
+        rows = self.conn.execute(
+            "SELECT fingerprint,saved_at FROM profile_events WHERE company=? ORDER BY id",
+            (_text(company, "company"),)).fetchall()
+        return [dict(zip(("fingerprint", "saved_at"), row)) for row in rows]
 
     def current(self) -> list[dict]:
         self.verify_integrity()
@@ -303,6 +364,9 @@ def evaluate(notice: dict, profile_raw: object, now: datetime | None = None) -> 
             passed.append(f"서류 유효기간 확인: {doc}")
     if not notice["required_documents"]:
         review.append("필수서류 원문 확인 필요")
+    if notice.get("provenance_state") == "OFFICIAL_SNAPSHOT_UNVERIFIED":
+        review.append("공식 API 응답의 자격조건/첨부 원문 대조 미완료")
+    review.extend("추가 확인 필요: " + clause for clause in notice.get("unverified_clauses", []))
     label = "부적합" if failures else "추가 확인 필요" if review else "적합"
     return {"notice_no": notice["notice_no"], "title": notice["title"], "revision": notice["revision"], "company": profile["company"], "status": label, "deterministic_mismatch": failures, "needs_review": review, "matched": passed, "deadline": notice["deadline"], "source_url": notice["source_url"], "source_fingerprint": notice.get("fingerprint"), "disclaimer": DISCLAIMER}
 

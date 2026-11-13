@@ -24,6 +24,22 @@ class LocalController:
         self.last_report = None
         return self.profile
 
+    def save_current_profile(self) -> dict:
+        if self.profile is None:
+            raise ValueError("먼저 기업 프로필 JSON을 불러오세요")
+        with BidLedger(self.database) as ledger:
+            return ledger.save_profile(self.profile)
+
+    def stored_profiles(self) -> list[dict]:
+        with BidLedger(self.database) as ledger:
+            return ledger.list_profiles()
+
+    def use_stored_profile(self, company: str) -> dict:
+        with BidLedger(self.database) as ledger:
+            self.profile = ledger.get_profile(company)
+        self.last_report = None
+        return self.profile
+
     def import_notices(self, path: str | Path) -> dict:
         records = read_local_json(path)
         with BidLedger(self.database) as ledger:
@@ -117,6 +133,21 @@ def launch(database: str | Path) -> None:
             state.set("기업 프로필: " + profile["company"])
             return {"company": profile["company"], "mode": "local-only"}
 
+    def save_profile():
+        return controller.save_current_profile()
+
+    def choose_stored():
+        profiles = controller.stored_profiles()
+        if not profiles:
+            raise ValueError("저장된 회사 프로필이 없습니다")
+        company = simpledialog.askstring("저장된 기업", "기업명을 정확히 입력하세요:\n" +
+                                         "\n".join(x["company"] for x in profiles), parent=root)
+        if not company:
+            return
+        loaded = controller.use_stored_profile(company)
+        state.set("저장된 기업 프로필: " + loaded["company"])
+        return {"company": loaded["company"], "mode": "local-database"}
+
     def import_file():
         path = filedialog.askopenfilename(title="권한 있는 정규화 공고 JSON", filetypes=[("JSON", "*.json")])
         if path:
@@ -186,7 +217,7 @@ def launch(database: str | Path) -> None:
             return
         return controller.review(record["notice_no"], record["source_fingerprint"], reviewer, decision.strip(), note)
 
-    actions = [("공고 가져오기", import_file), ("기업 프로필", choose_profile), ("사전검토", run_screen),
+    actions = [("공고 가져오기", import_file), ("기업 프로필", choose_profile), ("프로필 저장", save_profile), ("저장 프로필", choose_stored), ("사전검토", run_screen),
                ("변경·검토 이력", show_history), ("마감 알림 확인", controller.alerts),
                ("수동 검토 기록", manual_review), ("보고서 저장", save_report),
                ("DB 백업", save_backup), ("새 DB로 복원", restore)]

@@ -16,6 +16,15 @@ def main(argv=None):
     p.add_argument("--db", required=True, help="local SQLite path")
     sub = p.add_subparsers(dest="command", required=True)
     imp = sub.add_parser("import", help="import normalized, authorized JSON notices")
+    official = sub.add_parser("import-official-snapshot", help="strict OFFLINE local G2B response; provisional mapping")
+    official.add_argument("json_file")
+    official.add_argument("--category", required=True, choices=("goods", "services", "construction", "foreign"))
+    official.add_argument("--obtained-at", required=True, help="real observed ISO timestamp with timezone")
+    prof_save = sub.add_parser("profile-save", help="append local company profile version")
+    prof_save.add_argument("json_file")
+    sub.add_parser("profiles", help="list locally saved companies")
+    prof_stored = sub.add_parser("screen-stored", help="screen against latest saved local company profile")
+    prof_stored.add_argument("company")
     imp.add_argument("json_file")
     screen = sub.add_parser("screen", help="source-linked preliminary report")
     screen.add_argument("profile_file")
@@ -54,6 +63,19 @@ def main(argv=None):
         with BidLedger(args.db) as ledger:
             if args.command == "import":
                 result = ledger.ingest(read_local_json(args.json_file))
+            elif args.command == "import-official-snapshot":
+                from .official import parse_official_snapshot
+                parsed = parse_official_snapshot(read_local_json(args.json_file), args.category,
+                                                 datetime.fromisoformat(args.obtained_at))
+                result = {**ledger.ingest(parsed["notices"]), "source": "LOCAL_OFFICIAL_SNAPSHOT_UNVERIFIED",
+                          "snapshot_sha256": parsed["snapshot_sha256"], "page_no": parsed["page_no"],
+                          "total_count": parsed["total_count"], "notice": parsed["warning"]}
+            elif args.command == "profile-save":
+                result = ledger.save_profile(read_local_json(args.json_file))
+            elif args.command == "profiles":
+                result = {"companies": ledger.list_profiles(), "scope": "LOCAL_DB_ONLY"}
+            elif args.command == "screen-stored":
+                result = build_report(ledger, ledger.get_profile(args.company))
             elif args.command in {"screen", "export"}:
                 profile = read_local_json(args.profile_file)
                 now = datetime.fromisoformat(args.now) if args.command == "screen" and args.now else None

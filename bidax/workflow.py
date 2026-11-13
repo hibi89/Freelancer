@@ -27,7 +27,14 @@ def read_local_json(path: str | Path) -> object:
         blob = file.read(MAX_LOCAL_JSON_BYTES + 1)
     if len(blob) > MAX_LOCAL_JSON_BYTES:
         raise ValueError("local JSON exceeds 10 MiB safety limit")
-    return json.loads(blob.decode("utf-8-sig"))
+    def unique_keys(pairs):
+        seen = {}
+        for key, value in pairs:
+            if key in seen:
+                raise ValueError("duplicate JSON key rejected: " + key)
+            seen[key] = value
+        return seen
+    return json.loads(blob.decode("utf-8-sig"), object_pairs_hook=unique_keys)
 
 
 def build_report(ledger: BidLedger, profile: object, now: datetime | None = None) -> dict[str, Any]:
