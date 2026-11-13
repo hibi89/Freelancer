@@ -202,12 +202,12 @@ def launch(database: str | Path) -> None:
         return controller.history(chosen()["notice_no"])
 
     def save_report():
-        fmt = simpledialog.askstring("보고서 형식", "형식: json / csv / html", initialvalue="html", parent=root)
+        fmt = simpledialog.askstring("보고서 형식", "형식: json / csv / html / pdf", initialvalue="html", parent=root)
         if fmt is None:
             return
         fmt = fmt.lower().strip()
-        if fmt not in ("json", "csv", "html"):
-            raise ValueError("json, csv 또는 html만 지원")
+        if fmt not in ("json", "csv", "html", "pdf"):
+            raise ValueError("json, csv, html 또는 pdf만 지원")
         filename = filedialog.asksaveasfilename(title="새 보고서 경로", defaultextension="." + fmt,
                                                 filetypes=[(fmt.upper(), "*." + fmt)])
         if filename:

@@ -1,49 +1,30 @@
-## [2026-11-14 KST] BID AX v2 원격 3모듈 구현 동기화·온비드 계획기 PASS
-- 최종설계 전체 R01–R29 29개, 사용자 목표 85%. **공식 최종완성률 UNASSESSED / 85% 달성 미입증 / [작업중] 유지 / RELEASE HOLD / 크몽 미등록.**
-- 기존 로컬 전용이던 온비드·법원경매 코드/테스트 GitHub 반영 완료 (기능 `0b407a9edc36`, **8/8 원격 동일성**). 무료 API 메타데이터 기반 키 없는 계획기 추가 (`2a9852bcb47a271a4119f67dfcaf8ec35ae2a632`, **4/4 원격 동일성**). 실제 API·원문/고객 키 호출 없음.
-- Linux Python3.13.5 기존130 + 6 신규 = **136 PASS/0 FAIL/0 SKIP**; compileall, Python3.11 AST22, 비출시 pyz CLI E2E PASS. Python3.11 실런타임/Win10·11/EXE·수동 GitHub OS CI는 **미실행**; 실 공고100/인간10 및 판매/첨부 권리도 **미검증**.
-- 정본/차단 근거 [P85 최신 수용표](docs/P85_V2_CURRENT_ACCEPTANCE_20261114.md) · [R01–29 추적](docs/BID_AX_EXPANSION_REASSESSMENT_20261113.md). 기존 BID OWL/타 상품/원천29·판매19 이력/고객 데이터 불변.
+## [2026-11-14 KST] P85 한국어 PDF 보고서·법원경매 문서 안전 미리보기 기능 추가
+- 기존 R01–R29 전체 설계 유지. R13 PDF 로컬 출력(ReportLab 선택), R27–R28 동의 기반 PDF/TXT 범주형 미리보기(pypdf 선택) 보강. PDF/TXT 원문 전문 DB 미저장/권리 적합 확정 금지. README·docs/P85_PDF_LOCAL_ACCEPTANCE_20261114.md 참고.
+- 기존 136 PASS + 신규 15 PASS = **Linux Python3.13.5 로컬 151 PASS / 0 FAIL / 0 SKIP** (선택 패키지 설치된 환경), 컴파일 PASS. 실제 Win10/11·무료 공식API·100실공고/10실사례·고객/폰트권리·EXE 미검증.
+- 이번 작업 신규 코드 GitHub SHA/readback 및 중앙 동기화는 실제 적용 후 확정. 공식 최종완성률 **UNASSESSED**, 사용자 목표 85% **[작업중]**, RELEASE HOLD·크몽 미등록.
 
 ---
 
-## [2026-11-13 KST] BID AX v2 R22–R29 오프라인 기능 구현·검증 후속 — GitHub 코드 동기화 대기
-- 사용자 명시 목표: 최종설계 85%. 기존 R01–R29 전부 유지. 공식 완성률 **UNASSESSED / 85% 미입증 / [작업중] / RELEASE HOLD / 크몽 미등록**.
-- **현재 작업환경 로컬 시제품만**: bidax/onbid.py(온비드 정규화된 권한 있는 로컬 JSON, 독립 상품/조건/결과 원장·변조/중복/구버전 보호·REVIEW_HOLD), bidax/court.py(명시적 동의 받은 TXT/PDF 로컬 파일의 해시·문서별 인간 검토·PDF 내용 미추출), CLI 4명령, GUI 4동작, 합성 예시·테스트. 실제 3모듈 핵심 오프라인 검증 수행.
-- **로컬 Python 3.13.5 Linux: 130 PASS/0 FAIL/0 SKIP**, compileall PASS, Linux Xvfb Tk+3모듈 GUI controller PASS, 별도 비출시 pyz CLI 온비드+법원 import/report PASS. API/실고객/실 Windows/Python 3.11/EXE/법원 PDF 내용분석 모두 NOT_RUN.
-- **중요: 이번 GitHub 원격 제품 브랜치에는 신규 기능 코드가 아직 올라가지 않음.** 테스트 130 PASS는 로컬 임시 경로에서만 관찰, GitHub CI/원격 동일 SHA 검증 **아님**. 승인된 100점 가중치도 없음. 이후 코드 동기화할 때 source ZIP의 로컬 구현/테스트 전체를 그대로 복원·테스트한 뒤 코드 커밋과 원격 blob/readback 검증 필요. 문서만 반영됨.
-- 원본 별도 Bid_Owl·다른 Freelancer 제품·고객 API 키·고객 파일·중앙 29/19 이력 유지; 실제 외부 전송 0.
-- 추가 검토 기록: docs/P85_V2_LOCAL_IMPLEMENTATION_PENDING_GITHUB_20261113.md. 이전 기록은 이력으로 보존.
+# BID AX 2026-11-14 소스 배포 스냅샷 상태
+
+오프라인 3모듈(나라장터·온비드·법원경매 로컬 자료) 코드 GitHub 반영 완료. 기능 SHA 2a9852bcb47a271a4119f67dfcaf8ec35ae2a632 / 문서 HEAD d295a8869689272f14a37864716e69093d5ca351. Linux Python3.13.5 합성/mock 로컬 136 PASS / 0 FAIL / 0 SKIP. Win10/11/실공식 API/고객/독립 Python CI 미검증. 전체 R01–R29 공식 최종률 UNASSESSED / 목표 85% 미인증, [작업중]/출시 HOLD. 아래 과거 단계 상태는 이력입니다.
 
 ---
 
-## [2026-11-13 KST] BID AX v2 3모듈 사용자확정 설계·최종률 재산정
-- 나라장터 + 온비드 무료 API 공매 + 고객 적법한 법원경매 자료 로컬 분석. **기존 R01–R21 보존 + R22–R29 추가 = 최종29개**. 정본 docs/FINAL_BLUEPRINT.md · 29개 전수 docs/BID_AX_EXPANSION_REASSESSMENT_20261113.md.
-- 신규 8개 기능 구현·실행 검증 **0/8**, 기존 94 PASS는 과거 합성 테스트. 이번 **docs-only**, 실 API/Windows/고객 전송/소스 변경 0.
-- 공식 최종완성률 **UNASSESSED** (가중치 미승인), 85% 목표 **[작업중]**·RELEASE HOLD·크몽 미등록 유지. 제외 BID OWL/타 제품·고객 원본 불변.
+# BID AX P85 추가 보안 회귀 및 원격 검증 — 2026-11-13 KST
 
----
-
-# BID AX 2026-11-13 P85 independent test preparation (latest)
-- User target: final 85% of full R01-R21 blueprint. **NOT VERIFIED**; official **UNASSESSED**, **[작업중] retained**, RELEASE HOLD, no Kmong listing.
-- Locally Python3.13.5 Linux **94 PASS / 0 FAIL / 0 SKIP**, compileall PASS, Python3.11 AST syntax for 20 files PASS, Python .pyz --help PASS. Added 100 SYNTHETIC notices in 5 out-of-order pages with restart and 10 FAKE review records + backup/restore. These are **NOT** 100 real official notices / 10 independent human qualification checks.
-- Created manual-only .github/workflows/bid-ax-manual-acceptance.yml 3 matrix legs (Windows3.11, Ubuntu3.11/3.13). **NOT DISPATCHED** due private Actions possible billing; no independent OS CI result, actual Windows installer or customer run yet. Existing blueprint-only workflow success is not Python CI.
-- Evidence docs/P85_CROSS_PLATFORM_ACCEPTANCE_PLAN_20261113.md. Prior baseline HEAD 78247ce6132fc1af2b05cd7fb65729711355caf6; latest HEAD to verify after docs commit. API contracts, real data/rights, Windows/EXE, real Korean PDF and customer acceptance unverified. Other branches and user data preserved.
----
-
-# BID AX P85 보안 후속 — 2026-11-13 KST
-
-- 사용자 목표: 최종설계 전체 **85%**. 공식 최종완성률 **UNASSESSED / 목표 미검증 / [작업중] 유지 / RELEASE HOLD / 크몽 미등록**.
-- 새 기능 SHA `9a895ad6ac6d47941d0cf5c5a3ec908e4a298947`: 완료된 수집 배치 사후변조 거부, API 승인 bool 엄격화, 오류문구 내 서비스키 노출 방어, 타임아웃 유한 재시도·KST 일일 호출예산.
-- Linux Python3.13.5에서 전체 로컬 회귀 **90 PASS/0 FAIL/0 SKIP**, compileall PASS (기존83 + 신규7); 실제 정부 API 호출·고객자료 전송 없음. [증거](docs/P85_SECURITY_FOLLOWUP_20261113.md).
-- 이번 기능 코드/테스트 3개 GitHub readback 완료; 새 커밋 Python CI 결과, Python3.11, 실 Windows10/11, 실제 공고100건·자격10건·권리/고객 인수 미검증. 기존 BID OWL과 다른 제품 보존.
+- **사용자 목표:** 최종설계 R01–R21 전체 85%. 공식 **UNASSESSED / 목표 미검증 / `[작업중]` 유지 / RELEASE HOLD / 크몽 미등록**. P85 엔지니어링 로컬 범위와 85% 정식 최종완성률은 별도.
+- **기존 P85 83 PASS 유지 후 신규 7개 PASS → 로컬 90 PASS, 0 FAIL, 0 SKIP** (Linux Python3.13.5); compileall PASS. 완료 배치 페이지 사후변조 탐지, 실 API 승인 bool 값 강제, 비밀 포함 오류문구 제거, 타임아웃 재시도/한도 테스트.
+- **실 사용자 API/실 Windows/EXE/실 100공고·자격10건/승인된 가중치/고객검증 없음.** GitHub 원격 기능 SHA·CI 검증은 신규 커밋 이후 수행; 전체 결과 `docs/P85_SECURITY_FOLLOWUP_20261113.md`.
+- BID OWL·다른 상품·기존 고객 파일·29→19 판매 이력 불변.
 
 ---
 
 # BID AX P85 engineering checkpoint — 2026-11-13 KST
 
 - **목표:** 사용자 확정 최종설계 전체 **85%**. **공식 최종완성률 `UNASSESSED` / 85% 미입증 / `[작업중]` 유지 / RELEASE HOLD / 미등록**.
-- P85 로컬 기능: UUID/7일/page/전체건수 일치 스냅샷 체크포인트·재시작 복구, 변조·중복 거부, 저장된 기한 알림 중복 방지, *호출 불가 기본 상태* 의 선택형 공식 API 전송 라이브러리(메모리 키/고정 URL/단일 요청의 유한 재시도·로컬 사용량 기록), Windows 수동 패키징 스크립트·검증용 Python `.pyz`와 manifest 소스 ZIP. 기존 P70 GUI/원장/3상태 사전검토 보존.
-- 로컬 Python3.13.5 Linux `python -Werror::ResourceWarning -m unittest discover -s tests -q`: **83 PASS/0 FAIL/0 SKIP**; `compileall` PASS; Tk8.6 Linux Xvfb 기본 초기화 PASS. Windows/Python3.11/실 API·고객/EXE/원격 Python CI **NOT_RUN**.
+- P85 로컬 기능: UUID/7일/page/전체건수 일치 스냅샷 체크포인트·재시작 복구, 변조·중복 거부, 저장된 기한 알림 중복 방지, *호출 불가 기본 상태* 의 선택형 공식 API 전송 라이브러리(메모리 키/고정 URL/단일 요청의 유한 재시도·로컬 사용량 기록), Windows 수동 패키징 스크립트와 manifest 소스 ZIP. 기존 P70 GUI/원장/3상태 사전검토 보존.
+- 로컬 Python3.13.5 Linux `python -Werror::ResourceWarning -m unittest discover -s tests -q`: **80 PASS/0 FAIL/0 SKIP**; `compileall` PASS; Tk8.6 Linux Xvfb 기본 초기화 PASS. Windows/Python3.11/실 API·고객/EXE/원격 Python CI **NOT_RUN**.
 - [P85 세부 검증/잔여 요구](docs/P85_STAGE_EVIDENCE_20261113.md); 전체 21개 요구 R01–R21 변경/축소 없음, 승인 가중치 부재. 국내 조달 운영 자격/실 공고100건·10사례·PDF·서명/실 설치·보안/실사용 승인 없음.
 - 기능 이전 Git SHA `766032d6256d634469366b1125639f9aa9a6ef1c`. 이번 원격 commit/SHA는 GitHub 반영 후 readback으로 확인해야 함. 비밀/고객DB·BID OWL·기타 Freelancer 상품·크몽 29/19 이력 무수정.
 

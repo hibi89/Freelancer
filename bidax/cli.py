@@ -29,10 +29,10 @@ def main(argv=None):
     screen = sub.add_parser("screen", help="source-linked preliminary report")
     screen.add_argument("profile_file")
     screen.add_argument("--now", help="ISO8601 offset-aware time for reproducible checks")
-    export = sub.add_parser("export", help="create new JSON/CSV/HTML report; never overwrite")
+    export = sub.add_parser("export", help="create new JSON/CSV/HTML/PDF report; never overwrite")
     export.add_argument("profile_file")
     export.add_argument("output_file")
-    export.add_argument("--format", choices=("json", "csv", "html"), required=True)
+    export.add_argument("--format", choices=("json", "csv", "html", "pdf"), required=True)
     hist = sub.add_parser("history")
     hist.add_argument("notice_no")
     changes = sub.add_parser("changes")
@@ -74,6 +74,11 @@ def main(argv=None):
     court_imp.add_argument("--case-id", required=True)
     court_imp.add_argument("--source-note", required=True, help="why user has permission to inspect file")
     court_imp.add_argument("--consent", action="store_true", help="owner explicitly agrees to local import")
+    preview = sub.add_parser("court-preview", help="optional local PDF/TXT keyword mentions (not legal findings)")
+    preview.add_argument("file")
+    preview.add_argument("--case-id", required=True)
+    preview.add_argument("--source-note", required=True)
+    preview.add_argument("--consent", action="store_true")
     court_rep = sub.add_parser("court-report", help="local-only human-review checklist")
     court_rep.add_argument("case_id")
     gui = sub.add_parser("gui", help="launch offline desktop GUI (Tkinter)")
@@ -89,6 +94,10 @@ def main(argv=None):
         with OnbidStore(args.db) as store:
             result = (store.import_snapshot(read_local_json(args.json_file))
                       if args.command == "onbid-import" else store.report())
+    elif args.command == "court-preview":
+        from .court import preview_document
+        result = preview_document(args.file, case_id=args.case_id, user_consent=args.consent,
+                                  source_note=args.source_note)
     elif args.command in {"court-import", "court-report"}:
         from .court import CourtStore
         with CourtStore(args.db) as store:

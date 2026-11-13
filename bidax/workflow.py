@@ -141,6 +141,9 @@ def write_new_report(path: str | Path, report: dict, fmt: str) -> None:
         content = ("\ufeff" + report_csv(report)).encode("utf-8")
     elif fmt == "html":
         content = report_html(report).encode("utf-8")
+    elif fmt == "pdf":
+        from .pdf_report import build_pdf_bytes
+        content = build_pdf_bytes(report)
     else:
         raise ValueError("unknown export format")
     with path.open("xb") as file:

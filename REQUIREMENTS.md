@@ -1,8 +1,13 @@
-## [2026-11-14] R01–R29 v2 실제 3모듈 수용 범위 (최신)
-- R22–R26 일부: 온비드 로컬 JSON 원장(물건/결과/변경/출처/변조), 공식 API 15157220/15157252/15157254 **키 없는 비실행 조회계획**, 온비드 실 API 사용/원문·페이지/권리·고객 수용 아직 0.
-- R27–R29 일부: 고객 동의 기반 로컬 PDF/TXT 문서해시, TXT 키워드·체크리스트(법적 판정 금지), 3모듈 GUI/DB 분리. 법원 일반 API, 원문 PDF 추출/악성검사/고객 법률자격 수용 없음.
-- 기존 R01–R21 보존, 최종설계 29개 요구. Linux Python3.13.5 합성·mock **136 PASS**와 기능 SHA `2a9852bcb47a271a4119f67dfcaf8ec35ae2a632` 원격 12개 파일 동일성. 실제 Win10/11/파이썬3.11 런타임/실 API·100건·인간10건/독립 상용권 미확인.
-- 공식 `UNASSESSED`, 85% `[작업중]`, `RELEASE HOLD` 보존. [상세](docs/P85_V2_CURRENT_ACCEPTANCE_20261114.md).
+## P85 후속 PDF 출력/문건 미리보기 — 수용 한계 (2026-11-14)
+- **R13 부분 보강:** 한국어 CID font mapping으로 로컬 임시 PDF 생성·기존 파일 덮어쓰기 금지. ReportLab 선택 의존성, PDF 글꼴/출력/고객 Win10·11 미검증; 정식 보고서 수용 미완.
+- **R27–R28 부분 보강:** 명시적 고객 동의+적법 보유 근거가 있는 로컬 PDF/TXT 텍스트 언급 목록/체크리스트; pypdf 선택 의존성, 악성파일·스캔 PDF OCR·권리진위·법률검증 미지원. 원문 전문/개인정보는 DB에 미저장, 미확인 REVIEW_HOLD 유지.
+- R01–R29 최종설계 축소 없음. 전체 공식 완성률은 승인 가중치·실정부/Windows/실고객 수용 전 **UNASSESSED**, 사용자 85% 목표 [작업중]·RELEASE HOLD.
+
+---
+
+# BID AX v2 현재 최종 요구 안내
+
+R01–R21 기존 요구 보존 + R22–R26 온비드 공매 + R27–R29 법원경매 동의 로컬 문서/3원천 격리. 총 29개, 공식 최종완성률 UNASSESSED, 85% 목표 [작업중], RELEASE HOLD. 이 ZIP 안 아래 요구 문구는 역사적으로 보존한 v1/P85 단계입니다. 최신 전체 설계/검증 표는 GitHub product/bid-ax-public-procurement/docs/FINAL_BLUEPRINT.md 및 docs/P85_V2_CURRENT_ACCEPTANCE_20261114.md.
 
 ---
 
@@ -45,20 +50,4 @@
 
 ## P85 attempted milestone — no change of R01–R21 final denominator
 
-Verified locally: page-staged partial imports, restart recovery, replay dedupe, durable reminders, mocked and capped explicit transport, safe source package. 83 synthetic/mock/portable tests and Linux Tk smoke. **Not tested:** official data collection/rights and 100/10 evidence, Win10/11+Py3.11, EXE/signature/installation, user identity/ACL, PDF, customer/legal acceptance. Official completion `UNASSESSED`; 85% goal `[작업중]` remains. See `docs/P85_STAGE_EVIDENCE_20261113.md`.
-
-
-## [2026-11-13] 사용자 확정 BID AX v2 신규 필수 요구 (최신 우선)
-
-기존 R01–R21 유지, R22–R29 추가, **전체 R01–R29 29개**가 최신 최종설계 100%. 나라장터 기본/온비드 공식 무료 API 확장/법원경매 적법한 로컬 문서 분석 프리미엄. 무허가 크롤링·법률 확정·자동입찰 금지. 사용료 무료는 이용/재배포권 전체 승인이 아님.
-
-- **R22** 온비드 API 메타데이터·권리·상용 조건/약관·참조키 — 메타데이터만 확인, 코드 0
-- **R23** 온비드 승인된 고객 키로 목록/물건/상세/페이지 증분 수집, quota/429/중단복구 — 미구현, 실호출 0
-- **R24** 공고관리번호·물건관리번호·공매조건번호 원문 링크, 가격·유찰·SHA 버전 원장 — 미구현
-- **R25** 온비드 낙찰·유찰·취소와 정정/변경 이력·중복/시점 오류 처리 — 미구현
-- **R26** 온비드 필터/관심물건·비용/점유/권리/세금/명도 위험 체크리스트; 투자판단은 인간 — 미구현
-- **R27** 적법하게 확보한 고객 법원경매 문서 동의 기반 로컬 업로드, 출처/해시/악성·민감정보 검증 — 미구현
-- **R28** 법원경매 문건·물건 연결, 권리/위험 출처 표시·미확인 REVIEW_HOLD; 법률의견 보장 금지 — 미구현
-- **R29** 3원천 ID/권한/데이터/보고 분리·tier/가이드/Windows·실고객 상업 수용 — 미구현
-
-실 API/Windows/권리/고객 수용과 요구별 승인 가중치 미확보 → 공식 **UNASSESSED**, 사용자 목표 85% [작업중], 출시 HOLD·미등록. 정본 docs/FINAL_BLUEPRINT.md, 29개 전수 docs/BID_AX_EXPANSION_REASSESSMENT_20261113.md.
+Verified locally: page-staged partial imports, restart recovery, replay dedupe, durable reminders, mocked and capped explicit transport, safe source package. 80 synthetic/mock tests and Linux Tk smoke. **Not tested:** official data collection/rights and 100/10 evidence, Win10/11+Py3.11, EXE/signature/installation, user identity/ACL, PDF, customer/legal acceptance. Official completion `UNASSESSED`; 85% goal `[작업중]` remains. See `docs/P85_STAGE_EVIDENCE_20261113.md`.

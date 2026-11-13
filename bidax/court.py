@@ -116,3 +116,63 @@ class CourtStore:
                 "review_status":"추가 확인 필요","required_human_checks":list(REVIEW_ITEMS),
                 "legal_qualification_approved":False,"disclaimer":DISCLAIMER,
                 "network_calls":0}
+
+
+def preview_document(filename: str | Path, *, case_id: str, user_consent: bool,
+                     source_note: str, max_pages: int = 12) -> dict:
+    """Optional local PDF text-mention preview; never saves/exposes full text.
+
+    No OCR, no malware scan and no legal rights conclusion. Missing text is unknown.
+    Retains the existing metadata-only import path unchanged.
+    """
+    record = inspect_document(filename, case_id=case_id, user_consent=user_consent,
+                              source_note=source_note)
+    if type(max_pages) is not int or not 1 <= max_pages <= 20:
+        raise ValueError("max_pages must be 1..20")
+    if record["file_type"] == ".txt":
+        return {**record, "preview_status": "TEXT_MENTIONS_ONLY", "pages_checked": 0,
+                "has_unreadable_pages": False, "full_document_text_in_output": False}
+    try:
+        from pypdf import PdfReader
+    except ImportError as exc:
+        raise RuntimeError("PDF text preview requires optional pypdf; metadata-only import is available") from exc
+    from io import BytesIO
+    raw = Path(filename).read_bytes()
+    if len(raw) != record["size_bytes"] or hashlib.sha256(raw).hexdigest() != record["sha256"]:
+        raise ValueError("source PDF changed during preview")
+    try:
+        reader = PdfReader(BytesIO(raw), strict=True)
+        if reader.is_encrypted:
+            raise ValueError("encrypted PDF cannot be previewed")
+        if not 1 <= len(reader.pages) <= max_pages:
+            raise ValueError("PDF page count exceeds local preview limit or is empty")
+        # Explicitly disallow active content or embedded files rather than silently
+        # treating a complex PDF as a verified legal document.
+        root = reader.trailer["/Root"]
+        if any(name in root for name in ("/OpenAction", "/AA", "/Names", "/AcroForm")):
+            raise ValueError("active or embedded PDF content: local preview rejected")
+        found = set()
+        unreadable = False
+        for page in reader.pages:
+            if "/AA" in page or "/Annots" in page:
+                raise ValueError("PDF annotations/actions: local preview rejected")
+            text = page.extract_text() or ""
+            if len(text) > 25_000:
+                raise ValueError("PDF page text exceeds local preview bound")
+            if not text.strip():
+                unreadable = True
+            for category, words in MENTION_WORDS.items():
+                if any(w in text for w in words):
+                    found.add(category)
+    except ValueError:
+        raise
+    except Exception as exc:
+        raise ValueError("PDF could not be parsed safely; keep human review") from None
+    return {**record, "keyword_mentions": sorted(found),
+            "extraction": "PDF_KEYWORD_MENTIONS_ONLY_NOT_LEGAL_FINDINGS",
+            "preview_status": "MANUAL_REVIEW_REQUIRED",
+            "pages_checked": len(reader.pages),
+            "has_unreadable_pages": unreadable,
+            "full_document_text_in_output": False,
+            "malware_scan_performed": False,
+            "disclaimer": DISCLAIMER + " PDF 텍스트는 OCR/악성코드 검사가 아니며, 누락·잘못된 추출 가능성이 있습니다."}

@@ -1,21 +1,16 @@
-> **[2026-11-14 v2 3모듈 현재 상태]** 나라장터 오프라인 사전검토 + 온비드 공매 정규화 로컬 JSON 자료 원장 + 고객 동의 법원경매 PDF/TXT 해시·검토. 실제 API 자동 호출·법적 적합 판정·Windows EXE/판매 없음. 전체 최종 R01–29 공식 완성률 UNASSESSED, 85% 목표 [작업중], 출시 HOLD.
->
-> 추가 사용 예시 (독립 로컬 SQLite, 가상 데이터):
->
-> ```bash
-> python -m bidax.cli --db ./bidax-local.db onbid-import examples/onbid_assets_synthetic.json
-> python -m bidax.cli --db ./bidax-local.db onbid-import examples/onbid_results_synthetic.json
-> python -m bidax.cli --db ./bidax-local.db onbid-report
-> python -m bidax.cli --db ./bidax-local.db court-import ./authorized-document.pdf --case-id 2026타경999 --source-note "소유자 허가를 받은 문서" --consent
-> python -m bidax.cli --db ./bidax-local.db court-report 2026타경999
-> python -m bidax.cli --db ./bidax-local.db onbid-plan result_detail ./params.json
-> ```
->
-> `onbid-plan`은 API 키·HTTP가 없는 비실행 계획을 반환합니다. 실 이용권 확인 전 자동수집을 활성화하지 않습니다. [최신 검증 상태](docs/P85_V2_CURRENT_ACCEPTANCE_20261114.md).
->
-> ---
+## 2026-11-14 Optional Korean PDF and court document preview (P85 follow-up, unreleased)
 
-> **P85 후속 보안 점검 (2026-11-13)**: 완료된 공고 배치 SHA 변조 탐지, API 승인 boolean True 검증, 비밀 포함 urllib 예외 redaction 및 타임아웃 재시도. 로컬 회귀 90 PASS(합성), [근거](docs/P85_SECURITY_FOLLOWUP_20261113.md). 공식 최종완성률 UNASSESSED·출시 HOLD.
+- **Local bid report PDF:** `python -m bidax.cli --db customer.db export examples/profile.json NEW_REPORT.pdf --format pdf`. Requires manually installed optional `reportlab` (tested 4.4.9); CID font mapping `HYSMyeongJo-Medium` uses no bundled font binaries, PDF viewer rendering/Korean glyph acceptance and font rights must be checked before sale. JSON/CSV/HTML exports continue to use standard library only. Never overwrite an existing report.
+- **Opt-in court PDF/TXT keyword preview:** `python -m bidax.cli --db customer.db court-preview USER_FILE.pdf --case-id 2026타경12345 --source-note "고객이 적법하게 제공한 원본" --consent`. Requires optional `pypdf` for PDF (tested 5.9.0). Parses up to 12 pages (maximum configurable internal limit 20), refuses encrypted/annotated/active PDF, never stores full extracted text, does not OCR or scan malware, and never interprets court rights as approved. Existing `court-import` remains metadata-only for backward compatibility. Missing text or checked terms do **not** prove absence of risks.
+- Both optional libraries may need installation in the customer's local Python environment, and are not included in the source ZIP / current portable `.pyz`; neither performs network activity as part of these functions. Do not enable live APIs or ship an EXE based on the local test alone.
+
+---
+
+# BID AX v2 — 3모듈 소스 스냅샷 (2026-11-14 KST)
+
+이 ZIP은 비출시 코드/테스트 스냅샷입니다. **전체 최종설계는 R01–R29(29개), 공식 최종완성률 UNASSESSED, 85% 미인증, [작업중], RELEASE HOLD**입니다. 나라장터/온비드 정규화 공고/공매와 소유자 동의 법원 자료의 오프라인 처리만 검증됐습니다. 최신 정본 STATUS/HANDOFF/FINAL_BLUEPRINT은 GitHub private hibi89/Freelancer@product/bid-ax-public-procurement HEAD d295a8869689272f14a37864716e69093d5ca351을 참조하십시오. 아래 문서는 이전 단계의 기록입니다.
+
+---
 
 # BID AX — offline public procurement preparation (prototype)
 
@@ -81,14 +76,3 @@ python packaging/build_source_zip.py ./BID_AX_SOURCE_ONLY.zip
 `stage-page` reads a **local, authorized** API-shaped JSON file; it never performs HTTP. All expected pages must be staged before promotion, incomplete batches do not modify the current notice ledger. The `bidax.transport` opt-in helper is **not enabled** in CLI/GUI. For any real request, explicit customer permission, their own government key, license/source contract verification and quota planning are mandatory. Reminders require explicit user action while PC is on. `packaging/build_windows.ps1` is a **manual, unsigned build procedure only**, not a tested installer. See [P85 evidence](docs/P85_STAGE_EVIDENCE_20261113.md).
 
 **Official final completion: UNASSESSED**, not 85%; `[작업중]`/RELEASE HOLD until weighted full-design independent acceptance.
-
-
-### Portable Python package (P85 follow-up; not Windows EXE)
-
-```bash
-python packaging/build_portable.py ./BID_AX.pyz
-python ./BID_AX.pyz --db ./local.db import examples/notices.json
-python ./BID_AX.pyz --db ./local.db screen examples/profile.json
-```
-
-This deterministic `.pyz` runs with Python 3.11+ on a PC that has Python installed. It is **not an installer**, is unsigned, does not schedule or automatically call the government API, and was only executed under Linux Python3.13.5 with synthetic data. No claim of Windows customer readiness. See `tests/test_portable.py`.
