@@ -1,19 +1,3 @@
-## [BID_AX_P70_DOC_SYNC_20261113] 새 고객 흐름 — 로컬 전용 P70
-
-```bash
-python -Werror::ResourceWarning -m unittest discover -s tests -v
-python -m bidax.cli --db ./local.db gui
-python -m bidax.cli --db ./local.db import examples/notices.json
-python -m bidax.cli --db ./local.db screen examples/profile.json
-python -m bidax.cli --db ./local.db alerts --hours 72
-python -m bidax.cli --db ./local.db export examples/profile.json ./report.html --format html
-python -m bidax.cli --db ./local.db changes R26BK000001
-python -m bidax.cli --db ./local.db backup ./backup.db
-python -m bidax.cli --db ./restored-new.db restore ./backup.db
-```
-
-Tkinter에서 기업 JSON을 열고, 정규화된 **사용 권한 있는** 공고 JSON만 가져온 뒤 사람의 검토/근거/기한을 확인한다. 보고서 JSON·CSV·HTML은 **새 파일**로만 저장, DB 복원은 **새 경로**로만 가능하며 원본은 절대 덮어쓰지 않는다. 알림은 앱 실행 중 확인만, 실 API·자동입찰·법적 적격 보증·유료 AI/서버/배포 없음. 기능 SHA `22d44f5e2fb39024703331903b881bec7bfd6521`, 45 PASS + Linux Xvfb GUI smoke, **공식 최종완성률 UNASSESSED / 70 목표 [작업중]**. [P70 추적](docs/P70_STAGE_EVIDENCE_20261113.md).
-
 # BID AX — offline public procurement preparation (prototype)
 
 **Private candidate; not for sale.** Separate from the excluded BID OWL project. Standalone Python 3.11+ standard-library engine; SQLite file stays on the customer's PC. No background daemon, HTTP traffic, account, embedded API key, ML, or subscription. This is **preliminary screening**, never a substitute for original bid documents or a licensed professional.
@@ -43,6 +27,38 @@ The pure `official_query()` helper creates a **request plan only** (no key, netw
 
 See `docs/FINAL_BLUEPRINT.md` and `REQUIREMENTS.md`. There are no secrets in this repository. API documentation: https://www.data.go.kr/data/15129394/openapi.do (modified 2026-11-10: max 7-day query window, developer 1,000 requests, free entry, license displayed as no restrictions). This metadata is **not** an end-to-end legal authorization for every customer's commercial scenario and related data/attachments. Do not ship the product or promise eligibility without formal acceptance and current source verification.
 
-## 2026-11-13 P70 follow-up
-Source 027c4592e7aed1d806a9218269efe534952a8f04. Added offline G2B-format snapshot contract quarantine (never live HTTP), saved/reusable local multi-company SQLite profiles, and duplicate JSON key checks. Local Python3.13.5: 60/60 PASS, Tk Xvfb smoke PASS; six Git blobs match. Actual API response/Win10-11/Python3.11/customer/CI not verified. See docs/P70_HARDENING_EVIDENCE_20261113.md.
-Full R01-R21 final completion remains UNASSESSED (approved owner weighting absent), target 70% [작업중] retained and RELEASE HOLD. Local DB profiles are plaintext, keep filesystem access restricted; never put real customer data or credentials into repo.
+
+## P70 extension (2026-11-13, offline only)
+
+From the repository root with Python3.11+ and standard-library Tkinter installed:
+
+```bash
+python -m unittest discover -s tests -v
+python -m bidax.cli --db ./bid_ax_local.db gui
+python -m bidax.cli --db ./bid_ax_local.db import examples/notices.json
+python -m bidax.cli --db ./bid_ax_local.db screen examples/profile.json
+python -m bidax.cli --db ./bid_ax_local.db alerts --hours 72
+python -m bidax.cli --db ./bid_ax_local.db export examples/profile.json ./bid_report.html --format html
+python -m bidax.cli --db ./bid_ax_local.db changes R26BK000001
+python -m bidax.cli --db ./bid_ax_local.db backup ./bid_ax_backup.db
+python -m bidax.cli --db ./bid_ax_restored.db restore ./bid_ax_backup.db
+```
+
+Supported **new-file** exports: HTML (offline CSP, printable), CSV (BOM and formula-injection neutralization), JSON. No output file overwrite. UI actions: choose company profile, import normalized authorized notices, inspect preliminary decisions, source links and changes, record human review explicitly, check due/expired reminders when app is open, export, backup and restore into NEW paths. To record a review from CLI, use `review NOTICE_NO FINGERPRINT REVIEWER 확인|보류|반려 NOTE [--request-id UUID]`. Review does **not** legalize a bid or submit it.
+
+No network client or authorized real API key is bundled: all examples are synthetic, and updates/reminders only reflect local files/PC sessions. **2026-11-10 official API query window is 7 days.** Python 3.13/Linux/Xvfb 45 PASS including GUI smoke; actual Windows10/11 GUI/installer and real G2B data NOT_RUN. [P70 evidence and full R01–R21 trace](docs/P70_STAGE_EVIDENCE_20261113.md). Official final blueprint completion **UNASSESSED**, RELEASE HOLD, `[작업중]` target 70.
+
+
+## P85 local-only stage (2026-11-13)
+
+```bash
+python -Werror::ResourceWarning -m unittest discover -s tests -q
+python -m bidax.cli --db ./local.db stage-page ./authorized-page1.json --batch-id 1d8ff697-e0ac-42e4-96ed-642176c0633f --category goods --start 2026-11-07T09:00:00+09:00 --end 2026-11-13T09:00:00+09:00 --obtained-at 2026-11-13T09:30:00+09:00
+python -m bidax.cli --db ./local.db stage-status 1d8ff697-e0ac-42e4-96ed-642176c0633f
+python -m bidax.cli --db ./local.db poll-alerts --hours 72
+python packaging/build_source_zip.py ./BID_AX_SOURCE_ONLY.zip
+```
+
+`stage-page` reads a **local, authorized** API-shaped JSON file; it never performs HTTP. All expected pages must be staged before promotion, incomplete batches do not modify the current notice ledger. The `bidax.transport` opt-in helper is **not enabled** in CLI/GUI. For any real request, explicit customer permission, their own government key, license/source contract verification and quota planning are mandatory. Reminders require explicit user action while PC is on. `packaging/build_windows.ps1` is a **manual, unsigned build procedure only**, not a tested installer. See [P85 evidence](docs/P85_STAGE_EVIDENCE_20261113.md).
+
+**Official final completion: UNASSESSED**, not 85%; `[작업중]`/RELEASE HOLD until weighted full-design independent acceptance.

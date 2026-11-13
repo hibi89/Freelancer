@@ -50,6 +50,17 @@ def main(argv=None):
     backup.add_argument("target")
     restore = sub.add_parser("restore", help="restore backup into NEW database file")
     restore.add_argument("source")
+    stage = sub.add_parser("stage-page", help="offline local authorized G2B page, resumable batch")
+    stage.add_argument("json_file")
+    stage.add_argument("--batch-id", required=True, help="unique UUID for one query snapshot")
+    stage.add_argument("--category", required=True, choices=("goods", "services", "construction", "foreign"))
+    stage.add_argument("--start", required=True, help="7-day-or-less query start with UTC offset")
+    stage.add_argument("--end", required=True, help="query end with UTC offset")
+    stage.add_argument("--obtained-at", required=True, help="observed ISO timestamp with UTC offset")
+    status = sub.add_parser("stage-status", help="view durable offline staging checkpoint")
+    status.add_argument("batch_id", help="UUID of the staged batch")
+    poll = sub.add_parser("poll-alerts", help="save-once due reminder observations; PC must be on")
+    poll.add_argument("--hours", type=int, default=72)
     gui = sub.add_parser("gui", help="launch offline desktop GUI (Tkinter)")
     args = p.parse_args(argv)
 
@@ -70,6 +81,17 @@ def main(argv=None):
                 result = {**ledger.ingest(parsed["notices"]), "source": "LOCAL_OFFICIAL_SNAPSHOT_UNVERIFIED",
                           "snapshot_sha256": parsed["snapshot_sha256"], "page_no": parsed["page_no"],
                           "total_count": parsed["total_count"], "notice": parsed["warning"]}
+            elif args.command == "stage-page":
+                from .batch import stage_snapshot
+                result = stage_snapshot(ledger, args.batch_id, args.category,
+                                        datetime.fromisoformat(args.start), datetime.fromisoformat(args.end),
+                                        read_local_json(args.json_file), datetime.fromisoformat(args.obtained_at))
+            elif args.command == "stage-status":
+                from .batch import batch_status
+                result = batch_status(ledger, args.batch_id)
+            elif args.command == "poll-alerts":
+                from .reminders import poll_due
+                result = poll_due(ledger, within_hours=args.hours)
             elif args.command == "profile-save":
                 result = ledger.save_profile(read_local_json(args.json_file))
             elif args.command == "profiles":

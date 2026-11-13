@@ -62,6 +62,11 @@ class LocalController:
         with BidLedger(self.database) as ledger:
             return due_alerts(ledger)
 
+    def poll_alerts(self) -> dict:
+        from .reminders import poll_due
+        with BidLedger(self.database) as ledger:
+            return poll_due(ledger)
+
     def review(self, notice_no: str, fingerprint: str, reviewer: str, decision: str, note: str) -> dict:
         with BidLedger(self.database) as ledger:
             return ledger.record_review(notice_no, fingerprint, reviewer, decision, note,
@@ -204,6 +209,11 @@ def launch(database: str | Path) -> None:
             restore_backup(src, dest)
             return {"restored_to_new_path": dest, "active_database_unchanged": str(controller.database)}
 
+    def poll_reminders():
+        result = controller.poll_alerts()
+        state.set(f"PC 실행 중 조회: 신규 마감 알림 {result['new_count']}건 · 저장된 중복 알림 제외")
+        return result
+
     def manual_review():
         record = chosen()
         reviewer = simpledialog.askstring("검토자", "담당자 식별명(로컬 기록):", parent=root)
@@ -218,7 +228,7 @@ def launch(database: str | Path) -> None:
         return controller.review(record["notice_no"], record["source_fingerprint"], reviewer, decision.strip(), note)
 
     actions = [("공고 가져오기", import_file), ("기업 프로필", choose_profile), ("프로필 저장", save_profile), ("저장 프로필", choose_stored), ("사전검토", run_screen),
-               ("변경·검토 이력", show_history), ("마감 알림 확인", controller.alerts),
+               ("변경·검토 이력", show_history), ("마감 알림 확인", poll_reminders),
                ("수동 검토 기록", manual_review), ("보고서 저장", save_report),
                ("DB 백업", save_backup), ("새 DB로 복원", restore)]
     for label, action in actions:

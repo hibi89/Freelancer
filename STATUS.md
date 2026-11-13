@@ -1,24 +1,19 @@
-# BID AX 2026-11-13 P70 hardening status (latest)
-- User target: 70% of entire R01-R21 final blueprint. Official final completion UNASSESSED; target NOT VERIFIED, [작업중] retained, RELEASE HOLD, no listing.
-- Source SHA 027c4592e7aed1d806a9218269efe534952a8f04; 6/6 GitHub blob hashes identical to local. Tested Linux Python3.13.5 60 PASS/0 FAIL/0 SKIP; compileall/Tk8.6 Xvfb smoke PASS.
-- Local official-shaped JSON snapshot parser (no real API) forces REVIEW_HOLD and source hash; multi-company immutable-version profile storage, local CLI/GUI selection, JSON duplicate-key rejection.
-- No real API/key/100 notices/10 qualification reviews, Win10/11, signed EXE, customer acceptance, Python CI or deploy. Details docs/P70_HARDENING_EVIDENCE_20261113.md.
-- No modification to excluded Bid_Owl, other products, sale listings, original source/history.
+# BID AX P85 engineering checkpoint — 2026-11-13 KST
+
+- **목표:** 사용자 확정 최종설계 전체 **85%**. **공식 최종완성률 `UNASSESSED` / 85% 미입증 / `[작업중]` 유지 / RELEASE HOLD / 미등록**.
+- P85 로컬 기능: UUID/7일/page/전체건수 일치 스냅샷 체크포인트·재시작 복구, 변조·중복 거부, 저장된 기한 알림 중복 방지, *호출 불가 기본 상태* 의 선택형 공식 API 전송 라이브러리(메모리 키/고정 URL/단일 요청의 유한 재시도·로컬 사용량 기록), Windows 수동 패키징 스크립트와 manifest 소스 ZIP. 기존 P70 GUI/원장/3상태 사전검토 보존.
+- 로컬 Python3.13.5 Linux `python -Werror::ResourceWarning -m unittest discover -s tests -q`: **80 PASS/0 FAIL/0 SKIP**; `compileall` PASS; Tk8.6 Linux Xvfb 기본 초기화 PASS. Windows/Python3.11/실 API·고객/EXE/원격 Python CI **NOT_RUN**.
+- [P85 세부 검증/잔여 요구](docs/P85_STAGE_EVIDENCE_20261113.md); 전체 21개 요구 R01–R21 변경/축소 없음, 승인 가중치 부재. 국내 조달 운영 자격/실 공고100건·10사례·PDF·서명/실 설치·보안/실사용 승인 없음.
+- 기능 이전 Git SHA `766032d6256d634469366b1125639f9aa9a6ef1c`. 이번 원격 commit/SHA는 GitHub 반영 후 readback으로 확인해야 함. 비밀/고객DB·BID OWL·기타 Freelancer 상품·크몽 29/19 이력 무수정.
+
 ---
 
-# BID_AX_P70_DOC_SYNC_20261113 — BID AX 현행 상태 (2026-11-13 KST)
+# BID AX — status (2026-11-13 KST, P70 continuation)
 
-- **이번 사용자 목표:** 최종설계 전체 70%; 기술 **P70 오프라인 로컬 엔지니어링 수용 PASS**, 전체 최종설계 공식률 **UNASSESSED**(R01–R21 승인 가중치 미확정), `[작업중]` **유지**, RELEASE HOLD/크몽 미등록.
-- **실 구현:** Python/Tkinter 오프라인 GUI, 기업 프로필 JSON→공고 가져오기→3상태 사전검토→변경/수동 검토/마감 기한→HTML·CSV·JSON 보고서→SQLite 백업과 새 DB 복원. 실 API/상용 납품은 포함하지 않음.
-- **정확 기능 SHA:** `22d44f5e2fb39024703331903b881bec7bfd6521`, 원격 17/17 소스 원본 일치; Python3.13.5/Linux `python -Werror::ResourceWarning -m unittest discover -s tests -v` **45 PASS / 0 FAIL / 0 SKIP**. Tk8.6 Linux Xvfb 화면 실행 smoke PASS. 기존 [blueprint-only CI #43379099736](https://github.com/hibi89/Freelancer/actions/runs/43379099736)와 [문서 커밋 CI #43379700645](https://github.com/hibi89/Freelancer/actions/runs/43379700645)는 **SUCCESS**이나 **Python 테스트 CI가 아님**.
-- **미검증/차단:** 실 나라장터 원문/첨부/100건/자격10건, 실 호출·계정 키·요금한도/오류 복구, Python3.11·Windows10/11 GUI, 설치·PDF·고객수용·상업권리/법적 자격·Production. 자동 제출/법적 적합성 승인 절대 금지.
-- **원천 보존:** 기존 제외 BID OWL·다른 Freelancer 상품 브랜치·고객 자료·중앙 크몽 등록 이력 변경 없음. 상세 검증 `docs/P70_STAGE_EVIDENCE_20261113.md`; 아래 50 단계 문서는 당시 이력으로만 보존.
-
-# BID AX — status (2026-11-13 KST)
-
-- Scope: private `hibi89/Freelancer@product/bid-ax-public-procurement` independent BID AX candidate; excluded historical BID OWL unchanged.
-- 50-stage local engine: normalized notice input, local SQLite evidence/version/dedupe, profile validation, region/license/budget/docs/deadline preliminary screening, JSON report, backup no-overwrite, pure official seven-day API query plan.
-- Local test evidence: Python3.11+ standard library `python -m unittest discover -s tests -v` **19 PASS, 0 FAIL, 0 SKIP** in isolated test environment before GitHub upload. Exact GitHub SHA and CI readback must be separately checked.
-- No live official API call, no 100 notices/10 human eligibility checks, no real Windows customer execution, GUI, packaging, scheduled notifications or compliance signoff. No customer data or API secret. Release HOLD / unpublished.
-- **Official full blueprint completion: UNASSESSED**, no approved requirement weights. **Target: final 50%**, marker `[작업중]` kept until weighted exact-SHA independent acceptance. Do not equate 50-stage local milestone to final score.
-- Evidence and next: `docs/FINAL_BLUEPRINT.md` R01–R21; official API https://www.data.go.kr/data/15129394/openapi.do (2026-11-10 7-day change). Next real adapter and controlled source case tests, human review workflow/GUI and weighted scoring owner approval.
+- **Product:** private `hibi89/Freelancer@product/bid-ax-public-procurement`; BID OWL unchanged and excluded. Final 21-requirement blueprint unchanged.
+- **User target: 70% full design**, work marker `[작업중]` preserved; **official final completion UNASSESSED**, owner-approved requirements weights lacking, explicit release/registration HOLD.
+- **Local P70 engineering additions:** Tkinter GUI (profile → import → screen → history / manual review → export / backup / restore), append-only idempotent review with stale fingerprint check; KST on-demand alerts, diff, SQLite hash/quick-check, create-only database backup and restore; report JSON/CSV/HTML with CSV formula and HTML injection guards, max-10MiB local JSON bound.
+- **Testing:** baseline 19 PASS; total **45 PASS / 0 FAIL / 0 SKIP** in Python 3.13.5 on Linux; warnings-as-error check clean. Tk8.6 GUI launches/closes under Linux Xvfb. Exact source SHA/readback to confirm after GitHub commit. No live API/real 100 notices/10 human eligibility cases/Windows10 or 11/installer/PDF/long-running scheduling/production/customer pilot.
+- **No external transfer:** No official API key or HTTP request in product; no user document uploaded; raw notice input is already authorized normalized local JSON, not live official response mapping.
+- **Reference:** [P70 requirement by requirement evidence](docs/P70_STAGE_EVIDENCE_20261113.md), `REQUIREMENTS.md`, `docs/FINAL_BLUEPRINT.md`; official portal is `https://www.data.go.kr/data/15129394/openapi.do` with 7-day limit effective 2026-11-10.
+- **Next 70→85:** live authorized API mapping/quota/backoff/attachments/credentials, actual Windows GUI+installer, safe scheduling and migration, PDF/report acceptance, real 100/10 cases, customer rights, role model and approved full-score weights.

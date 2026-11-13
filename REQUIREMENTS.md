@@ -1,9 +1,3 @@
-## [BID_AX_P70_DOC_SYNC_20261113] 70% 단계 실제 수용·미검증 (최종설계 축소 아님)
-- R05–R15 일부 로컬 계약/조회/보고·수동 승인 아닌 검토 감사, R16 GUI 기본 흐름, R18 부분 백업/검증을 추가. 전체 R01–R21 완전 수용으로 간주하지 않는다.
-- Linux Python3.13.5 **45 PASS/0 FAIL/0 SKIP**, Tk8.6 Linux Xvfb 실행 PASS, 기능 SHA `22d44f5e2fb39024703331903b881bec7bfd6521`. GitHub blueprint-only CI SUCCESS는 실제 Python 테스트 실행이 아님.
-- API 응답/원문/권리, 보안 키/운영quota, 100 실공고·10 실제 자격 대조, 고객 Windows10/11, 설치/실시간 스케줄·PDF·고객 승인 부족. 공식 `UNASSESSED`, 70 목표 `[작업중]`/출시 HOLD.
-- [세부 21개 추적](docs/P70_STAGE_EVIDENCE_20261113.md). 과거 REQUIREMENTS 본문은 보존한다.
-
 # BID AX — requirements and acceptance (full product = 100%)
 
 - R01-R04: official original source/permission and change-aware collection; region/kind/period; user-owned key/quotas; failures/retries/rate limiting; original evidence.
@@ -31,6 +25,16 @@
 
 **Completion scoring:** user-approved per-requirement weights are not available. The official final-blueprint completion remains `UNASSESSED`; a unit-test pass or this 50-stage checkpoint is not mathematically 50% of R01-R21.
 
-## 2026-11-13 P70 follow-up
-Source 027c4592e7aed1d806a9218269efe534952a8f04. Added offline G2B-format snapshot contract quarantine (never live HTTP), saved/reusable local multi-company SQLite profiles, and duplicate JSON key checks. Local Python3.13.5: 60/60 PASS, Tk Xvfb smoke PASS; six Git blobs match. Actual API response/Win10-11/Python3.11/customer/CI not verified. See docs/P70_HARDENING_EVIDENCE_20261113.md.
-Full R01-R21 final completion remains UNASSESSED (approved owner weighting absent), target 70% [작업중] retained and RELEASE HOLD. Local DB profiles are plaintext, keep filesystem access restricted; never put real customer data or credentials into repo.
+
+## 2026-11-13 added implementation acceptance evidence (no reduced scope)
+
+- P70 goal = real Windows GUI + evidence-linked customer journey, report exports and local failure recovery; current **bounded offline implementation only**.
+- Keep `R01–R21` full 100% denominator unchanged, and require owner-approved weights + exact-SHA evidence before any official final % number.
+- Tested local Python 3.13.5 45 PASS/0 FAIL/0 SKIP, Tk 8.6 Xvfb smoke PASS. No official API call, Windows10/11 test, real G2B qualification, customer or legal acceptance.
+- Separate human preliminary review log from actual legal qualification and authorized submission. No API keys saved, no original BID OWL copied.
+- Read [P70 evidence and outstanding gates](docs/P70_STAGE_EVIDENCE_20261113.md) before advancing to EXE/scheduling or making a progress claim.
+
+
+## P85 attempted milestone — no change of R01–R21 final denominator
+
+Verified locally: page-staged partial imports, restart recovery, replay dedupe, durable reminders, mocked and capped explicit transport, safe source package. 80 synthetic/mock tests and Linux Tk smoke. **Not tested:** official data collection/rights and 100/10 evidence, Win10/11+Py3.11, EXE/signature/installation, user identity/ACL, PDF, customer/legal acceptance. Official completion `UNASSESSED`; 85% goal `[작업중]` remains. See `docs/P85_STAGE_EVIDENCE_20261113.md`.
