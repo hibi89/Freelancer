@@ -1,3 +1,18 @@
+## 2026-11-14 KST 후속 사용자 콘솔 — EXE 크기/SHA256/MZ 확인
+
+같은 네이티브 Windows 생성 후보 파일에 대해 사용자가 PowerShell `Get-Item ... | Format-List`, `Get-FileHash ... -Algorithm SHA256`, `[System.IO.File]::OpenRead`로 첫 두 바이트를 직접 검사한 결과:
+
+- **바이트 크기:** `7107722` bytes.
+- **SHA256:** `A7CD6B052108E5630E4AD50151841F0B812654F22E87CFE8338E22CB12A5C23E`.
+- **MZ 헤더:** `PASS` (첫 두 바이트 77/90).
+- **경로:** 사용자 로컬 TEMP의 `worknova-exe-3561dc8e2946484a8af0d09b00c7c58a/dist/WORKNOVA-Desk/WORKNOVA-Desk.exe`. 로컬 경로는 공개 고객 자료가 아니며, 정확 경로를 GitHub에 기록할 필요 없으므로 UUID와 계정 이름은 본 기록의 경로에 포함하지 않는다.
+
+**추가로 확인된 항목:** 산출물 EXE 파일 존재와 크기/SHA256 계산, 기본 Windows MZ 헤더가 사용자 제공 로그로 검증됨. **검증되지 않은 사항:** 외부에서 바이너리 직접 재해시(파일 본문 미수신), PE 전체 구조·서명·SmartScreen/Defender, 런타임 GUI 및 거래처 데이터 저장, PyInstaller onedir 전체 폴더 필수 DLL/자산 이식성과 Python 미설치 PC 실행, 고객 정보 및 권리·고객 수용. 이 결과는 사용자 제공 콘솔을 근거로 한 해시 기록일 뿐, 바이너리 무해성이나 EXE 정상 작동을 보증하지 않는다.
+
+### 다음 안전 GUI 런타임 테스트의 격리 원칙
+
+실 EXE는 처음 구동 시 `windows_gui_entry.py`에서 `LOCALAPPDATA/WORKNOVA Desk/Data/desk.sqlite` 경로를 정하며, `gui.main()`은 해당 DB가 없을 때 새 빈 장부를 만들지 명시적으로 확인한다. 실제 고객 데이터를 건드리지 않도록, PowerShell `System.Diagnostics.ProcessStartInfo.UseShellExecute=false` 및 자식 **프로세스 전용** `EnvironmentVariables['LOCALAPPDATA']`에 새 `TEMP/worknova-gui-qa-<GUID>`을 설정하고 EXE를 실행한다. 팝업에 표시되는 빈 장부 생성은 격리 경로에서만 `예`를 선택. 고객 실명·실수금·외부 데이터는 사용하지 않으며, 실행 프로세스와 새 SQLite 테스트 파일 경로를 별도로 확인. 사용자가 결과 제공 전 이 후속 시험은 **NOT_RUN**.
+
 # WORKNOVA Desk — 2026-11-14 KST 실제 Windows 독립 EXE 빌드 사용자 로그 증거
 
 ## 사실(사용자가 전달한 PowerShell 로그에 근거)
