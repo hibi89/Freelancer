@@ -419,9 +419,20 @@ class Desk:
 
     def backup(self, destination: str | Path) -> str:
         dst = Path(destination)
-        if not dst.parent.is_dir() or dst.exists() or dst.is_symlink() or dst.resolve() == self.path.resolve():
-            raise DeskError("backup target must be a new file in an existing directory")
+        if (not dst.parent.is_dir() or dst.parent.is_symlink() or
+                dst.exists() or dst.is_symlink() or dst.resolve() == self.path.resolve()):
+            raise DeskError("backup target must be a new file in an existing non-symlink directory")
         self.verify_audit()
+        # Never create customer backup using sqlite3's default OS mode: that can
+        # inherit a permissive umask (e.g. 0644). Exclusively reserve mode 0600.
+        # The existing file is NEVER modified, and errors remove only our own file.
+        try:
+            fd = os.open(dst, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            os.close(fd)
+        except FileExistsError:
+            raise DeskError("backup target already exists") from None
+        except OSError as exc:
+            raise DeskError("cannot create a private backup file") from exc
         # SQLite online backup retains a consistent snapshot even in WAL mode.
         try:
             with closing(sqlite3.connect(str(dst))) as out:

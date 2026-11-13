@@ -40,3 +40,15 @@ bytecode caches/executable files block startup. Missing owner DB prompts for
 explicit first-run confirmation in GUI; CLI existing ledger commands fail
 closed unless explicit init was first run. This was tested on Linux only;
 Windows OS execution remains NOT RUN and product is RELEASE HOLD.
+
+P85 OFFLINE BACKUP RECOVERY REHEARSAL (no cloud, explicit opt-in)
+- Choose a separate private existing local workspace directory. It must not be the
+  active database folder. Temporary copies of sensitive data will be created and
+  automatically removed when the rehearsal finishes.
+- Use Python installed on your computer. Example:
+    python -B -m worknova_desk --db FULL_PATH_TO_EXISTING_DB rehearse-restore --workspace-dir FULL_PATH_TO_PRIVATE_SCRATCH
+- This verifies a SHA-pinned backup, a new-path restore and 6 business/audit
+  tables. A successful rehearsal is NOT proof of physical Windows power-failure
+  recovery, encryption, cloud backup, banking receipts or legal acceptance.
+- Backups contain sensitive customer data; protect via OS account encryption and
+  owner-controlled offline storage. On POSIX, newly created backups use mode 0600.

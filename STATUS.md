@@ -1,29 +1,21 @@
-# STATUS — WORKNOVA Desk P85 continuation, installer + lost-ledger safety (2026-11-13 KST)
+# STATUS — WORKNOVA Desk P85 offline recovery checkpoint
 
-**Repo:** Private `hibi89/Freelancer@product/worknova-desk-local`.
-**Owner objective:** 85% of COMPLETE WD-01..WD-14 final blueprint; **official percentage UNASSESSED / NOT CERTIFIED**. Unapproved candidate rubric `docs/FINAL_BLUEPRINT_WEIGHT_PROPOSAL.md` is explicitly NOT an accepted denominator. Keep central KMONG **[작업중]** and **RELEASE HOLD**. No KMONG registered product or production deployment.
+Updated 2026-11-13 KST · Private `hibi89/Freelancer@product/worknova-desk-local`.
 
-## Newly implemented, verified locally
+**Official whole-final-blueprint completion UNASSESSED; user requested P85 NOT CERTIFIED. `[작업중]` remains. RELEASE HOLD / no actual product registration / no Production.** The WD-01..WD-14 blueprint and unapproved 100-point proposal remain unchanged.
 
-- Fixed two demonstrable Windows installer logic defects: `verify_portable.py` was erroneously rejected by an overrestrictive PowerShell allowlist, and `FILE_MANIFEST.json` was omitted when copying the installed application. Installer stages manifest and checks all hashes before replacing prior app; retains app rollback and untouched Data directory.
-- Corrected Windows launcher verifier root from quoted trailing-backslash `%~dp0` to `.` after pushd; the new package verifier refuses injected `__pycache__` / bytecode / unexpected executables.
-- Prevented silent empty customer ledger creation: all CLI commands except `init` use SQLite `mode=rw`; GUI asks explicit first-run confirmation if DB is missing; no file is created on refusal. New POSIX DB created with `0600`; existing DB permissions untouched. Windows OS ACL/security settings remain unverified and unchanged.
-- **97/97 Linux Python3.13.5 unit tests PASS**, 0 FAIL/0 SKIP (previous 81 + 16 new).
-- **3 real Linux Tk8.6 Xvfb GUI smoke flows PASS** (existing sales workflow, customer delivery evidence, new first-run DB guard).
-- `python -m compileall -q worknova_desk scripts` PASS; stage simulation `verify_portable()` and corruption negatives included in 97 tests. A Linux staging simulation is **not** a Windows PowerShell test.
-- Detailed evidence: `docs/P85_INSTALL_DB_SAFETY_20261113.md`. Exact remote commit SHA and package extraction tests to be recorded at final GitHub write verification.
+## Verified in local Linux Python 3.13.5
 
-## Remaining blockers
+- Existing offline customer/quote/revisions/contracts/milestones/receipts, controlled deletion, file evidence hashes, audit checkpoint, redacted DOCX/PDF, Tk GUI and portable prelaunch verification preserved.
+- Newly implemented recovery drill: opt-in separate existing private scratch workspace; consistent online backup, SHA-pinned new-path restoration, six business/audit tables exact comparison, automatic scratch cleanup. Backup creation POSIX owner-only 0600 even under umask 022; no existing user files overwritten or permissions changed.
+- Python regression **104/104 PASS, 0 FAIL, 0 SKIP**, original 97 + 7 recovery unit/CLI scenarios. See `docs/P85_RECOVERY_DRILL_20261113.md`.
+- Portable v3 strict 13 source/script entries plus manifest; Linux extraction + preflight + throwaway CLI (and existing Tk8.6 Xvfb GUI flows) require final-source-SHA evidence in HANDOFF.
 
-- Native Windows10/11 non-admin PowerShell install/upgrade/rollback/uninstall/GUI/Word/PDF/Defender, tested standalone code-signed EXE, verified OS access controls and encryption, offline customer privacy and authorized user, legal/font rights, 10+ REAL buyer acceptances, approved 100-point rubric — **NOT RUN/NOT APPROVED**.
-- Local `actor` names are labels, not user authentication. SHA/manifest protect against accidental corruption only; not signature/independent proof. SQLite disk remains unencrypted. No bank/PayPal/API settlement.
+## Unverified / blockers
 
-## Safety and recovery
+- Real Windows10/11 per-user PowerShell install, upgrade, launch, rollback, removal, data/ACL preservation, signed bundled EXE, Defender; actual Windows Word/PDF and rights; true OS authentication/ACL/disk encryption and administrator-compromise resistance; real buyer cases and legal/tax acceptance; approved complete 100-point WD rubric. No actual bank payment/provider API. These prevent official P85 certification and sales.
+- No Vercel or public service planned; Production status **N/A**. Policy-only Actions do NOT count as product Windows CI.
 
-- Previous verified feature commit `6f24ccea44c120391254922f4b0d0801bfbb6e5f` remains an application-code rollback reference. Never overwrite customer SQLite, migrated schema, backups, or secrets. Existing PayPal hackathon source, `Freelancer@main`, and all other branches untouched.
-- No API/paid CI/Production, permissions changes, real customer data processing or actual KMONG registration.
-- **Official completion UNASSESSED, P85 NOT CERTIFIED; [작업중], RELEASE HOLD.**
+## Rollback
 
-## Final Linux portable evidence
-
-`python -B scripts/build_portable.py` from source root PASS after dependency path repair. Produced unsigned Python-required 13-member ZIP SHA256 `50d25add8e34735576da6c0dfbd002092943f46d3160573358358e3954505187`; extracted `verify_portable` **12/12 PASS**, CLI synthetic init/customer/list PASS. Actual Windows installer NOT RUN.
+Previous verified code `85a2a115d32d3378544ae68bb453466499aebcb8` in Git history. Do not touch owner databases, backups, main branch, PayPal source, other product statuses or licenses. Package v3 requires its paired v3 integrity verifier, do not mix with v2. Preserve source/test evidence exact SHA in central KMONG registry and `HANDOFF.md`.

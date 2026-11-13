@@ -22,7 +22,7 @@ from worknova_desk.core import DeskError
 
 SOURCE_FILES = ['worknova_desk/__init__.py', 'worknova_desk/__main__.py',
                 'worknova_desk/core.py', 'worknova_desk/gui.py', 'worknova_desk/documents.py',
-                'worknova_desk/evidence.py','worknova_desk/delivery_evidence.py','worknova_desk/lifecycle.py']
+                'worknova_desk/evidence.py','worknova_desk/delivery_evidence.py','worknova_desk/lifecycle.py','worknova_desk/recovery.py']
 SCRIPTS = [('scripts/launch.cmd','launch.cmd'),
            ('scripts/install_local.ps1','install_local.ps1'),
            ('scripts/verify_portable.py','verify_portable.py'),
@@ -40,7 +40,7 @@ def bundle(root: Path, output: Path) -> dict:
         if path.is_symlink() or not path.is_file() or path.stat().st_size > 1024*1024:
             raise DeskError(f'invalid package source: {source}')
         content[name] = path.read_bytes()
-    manifest={'format':'worknova-p85-portable-v2',
+    manifest={'format':'worknova-p85-portable-v3',
               'kind':'Python source + per-user PowerShell installer; requires local Python; unsigned; RELEASE HOLD',
               'files':[{'path':name,'bytes':len(payload),'sha256':hashlib.sha256(payload).hexdigest()}
                        for name,payload in sorted(content.items())]}

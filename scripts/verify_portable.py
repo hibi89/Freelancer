@@ -20,9 +20,10 @@ EXPECTED = frozenset({
     "worknova_desk/evidence.py",
     "worknova_desk/delivery_evidence.py",
     "worknova_desk/lifecycle.py",
+    "worknova_desk/recovery.py",
     "launch.cmd", "install_local.ps1", "README_OFFLINE.txt", "verify_portable.py",
 })
-FORMAT = "worknova-p85-portable-v2"
+FORMAT = "worknova-p85-portable-v3"
 HEX = re.compile(r"^[0-9a-f]{64}$")
 
 class PackageError(ValueError):

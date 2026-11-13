@@ -28,12 +28,13 @@ if ($Uninstall) {
 $manifestPath = Join-Path $package 'FILE_MANIFEST.json'
 if (-not (Test-Path -LiteralPath $manifestPath)) { throw 'FILE_MANIFEST.json missing' }
 $manifest = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
-if ($manifest.format -ne 'worknova-p85-portable-v2') { throw 'Invalid package manifest format' }
+if ($manifest.format -ne 'worknova-p85-portable-v3') { throw 'Invalid package manifest format' }
 $required = @(
   'worknova_desk/__init__.py','worknova_desk/__main__.py',
   'worknova_desk/core.py','worknova_desk/gui.py',
   'worknova_desk/documents.py','worknova_desk/evidence.py',
   'worknova_desk/delivery_evidence.py','worknova_desk/lifecycle.py',
+  'worknova_desk/recovery.py',
   'launch.cmd','README_OFFLINE.txt','install_local.ps1','verify_portable.py'
 )
 $seen = @{}
@@ -83,7 +84,7 @@ try {
     # Recheck every staged path against the staged manifest before replacing any
     # installed code. Customer data and the prior application have not been touched.
     $staged = Get-Content -LiteralPath $stagedManifest -Raw -Encoding UTF8 | ConvertFrom-Json
-    if ($staged.format -ne 'worknova-p85-portable-v2' -or $staged.files.Count -ne $required.Count) {
+    if ($staged.format -ne 'worknova-p85-portable-v3' -or $staged.files.Count -ne $required.Count) {
         throw 'Staging manifest invalid'
     }
     foreach ($entry in $staged.files) {

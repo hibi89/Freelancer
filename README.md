@@ -77,3 +77,9 @@ The desktop GUI asks before creating a missing database; if an existing DB has
 moved, decline, locate/restore it first. New POSIX DB files default to mode
 `0600`, not a Windows ACL guarantee. Portable product requires Python 3.11+,
 no code signing. See `docs/P85_INSTALL_DB_SAFETY_20261113.md`.
+
+## P85 offline backup privacy/recovery drill (2026-11-13)
+
+`python -B -m worknova_desk --db EXISTING.sqlite rehearse-restore --workspace-dir SEPARATE_EXISTING_PRIVATE_FOLDER`
+
+Explicitly creates a temporary private workspace with a SHA-verified SQLite backup, restores it only to a new filename, compares all six business/audit tables and removes temporary copies. Refuses using the live database directory as workspace. Newly created POSIX backups are `0600` even under a permissive umask; **Windows ACL/BitLocker and physical Windows storage recovery remain unverified**. Never use a customer file in an untrusted shared/network directory. See `docs/P85_RECOVERY_DRILL_20261113.md`.

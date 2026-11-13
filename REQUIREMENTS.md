@@ -46,3 +46,8 @@ Canonical whole-product design: `docs/FINAL_BLUEPRINT.md` (WD-01 through WD-14).
 - WD-13: Windows installation must ship its own `FILE_MANIFEST.json` and permit every required verifier file, checksum the stage before swapping app, fail on unexpected executables and `__pycache__`. Linux staging model tests are **not** physical Win10/11 validation.
 - New POSIX SQLite files should be `0600` with existing permissions unchanged; Windows ACL, encryption, signed standalone EXE and real owner access controls remain **NOT RUN / incomplete**.
 - Weighted final-score proposal `docs/FINAL_BLUEPRINT_WEIGHT_PROPOSAL.md` is explicitly **NOT OWNER APPROVED**, not permission to declare 85%. Keep central `[작업중]`, RELEASE HOLD.
+
+## P85 owner-safe recovery validation, 2026-11-13
+- WD-09: explicit `rehearse-restore` using an operator-selected *separate* existing private workspace; SHA256-pinned new-path restore and six-table snapshot check, temporary files deleted, source database not changed; Python Linux regression executed. New POSIX backups use owner-only 0600. No real Win10/11 ACL/power-loss proof.
+- WD-13: offline source manifest format v3 includes `worknova_desk/recovery.py` in its strict 13-file allowlist. Older v2 packages remain separate rollback artifacts; a v3 package must only be checked with its paired v3 verifier. No signed standalone EXE.
+- The WD-01..WD-14 full final blueprint, unapproved 100-point rubric, UNASSESSED official score, `[작업중]` and RELEASE HOLD remain unchanged.

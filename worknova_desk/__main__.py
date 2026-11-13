@@ -9,6 +9,7 @@ from .documents import export_document
 from .evidence import create_checkpoint, verify_checkpoint
 from .lifecycle import rename_customer, delete_unused_customer
 from .delivery_evidence import attach_file, verify_file, list_evidence
+from .recovery import rehearse_restore
 
 
 def main(argv=None):
@@ -62,6 +63,7 @@ def main(argv=None):
     cmd("backup", ("out", True))
     cmd("migrate-v1", ("backup_out", True))
     cmd("restore-new", ("backup_file", True), ("new_db", True), ("sha256", True))
+    cmd("rehearse-restore", ("workspace_dir", True))
     args = parser.parse_args(argv)
     desk = None
     try:
@@ -120,6 +122,7 @@ def main(argv=None):
         elif c == "checkpoint-verify": value = verify_checkpoint(desk, args.file, expected_file_sha256=args.expected_file_sha256)
         elif c == "backup": value = {"backup_sha256": desk.backup(args.out)}
         elif c == "migrate-v1": value = {"backup_sha256": desk.migrate_v1(args.backup_out), "schema_version": desk.schema_version}
+        elif c == "rehearse-restore": value = rehearse_restore(desk, args.workspace_dir)
         print(json.dumps({"ok": True, "result": value}, ensure_ascii=False, sort_keys=True))
         return 0
     except (DeskError, ValueError, json.JSONDecodeError) as exc:
