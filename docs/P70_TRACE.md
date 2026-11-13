@@ -9,13 +9,13 @@
 | WD-03 quotation immutability/revisions | `core.py`: v2 `root_quote_id/parent_quote_id`, `revise_quote`, `quote_history`, latest-draft approval rejection | chain revision 1→2→3, reject stale edits, original approved quote and contract amount unchanged | full buyer approvals/legal scope, customer acceptance |
 | WD-09 safe recovery / migration | `core.py`: explicit `migrate_v1(backup_out)`, SHA-pinned `restore_new(backup,out,sha256)` writes only **new path**, audit+SQLite integrity+FK | v1 fixture preservation + unmodified backup; restored v2 rows and event chain; wrong hash/existing target/bad db rejection | crash/powerfail, customer Win10/11/OneDrive, disk encryption, large DB |
 | WD-10 private HTML preview | `core.py:export_quote_html`, CLI `quote-preview` | escapes markup, blocks script/CSP, excludes customer name, output never overwrite | actual Korean printing/PDF/font |
-| WD-11 guided local UI proof | `gui.py` Tkinter local UI; customers→quotes→contracts→milestones, manual approvals/receipts, search & price rows | GUI parser tests, real Tk 8.6 Xvfb widget lifecycle/selected customer→quote list **PASS** | physical Windows GUI usability, 100% keyboard access, assistive tech |
+| WD-11 guided local UI proof | `gui.py` Tkinter local UI; customers→quotes→contracts→milestones, manual approvals/receipts, search & price rows | GUI parser tests, real Tk 8.6 Xvfb widget synthetic E2E customer→quote→approval→contract→activate→delivery→acceptance→partial collection and amount/audit checks **PASS** | physical Windows GUI usability, 100% keyboard access, assistive tech |
 | WD-01 basic customer lookup | `core.py:list_customers/list_quotes/list_contracts/list_milestones` | search by name, row mapping and output | permissions, customer update/delete/suppression |
 
 ## Exact local test commands/observed results
 
 - `PYTHONPATH=. python -m unittest discover -s tests -q` on Linux Python **3.13.5**: **37 PASS, 0 FAIL, 0 SKIP** (18 original + 19 new). Synthetic customers; real temp SQLite DB/backup and CLI subprocess; no customer data.
-- `PYTHONPATH=. xvfb-run -a python tests/gui_smoke_xvfb.py`: **PASS**, Tk 8.6 real widgets created, selected customer drives quote table, window destroyed. Virtual X server **not Windows/browser proof**.
+- `PYTHONPATH=. xvfb-run -a python tests/gui_smoke_xvfb.py`: **PASS**, real Tk 8.6 widgets exercised a synthetic full GUI flow: customer → quote → owner approval → contract activation → delivery → buyer acceptance → 50 KRW manual collection (60 KRW remains), audit rechecked, window destroyed. Virtual X server **not Windows/browser proof**.
 - `python -m compileall -q worknova_desk`: PASS. No external calls, authentication, PayPal sandbox transactions or remote CI executed.
 
 ## Safety and operational notes

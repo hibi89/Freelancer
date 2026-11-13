@@ -113,11 +113,28 @@ class WorknovaGUI:
             tree.insert("", "end", iid=row["id"], values=tuple(str(row.get(col,"")) for col in cols))
 
     def refresh(self):
+        # Preserve the operator's selection across writes; no implicit approval or action.
+        selected={name:(tree.selection()[0] if tree.selection() else None)
+                  for name,tree in self.views.items()}
         rows=self.desk.list_customers(self.search.get())
         self._put("customers",rows,("name","id"))
         self._put("quotes",[],("revision","status","total_krw","id"))
         self._put("contracts",[],("status","scope","id"))
         self._put("milestones",[],("title","status","amount_krw","id"))
+        customers=self.views["customers"]
+        if selected["customers"] and customers.exists(selected["customers"]):
+            customers.selection_set(selected["customers"])
+            self.refresh_children("customers")
+            quotes=self.views["quotes"]
+            if selected["quotes"] and quotes.exists(selected["quotes"]):
+                quotes.selection_set(selected["quotes"])
+            contracts=self.views["contracts"]
+            if selected["contracts"] and contracts.exists(selected["contracts"]):
+                contracts.selection_set(selected["contracts"])
+                self.refresh_children("contracts")
+                steps=self.views["milestones"]
+                if selected["milestones"] and steps.exists(selected["milestones"]):
+                    steps.selection_set(selected["milestones"])
 
     def refresh_children(self, kind):
         try:

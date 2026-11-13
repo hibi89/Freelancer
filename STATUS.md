@@ -4,8 +4,8 @@
 
 ## Completed & locally verified
 - P50: independent local SQLite quote→contract/milestone→delivery/revision/acceptance→manual partial collection, KRW/VAT rounding, audit chain, consistent backup, redacted HTML/JSON.
-- P70: additive v2 quote immutable revisions/lineage, latest-version guard, explicit non-destructive v1 backup/migration, SHA256-pinned restore only into new path, quote HTML, customer/quote/contract/milestone browsing, Korean Tkinter guided desktop workflow including owner confirmations and manual cash-state label.
-- Linux Python 3.13.5 **37/37 unittest PASS**, Python source compile PASS, Tk 8.6 widget lifecycle/customer selection/quote display **PASS** under Linux Xvfb virtual display. See `docs/P70_TRACE.md`.
+- P70: additive v2 quote immutable revisions/lineage, latest-version guard, explicit non-destructive v1 backup/migration, SHA256-pinned restore only into new path, quote HTML, customer/quote/contract/milestone browsing, state-preserving selections, Korean Tkinter guided desktop workflow including owner confirmations and manual cash-state label.
+- Linux Python 3.13.5 **37/37 unittest PASS**, Python source compile PASS, Tk 8.6 widget real GUI scripted quote→approval→contract→deliver→accept→collection **PASS** under Linux Xvfb virtual display. See `docs/P70_TRACE.md`.
 - Existing PayPal hackathon and Freelancer main branches, customer data/secrets, Vercel/Cloudflare, remote auth and all other product states remain unmodified.
 
 ## Open gates

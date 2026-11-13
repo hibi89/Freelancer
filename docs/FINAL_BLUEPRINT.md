@@ -26,7 +26,7 @@ No PayPal API or other original hackathon code is imported; the original quoteâ†
 | WD-08 | auditable append-only event integrity, detection and safer reconciliation | SHA256 hash-chain test; owner rewrite not prevented |
 | WD-09 | durable SQLite, point-in-time backup, restore drill, migration, failure isolation | v1 backup+explicit migrate, SHA-pin restore-new, integrity/audit regression; Windows recovery pending |
 | WD-10 | privacy-safe client JSON/HTML, clear fee/tax wording and offline provenance | redacted reports and quote preview with CSP escaped markup tested |
-| WD-11 | end-user Windows GUI workflow with search, customer/quote selection and error guidance | Tk prototype and Xvfb widget flow PASS; actual Windows/UX NOT_RUN |
+| WD-11 | end-user Windows GUI workflow with search, customer/quote selection and error guidance | Tk prototype and Xvfb end-to-end synthetic UI flow PASS; actual Windows/UX NOT_RUN |
 | WD-12 | Korean DOCX/PDF with fonts, version preservation, print UX | NOT BUILT |
 | WD-13 | secure Win10/11 install/upgrade/uninstall, local access controls, encrypted storage option | NOT BUILT |
 | WD-14 | 10+ realistic industry samples, legal/tax review, rights/NOTICE, commercial owner acceptance and support | NOT RUN |
