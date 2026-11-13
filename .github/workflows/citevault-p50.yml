@@ -19,6 +19,7 @@ on:
       - scripts/p85-operator-demo.mjs
       - tests/p85-operator-ui.test.mjs
       - tests/p85-library.test.mjs
+      - tests/p85-browser-e2e.test.mjs
       - tests/p85-operator-users.test.mjs
       - enterprise/p85-ui.mjs
       - enterprise/p85-native-extract.mjs
@@ -140,6 +141,21 @@ jobs:
         run: node --test tests/p85-native-integration.test.mjs tests/p85-journey.test.mjs
       - name: Run isolated synthetic end-to-end HTTP demo (never approves export)
         run: node scripts/p85-synthetic-demo.mjs --self-test
+  p85-browser-render:
+    name: Actual Chromium rendered desktop/mobile CITEVAULT UI / ubuntu-24.04
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Checkout exact CITEVAULT code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Setup Node 22 with native CDP WebSocket
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Validate actual Chrome UI login, authorized document KPI, source search, mobile viewport, logout
+        run: node --test tests/p85-browser-e2e.test.mjs
   synthetic-evidence:
     runs-on: ubuntu-24.04
     timeout-minutes: 12
