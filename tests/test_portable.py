@@ -59,7 +59,6 @@ class PortableTests(unittest.TestCase):
 
 if __name__=="__main__": unittest.main()
 
-
 class PortableCrossSourceAcceptance(unittest.TestCase):
     def test_packaged_zipapp_three_source_overview_and_watch(self):
         with tempfile.TemporaryDirectory() as td:
