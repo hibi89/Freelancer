@@ -1,3 +1,12 @@
+## 2026-11-14 P85 schema and privacy safety follow-up
+
+- WD-01: redacted-by-default local JSON customer portfolio with amounts/status only; requires second explicit flag to include customer name. Out-of-band OS folder privacy remains user's responsibility; no multiuser authorization or retention/legal erasure.
+- WD-08/09: treat unrelated SQLite v0, pre-existing blank file, corrupted bytes, incomplete v2 catalog and altered audit as unsafe on open; fail before creating product tables. Existing valid v1 migrates only via explicit backup. Checkpoint is unsigned.
+- WD-11/13: GUI button and package manifest add `worknova_desk/privacy.py` (14 source/script entries + manifest); Python-required portable ZIP, no signed EXE or real Windows validation.
+- New negative/functional tests: 19, all passing locally along with original 104; four GUI Xvfb scripts and 14-file extracted package proof. No reduction of WD-01–WD-14 or accepted percentage. Formal final rate **UNASSESSED**, P85 not yet certified, `[작업중]` and RELEASE HOLD.
+
+---
+
 ## 2026-11-13 P85 customer lifecycle/evidence acceptance follow-up (no scope reduction)
 
 - WD-01 **partial local implementation:** guarded customer rename and delete only when there are no quotes; account roles/authentication and full owner privacy lifecycle still incomplete.

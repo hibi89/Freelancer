@@ -49,6 +49,7 @@ class Desk:
         self.path = Path(path)
         if self.path.is_symlink() or not self.path.parent.is_dir() or self.path.parent.is_symlink():
             raise DeskError("database path must be inside an existing non-symlink directory")
+        created_new_file = False
         if not allow_create:
             # SQLite's default connect silently creates a fresh empty ledger. For all
             # existing-ledger operations this can look like catastrophic data loss.
@@ -70,15 +71,37 @@ class Desk:
                     raise DeskError("cannot create new local ledger") from exc
                 else:
                     os.close(fd)
+                    created_new_file = True
             self.db = sqlite3.connect(str(self.path), timeout=5, isolation_level=None)
         self.db.row_factory = sqlite3.Row
-        self.db.execute("PRAGMA foreign_keys=ON")
-        self.db.execute("PRAGMA busy_timeout=5000")
-        version = self.db.execute("PRAGMA user_version").fetchone()[0]
-        if version not in (0, 1, 2):
+        try:
+            # Fail closed *before* running CREATE TABLE IF NOT EXISTS. A foreign
+            # SQLite file (user_version=0) must never be quietly converted to an
+            # empty WORKNOVA ledger, especially during SHA-pinned restore.
+            version = self.db.execute("PRAGMA user_version").fetchone()[0]
+            if version not in (0, 1, 2):
+                raise DeskError("unsupported schema version; backup and migrate manually")
+            if version == 0 and not created_new_file:
+                raise DeskError("existing file has no WORKNOVA schema; original left unchanged")
+            if version == 2 and not created_new_file:
+                required = {"customers", "quotes", "contracts", "milestones", "receipts", "audit_events"}
+                names = {row[0] for row in self.db.execute(
+                    "SELECT name FROM sqlite_master WHERE type='table'")}
+                if not required.issubset(names):
+                    raise DeskError("incomplete WORKNOVA v2 schema; restore a verified backup")
+                quote_columns = {row[1] for row in self.db.execute("PRAGMA table_info(quotes)")}
+                if not {"root_quote_id", "parent_quote_id"}.issubset(quote_columns):
+                    raise DeskError("invalid WORKNOVA v2 quote columns")
+            self.db.execute("PRAGMA foreign_keys=ON")
+            self.db.execute("PRAGMA busy_timeout=5000")
+        except sqlite3.DatabaseError as exc:
             self.db.close()
-            raise DeskError("unsupported schema version; backup and migrate manually")
-        self.db.executescript("""
+            raise DeskError("invalid or corrupt SQLite database; no data changed") from exc
+        except Exception:
+            self.db.close()
+            raise
+        try:
+            self.db.executescript("""
         CREATE TABLE IF NOT EXISTS customers (
           id TEXT PRIMARY KEY, name TEXT NOT NULL, created_at TEXT NOT NULL
         );
@@ -113,9 +136,20 @@ class Desk:
           digest TEXT NOT NULL
         );
         """)
-        if version == 0:
-            self.db.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_quote_root_revision ON quotes(root_quote_id, revision)")
-            self.db.execute("PRAGMA user_version=2")
+            if version == 0:
+                self.db.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_quote_root_revision ON quotes(root_quote_id, revision)")
+                self.db.execute("PRAGMA user_version=2")
+            elif not created_new_file:
+                # Refuse to operate on a corrupted historical audit on reopen.
+                # Hashes are UNSIGNED: this detects accidental/partial changes,
+                # not an administrator replacing both DB and checkpoint.
+                self.verify_audit()
+        except sqlite3.DatabaseError as exc:
+            self.db.close()
+            raise DeskError("database schema/audit unreadable; locate a verified backup") from exc
+        except Exception:
+            self.db.close()
+            raise
 
     def close(self):
         self.db.close()

@@ -10,6 +10,7 @@ from .evidence import create_checkpoint, verify_checkpoint
 from .lifecycle import rename_customer, delete_unused_customer
 from .delivery_evidence import attach_file, verify_file, list_evidence
 from .recovery import rehearse_restore
+from .privacy import export_customer_summary
 
 
 def main(argv=None):
@@ -36,6 +37,9 @@ def main(argv=None):
     cmd("list-customers", ("search", False))
     cmd("list-quotes", ("customer_id", True))
     cmd("list-contracts", ("customer_id", True))
+    summary = cmd("export-customer-summary", ("customer_id", True), ("out", True))
+    summary.add_argument("--include-name", action="store_true")
+    summary.add_argument("--confirm-disclosure", action="store_true")
     cmd("list-milestones", ("contract_id", True))
     cmd("contract", ("quote_id", True), ("scope", True), ("steps_json", True))
     cmd("activate", ("contract_id", True), ("actor", True))
@@ -87,6 +91,8 @@ def main(argv=None):
         elif c == "list-customers": value = desk.list_customers(args.search or "")
         elif c == "list-quotes": value = desk.list_quotes(args.customer_id)
         elif c == "list-contracts": value = desk.list_contracts(args.customer_id)
+        elif c == "export-customer-summary": value = export_customer_summary(desk, args.customer_id, args.out,
+            include_name=args.include_name, confirm_disclosure=args.confirm_disclosure)
         elif c == "list-milestones": value = desk.list_milestones(args.contract_id)
         elif c == "quote-preview":
             path = Path(args.out)

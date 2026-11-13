@@ -63,3 +63,7 @@ These stages are directional deliverable gates, **not agreed 100-point weights**
 
 ## P85 hardening follow-up, without changing final requirements
 WD-08 gained user-generated separate hash checkpoint with 6 table digests (not cryptographically signed), and WD-13 gained a strict v2 portable preflight before GUI launch. Neither changes approved product scope, final completion weights, or release conditions. Refer to `docs/P85_HARDENING_20261113.md` for 68 local tests and the outstanding real Windows/customer/legal blockers. Formal final rate remains UNASSESSED; `[작업중]` and RELEASE HOLD remain.
+
+## P85 schema/privacy safety checkpoint (2026-11-14; no change to final scope)
+
+WD-01 now has a minimal owner-initiated offline customer summary output with default name redaction and explicit name disclosure, no sensitive free-text/bank refs and new-file-only private POSIX output. This is NOT complete multiuser roles, encrypted customer data, or legal deletion. WD-08/WD-09 fail closed on unrelated/empty/corrupt SQLite before creating tables and corrupted audit on reopened product DB. WD-11/13 include a local GUI summary button and 14-file Python-required manifest; actual Windows installation and signed EXE remain unverified. Evidence: `docs/P85_SCHEMA_PRIVACY_20261114.md`, Linux 123 tests and four Tk Xvfb scripts. Official final rate still **UNASSESSED** pending owner-approved 100-point weights and full buyer acceptance. `[작업중]`, RELEASE HOLD.

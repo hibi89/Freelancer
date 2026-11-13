@@ -83,3 +83,11 @@ no code signing. See `docs/P85_INSTALL_DB_SAFETY_20261113.md`.
 `python -B -m worknova_desk --db EXISTING.sqlite rehearse-restore --workspace-dir SEPARATE_EXISTING_PRIVATE_FOLDER`
 
 Explicitly creates a temporary private workspace with a SHA-verified SQLite backup, restores it only to a new filename, compares all six business/audit tables and removes temporary copies. Refuses using the live database directory as workspace. Newly created POSIX backups are `0600` even under a permissive umask; **Windows ACL/BitLocker and physical Windows storage recovery remain unverified**. Never use a customer file in an untrusted shared/network directory. See `docs/P85_RECOVERY_DRILL_20261113.md`.
+
+## P85 2026-11-14: safe customer summary and strict DB admission
+
+Valid WORKNOVA owner ledgers are created by the explicit `init` command. Existing unrelated `.sqlite`, partially initialized or corrupted databases are REFUSED without automatic conversion. Locate a trusted backup and use `restore-new` after SHA256 confirmation; never rename a foreign file to force its opening.
+
+`python -m worknova_desk --db YOUR_EXISTING.sqlite export-customer-summary --customer-id UUID --out NEW-summary.json` creates a NEW local summary with **customer name redacted** and without free text/bank references. The monetary values and random IDs remain confidential. Only to intentionally include customer name, pass *both* `--include-name --confirm-disclosure`. The GUI has a redacted selected-customer export. Do not share any output without reviewing its data; this is not legally certified data portability or bank proof.
+
+Tests: `PYTHONPATH=. python -m unittest discover -s tests -q` and Linux-only `PYTHONPATH=. xvfb-run -a python tests/gui_customer_summary_xvfb.py`. Packaging: `python scripts/build_portable.py --out NEW.zip` then extract `python verify_portable.py --root .` (14 hashed source/script entries + manifest, Python required; not an EXE). Real Win10/11 test and commercial sale approval remain PENDING.

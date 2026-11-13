@@ -1,3 +1,24 @@
+# STATUS — WORKNOVA Desk P85 schema/privacy safety (2026-11-14 KST)
+
+**Official final design completion UNASSESSED / owner 85% goal NOT CERTIFIED.** Product remains `[작업중]`, RELEASE HOLD, no Kmong sale and no production service. WD-01–WD-14 remains authoritative; proposed weights in `docs/FINAL_BLUEPRINT_WEIGHT_PROPOSAL.md` are unapproved.
+
+## Implemented and verified this turn
+
+- New/open path schema fail-closed: refuse unrelated SQLite v0/empty/corrupt; refuse incomplete v2 structure; validate audit and SQLite integrity on reopen. Protect unchanged original files and preserve v1 explicit migration.
+- User-controlled, minimal customer financial/contract-state JSON export, redacted name by default, explicit disclosure flags, no free text/bank references/file paths, new-file-only private output on POSIX, GUI button, consistent read snapshot. Output financial figures and opaque IDs are still confidential.
+- Offline portable manifest 14 source/script files + JSON, no remote service or paid usage. Python prerequisite unchanged.
+- Linux Python3.13.5 `PYTHONPATH=. python -m unittest discover -s tests -q`: **123 PASS / 0 FAIL / 0 SKIP**. Four Tk8.6 Xvfb scripted actual-widget GUI flows PASS. `compileall` PASS. ZIP extraction/preflight 14/14 + isolated CLI init/verify PASS. See `docs/P85_SCHEMA_PRIVACY_20261114.md`.
+
+## Gaps / stop conditions
+
+Windows10/11 native PowerShell/installer/upgrade/uninstall, true signed standalone EXE, login/auth and disk encryption, real Word/PDF licenses and print, 10+ actual customer acceptance, legal/NOTICE/support/sales signoff, approved weighted WD-01–WD-14 acceptance: **NOT VERIFIED**. No owner-data/credentials/font sent, no paid CI run, no actual bank settlement. Product Actions policy-only status is not functional QA. No Vercel/Production (N/A).
+
+## GitHub/rollback
+
+Feature branch `hibi89/Freelancer@product/worknova-desk-local`, prior exact head `4e8adf0f61281006bcb570aa2f6282925168b0f7`; code commit SHA determined after branch push and GitHub Blob readback. Restore previous feature code only, do not revert owner SQLite v2 with old v1 writer. No changes to Freelancer main, original PayPal hackathon, other product branches. Central Kmong `[작업중]` synchronization after code confirmation. **RELEASE HOLD**.
+
+---
+
 # STATUS — WORKNOVA Desk P85 offline recovery checkpoint
 
 Updated 2026-11-13 KST · Private `hibi89/Freelancer@product/worknova-desk-local`.
@@ -19,8 +40,3 @@ Updated 2026-11-13 KST · Private `hibi89/Freelancer@product/worknova-desk-local
 ## Rollback
 
 Previous verified code `85a2a115d32d3378544ae68bb453466499aebcb8` in Git history. Do not touch owner databases, backups, main branch, PayPal source, other product statuses or licenses. Package v3 requires its paired v3 integrity verifier, do not mix with v2. Preserve source/test evidence exact SHA in central KMONG registry and `HANDOFF.md`.
-
-## Verified source and KMONG sync — 2026-11-13 KST
-- Feature/tests exact GitHub source SHA: `09a22bbd399e08b81eb979cd78184f788faf8423` (tree `871c2bb54de8f7f81cc38c078a8dc4a1c60b8a10`), code/trace committed. Local Python **104/104 PASS**, Tk GUI 3 flows PASS; v3 bundle SHA256 `3d41225a3741dfb7934f6948e7e03c62a21ff8f4388423cb3fd65f9432b00e0c` (13 verified package entries + manifest) with isolated CLI init + recovery rehearsal PASS.
-- Central KMONG updated and re-read at `hibi89/hackathon-command-center-2026@kmong-productization` HEAD `50ddf2ce3ee79f19c347f8aa81ff1c4b08a2375b`, with same code SHA, test numbers and detailed audit file `docs/audits/WORKNOVA_DESK_P85_RECOVERY_20261113.md`.
-- Exact Windows 10/11 OS/runtime/EXE/Word/real-customer acceptance remain **NOT_RUN**; formal 85% **UNASSESSED**, `[작업중]`, RELEASE HOLD.

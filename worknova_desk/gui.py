@@ -15,6 +15,7 @@ from .core import Desk, DeskError
 from .documents import export_document
 from .lifecycle import rename_customer, delete_unused_customer
 from .delivery_evidence import attach_file, verify_file
+from .privacy import export_customer_summary
 
 
 def parse_rows(lines: str, *, kind: str) -> list[dict]:
@@ -74,7 +75,7 @@ class WorknovaGUI:
         self.views["quotes"].bind("<<TreeviewSelect>>",lambda _:self.refresh_children("quotes"))
         self.views["contracts"].bind("<<TreeviewSelect>>",lambda _:self.refresh_children("contracts"))
         actions=ttk.Frame(self.root);actions.pack(fill="x",padx=10,pady=5)
-        button_rows=[ttk.Frame(actions),ttk.Frame(actions),ttk.Frame(actions)]
+        button_rows=[ttk.Frame(actions) for _ in range(4)]
         for line in button_rows:line.pack(fill="x",anchor="w")
         for idx,(title, fn) in enumerate((
           ("견적 생성",self.new_quote),("견적 수정버전",self.revise_quote),("견적 승인",self.approve_quote),
@@ -84,7 +85,8 @@ class WorknovaGUI:
           ("장부 백업",self.backup), ("견적 DOCX",self.quote_docx),
           ("현황 DOCX",self.contract_docx), ("견적 PDF (폰트지정)",self.quote_pdf),
           ("거래처 수정",self.rename_selected_customer), ("미사용 거래처 삭제",self.delete_selected_customer),
-          ("납품 파일 해시 등록",self.attach_selected_evidence), ("납품 파일 해시 검증",self.verify_selected_evidence))):
+          ("납품 파일 해시 등록",self.attach_selected_evidence), ("납품 파일 해시 검증",self.verify_selected_evidence),
+          ("거래처 요약 JSON",self.export_selected_customer_summary))):
             ttk.Button(button_rows[idx//6],text=title,command=lambda f=fn:self.action(f)).pack(side="left",padx=2,pady=3)
         self.message=tk.StringVar(value="대상 항목을 선택하세요. 확인 후에만 실제 변경됩니다.")
         ttk.Label(self.root,textvariable=self.message).pack(anchor="w",padx=10,pady=5)
@@ -175,6 +177,14 @@ class WorknovaGUI:
         file=filedialog.askopenfilename(title='기존 납품파일 SHA256과 일치 여부 확인',parent=self.root)
         if not file:raise DeskError("증빙 파일 선택 취소")
         return verify_file(self.desk,milestone,file)
+    def export_selected_customer_summary(self):
+        customer = self.selected("customers")
+        file = filedialog.asksaveasfilename(title="새 거래처 요약 JSON (금액·ID도 민감)",
+            defaultextension=".json",filetypes=[("JSON", "*.json")],parent=self.root)
+        if not file: raise DeskError("요약 내보내기 취소")
+        self.confirmed("견적·수금 금액과 장부 식별자가 포함됩니다. 제3자에게 보내기 전에 검토하세요. 로컬 파일로 저장할까요?")
+        return export_customer_summary(self.desk,customer,file)
+
     def quote_items(self):return parse_rows(self.question("견적 품목","한 줄마다: 품목|수량|단가(원)\n예: 디자인|2|150000"),kind="quote")
     def vat(self):return messagebox.askyesno("부가세 확인","견적에 10% 부가세를 가산합니까?\n(세무 적합성은 사용자 판단)",parent=self.root)
     def new_quote(self):return self.desk.new_quote(self.selected("customers"),self.quote_items(),taxable=self.vat())

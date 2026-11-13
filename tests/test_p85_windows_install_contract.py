@@ -51,7 +51,7 @@ class WindowsInstallContractTests(unittest.TestCase):
 
     def test_staged_install_has_self_verifying_package(self):
         stage = self.stage_model()
-        self.assertEqual(verify(stage)['verified_files'], 13)
+        self.assertEqual(verify(stage)['verified_files'], 14)
         self.assertEqual((stage/'FILE_MANIFEST.json').read_bytes(),
                          (self.package/'FILE_MANIFEST.json').read_bytes())
 
