@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 from .core import Desk, DeskError, restore_new
+from .documents import export_document
 
 
 def main(argv=None):
@@ -36,6 +37,14 @@ def main(argv=None):
     cmd("accept", ("milestone_id", True), ("actor", True))
     cmd("collect", ("milestone_id", True), ("actor", True), ("amount_krw", True), ("reference", True))
     r = cmd("report", ("contract_id", True)); r.add_argument("--html-out")
+    document = sub.add_parser("export-document", help="Local redacted-by-default DOCX/PDF report; never sends data")
+    document.add_argument("--type", required=True, choices=("quote", "contract"))
+    document.add_argument("--id", required=True)
+    document.add_argument("--out", required=True)
+    document.add_argument("--format", choices=("docx", "pdf"), required=True)
+    document.add_argument("--pdf-font", help="PDF only: user-supplied Korean TTF; font rights remain user's responsibility")
+    document.add_argument("--include-customer", action="store_true", help="Include customer name in output; requires --confirm-disclosure")
+    document.add_argument("--confirm-disclosure", action="store_true", help="Explicit permission to disclose customer name")
     sub.add_parser("verify")
     cmd("backup", ("out", True))
     cmd("migrate-v1", ("backup_out", True))
@@ -80,6 +89,11 @@ def main(argv=None):
                     raise DeskError("HTML export requires a new local output path")
                 path.write_text(desk.export_html(args.contract_id), encoding="utf-8")
                 value["html_created"] = True
+        elif c == "export-document":
+            value = export_document(desk, args.type, args.id, args.out,
+                         format=args.format, pdf_font=args.pdf_font,
+                         include_customer=args.include_customer,
+                         confirm_disclosure=args.confirm_disclosure)
         elif c == "verify": value = {"verified_events": desk.verify_audit()}
         elif c == "backup": value = {"backup_sha256": desk.backup(args.out)}
         elif c == "migrate-v1": value = {"backup_sha256": desk.migrate_v1(args.backup_out), "schema_version": desk.schema_version}

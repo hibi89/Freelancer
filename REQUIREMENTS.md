@@ -15,3 +15,12 @@ Canonical whole-product design: `docs/FINAL_BLUEPRINT.md` (WD-01 through WD-14).
 - Korean offline Tkinter local GUI with customer filtering, quote entry/revision, owner approval, contract and milestone actions, manual partial collection and redacted review HTML.
 - P70 Linux scoped regression and GUI virtual-display smoke required, plus Windows user acceptance before commercial score.
 - Preserve all 14 canonical WD requirements; formal user final percentage remains UNASSESSED pending 100-point weights, exact-SHA acceptance and external gates.
+
+## P85 engineering gate additions, 2026-11-13
+
+- Must preserve baseline P50/P70 and schema v2, use no network and do not change PayPal original.
+- WD-10/12: export redacted Korean quote/contract review DOCX without external dependencies; optional user-rights-cleared Korean TTF PDF, reportlab optional. No PDF claims if font missing. All document paths must be new, user-initiated; emit hash.
+- WD-11: GUI user action triggers local quote/contract DOCX / PDF; customer disclosure remains opt-in and is disabled by default.
+- WD-13: verify deterministic ZIP source allowlist + SHA manifest and provide unsigned Windows per-user Python portable install candidate with app/data split, dry-run and rollback. A Python prerequisite/unsigned PowerShell **must not be advertised as a native EXE or signed installer**.
+- WD-14: record 10 synthetic industry cases separately from actual customer legal and accounting signoff.
+- Official final 85% not claimable without owner-approved weights/full WD-01..14 evidence; `[작업중]` and RELEASE HOLD unchanged.

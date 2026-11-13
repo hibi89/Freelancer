@@ -46,3 +46,11 @@ No PayPal API or other original hackathon code is imported; the original quote�
 - **P100:** end-customer acceptance, support/returns, clear full coverage and owner release approval.
 
 These stages are directional deliverable gates, **not agreed 100-point weights** for the entire WD-01..14. Formal final-completion rate remains UNASSESSED until approval and exact-SHA evidence.
+
+## 2026-11-13 P85 implementation checkpoint (additive, not an owner-approved scope change)
+
+- WD-10/12: a user-triggered Korean DOCX generator using only standard-library OOXML, and an optional PDF via locally installed ReportLab + explicit rights-cleared `.ttf`. Outputs redact customer names by default, refuse overwrite, bind quote version / contract amounts, include no-certification disclaimers and SHA256 receipt. No fonts redistributed.
+- WD-11: new desktop buttons for DOCX quote/contract and optional PDF quote. Xvfb widget smoke is Linux-only, not Windows acceptance.
+- WD-13: deterministic source-only portable ZIP, SHA256 file manifest, Windows per-user PowerShell install/rollback/uninstall scripts that explicitly retain separate customer data. This is **not a self-contained EXE or signed installer**; Python must be preinstalled and real Windows installation has not been executed.
+- WD-14: 10 synthetic industry transaction cases were run, **not ten real customer samples**. WD-01 role/login, WD-06 external delivery proof, WD-08 independent tamperproofing, WD-09 secure DB encryption, WD-12 real Windows fonts/legal, WD-13 physical Windows installer, WD-14 customer acceptance remain incomplete.
+- P85 engineering activity is documented in `docs/P85_TRACE.md`. The one official full-design % remains **UNASSESSED / not yet 85%** until the owner approves weighted WD-01..14 mapping and every scored acceptance is evidenced at an exact SHA. **[작업중] and RELEASE HOLD remain.**

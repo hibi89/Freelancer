@@ -25,6 +25,26 @@ For Windows (Python 3.11+ with Tcl/Tk installed) use `py -3 -m worknova_desk.gui
 
 ## Tests and boundaries
 
-`PYTHONPATH=. python -m unittest discover -s tests -q` locally **37/37 PASS** (18 P50 regressions plus 19 P70); `PYTHONPATH=. xvfb-run -a python tests/gui_smoke_xvfb.py` **PASS** on Linux virtual Tk 8.6 for scripted quote→approval→contract→delivery→acceptance→partial collection E2E. No Windows end-user acceptance/CI, real-client VAT/legal signoff, DOCX/PDF final output, signed installer, customer onboarding, commercial IP/legal approval. All releases **HOLD**.
+`PYTHONPATH=. python -m unittest discover -s tests -q` locally **37/37 PASS** (18 P50 regressions plus 19 P70); `PYTHONPATH=. xvfb-run -a python tests/gui_smoke_xvfb.py` **PASS** on Linux virtual Tk 8.6. No Windows end-user acceptance/CI, real-client VAT/legal signoff, DOCX/PDF final output, signed installer, customer onboarding, commercial IP/legal approval. All releases **HOLD**.
 
 [Final whole-product blueprint](docs/FINAL_BLUEPRINT.md) · [P70 scoped evidence](docs/P70_TRACE.md) · [P50 baseline](docs/P50_TRACE.md).
+
+## P85 scoped upgrade — offline Korean DOCX/PDF + portable source package (2026-11-13)
+
+Original P50/P70 functions and DB v2 remain unchanged. From the private checkout:
+
+```sh
+PYTHONPATH=. python -m unittest discover -s tests -q
+PYTHONPATH=. xvfb-run -a python tests/gui_smoke_xvfb.py  # Linux GUI test only
+python -m worknova_desk --db ./demo.sqlite export-document --type quote --id QUOTE_ID --out ./NEW_QUOTE.docx --format docx
+python -m worknova_desk --db ./demo.sqlite export-document --type contract --id CONTRACT_ID --out ./NEW_REPORT.docx --format docx
+# Optional Korean PDF requires local reportlab and a licensed Korean TTF file:
+python -m worknova_desk --db ./demo.sqlite export-document --type quote --id QUOTE_ID --out ./NEW_QUOTE.pdf --format pdf --pdf-font /PATH/TO/YOUR_LICENSED_KOREAN.ttf
+python scripts/build_portable.py --out ./NEW_WORKNOVA_PORTABLE.zip
+```
+
+The generated documents exclude customer names by default, show quote version and recorded KRW/VAT, and disclaim legal, payment and tax certification. CLI inclusion of a customer name requires **both** `--include-customer` and `--confirm-disclosure`; the GUI does not offer unredacted export. Documents and SQLite backups are sensitive, unencrypted local data and are never automatically uploaded.
+
+The Windows portable ZIP includes Python source, explicit checksums, `launch.cmd`, and a candidate `install_local.ps1` for user-scoped install/upgrade/remove preserving `LOCALAPPDATA\\WORKNOVA Desk\\Data`. **Windows Python 3.11+ and Tk are prerequisites. No standalone EXE, signed MSI, font files or customer database are bundled.** Native Windows install/rollback/Defender/SmartScreen **NOT_RUN**. The PowerShell script must be reviewed and never silently bypass policy.
+
+Engineering proof: [P85 trace](docs/P85_TRACE.md) (Linux 52/52 tests and virtual-display UI smoke; **official final % UNASSESSED and RELEASE HOLD**). The previous P70 test statement above is historical rather than the current test total.

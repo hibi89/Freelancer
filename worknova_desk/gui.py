@@ -12,6 +12,7 @@ from pathlib import Path
 from tkinter import ttk, simpledialog, messagebox, filedialog
 
 from .core import Desk, DeskError
+from .documents import export_document
 
 
 def parse_rows(lines: str, *, kind: str) -> list[dict]:
@@ -71,14 +72,15 @@ class WorknovaGUI:
         self.views["quotes"].bind("<<TreeviewSelect>>",lambda _:self.refresh_children("quotes"))
         self.views["contracts"].bind("<<TreeviewSelect>>",lambda _:self.refresh_children("contracts"))
         actions=ttk.Frame(self.root);actions.pack(fill="x",padx=10,pady=5)
-        button_rows=[ttk.Frame(actions),ttk.Frame(actions)]
+        button_rows=[ttk.Frame(actions),ttk.Frame(actions),ttk.Frame(actions)]
         for line in button_rows:line.pack(fill="x",anchor="w")
         for idx,(title, fn) in enumerate((
           ("견적 생성",self.new_quote),("견적 수정버전",self.revise_quote),("견적 승인",self.approve_quote),
           ("계약 생성",self.new_contract),("계약 활성화",self.activate),
           ("납품",self.deliver),("수정 요청",self.revision),("납품 승인",self.accept),
           ("수금 수기 기록",self.collect),("견적 HTML 미리보기",self.preview),
-          ("장부 백업",self.backup))):
+          ("장부 백업",self.backup), ("견적 DOCX",self.quote_docx),
+          ("현황 DOCX",self.contract_docx), ("견적 PDF (폰트지정)",self.quote_pdf))):
             ttk.Button(button_rows[idx//6],text=title,command=lambda f=fn:self.action(f)).pack(side="left",padx=2,pady=3)
         self.message=tk.StringVar(value="대상 항목을 선택하세요. 확인 후에만 실제 변경됩니다.")
         ttk.Label(self.root,textvariable=self.message).pack(anchor="w",padx=10,pady=5)
@@ -182,6 +184,24 @@ class WorknovaGUI:
         if path.exists() or path.is_symlink() or not path.parent.is_dir():raise DeskError("기존 파일 덮어쓰기 금지")
         with path.open("x",encoding="utf-8") as f:f.write(self.desk.export_quote_html(quote))
         return "개인정보 없는 새 HTML 미리보기 생성"
+    def quote_docx(self):
+        return self._export_selected('quote','docx')
+    def contract_docx(self):
+        return self._export_selected('contract','docx')
+    def quote_pdf(self):
+        return self._export_selected('quote','pdf')
+    def _export_selected(self,kind,format):
+        identifier=self.selected('quotes' if kind=='quote' else 'contracts')
+        filename=filedialog.asksaveasfilename(title='새 민감정보 제외 문서 저장',defaultextension='.'+format,
+                    filetypes=[(format.upper(),'*.{}'.format(format))],parent=self.root)
+        if not filename:raise DeskError('문서 저장 취소')
+        font=None
+        if format=='pdf':
+            font=filedialog.askopenfilename(title='상업적으로 사용 가능한 한글 TTF를 본인이 지정하세요',
+                                 filetypes=[('TrueType font','*.ttf')],parent=self.root)
+            if not font:raise DeskError('한글 PDF 폰트 선택 취소')
+        return export_document(self.desk,kind,identifier,filename,format=format,pdf_font=font)
+
     def backup(self):
         file=filedialog.asksaveasfilename(title="새 SQLite 백업(새 이름)",defaultextension=".sqlite",parent=self.root)
         if not file:raise DeskError("백업 취소")

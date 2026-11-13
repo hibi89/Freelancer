@@ -1,18 +1,22 @@
-# STATUS — WORKNOVA Desk P70 offline engineering gate
+# STATUS — WORKNOVA Desk scoped P85 implementation (2026-11-13 KST)
 
-2026-11-13 KST · `hibi89/Freelancer@product/worknova-desk-local` · **official final-blueprint % UNASSESSED / user P70 goal not formally certified** · central **[작업중]** · RELEASE HOLD / not registered for sale.
+**Repo:** `hibi89/Freelancer` (Private), branch `product/worknova-desk-local`. **Official final-blueprint completion: UNASSESSED**, user P85 objective **not certified**. KMONG `[작업중]` remains; **RELEASE HOLD / not registered / no Production**.
 
-## Completed & locally verified
-- P50: independent local SQLite quote→contract/milestone→delivery/revision/acceptance→manual partial collection, KRW/VAT rounding, audit chain, consistent backup, redacted HTML/JSON.
-- P70: additive v2 quote immutable revisions/lineage, latest-version guard, explicit non-destructive v1 backup/migration, SHA256-pinned restore only into new path, quote HTML, customer/quote/contract/milestone browsing, state-preserving selections, Korean Tkinter guided desktop workflow including owner confirmations and manual cash-state label.
-- Linux Python 3.13.5 **37/37 unittest PASS**, Python source compile PASS, Tk 8.6 widget real GUI scripted quote→approval→contract→deliver→accept→collection **PASS** under Linux Xvfb virtual display. See `docs/P70_TRACE.md`.
-- Existing PayPal hackathon and Freelancer main branches, customer data/secrets, Vercel/Cloudflare, remote auth and all other product states remain unmodified.
+## Implemented and locally verified
 
-## Open gates
-- **Formal P70:** owner-approved WD-01..WD-14 100-point weights, exact requirement acceptance; Windows GUI/rights/customer-grade tests and completeness still missing. Therefore do not claim `70% final` from scoped test pass.
-- **Later P85/95/100:** end-user Windows UI accessibility and packaging/installer, document DOCX/PDF fonts/right review, roles/customer delete/export, zero-trust backup restore, 10+ buyer cases and owner release signoff.
-- No actual hosted CI/Windows app execution, real bank/PayPal/AI, legally binding contract, real paying customer, Production URL; CI/Production **NOT_RUN / N/A**. No paid CI invoked.
+- P50/P70 intact: offline KRW + VAT quote, explicit quote approval, immutable versioned revisions, approved contract, milestone states/acceptance, manual payments/receivables, audit, v1 migration/backup, hash-verified new-path restore and Tk GUI.
+- New P85: redacted-by-default Korean standard-library DOCX for quote and contract progress; optional PDF using ReportLab + caller-provided font (no font bundling); GUI export actions; path no-overwrite, explicit dual privacy flags, audit check and SHA256 receipts.
+- New P85: deterministic source-only portable ZIP and file SHA256 manifest, candidate per-user Windows `install_local.ps1` and `launch.cmd`, app-data split/rollback/uninstall preserving user data. This **requires Python** and is not a signed EXE/installer. Real Windows action NOT_RUN.
+- Local Linux Python3.13.5 52/52 unittest PASS, 0 FAIL, 0 SKIP. Tk8.6 Xvfb scripted user-flow PASS. `compileall` PASS. PDF bytes and Korean text parsed using host-installed NanumGothic fixture (not part of product), DOCX read using python-docx. 10 synthetic industry finance/lifecycle cases PASS; *not* customer acceptances.
 
-## Backup and rollback
+## Open official full-design requirements
 
-P50 code preserved in previous branch Git history and local `/mnt/data/worknova_desk_p50` ephemeral source. New schema v2 for new DBs; legacy v1 migration needs explicit verified backup. No original owner DB was edited. Roll back software by checking out previous feature commit, keep user DB/backup intact, **do not open migrated v2 DB using an old v1 writer**. Main remains unaffected.
+WD-01 real roles and data lifecycle, WD-06 external delivery evidence, WD-08 tamper-resistant independent proof, WD-09 secure customer recovery, WD-11 native Windows UX, WD-12 actual Windows Word/Print and font license, WD-13 self-contained signed Windows package/ACL/encryption, WD-14 10 actual accepted user cases, legal/license/NOTICE/support/sale approval. Owner-approved whole-product 100-point weight matrix is unavailable; numeric score must not be invented.
+
+## Safety / recovery
+
+- PayPal hackathon source, Freelancer main and other product branches and existing customer DB untouched. P70 predecessor Git commit `16d08b79621a303e190835a74885d58d75d513d9` is the rollback code reference; **do not use older writer against a migrated v2 DB**.
+- Backups/new exports are explicitly user-owned and never silently overwritten or transmitted. No font included. Installer scripts have not been executed on Windows. Sensitive SQLite remains unencrypted; user must protect folder with OS permissions/encryption.
+- Product SHA to be filled by exact GitHub source commit readback. No Actions Windows/Production run for this SHA, no actual payment or commercial test.
+
+Evidence: `docs/P85_TRACE.md` (full WD-01..WD-14 rows). **RELEASE HOLD**.
