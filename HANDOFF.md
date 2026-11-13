@@ -1,3 +1,18 @@
+# HANDOFF — 배점안 승인/전체 최종설계 점수 검증 (2026-11-14 KST, 최신)
+
+1. **목표/기술:** WORKNOVA Desk 오프라인 Windows 견적→계약→납품→수금, Python/SQLite/Tk. WD-01~WD-14 전체 최종설계 100점 분모 고정, 사용자 `배점안승인`으로 가중치 승인.
+2. **변경/결정:** 한국어 배점 정본 및 14항목 검증 원장을 문서 갱신. 점수 변경·범위 축소·기능 코드 변경 없음. 원래 가중치 [8,7,6,6,6,7,7,8,10,5,8,6,10,6].
+3. **테스트:** 이전 기능 SHA `fb71ca9a65f8d1a067a2b53eb18fbdac0580054b`에서 Linux 141/141 PASS, Tk Xvfb 5 PASS, 포터블 15 PASS 기록. 이번 승인 문서 변경으로 새 테스트 실행한 것으로 주장하지 않음; Windows NOT_RUN.
+4. **진행/대기:** 최종 구매자 검수까지 전체 완료된 항목에만 배점 인정 → 현재 **0/100 정식 인정점수**(구현률 0% 의미 아님). **P85 미달**, `[작업중]`·RELEASE HOLD·실상품 등록 없음.
+5. **오류/대안:** 누적 기능 테스트 수를 최종률로 오해하면 왜곡. 비용 없는 Linux 테스트는 완료됐지만 실제 Windows/Word/파일 권한·권리·고객 시험은 별도. 무료 Windows 직접 검증 우선, 유료 CI 무단 실행 금지.
+6. **저장소/SHA/경로:** `hibi89/Freelancer@product/worknova-desk-local`, 기존 기능 SHA 상기; 승인 문서 커밋은 GitHub HEAD에서 재조회. `docs/FINAL_BLUEPRINT_WEIGHT_PROPOSAL.md`, `docs/FINAL_SCORE_EVIDENCE_20261114.md`, `STATUS.md`, `HANDOFF.md`.
+7. **환경/배포:** Python3.11+ / Windows10/11 타깃; `python -m unittest discover -s tests -q`, Windows 합성 검증 `py -3 -B tools\\windows_acceptance.py`(실행 미완). Vercel·Production N/A.
+8. **원본/보안/백업:** 실고객 DB, 원본 PayPal 저장소, Freelancer main/기존 브랜치 수정 금지. 백업·실제 데이터·비밀번호·개인정보 GitHub 저장 금지. 사용 중 SQLite DB 평문, 선택 백업만 암호화.
+9. **다음 순위/완료 기준/승인:** 무료 실제 Windows 설치·복구 및 PowerShell 검증→권한/독립 EXE/Word/권리→실고객 수용→요구별 완료 증거 갱신→최종 점수 >=85. 판매·유료 비용·권한/데이터 변경은 별도 승인.
+10. **갱신/확인:** 2026-11-14 KST. 기준 소스 `fb71ca9a65f8d1a067a2b53eb18fbdac0580054b`, 이 회차는 승인 문서만 수정/원격 SHA 재확인 필요. 크몽 원장 승인 기록 최신화 필요.
+
+---
+
 # HANDOFF — WORKNOVA Desk P85 Windows gate (2026-11-14 KST)
 
 1. **Scope/stack:** WD-01..14 complete offline Windows freelancer tool, local Python3.11+/SQLite/Tk, Korean DOCX, optional PDF, no PayPal/cloud; no scope reduction.

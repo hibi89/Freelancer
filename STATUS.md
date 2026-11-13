@@ -1,3 +1,13 @@
+# STATUS — 2026-11-14 KST: 최종설계 배점안 사용자 승인(최신)
+
+- 사용자 명시적 `배점안승인`: WD-01~WD-14의 기존 100점 배점을 **최종 승인**. 상세 `docs/FINAL_BLUEPRINT_WEIGHT_PROPOSAL.md`(파일명은 기존 참조를 위해 유지). 설계 범위 축소나 점수 임의 조정 없음.
+- 승인된 엄격한 *항목 전체 완료만 PASS* 기준 현재 **최종 검증 인정점수 0/100**, **85점 목표 미달**. 이는 기능 구현률 0%가 아니라 구매자 수용까지 완전 종료된 항목이 아직 없다는 뜻. **14개 항목 부분 구현·기능 검증 증거**는 `docs/FINAL_SCORE_EVIDENCE_20261114.md`에서 구분.
+- 이전 회차 증거: Linux Python 141/141 PASS, Tk Xvfb GUI 5종 PASS, 포터블 15개 파일 검사 PASS(기능 SHA `fb71ca9a65f8d1a067a2b53eb18fbdac0580054b`). **이번 승인 작업에는 제품 코드 수정·신규 실행 테스트 없음**.
+- Windows10/11 실기기, 보안·서명 EXE, Word 인쇄·폰트 권리, 실고객·법률/지원 수용 **미검증**. 무료 검증 우선; 유료 CI·보안 설정 변경·실고객 전송·판매GO는 승인 대상 외.
+- `hibi89/Freelancer@product/worknova-desk-local` `[작업중]`·`RELEASE HOLD`·실등록 미완료. Production N/A. 기존 데이터·타브랜치·PayPal 원본 변경 없음.
+
+---
+
 # STATUS — WORKNOVA Desk Windows acceptance readiness (2026-11-14 KST)
 
 - Owner objective: verified **85% of full WD-01..14**. **UNASSESSED / NOT CERTIFIED**, [작업중], RELEASE HOLD. Proposed 100-point rubric still unapproved; never equate local engineering stage with final percent.

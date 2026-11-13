@@ -1,23 +1,31 @@
-# WORKNOVA Desk — provisional 100-point acceptance rubric (NOT APPROVED)
+# WORKNOVA Desk — 사용자 승인 최종설계 100점 평가기준
 
-This rubric is a **proposal only**, does not amend the owner's WD-01..WD-14 full design, and MUST NOT be used to claim a numeric final-completion percentage until the owner agrees on weights and actual test evidence at an exact source SHA. P50/P70/P85 milestones are engineering iterations, not whole-product percentages.
+**승인:** 2026-11-14 KST 사용자 발언 `배점안승인`. 기존 WD-01~WD-14 전체 범위와 각 가중치를 그대로 확정. 기존 파일명 `FINAL_BLUEPRINT_WEIGHT_PROPOSAL.md`는 참조 호환성을 위해 유지하되, 아래 배점은 더 이상 초안이 아닙니다.
 
-| ID | Proposed weight | Current evidence / major gaps |
-|---|---:|---|
-| WD-01 | 8 | Create/list/rename/delete-unused synthetic test; no authenticated roles/retention policy |
-| WD-02 | 7 | KRW/VAT integer tests; real tax review not done |
-| WD-03 | 6 | Immutable version lineage/approval tests; buyer checks unverified |
-| WD-04 | 6 | Contract scope and explicit activation tests; external legal agreement not verified |
-| WD-05 | 6 | Milestone sum/state validation tests; buyer scenarios incomplete |
-| WD-06 | 7 | Delivery/revision/acceptance + hashed local file; no external proof of receipt or identity |
-| WD-07 | 7 | Manual partial receipts and outstanding controls; no bank settlement verification |
-| WD-08 | 8 | Chain + separate unsigned checkpoint; no independent signed/remote proof |
-| WD-09 | 10 | Backups, migration, new-path restore, explicit missing DB safety; Windows power-loss/ACL drill missing |
-| WD-10 | 5 | Redacted local JSON/HTML, no automatic transmission; external privacy review missing |
-| WD-11 | 8 | Tk Linux virtual-display flows; physical Win10/11 UX missing |
-| WD-12 | 6 | Korean DOCX and optional owner-font PDF Linux tests; Word printing and font rights missing |
-| WD-13 | 10 | Hash-pinned Python-required packaging, staged model, private new POSIX DB; Windows install/EXE signing/OS encryption missing |
-| WD-14 | 6 | 10 synthetic industry cases; zero real buyer acceptance, legal/NOTICE/support approval |
-| **Total** | **100** | **Weights, pass conditions and any final percentage NOT APPROVED** |
+| ID | 정식 평가 항목 | 승인 배점 |
+|---|---|---:|
+| WD-01 | 고객 등록·수정·삭제 및 개인정보·권한 | 8점 |
+| WD-02 | 원화 견적 금액 및 부가세 계산 | 7점 |
+| WD-03 | 견적 버전 이력과 명시적 승인 | 6점 |
+| WD-04 | 승인 견적에 연결된 계약·활성화 | 6점 |
+| WD-05 | 작업 단계별 금액·상태 검증 | 6점 |
+| WD-06 | 납품·수정·검수 및 증빙 | 7점 |
+| WD-07 | 수금·미수금·중복 수금 차단 | 7점 |
+| WD-08 | 이력 무결성·위변조 탐지 | 8점 |
+| WD-09 | 백업·복원·마이그레이션·복구 | 10점 |
+| WD-10 | 개인정보 비공개 출력·유출 방지 | 5점 |
+| WD-11 | Windows 사용자 화면·접근성 | 8점 |
+| WD-12 | 한국어 DOCX/PDF·인쇄·폰트 권리 | 6점 |
+| WD-13 | Windows 설치·갱신·삭제·접근통제·암호화 | 10점 |
+| WD-14 | 실사용자 검수·법률·권리·지원·판매 준비 | 6점 |
+| **합계** | **변경 없는 최종설계 전체** | **100점** |
 
-Suggested acceptance grades per item: **PASS** only for complete buyer-facing evidence, **PARTIAL** for tested subsets, **NOT RUN/BLOCKED** for OS/customer/legal gates, with no fake fractional credit. A final P85 requires at least 85 of 100 **owner-approved**, fully evidenced points, while every safety-critical release blocker remains HOLD even if a score exceeds 85.
+## 점수 판정의 사용자 승인 원칙
+
+- **PASS(완료):** 해당 항목이 최종 구매자 기준까지 구현·테스트·수용 증거를 갖춘 경우에만 전체 배점 인정.
+- **PARTIAL(부분):** 기능/자동 테스트만 통과하거나 Windows·고객·권리 검증이 남은 경우 해당 배점은 아직 확정 인정하지 않음. 임의 소수점 점수 없음.
+- **NOT_RUN / BLOCKED:** 아직 실검증하지 않은 항목. 증거 없이 성공 주장 금지.
+- **목표:** 각 항목 최종 검증점수 합계 **85/100점 이상**. 보안·유료결제·권리·실고객 데이터·출시 승인 등 필수 안전조건은 점수와 별개.
+- **상태 구별:** 공학단계 P50/P70/P85 또는 테스트 PASS 개수 ≠ 최종설계 완료율. 
+
+**검증 정본:** `docs/FINAL_SCORE_EVIDENCE_20261114.md`. 변경 기록을 폐기하지 않고 사용자 승인된 이 배점을 단일 정본으로 사용합니다.

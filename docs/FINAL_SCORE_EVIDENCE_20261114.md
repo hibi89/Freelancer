@@ -1,23 +1,27 @@
+# WORKNOVA Desk — 승인 배점 기준의 전체 최종설계 검증 원장
 
-# WORKNOVA Desk — whole-final-blueprint evidence ledger, 2026-11-14 KST
+**2026-11-14 KST:** 사용자가 WD-01~WD-14의 **100점 배점안을 승인**. 기준점수 합계 100, 목표 85. 원본 설계/범위는 변경하지 않음. 이번 변경은 **평가기준 승인·증거 재분류**이며 소스 구현이나 Windows 실기기 검증이 아님.
 
-This is the user's *whole final product* WD-01..WD-14, not a P85 engineering label. The proposed weights in `docs/FINAL_BLUEPRINT_WEIGHT_PROPOSAL.md` sum to 100 but have NOT been owner-approved, and there is **no independently auditable 85/100 completion claim**. Scoring status: **UNASSESSED**, user target 85 NOT CERTIFIED, [작업중], RELEASE HOLD.
+| 항목 | 승인배점 | 현재 기존 검증 증거 | 누락된 최종 구매자 수용 조건 | 판정 | 확정 인정점수 |
+|---|---:|---|---|---|---:|
+| WD-01 | 8 | 고객 등록·변경·미사용 고객 삭제, 비공개 JSON | 실제 권한·보존·삭제 정책 미검증 | PARTIAL | 0 |
+| WD-02 | 7 | 정수 KRW/VAT 계산과 예외 테스트 | 실제 세무·표시 적정성 검토 미완 | PARTIAL | 0 |
+| WD-03 | 6 | 불변 견적 버전·승인 및 테스트 | 구매자 실제 승인 절차 검수 미완 | PARTIAL | 0 |
+| WD-04 | 6 | 견적 연결 계약·별도 활성화 테스트 | 계약 문구 및 실제 법적 수용 미완 | PARTIAL | 0 |
+| WD-05 | 6 | 마일스톤 합계와 상태 전환 테스트 | 실사용 업종 수용 사례 미완 | PARTIAL | 0 |
+| WD-06 | 7 | 납품·수정·수용 및 파일 해시 | 실제 구매자의 수령·신원 증명 미완 | PARTIAL | 0 |
+| WD-07 | 7 | 수동 부분 수금·미수금·중복 방지 | 실제 외부 입금 증빙·대사 미검증 | PARTIAL | 0 |
+| WD-08 | 8 | SHA 감사 체인·독립 보관 가능한 미서명 체크포인트 | 독립 서명 기반 변조방지 미검증 | PARTIAL | 0 |
+| WD-09 | 10 | v1/v2 백업·복원 리허설·선택적 AES-GCM 암호화 백업 | Windows ACL·전원차단 복구·실사용 복원 미검증 | PARTIAL | 0 |
+| WD-10 | 5 | 비공개 JSON/HTML 출력·외부 전송 없는 로컬 작동 | 독립 개인정보 처리·보존 검토 미완 | PARTIAL | 0 |
+| WD-11 | 8 | Linux Tk Xvfb GUI 합성 시나리오 5종 PASS | 실제 Windows10/11 UI·접근성 미검증 | PARTIAL | 0 |
+| WD-12 | 6 | 한국어 DOCX·사용자 폰트 PDF의 Linux 생성·파싱 | Windows Word 인쇄·한글 폰트 상업권리 미검증 | PARTIAL | 0 |
+| WD-13 | 10 | 15개 소스 무결성 확인, Python 필요 포터블 ZIP | Windows 설치·복구·독립 서명 EXE·DB 보호 미검증 | PARTIAL | 0 |
+| WD-14 | 6 | 10개 업종 합성 업무 테스트 | 실제 고객 검수·법률/NOTICE·판매/지원 승인 미완 | PARTIAL | 0 |
+| **합계** | **100** | 기존 기능 개발·회귀 증거 보유 | 실 Windows·구매자·법률·판매 검증 남음 | **최종85 미달** | **0/100** |
 
-| ID | Proposed weight (unapproved) | Verified engineering | Outstanding buyer-facing acceptance |
-|---|---:|---|---|
-| WD-01 | 8 | local customer create/rename/delete-unused and redacted summary | authenticated roles and retention rights |
-| WD-02 | 7 | integer KRW/VAT rounding & negative tests | owner legal/tax consultation |
-| WD-03 | 6 | versioned quote chain & explicit approval, synthetic tests | real owner/buyer workflow acceptance |
-| WD-04 | 6 | contract tied to approved quote and activation | signed buyer/legal terms acceptance |
-| WD-05 | 6 | milestone sum/transition tests | end-user industry cases |
-| WD-06 | 7 | delivery/revision/accept + local hashed proof | actual receiving buyer identity/proof |
-| WD-07 | 7 | manual partial receipts and idempotency | real settlement/legitimate external evidence |
-| WD-08 | 8 | SHA event chain and separate unsigned checkpoint | independent signed tamperproofing |
-| WD-09 | 10 | SQLite v1/v2 recover/migrate, restore drill, optional encrypted backup | native Windows disk/ACL/power-loss recovery |
-| WD-10 | 5 | local redacted JSON/HTML and no network | external privacy review |
-| WD-11 | 8 | Tk Xvfb 5 synthetic GUI flows | real Windows10/11 accessibility/UI QA |
-| WD-12 | 6 | Korean DOCX, optional locally installed-font PDF Linux tests | real MS Word print and font rights |
-| WD-13 | 10 | hash-pinned Python portable ZIP, staging, optional backup encryption | Windows verified install/upgrade/ACL/signed self-contained EXE/live DB protection |
-| WD-14 | 6 | ten synthetic industry cases | ten real buyer acceptances, legal NOTICE/support/sales owner signoff |
+**해석 주의:** `0/100`은 **완전한 구매자 수용까지 최종 검증된 항목만 인정하는 엄격한 점수**일 뿐, 제품 구현률이 0%라는 의미가 아님. 14개 항목에 부분 구현/테스트 증거가 존재하지만, 각 항목의 승인된 전체 배점을 부분 구현만으로 계산하거나 85%로 올려서는 안 됨. 기존 개발 진행정도는 이 점수와 구분해 설명한다.
 
-**Critical scoring rule:** Tests passing on Linux are NOT equivalent to completed Windows/customer/rights acceptance. No WD item receives a fabricated percentage; final numeric completion requires owner-approved weights, strict evidence and real OS/customer validation. Locally executed suite: 141 PASS, 5 GUI flows, portable 15-file check PASS. Native Windows/Word/installer, customer/license and official 85 remain unverified.
+**기존 실행 근거(이전 회차):** Linux Python 3.13.5 unittest 141/141 PASS, Tk Xvfb 5/5 PASS, Python이 필요한 포터블 15개 파일 검증 PASS, 제품 기능 SHA `fb71ca9a65f8d1a067a2b53eb18fbdac0580054b`. 이 문서 승인 회차에서 제품 기능을 다시 테스트한 것은 아님. Windows 설치/GUI/Word/ACL/서명EXE, 실구매자 검수·라이선스·지원은 미검증. 
+
+**다음 우선순위:** ① 무료 Windows runner 실제 실행과 복구 ② Windows 독립 EXE·원본 권한·장부 보호 ③ 최종 사용자/법적 권리 검토 ④ WD 항목 단위 재증빙 후 정식 배점 반영. `[작업중]`, `RELEASE HOLD`, 크몽 실제 판매 미등록 유지.
