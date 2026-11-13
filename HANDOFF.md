@@ -1,3 +1,18 @@
+# HANDOFF — 2026-11-14 KST WORKNOVA Desk PyInstaller user-site 오류 수정 (최신 10항)
+
+1. **목표·기술·승인:** WD-01~14 고정 100점·최종 사용자 수용85점, Python3.11/SQLite/Tk Windows 로컬 오프라인 프로그램. 비용0 유지.
+2. **완료·변경·설계판단:** 사용자 Win PowerShell에서 `PyInstaller 6.22.3` 정상설치/plan PASS→실빌드 `No module named PyInstaller`. A) 시스템 전역 재설치(환경 변경·충돌 위험), B) 빌드 서브프로세스의 `PYTHONNOUSERSITE=1` 제거(원본 유지·비용0). B 최소 수정으로 `tools/windows_build_exe.py`와 `tests/test_windows_exe_build.py` 신규 1테스트 갱신. 이전 업무 로직/스키마/원본 ZIP 변경 없음.
+3. **테스트·검증:** 사용자 보고 원인 로그 직접 확인. 변경 후 소스 Git blob `10d60c3789fb2f8c654479845ec9296dbb0c890b` 로컬 복제 내용과 일치, Linux Python3.13.5 **5/5 mock/경로 테스트 PASS**, py_compile PASS, GitHub 파일별 readback 일치. 실제 수정 버전 네이티브 Windows EXE 빌드·GUI/전체 회귀는 **NOT_RUN**, 이전 Windows 합성 11 PASS×2는 별도 통과.
+4. **진행·대기·차단:** 빌드 차단 원인 코드 수정/단위 검증 완료; EXE 실제 생성·GUI·OS 접근통제·서명·Defender·실고객/법률/권리 미완. 공식 전체 수용점수 **0/100**, 목표85 미달, [작업중]·RELEASE HOLD·미등록.
+5. **실패 증거·재시도·대안:** 사용자가 `pip --user`로 설치해 부모에서 PyInstaller 접근 가능, 자식 환경 `PYTHONNOUSERSITE=1` 차단으로 못찾음. 재설치/전역설정 변경 반복 금지. 기존 로컬 ZIP이라면 `--plan`이 출력한 CLI를 PowerShell에서 직접 실행(새 UUID 폴더, 명령 상세 `docs/P85_PYINSTALLER_USER_SITE_FIX_20261114.md`) 또는 수정 최신 ZIP 새로 받기. 실패한 `$out` 경로는 재사용 금지.
+6. **저장소·SHA·경로:** `hibi89/Freelancer@product/worknova-desk-local`; 오류 발생전 HEAD `d8ab09beae722607a180390dcc3807801fc569cb`, 변경 파일 `tools/windows_build_exe.py`, `tests/test_windows_exe_build.py`, 근거 `docs/P85_PYINSTALLER_USER_SITE_FIX_20261114.md`; 최종 제품/중앙 HEAD 본 문서 커밋 후 재확인.
+7. **배포·환경·실행:** Production/Vercel N/A. Python3.11 Windows 10.0.26200.9974(사용자 보고), PyInstaller6.22.3. 로컬 Python 빌드 스크립트 `py -3 -B tools\\windows_build_exe.py --out NEW_DIRECTORY`(최신 소스만), 기존 ZIP은 PowerShell --plan 직접 호출. 빌드 성공은 실행/서명 성공이 아님.
+8. **원본·보안·백업:** 사용자 실제 DB/OS ACL/원본 PayPal·Freelancer main/다른 상품 및 등록완료 기록 전부 불변; 유료 서비스/API/Actions 무실행. 기존 HEAD로 코드 복구 가능, 사용자 설치 PyInstaller 유지.
+9. **다음 우선·승인·완료:** 실제 Windows에서 새 출력폴더로 재빌드→결과·SHA/PE 헤더→격리 GUI 첫 실행·파일 생성/보존→Windows 폴더 권한/평문 데이터·서명/권리·실구매자. 전체 WD별 PASS배점 합85점 이상에서만 최종 달성. 실고객·보안 변경·유료 인증서/제출 승인 선행.
+10. **확인시점·검증범위·문서:** 2026-11-14 KST, 빌드 사용자 실패 로그·GitHub 정본 patch·Linux 5 mock PASS만 새 근거. 수정 Windows EXE 결과 아직 없음. 중앙 원장/STATUS/HANDOFF 동기화 후 원격 SHA 확인.
+
+---
+
 # HANDOFF — 2026-11-14 KST WORKNOVA Desk native Windows QA 사용자 증거 인수인계 (최신 10항)
 
 1. **목표·확정 요구·기술:** WD-01~14 승인 전체100점(고정) 중 최종구매자 수용85점, Python3.11+/SQLite/Tk 오프라인 Windows 앱.
