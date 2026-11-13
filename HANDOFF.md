@@ -1,5 +1,19 @@
 # CITEVAULT AX — HANDOFF — RAG Studio 기업형 (10항, 2026-11-13 KST)
 
+## [2026-11-13 KST] CITEVAULT AX P70 2차 진행 — 10항 인수인계
+
+1. **목표·확정 요구·기술:** 사용자 최종설계 전체 100% 대비 70% 목표. 고객형 로컬 RAG 문서·SQL·인용, PREP/SMAX 승인 경계, 기업 ACL/IAM, 모델없는 근거검색. 공식률 `UNASSESSED`/70 미확정, 로컬 prototype 기능을 축소된 신규 분모에 대입 금지.
+2. **완료·변경·설계 선택:** 기존 RAG 코드 재작성 없이 pinned 원본의 검증된 검색을 참조. 신규 `enterprise/p70-citation-contract.mjs`, `tests/p70-citation-contract.test.mjs`, `enterprise/p70-local-review.mjs`, `tests/p70-local-review.test.mjs` 추가. 기존 `enterprise/p70-rag-bridge.mjs`는 엄격 citation 계약을 호출하도록 수정. 독립 CI 31 Node tests 추가. Git 원본 RAG/PREP/SMAX·고객자료 무변경.
+3. **테스트 명령·성공·미검증:** Node22.16 `node --test tests/p70-citation-contract.test.mjs tests/p70-local-review.test.mjs` **31 PASS/0FAIL/0SKIP**. 선행 P50 standalone 3PASS/3SKIP를 포함 동일 실행 37total/34PASS/0FAIL/3SKIP. 4개 원격 Git blob/local `git hash-object` 일치: citation `03f09a31ded87cefe728f381511512f93b44b6b8`, citation test `c62eeeed6958d771fd6a0ddfe633d6da8eed6b59`, local review `0e8929298b879947117fd2c1bd30d3074bbdcfcc`, review test `9d87f01fc53b06d7592db2a347788ce5f9361345`. V8에서 원본 RAG BM25/knowledge 실제 소스+public synthetic 텍스트 동작 5PASS, 원본 Node loadPackage/PDF/DOCX 실통합 및 Hosted Actions 미검증.
+4. **완료/진행/대기/차단:** 인용 누락 FOUND 허용 취약 논리 제거, 임시 CSV bytes SHA/필드/정확 금액 리뷰 HOLD 구현; 기업 인가 없는 합성 prototype **출시 불가**. P50 원본 checkout 미검증 3SKIP, P70 다중 PDF/DOCX 실제 실행, 진짜 producer 승인, IAM/ACL-before-load, Windows 고객 실증 남음. `[작업중]` 유지.
+5. **오류·근거·시도·재시도 금지·대안:** Node22 신규 로컬 CSV 테스트 초기에 invalid UTF8 거부 코드 기대값 1건 불일치(실제 안전 거부 `INVALID_UTF8`), **테스트 기대값 정확히 수정 후 17PASS**. 원본 GitHub checkout은 DNS 실패, 커넥터로 실제 소스 읽고 in-memory 함수 검증 대체. Hosted push Actions는 연결 상태 API가 Classic statuses 0개이고 PR-only WorkflowRuns라 검사 불가. CI 성공/실패 어느 쪽도 주장 금지.
+6. **저장소/브랜치/SHA/주요 경로:** `hibi89/Freelancer@product/rag-enterprise-knowledge`, P70 2차 시작 `f3dce9d01ab2d40a4c53f0337b36592a21be8bc0`, 정확 원본 RAG pin `c5867b3951f51bfa97cadd1aad8fb13e9cf9e604`, 신규 source/tests 위 blob. CI update `bb529e9b5da82aed06d2eb82a593f217743da164`, P70 evidence docs `5fd556d11a97f20e5a6f8954ca9c7429da2823f7`. 본 HANDOFF 커밋 이후 실제 HEAD 재조회.
+7. **Production URL/Vercel·명령·환경:** Node22 local transient test; `.github/workflows/citevault-p50.yml` independent no-npm-contract job와 pinned original RAG source job. Production/실고객 배포 미적용, 유료 AI/외부 송신 0, 고객 네트워크 접근 없음. Local test cwd project branch root.
+8. **원본·백업·인증 관리·수정금지:** 실행 전 제품 SHA `f3dce9d01ab2d40a4c53f0337b36592a21be8bc0` 복구 기준, private PREP/SMAX·기존 RAG·실고객 자료·비밀/계정·배포 보존. 합성 SMAX JSON은 법적 승인 증명 불가. 원본 물리 PDF 파일, 실제 데이터/인증 키는 Git에 포함하지 않음.
+9. **다음 우선순위·절차·완료기준·사전승인:** 정확 실행된 Hosted Node P50/P70/RAG p512/p538/p540/p549 로그 확보→실 source customer rights/SMAX producer signed reviewer approval 및 revoke 구현은 보안/계정 승인 후→실 권한 사전필터/인덱스 격리→고객 Windows/Gold/보안/성능→사용자 승인 전체 최종설계 가중치 재산정. 70 목표는 그때만 판정.
+10. **최신화 시각·확인 범위·근거 커밋:** 2026-11-13 KST, GitHub 원격 source+본서/중앙 규칙 확인, exact local Node 34PASS/3SKIP 및 원본 V8 5PASS; CI/Production/Windows/고객 IAM/100%-denominator 승인 **미검증**. 기록 정본 `docs/P70_EVIDENCE_MATRIX.md`.
+
+
 ## [2026-11-13 KST] CITEVAULT AX P70 후속 작업 — 10항 최신 인수인계
 
 1. **목표·용도·확정 설계/기술:** 기업용 로컬 RAG, PREP/SMAX 데이터 검토·승인, 문서/SQL 근거, 사용자별 권한 및 모델 fallback. 이번 명시 목표 **최종설계 전체 대비 70%**, 이전 P50 검증 조건 포함. 사용자 승인 100점 가중치 부재로 공식 **UNASSESSED**, 70% 달성 미확정.
