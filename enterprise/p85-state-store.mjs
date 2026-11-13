@@ -73,7 +73,7 @@ export class SyntheticVaultStateStore {
         disabled:allAccounts.filter(x=>x.disabled===1).map(x=>x.user_id),generation};
     });
   }
-  saveDocumentWithGeneration(doc,expectedGeneration){
+  saveDocumentWithGeneration(doc,expectedGeneration,event,epoch){
     if(!stringId(doc?.tenantId)||!stringId(doc?.id)||!Number.isSafeInteger(expectedGeneration)||expectedGeneration<0)fail('DOCUMENT_INVALID');
     this.#transaction(()=>{
       const generation=this.#db.prepare('SELECT generation FROM header WHERE id=1').get()?.generation;
@@ -82,14 +82,7 @@ export class SyntheticVaultStateStore {
         .run(JSON.stringify(doc),doc.tenantId,doc.id);
       if(r.changes!==1)fail('DOCUMENT_NOT_FOUND');
       this.#db.prepare('UPDATE header SET generation=? WHERE id=1').run(expectedGeneration+1);
-    });
-  }
-  saveDocument(doc){
-    if(!stringId(doc?.tenantId)||!stringId(doc?.id))fail('DOCUMENT_INVALID');
-    this.#transaction(()=>{
-      const r=this.#db.prepare('UPDATE docs SET record=? WHERE tenant_id=? AND doc_id=?')
-        .run(JSON.stringify(doc),doc.tenantId,doc.id);
-      if(r.changes!==1)fail('DOCUMENT_NOT_FOUND');
+      this.#writeAudit(doc.tenantId,event,epoch);
     });
   }
   accountEnabled(userId){
@@ -106,31 +99,34 @@ export class SyntheticVaultStateStore {
     if(!stringId(tenantId))fail('DOCUMENT_INVALID');
     return this.#db.prepare('SELECT record FROM docs WHERE tenant_id=? ORDER BY doc_id').all(tenantId).map(x=>parseRecord(x.record));
   }
-  disableAccount(userId,tenantId){
+  disableAccount(userId,tenantId,event,epoch){
     if(!stringId(userId)||!stringId(tenantId))fail('USER_INVALID');
     this.#transaction(()=>{
       const r=this.#db.prepare('UPDATE users SET disabled=1 WHERE user_id=? AND tenant_id=?')
         .run(userId,tenantId);
       if(r.changes!==1)fail('USER_NOT_FOUND');
+      this.#writeAudit(tenantId,event,epoch);
     });
   }
-  setGeneration(value){
+  setGeneration(value,tenantId,event,epoch){
     if(!Number.isSafeInteger(value)||value<0)fail('GENERATION_INVALID');
     this.#transaction(()=>{
       const prior=this.#db.prepare('SELECT generation FROM header WHERE id=1').get();
       if(!prior||value!==prior.generation+1)fail('STALE_GENERATION');
       this.#db.prepare('UPDATE header SET generation=? WHERE id=1').run(value);
+      this.#writeAudit(tenantId,event,epoch);
     });
   }
-  auditEvent(tenantId,event,epoch){
-    // Rejecting an unknown account must not reveal or store guessed tenant names.
-    if(tenantId===null)return;
+  #writeAudit(tenantId,event,epoch){
     if(!stringId(tenantId)||typeof event!=='string'||!(/^[A-Z_]{1,32}$/).test(event)
       ||!Number.isSafeInteger(epoch)||epoch<0)fail('AUDIT_INVALID');
-    this.#transaction(()=>{
-      this.#db.prepare('INSERT INTO audit(tenant_id,event,stamp_ms) VALUES(?,?,?)').run(tenantId,event,epoch);
-      this.#db.prepare('DELETE FROM audit WHERE id NOT IN (SELECT id FROM audit ORDER BY id DESC LIMIT 1000)').run();
-    });
+    this.#db.prepare('INSERT INTO audit(tenant_id,event,stamp_ms) VALUES(?,?,?)').run(tenantId,event,epoch);
+    this.#db.prepare('DELETE FROM audit WHERE id NOT IN (SELECT id FROM audit ORDER BY id DESC LIMIT 1000)').run();
+  }
+  auditEvent(tenantId,event,epoch){
+    // Unknown account names never generate guessed tenant audit records.
+    if(tenantId===null)return;
+    this.#transaction(()=>this.#writeAudit(tenantId,event,epoch));
   }
   events(tenantId){
     if(!stringId(tenantId))fail('AUDIT_INVALID');
