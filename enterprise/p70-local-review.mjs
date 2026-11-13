@@ -94,7 +94,8 @@ function positiveInteger(s,max){
 export function reviewSyntheticSalesDirectory(dir){
   const root=rootDir(dir),csv=readFileBounded(root,'sales.csv',512*1024);
   const source=parseJson(readFileBounded(root,'smax-review.json',16*1024));
-  const plan=parseJson(readFileBounded(root,'prep-mapping.json',16*1024));
+  const mappingBytes=readFileBounded(root,'prep-mapping.json',16*1024);
+  const plan=parseJson(mappingBytes);
   const hash=crypto.createHash('sha256').update(csv).digest('hex');
   const {columns,rows}=csvRows(csv);
   if(!exact(source,['contract','source_sha256','headers','row_count','approval'])||
@@ -121,10 +122,13 @@ export function reviewSyntheticSalesDirectory(dir){
     if(revenue>9007199254740991n||units>9007199254740991n)fail('CSV_TOTAL_UNSAFE');
   }
   // Snapshot the bytes after validation, without treating this as a cryptographic producer signature.
+  const mappingHash=crypto.createHash('sha256').update(mappingBytes).digest('hex');
+  if(!crypto.timingSafeEqual(crypto.createHash('sha256').update(readFileBounded(root,'prep-mapping.json',16*1024)).digest(),
+       Buffer.from(mappingHash,'hex')))fail('MAPPING_CHANGED');
   if(!crypto.timingSafeEqual(crypto.createHash('sha256').update(readFileBounded(root,'sales.csv',512*1024)).digest(),
        crypto.createHash('sha256').update(csv).digest()))fail('SOURCE_CHANGED');
   return Object.freeze({contract:'CITEVAULT_SYNTHETIC_REVIEW_V1',status:'REVIEW_HOLD',
-    source_digest_verified:true,source_sha256:hash,mapping_exactly_bound:true,
+    source_digest_verified:true,source_sha256:hash,mapping_sha256:mappingHash,mapping_exactly_bound:true,
     row_lineage_verified:false,source_rows:rows.length,provisional_units:units.toString(),
     provisional_revenue_krw:revenue.toString(),tax_basis:'TAX_UNKNOWN',
     approval:'NOT_GRANTED',authenticated_reviewer:false,source_rights_verified:false,
