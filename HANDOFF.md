@@ -1,5 +1,20 @@
 # CITEVAULT AX — HANDOFF — RAG Studio 기업형 (10항, 2026-11-13 KST)
 
+## [2026-11-14 KST] CITEVAULT P85 매출 테넌트 경계 보강 — HANDOFF 10항
+
+1. **목표·용도·확정 설계·기술:** 기업용 로컬 CITEVAULT AX 전체 최종설계 대비 사용자 85% 목표. 실제 로그인·tenant/group/project/자료 ACL-before-read, native PDF/DOCX+검증된 SQLite SQL, 승인 PREP/SMAX AX, 모델/Windows 고객 수용. 공식 완료율 UNASSESSED.
+2. **완료·변경·설계 비교 근거:** 기존 local synthetic 통합 `/v1/assess`에서 조직 A 권한을 확인하고도 운영자가 임의 지정한 `salesDirectory`로 타조직 CSV를 바라볼 수 있는 잘못된 경계를 발견. 단순 policy string(A)은 누출 위험; **고정 tenant path + lstat 타입·symlink 검사(B)**가 무상/최소수정/보존성 우수하여 선택. 완전 OS별 파일 핸들/IDP 격리(C)는 승인·검증 필요. 코드 `p85-vault.mjs`/ `p85-journey.mjs` 수정, 부정2건. `p85-journey.test.mjs`의 fixture 원본 생성 재사용(서로 다른 테스트 디스크·실파싱 보존).
+3. **실행 명령·테스트 성공·실패·SKIP:** Linux Node22.16/Python3.13.5 `node --test tests/p85-journey.test.mjs` **18PASS/0FAIL/0SKIP**; `node --test --test-concurrency=1 tests/*.test.mjs` **89PASS/0FAIL/0SKIP**(journey18 + vault27 + loopback17 + state14 + native13); `node scripts/p85-synthetic-demo.mjs --self-test` PASS. 정확 Git blob SHA 3개 원격/로컬 일치. 이전 P50/P70/P85 통합 124total/121PASS/0FAIL/3SKIP은 이전 코드 증거로만 보존, 신규 126case 명령은 미실행. Hosted Windows/Actions 및 original RAG checkout 미검증.
+4. **완료/진행/대기/차단:** 합성 오프라인 PDF/DOCX+SQLite+ACL HTTP 종단 및 매출 tenant root binding/부정 경로 테스트 완료. 실제 기업 IdP/조직별 원본 인덱스·signed SMAX 승인/직원 계정·원본 RAG 정확 통합·한국어 ML/물리 Win 고객 수용 미구현. **[작업중], RELEASE HOLD / SALE NO-GO**.
+5. **오류 근거·원인·시도/재시도 금지·대안:** 타조직 salesDirectory path가 scope label과 물리적으로 미결합 → CSV 조회 전 정확 고정 경로 검증. 당시 첫 full ZIP 직렬 Node 테스트 실행은 환경 처리시간 한도 초과했으나 각 범주 검증 후 전체 완료 로그 `89/89` 수집. 노후 테스트에서 각 사례마다 PDF/DOCX 생성→66.7s, immutable template 1회 생성+독립 복제→28.0s. GitHub container DNS 실패해 pinned RAG checkout 불가, 동일 무의미 재시도 금지; RAG develop vs pin diverged→무단 이동 금지.
+6. **저장소·브랜치·SHA·경로:** `hibi89/Freelancer@product/rag-enterprise-knowledge`, 작업 이전 `1fc73ef7c6bd43015cd7fbf3c9f505940f61982b` (비강제 revert 복구 기준). 원본 pinned RAG `c5867b3951f51bfa97cadd1aad8fb13e9cf9e604`; develop now `bb8529ed689c1e95ccd7bbb722d4d6616eb46130` and diverged. 보강 source exact Git blobs vault `3256d1e52fed8bcf4748060478b381e9c5afe542`, journey `7e194a8def953e851e8413f217212338d033a994`, journey tests `40a171cadb662275f34c62f5f602ae3cdb7ab4d8`. Detailed evidence `docs/P85_TENANT_PATH_AND_QA_20261114.md`, 최신 product HEAD 본 문서 커밋 후 재조회.
+7. **Production/Vercel/명령·환경:** prod URL/도메인/Vercel/대외송신 미적용; Linux local Node22/Python3.13.5 / GitHub Actions Ubuntu22+Windows2022 Node22/Python3.11 매트릭스 구성만. `node --test --test-concurrency=1 tests/*.test.mjs`, `node scripts/p85-synthetic-demo.mjs --self-test`. 테스트용 임시 localhost만.
+8. **원본·백업·인증/수정금지:** 실제 고객 문서·자격증명/권한·RAG Studio/PREP/SMAX 원본·제품/브랜치 이전 정상 코드·기타 크몽 상품 등록기록 보존. 제품 Git 이전 SHA 복구점; 새 테스트 파일은 동일 SHA로 재현. 임시 ZIP 생성 검증 후 다운로드 가능, Library 영구 저장/과금/상용 운영 권한 변경 없음.
+9. **다음 작업 우선순위·승인·완료조건:** 원본 RAG pinned 소스/SQL/native/SMAX hosted job 로그 및 3SKIP 해소→실기업 IAM/서명 승인 PREP/SMAX/고객 문서 이용권·메모리 기반 PDF 파서 악성 입력 격리는 사전 승인→한국어 실제 모델 라이선스·품질/골드 평가→물리 Windows10/11 고객 인수·공식 최종설계 owner 승인 가중치로 85 산정. 합성 테스트 수는 최종 완성률 아님.
+10. **갱신 일시 KST·확인 범위/문서 기준:** 2026-11-14 KST. 제품 정확 Git blob 3개와 Linux local 89PASS, CI YAML 자체/원본 RAG divergent 상태 확인. GitHub Hosted Actions/실 Win10/11·실고객/ML·원본 RAG pin 통합/공식 85 미검증. 근거 `docs/P85_TENANT_PATH_AND_QA_20261114.md`.
+
+
+
 ## [2026-11-13 KST] CITEVAULT AX P85 PDF-DOCX·SQLite 실제 HTTP 통합 — 10항 HANDOFF
 
 1. **목표·용도·확정 설계·기술:** 사용자 설계 전체 대비 **85% 달성 지시**. 실제 기업 IdP/직원별 문서 ACL, PREP/SMAX 권리/서명 승인 AX, verified native PDF/DOCX 근거 + fixed read-only SQLite, 한국어 모델/Windows/고객 인수. 현재 공식 **UNASSESSED/85% 미검증**.
