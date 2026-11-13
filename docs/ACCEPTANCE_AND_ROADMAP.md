@@ -1,3 +1,6 @@
+### 2026-11-13 — SITECRAFT 독립 P50 합성 기술 CI 검증
+
+검증 기능 SHA a5c5a718dc33778fb1df59c601feee57944603db, https://github.com/hibi89/REA_Web/actions/runs/43375663779 Ubuntu+Windows 각 50PASS/0FAIL/1WARN, 2/2 SUCCESS. Strict local contract→실 frozen Fable static GET→Astra REVIEW_REQUIRED→허가된 합성 CSV 기반 REA Pro FastAPI/SQLite 새 앱 API 수용. 원본 보존 및 경로·URL·해시 거부 확인. 공식 100점 최종설계 수치 UNASSESSED(합성 P50 단계 점수 승계 금지), 중앙 [작업중]·RELEASE HOLD 유지. 실제 고객/실 사이트·동적 Fable --record·운영 배포 미검증.
 # SITECRAFT AX — REA_WEB 50/70/85/95/100 수용 게이트 및 로드맵
 
 > **상품명: SITECRAFT AX** · 허가형 웹사이트 진단·독립 재구축. 원래 기술명·원본 저장소는 유지.

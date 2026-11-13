@@ -1,3 +1,11 @@
+## 2026-11-13 KST — SITECRAFT AX P50 실제 합성 기술 게이트 검증
+
+- 사용자 목표 P50, 엔지니어링 합성 수용 통과. 공식 100점 최종설계 완성률은 UNASSESSED, 해총 [작업중] 유지.
+- 코드: hibi89/REA_Web@feature/sitecraft-ax-p50-20261113, 정확 기능/CI SHA a5c5a718dc33778fb1df59c601feee57944603db.
+- 신규 rea/sitecraft_ax.py: 허가된 로컬 HTML/SHA256 + owner CSV/SHA256, strict contract mapping, 원본 Fable static GET 1회 → Astra P4 추정 REVIEW_REQUIRED → 별도 synthetic owner 승인 CSV만 Pro FastAPI/SQLite 생성.
+- 실행: https://github.com/hibi89/REA_Web/actions/runs/43375663779 Ubuntu24.04 50PASS/0FAIL/1WARN, Windows2025 50PASS/0FAIL/1WARN; 2/2 SUCCESS. TestClient deprecation WARN.
+- 설계/기존 REA_Web feature/website-analysis-rebuild/Fable/Astra/Pro 원형/DATA2WEB 변경 없음. 새로운 SITECRAFT 전용 4파일 격리 브랜치.
+- 실제 고객/실사이트, Fable --record, UI 복구 및 Win10/11 물리 Chrome/Edge, Production 및 계약/권리 미검증. RELEASE HOLD.
 # SITECRAFT AX — STATUS — REA_WEB 크몽 리뉴얼 (2026-11-13 KST)
 
 > **상품명: SITECRAFT AX** · 허가형 웹사이트 진단·독립 재구축. 원래 기술명·원본 저장소는 유지.
