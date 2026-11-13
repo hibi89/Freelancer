@@ -33,6 +33,14 @@ jobs:
       - name: Verify pinned RAG commit
         shell: bash
         run: test "$(git -C rag rev-parse HEAD)" = "c5867b3951f51bfa97cadd1aad8fb13e9cf9e604"
+      - name: Install exact pinned RAG native document dependencies
+        shell: bash
+        working-directory: rag
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Validate original PDF/DOCX page and paragraph citations
+        shell: bash
+        working-directory: rag
+        run: node --test tests/p512-native-document.test.mjs
       - name: Run CITEVAULT source-bound synthetic regression
         shell: bash
         working-directory: citevault
