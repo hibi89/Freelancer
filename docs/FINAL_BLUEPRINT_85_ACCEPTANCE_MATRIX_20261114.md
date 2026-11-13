@@ -1,5 +1,12 @@
 # CITEVAULT AX — 최종설계 100% 기준 85% 수용 증거표 (2026-11-14 KST)
 
+## [2026-11-14 KST] REQ16 실제 Chromium UI·ACL 제한 KPI/차트 검증
+
+- 기능 `49918ad4d0de23b8bc462830fa0789e93ebd7936`, [CI #43529432977](https://github.com/hibi89/Freelancer/actions/runs/43529432977) **7/7 SUCCESS, 421 PASS/0FAIL/0SKIP**(중복 OS 포함), 신규 scope library8PASS/OS·actual Chrome desktop/mobile 1PASS.
+- REQ16: 서버 ACL 사전 필터 `GET /v1/library`; 사용자별 허용 문서 수/KPI, 컬렉션별 차트, 문서 선택, 로그아웃 클리어. Hosted Ubuntu actual Chrome 렌더·390px 모바일·스크린샷 생성·검색·로그아웃·JS exception0·외부 HTTP0 검증. 실 고객 Win10/11 브라우저/E2E는 여전히 별도.
+- 실제 기업 IAM·승인된 고객 문서·AI Korean model/성능·Windows 실물 설치·고객 Gold100/라이선스/법무·24항 owner weighted acceptance 미충족. **공식 UNASSESSED, 85% 미인증, [작업중]·RELEASE HOLD**.
+
+
 ## [2026-11-14 KST] REQ22 실코드 보강: SQLite active catalog↔백업 원문 SHA 정확 일치
 
 - 기능 `d32f530e2425da0129a4eb2e9a4a7aef6708dab8`, [CI #43527372030](https://github.com/hibi89/Freelancer/actions/runs/43527372030) Win/Ubuntu **6/6 SUCCESS, 404 PASS/0FAIL/0SKIP**(반복 포함).
@@ -68,7 +75,7 @@
 | 13 | 실제 사용자·그룹·프로젝트·컬렉션 인증 | **신규:** 운영자 로컬 계정 발급, scrypt derived 저장, SQLite 재기동·다른 프로세스 로그인, scoped permission, admin만 발급·상속 권한 한도 | **부분**: 실제 고객 IdP/현장 관리자 승인·MFA/계정 초대 미검증 |
 | 14 | 권한 변경·세션 철회·감사 | **신규:** `provisionUser/changeUserAccess` + SQLite transaction/audit, 기존 세션 권한 즉시 반영, 교차 프로세스 revoke | **검증-합성**: 생산 운영 복구·장기간 계정 정책 필요 |
 | 15 | 문서 버전 교체·폐기·재색인 | `p85-state-store.mjs` durable revision/retire/reindex, SHA·gen·audit 테스트 | **검증-합성**: shadow index 원자 swap·백업/검색 동시성 추가 |
-| 16 | 오프라인 사용자 UI/KPI/차트/출처 탐색 | **신규:** `p85-ui.mjs` localhost 로그인·문서 인용·매출 REVIEW_HOLD·계정 관리, strict CSP/no-store, JS 구문/HTTP/API 6PASS, local operator demo PASS | **부분**: Chromium 실렌더링은 검사 환경 조직 정책에서 localhost 차단; KPI/chart/Windows 미구현 |
+| 16 | 오프라인 사용자 UI/KPI/차트/출처 탐색 | **신규 실기능:** metadata-only ACL `GET /v1/library`, 현재 로그인 계정의 문서 KPI·컬렉션 차트·문서 선택·검색·로그아웃. Chrome 실제 desktop/mobile 390px E2E PASS, 신규 scope/ACL8PASS×2OS, JS 예외0·원격 네트워크0; 기존 운영자 UI/strict CSP 유지 | **검증-합성**: Github hosted Ubuntu Chrome 실제 렌더 성공, 물리 Win10/11 Chrome/Edge·고객 인수/실기업 IdP는 미검증 |
 | 17 | 한국어 실제 로컬 모델·선택 dense | 모델 미설치 fallback `SEARCH_ONLY`, 출처 없는 생성 차단 | **대기**: 실제 model weights·라이선스·Korean mini benchmark 없음 |
 | 18 | 프롬프트 인젝션·ZIP·악성 파일·권한/데이터 유출 | bytes budgets, source SHA/inode/symlink, fail-closed, no network, XSS-safe UI textContent | **부분**: 문서 파서 OS 샌드박스/TOCTOU/침투 테스트·공식 보안점검 미완 |
 | 19 | Windows10/11 오프라인 설치·백업/복구·라이선스 | Node/Python Linux localhost 셀프테스트, SQLite 재기동/문서 version 지속 | **대기**: 실제 Windows 패키지/물리 설치·백업/복구 인수 증거 없음 |

@@ -1,5 +1,19 @@
 # CITEVAULT AX — HANDOFF — RAG Studio 기업형 (10항, 2026-11-13 KST)
 
+## [2026-11-14 KST] REQ16 Chromium 실제 로컬 UI · 421 PASS — HANDOFF 필수10항
+
+1. **목표·확정설계/기술:** 사용자 전체 최종 24항 대비 85% 목표. 기업형 ACL/문서/SQL/PREP-SMAX 승인 RAG·Korean model·Windows/고객 수용. 현재 공식 UNASSESSED·판매 보류.
+2. **기능·방법 비교·결정:** A 브라우저에 전체 문서 카탈로그 내려받아 client filter = 권한 메타 유출로 미채택, B vault 내부 최신 계정+문서 권한 필터 후 DTO/KPI 전송 = 선택. `GET /v1/library` + 실제 JS KPI/컬렉션 차트/authorized doc selector/log-out clear. `p85-vault`, `p85-loopback`, `p85-ui`, `tests/p85-library`, `tests/p85-browser-e2e` 수정/추가.
+3. **실행명령·성공/실패·미검증:** [hosted #43529432977](https://github.com/hibi89/Freelancer/actions/runs/43529432977) 기능 `49918ad4d0de23b8bc462830fa0789e93ebd7936` Ubuntu/Win **7/7 SUCCESS, 421 executed PASS/0FAIL/0SKIP**(OS 반복). Linux Chromium real `node --test tests/p85-browser-e2e.test.mjs` 1PASS, UI scope tests Ubuntu/Windows 8PASS each; pinned RAG original upstream35+bridge36, native each31. Local Chrome 접속 정책차단은 실패로 위장하지 않음.
+4. **완료·진행·대기/차단:** 합성 localhost UI 실제 렌더/로그인/ACL 문서 KPI/컬렉션/선택·검색·390px 모바일·로그아웃 성공. 실제 customer IAM+권리·signed authoritative AX, licensed Korean model, physical Windows10/11, customer Gold100/security/legal/license/weights 미수용. [작업중], RELEASE HOLD.
+5. **오류근거·원인·시도/재시도금지/대안:** 현 local Chrome `net::ERR_BLOCKED_BY_ADMINISTRATOR`(정책); 허가 없이 우회 금지. 별도 무료 GitHub Hosted Ubuntu 실 Chrome 브라우저 job 1PASS, 스크린샷 SHA `dacfed126a5c6763bd6117e0645ac0b4f3cb532b1bbb573d163151570fa46a65`. Windows 브라우저는 물리 인수 필요, 실제 고객값 허용 전 PII 업로드 금지.
+6. **저장소·브랜치·SHA/경로:** `hibi89/Freelancer@product/rag-enterprise-knowledge` 기능 `49918ad4d0de23b8bc462830fa0789e93ebd7936`, 복구 전 문서 HEAD `aca47c3b5bef32c98ed7a3ac09a0a6ac56a4fe46`, 원본 RAG pin `c5867b3951f51bfa97cadd1aad8fb13e9cf9e604`; 주요 파일 `enterprise/p85-vault.mjs`, `enterprise/p85-loopback.mjs`, `enterprise/p85-ui.mjs`, `tests/p85-library.test.mjs`, `tests/p85-browser-e2e.test.mjs`, `.github/workflows/citevault-p50.yml`.
+7. **Production·Vercel·명령/환경:** Production/Vercel 미적용; GitHub Ubuntu24.04 actual Chrome, Node22.16, Windows2022 Node22.23 CI. `node --test tests/p85-library.test.mjs`, `node --test tests/p85-browser-e2e.test.mjs` (Chrome installed), `node scripts/p85-operator-demo.mjs --self-test`. Fake localhost only.
+8. **원본·백업·실인증/금지:** Git parent HEAD 안전 복구점, RAG/SMAX/PREP 원본·고객 문서·신원 비밀값·타상품/등록완료 원장 변경0. GitHub `Freelancer` 전체 PUBLIC owner 조치, 브랜치/이력 노출 위험 및 전체 secret scan 미검증. 실제 생산 고객정보 이 저장소 반입 금지.
+9. **다음 작업 우선순위·완료기준·승인:** (1) 증거 기반 authorized PREP/SMAX producer + 고객 자료 권리·계정 IdP (2) 실 license/sha Korean model weight/recall heldout (3) 실제 Win10/11 설치/백업 및 고객 Gold100/보안 인수 (4) 24행 weighted owner acceptance. 모델 없는 fallback만 정당 인증, 421 PASS는 85% 아님. 유료/실권한/고객 원본 변경은 관련 당사자 승인 필요.
+10. **기준일시·검증 범위·커밋:** 2026-11-14 KST, exact functional source `49918ad4` 7/7 jobs and detailed browser log PASS 검증, doc commit SHA 갱신 후 확인, 공식 UNASSESSED/RELEASE HOLD.
+
+
 ## [2026-11-14 KST] P85 백업 Catalog/문서 무결성 + 404 PASS — HANDOFF 10항
 
 1. **목표·확정 기술:** 최종 24개 항목 100% 대비 85% 사용자 목표. Offline RAG + rights-aware PDF/DOCX/SQL + 기업 identity/ACL + PREP/SMAX signed package + Korean local model + Windows 인수. 공식 UNASSESSED.

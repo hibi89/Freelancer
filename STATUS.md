@@ -1,5 +1,14 @@
 # CITEVAULT AX — STATUS — RAG Studio Enterprise, 2026-11-13 KST
 
+## [2026-11-14 KST] REQ16 실제 Chromium 대시보드·허용 문서 KPI/차트·원문 탐색 7/7 CI PASS
+
+- 기능 SHA `49918ad4d0de23b8bc462830fa0789e93ebd7936`, [정확 Github Actions #43529432977](https://github.com/hibi89/Freelancer/actions/runs/43529432977) **7/7 jobs SUCCESS, 421 test executions PASS/0FAIL/0SKIP**(OS 중복 포함). 신규 ACL library API 테스트8PASS/OS, Chromium 실제 브라우저 렌더 테스트1PASS. Linux/Windows vault+HTTP 각각115PASS.
+- 실기능: 서버 측 tenant/group/project/classification/active 사전 필터링 후 `GET /v1/library` 접근 허용된 문서의 metadata만 반환. `p85-ui.mjs` 문서 KPI/컬렉션 막대차트/원문 문서 선택/refresh/logout. 사용자 소스 원문·다른 조직 문서 명칭/개수·절대 파일 경로·토큰 미반출. SQLite 권한 철회·문서 폐기 시 즉시 반영.
+- 실제 Chrome CDP Ubuntu 서버에서 로그인→대시보드→문서 검색→390px 모바일 무가로오버플로→스크린샷 SHA `dacfed12...`→로그아웃 및 UI 초기화, 외부 HTTP 요청0·JS runtime exception0. 로컬 환경 Chrome localhost는 관리자 정책 BLOCKED, 정책 우회하지 않고 Hosted 실제 Chrome PASS로 대체. 물리 Windows10/11 Chrome/Edge 미검증.
+- 상세 `docs/P85_CHROMIUM_DASHBOARD_ACCEPTANCE_20261114.md`. REQ16 **합성 범위 브라우저 검증**, 실제 기업 IdP·원본 사용권·승인된 PREP/SMAX producer+AX/실 Korean model·Win 설치·고객 Gold100·보안 인수는 미완. 전체24항 **UNASSESSED, 85% 미인증, CITEVAULT AX [작업중], RELEASE HOLD/SALE NO-GO**. 타 제품/고객자료/Production/원본 소스 변경 없음.
+
+
+
 ## [2026-11-14 KST] P85 SQLite 백업 문서 목록↔원문 일치 보안 보강 — 정확 SHA d32f530e
 
 - **최신 기능 SHA `d32f530e2425da0129a4eb2e9a4a7aef6708dab8`:** [hosted CI #43527372030](https://github.com/hibi89/Freelancer/actions/runs/43527372030) Ubuntu/Windows **6/6 SUCCESS; 404 실행 PASS/0FAIL/0SKIP**(OS 중복·합성100 반복은 스위트 각1개). 기존 pinned 원본 RAG35+CITEVAULT bridge36도 성공.
