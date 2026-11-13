@@ -1,18 +1,13 @@
-> **[OWNER-FINAL-BLUEPRINT-100 | 2026-11-13 KST | 사용자 확정·전체 저장소 최우선]** 제품 공식 **최종완성률은 사용자 확정 최종설계도 전체 100%**를 분모로 한다. 총괄·작업자는 임의로 설계를 축소하거나, 해커톤용 MVP·합성 테스트·CI PASS·85/95% 내부 마일스톤을 최종완성률로 혼용할 수 없다. 최종설계 요구사항 ID→코드→정확 SHA 실제 검증→미구현/미검증 및 사용자 승인 가중치를 추적해 계산한다. 근거·가중치가 미비하면 **최종설계 기준 UNASSESSED(재산정 대기)**로 표시하고 종전 수치는 **과거 내부 마일스톤**으로 보존한다. 크몽 관련 완성률은 해총 `kmong-productization` 원장에 동기화한다. [작업중]/등록완료/RELEASE HOLD 등 기존 별도 상태는 보존한다. 상충하는 구형 진척률 산정 지시보다 우선. [공통 전체 규칙](https://github.com/hibi89/hackathon-command-center-2026/blob/kmong-productization/docs/strategy/FINAL_BLUEPRINT_COMPLETION_STANDARD_20261113.md). 정책 커밋은 코드 수정·성공 테스트·제품 출시·재산정 완료를 의미하지 않는다.
+# AGENTS — AXNODE 제품 브랜치
+> 전체 공통 [OWNER-FINAL-BLUEPRINT-100](https://github.com/hibi89/hackathon-command-center-2026/blob/kmong-productization/docs/strategy/FINAL_BLUEPRINT_COMPLETION_STANDARD_20261113.md) 준수. 최종완성률의 분모는 사용자 확정 제품 설계 전체 100%; 합성 POC/19 PASS=공식 상품 퍼센트 아님. 현재 `UNASSESSED`.
 
-# AGENTS — 5대 크몽 상품 설계 저장소
-- GitHub 비공개 `hibi89/Freelancer`의 `main`은 5개 상품 인덱스이며 `product/*` 5개 브랜치가 각 최종설계·수용 기준의 소유자다. 실제 제품 소스/CI/배포는 해당 독립 원본 GitHub 저장소에 존재한다.
-- 새 채팅 또는 사용자 `ㄱ`: 해당 상품 branch의 `HANDOFF.md → STATUS.md → AGENTS.md → REQUIREMENTS.md → docs/FINAL_BLUEPRINT.md → 원본 제품 최신 HANDOFF/STATUS/AGENTS/REQUIREMENTS/코드` 순으로 확인한다.
-- 제품 최종완성률 `50→70→85→95→100`은 **문서에 확정한 전체 제품 설계의 검증 단계**. 설계 파일만 작성하고 신규 코드를 구현하지 않은 경우 진행률을 임의로 부여하지 않는다.
-- 아키텍처는 최소 2개 안을 성능·비용·유지보수·법적 권리·데이터 보안으로 비교해 채택 근거를 기록한다.
-- 원본 코드/실 고객 정보/비밀번호·API 키·비공개 SMAX/PREP·회사 자료를 이 저장소/외부 AI/Public Repo로 무단 복사/업로드하지 않는다.
-- 계정, 외부 통신, 유료 비용, CI 분 사용, 보안/권한, 원본 변경, 신규 배포/도메인/사업자/계약 범위는 사전 승인 대상. AI의 추정/고객 실증/CI PASS/미검증을 분리한다.
-- 사용자가 제품 실제 개발을 지시할 때 해총 `hibi89/hackathon-command-center-2026@kmong-productization`의 해당 제품 `[작업중]` 지침 확인 후 정확 SHA·목표/검증 기준을 기록한다. 목표 미달 표시 임의 삭제 금지.
-- 문서·기능 변경 후 `STATUS.md`, `HANDOFF.md` 10항과 Git SHA·CI PASS/FAIL/SKIP·미검증 및 복구 방법 최신화. 의미 없는 CI·재배포·빈 커밋·force push 금지.
-- 고객에게는 지원된 기능·언어/파일·페이지·수정횟수·검수 기준·모델/브라우저/서버 비용·라이선스/영수증 정책을 명시. 광고 문구에 미구현 Graphify/agent-browser/Auto Ontology 통합을 구현 완료처럼 표기하지 않는다.
-- 원본 `Freelancer` 업워크 자료는 현행 트리에서만 제거, 과거 Git 이력으로 복구 가능. 다른 3개 제품 브랜치의 기존 작업/기록 유지.
-
-## 신규 product 브랜치 생성 시 해총 중앙 원장 등록 의무 (2026-11-13 사용자 지시)
-- `product/*` 브랜치 생성 **동일 작업 단위**에서 해총 `hibi89/hackathon-command-center-2026@kmong-productization`의 `docs/audits/FREELANCER_BRANCH_COMPLETION_REGISTRY_20261113.md`에 신규 상품/브랜치/최종완성률을 등록한다. 설계만 있어도 `UNASSESSED`로 즉시 등록하며, 공식 퍼센트 산정까지 기다리지 않는다.
-- 브랜치와 상품은 1:N 가능(ECHOHOME·PAWTALK처럼 한 브랜치 두 상품). 기존 원천 29종·판매 19종 및 등록완료 이력은 덮어쓰거나 중복 집계하지 않는다.
-- 이 지침은 **담당 GPT 작업 시 즉시 동기화하는 운영 규칙**이다. 별도 무인 이벤트 자동화는 교차 저장소 인증/권한/워크플로 검증 전까지 미구현이므로 무인 자동 등록 완료라고 주장하지 않는다.
+1. 담당 범위: `hibi89/Freelancer@product/axnode-sector-runtime` 독자 섹터 파일+런타임, 사용자 선택 A안. 다른 product/* 및 HAE/LA/기존32종 소스는 임의 변경 금지.
+2. 채팅 복구: HANDOFF.md → STATUS.md → AGENTS.md → REQUIREMENTS.md → docs/FINAL_BLUEPRINT.md → 실제 source/tests 순.
+3. 설계 변경 시 A(독자 바이트 포맷) vs B(기성 컨테이너) 성능·비용·보안·유지보수 비교. A를 ZIP 이름 변경으로 대체하거나 최종 범위를 줄이려면 사용자 승인 필요.
+4. `.axnode`의 서명·검사·정책·고객 승인이 검증되기 전 임의 원격 Python/쉘 다운로드 실행 금지. 네트워크 기본 차단, 좁은 allowlist, 최소 권한·상한·샌드박스·복구·무결성/공급망 보안 적용.
+5. GitHub에 고객 파일/키/.env/개인정보/대형 모델 업로드 금지. 외부 송신/유료 CI/계정권한·보안변경/원본 수정/상용 출고는 사전 승인. 무료 Actions 무제한 자원 보장 금지.
+6. 제품 구현 시작 전 본 브랜치 최신 SHA와 해총 원장 등록 상태 확인. 테스트·실 OS·GitHub Actions·원격 실행·고객 인수·Production을 독립 판정하고 기능 검증 SHA 기록. 실패 무진전 2회 STOP/PIVOT.
+7. `docs/FINAL_BLUEPRINT.md` R01~R29 요구/가중치(소유자 확정)/코드/정확 SHA 테스트 증거를 추적해야 공식 완성률 산정 가능. 기존 제품 진척률·등록이력 복제 금지.
+8. 신규 브랜치/변경 후 해총 `kmong-productization/docs/audits/FREELANCER_BRANCH_COMPLETION_REGISTRY_20261113.md`에 AXNODE 영구 등재. 별도 무인 동기화는 미구현.
+9. 기존 `[작업중]`/HOLD/미등록 상태 보존, 실제 크몽 게시 증거 없이는 `등록완료` 금지.
+10. 주요 변경 후 STATUS와 10항 HANDOFF 최신화, GitHub commit SHA/파일 readback, 미검증 명시. Vercel 등 배포 비대상은 미적용.
