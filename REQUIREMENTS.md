@@ -1,3 +1,9 @@
+## [BID_AX_P70_DOC_SYNC_20261113] 70% 단계 실제 수용·미검증 (최종설계 축소 아님)
+- R05–R15 일부 로컬 계약/조회/보고·수동 승인 아닌 검토 감사, R16 GUI 기본 흐름, R18 부분 백업/검증을 추가. 전체 R01–R21 완전 수용으로 간주하지 않는다.
+- Linux Python3.13.5 **45 PASS/0 FAIL/0 SKIP**, Tk8.6 Linux Xvfb 실행 PASS, 기능 SHA `22d44f5e2fb39024703331903b881bec7bfd6521`. GitHub blueprint-only CI SUCCESS는 실제 Python 테스트 실행이 아님.
+- API 응답/원문/권리, 보안 키/운영quota, 100 실공고·10 실제 자격 대조, 고객 Windows10/11, 설치/실시간 스케줄·PDF·고객 승인 부족. 공식 `UNASSESSED`, 70 목표 `[작업중]`/출시 HOLD.
+- [세부 21개 추적](docs/P70_STAGE_EVIDENCE_20261113.md). 과거 REQUIREMENTS 본문은 보존한다.
+
 # BID AX — requirements and acceptance (full product = 100%)
 
 - R01-R04: official original source/permission and change-aware collection; region/kind/period; user-owned key/quotas; failures/retries/rate limiting; original evidence.
