@@ -1,3 +1,10 @@
+# STATUS — 2026-11-14 KST 실제 Windows 격리 SQLite integrity_check ok / user_version 2 PASS (최신)
+
+- 소유자 콘솔 실제 Windows Python3.11에서 앞선 EXE 실행으로 생성된 새 TEMP `desk.sqlite`를 `mode=ro`로 열어 `PRAGMA integrity_check` → **`ok`**, `PRAGMA user_version` → **`2`** 확인. 이번 검사는 데이터 파일 기존 내용 수정하지 않음. 기존 EXE onedir 빌드/7,107,722 bytes·SHA256 `A7CD6B052108E5630E4AD50151841F0B812654F22E87CFE8338E22CB12A5C23E`/MZ PASS → GUI 표시→ExitCode0 → 새 격리 DB 존재까지의 실 Windows 사용자 보고 증거 연장. [자세한 기록](docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md).
+- **남은 미검증:** 거래처 CRUD/버튼 E2E/DB 재실행 지속성·감사로그, Python 없는 다른 PC·Windows ACL/활성 DB 암호화/서명·Defender/실고객 법무·글꼴 권리. 사용자 승인 WD01~14 전체100 완전 인수 배점 불변, WD08/09/11/13 부분 실증에도 정식 **0/100(구현률 0 아님), 85 미달, [작업중]/RELEASE HOLD/미등록**. 고객 실제 장부·OS 보안·원본 타상품 변경 없고 유료 비용0.
+
+---
+
 # STATUS — 2026-11-14 KST Windows EXE 종료코드 0 / 격리 SQLite 파일 존재 PASS (최신)
 
 - 실제 소유자 Windows PowerShell에서 `ProcessStartInfo.UseShellExecute=false`, EXE 자식 프로세스의 `LOCALAPPDATA`만 새 `TEMP/worknova-gui-qa-<GUID>` 폴더로 분리하여 실행, 새 빈 장부 확인 후 실제 Tk 메인 GUI 표시→X 종료→`WaitForExit()` 완료. 사용자 콘솔 **`ExitCode=0`, `TestDatabaseExists=True`**(`WORKNOVA Desk/Data/desk.sqlite` 경로) 확인. 이것은 실제 Windows **EXE 기본 GUI 실행·정상 종료·격리된 새 SQLite 파일 생성 PASS** 증거이며, 사용자가 제공한 콘솔 결과에 의존. 기존 Win onedir 빌드 PASS·EXE 7,107,722바이트·SHA256 `A7CD6B052108E5630E4AD50151841F0B812654F22E87CFE8338E22CB12A5C23E`·MZ PASS와 연결. [근거](docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md).
