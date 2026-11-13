@@ -14,6 +14,8 @@ on:
       - enterprise/p70-local-review.mjs
       - tests/p70-local-review.test.mjs
       - enterprise/p85-vault.mjs
+      - enterprise/p85-conversation.mjs
+      - tests/p85-conversation.test.mjs
       - tests/p85-bm25.test.mjs
       - enterprise/p85-bm25.mjs
       - scripts/p85-operator-demo.mjs
@@ -88,6 +90,7 @@ jobs:
         shell: bash
         run: |
           node --check enterprise/p85-vault.mjs
+          node --check enterprise/p85-conversation.mjs
           node --check enterprise/p85-loopback.mjs
           node --check enterprise/p85-state-store.mjs
           node --check enterprise/p85-signed-provenance.mjs
@@ -98,7 +101,7 @@ jobs:
           node --check enterprise/p85-journey.mjs
           node --check scripts/p85-operator-demo.mjs
       - name: Run real local credentials, tenant isolation and lifecycle regression
-        run: node --test tests/p85-vault.test.mjs tests/p85-loopback.test.mjs tests/p85-state-store.test.mjs tests/p85-signed-provenance.test.mjs tests/p85-operator-users.test.mjs tests/p85-operator-ui.test.mjs tests/p85-bm25.test.mjs tests/p85-signed-journey.test.mjs tests/p85-library.test.mjs
+        run: node --test tests/p85-vault.test.mjs tests/p85-loopback.test.mjs tests/p85-state-store.test.mjs tests/p85-signed-provenance.test.mjs tests/p85-operator-users.test.mjs tests/p85-operator-ui.test.mjs tests/p85-bm25.test.mjs tests/p85-signed-journey.test.mjs tests/p85-library.test.mjs tests/p85-conversation.test.mjs
       - name: Validate 100 synthetic Korean search and access cases with latency evidence
         run: node --test tests/p85-synthetic100.test.mjs
       - name: Test opt-in offline SQLite backup and create-only restore

@@ -112,6 +112,13 @@ test('real rendered desktop/mobile login, scoped library, search and logout in C
   await browser.evaluate('(()=>{document.getElementById("question").value="반품 신청 기간";document.getElementById("query").requestSubmit();return true})()');
   await poll(()=>browser.evaluate('document.getElementById("result").textContent.includes("SEARCH_ONLY")'),'SCOPED_SEARCH');
   assert.match(await browser.evaluate('document.getElementById("result").textContent'),/문서 policy/);
+  assert.equal(await browser.evaluate('Boolean(document.getElementById("conversation-start"))'),true);
+  await browser.evaluate('document.getElementById("conversation-start").click()');
+  await poll(()=>browser.evaluate('document.getElementById("conversation-status").textContent.includes("근거 대화 활성")'),'CHAT_CONTEXT_START');
+  await browser.evaluate('(()=>{document.getElementById("question").value="그 기간은?";document.getElementById("conversation-next").click();return true})()');
+  await poll(()=>browser.evaluate('document.getElementById("conversation-status").textContent.includes("재검증된 후속 검색")'),'CHAT_CONTEXT_FOLLOWUP');
+  assert.match(await browser.evaluate('document.getElementById("result").textContent'),/문서 policy/);
+
   await browser.send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
   const scrollWidth=await browser.evaluate('document.documentElement.scrollWidth');
   assert.ok(scrollWidth<=396,'MOBILE_HORIZONTAL_OVERFLOW_'+scrollWidth);

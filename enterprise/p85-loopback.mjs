@@ -1,6 +1,7 @@
 /** Local-only synthetic HTTP harness for P85 vault, not a production customer API. */
 import http from 'node:http';
 import {html,css,js} from './p85-ui.mjs';
+import {ScopedConversation} from './p85-conversation.mjs';
 
 const MAX_BODY=4096;
 const send=(res,status,data)=>{
@@ -33,6 +34,7 @@ const auth=req=>{
 export async function launchSyntheticLoopback(vault,{journey=null}={}){
   if(!vault||typeof vault.login!=='function'||typeof vault.search!=='function'||
     typeof vault.source!=='function'||typeof vault.retire!=='function')throw Error('VAULT_REQUIRED');
+  const conversation=new ScopedConversation(vault);
   const server=http.createServer(async(req,res)=>{
     try{
       if(req.socket.remoteAddress!=='127.0.0.1')return send(res,403,{error:'LOOPBACK_ONLY'});
@@ -59,6 +61,10 @@ export async function launchSyntheticLoopback(vault,{journey=null}={}){
         return send(res,200,journey.assess(token,x.question,{
           documentIds:x.documentIds??null,collection:x.collection??null}));
       }
+      if(req.method==='POST'&&req.url==='/v1/conversation/ask'){
+        const x=await body(req);
+        return send(res,200,conversation.ask(token,x));
+      }
       if(req.method==='POST'&&req.url==='/v1/search'){
         const x=await body(req);
         return send(res,200,vault.search(token,x.question,{
@@ -70,7 +76,8 @@ export async function launchSyntheticLoopback(vault,{journey=null}={}){
       if(req.method==='GET'&&req.url==='/v1/library')
         return send(res,200,vault.library(token));
       if(req.method==='POST'&&req.url==='/v1/logout'){
-        vault.logout(token);return send(res,200,{status:'LOGGED_OUT'});
+        vault.logout(token);conversation.forgetToken(token);
+        return send(res,200,{status:'LOGGED_OUT'});
       }
       if(req.method==='POST'&&req.url==='/v1/admin/reindex')
         return send(res,200,vault.reindex(token));

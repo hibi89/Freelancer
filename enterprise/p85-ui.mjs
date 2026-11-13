@@ -9,7 +9,9 @@ export const html=`<!doctype html>
 <section aria-label="근거 검색"><h2>권한 범위 근거 검색</h2>
 <form id="query"><label>질문 <input id="question" required maxlength="300" placeholder="반품 신청 기간"></label>
 <label>문서 ID (쉼표 구분, 비우면 권한 있는 전체 문서) <input id="docids" maxlength="300"></label>
-<button type="submit">근거만 검색</button><button type="button" id="assess">문서·SQL 리뷰 요청</button></form>
+<button type="submit">근거만 검색</button><button type="button" id="assess">문서·SQL 리뷰 요청</button>
+<button type="button" id="conversation-start">근거 대화 시작</button><button type="button" id="conversation-next">후속 질문 계속</button></form>
+<p id="conversation-status" class="tag" role="status" aria-live="polite">후속 질문은 근거 문서에만 연결되며 5분 후 만료됩니다.</p>
 <p class="tag">답변 생성 없음. 매출 데이터는 고객 승인 전까지 REVIEW_HOLD.</p><div id="result" role="status" aria-live="polite"></div></section>
 <section aria-label="허용 문서 탐색"><h2>허용 문서 대시보드</h2>
 <p class="tag">로그인한 계정의 문서만 표시 · 원문과 미허가 문서는 표시하지 않음</p>
@@ -30,6 +32,7 @@ export const html=`<!doctype html>
 export const css=`:root{color-scheme:dark;font-family:system-ui,'Malgun Gothic',sans-serif;background:#111827;color:#f3f4f6}body{margin:0}main{width:min(900px,92%);margin:2rem auto}header{border-bottom:1px solid #374151}h1{font-size:2rem;letter-spacing:-.04em}.tag,footer{color:#aab8ce}section{background:#1f2937;border:1px solid #374151;border-radius:12px;padding:1rem 1.4rem;margin:1rem 0}h2{font-size:1.2rem}form{display:flex;gap:.7rem;flex-wrap:wrap;align-items:end}label{display:flex;flex-direction:column;gap:.3rem;min-width:170px;flex:1}input{background:#111827;color:#fff;border:1px solid #64748b;border-radius:7px;padding:.6rem;max-width:100%;font-size:1rem}button{background:#2563eb;color:white;border:0;border-radius:8px;padding:.7rem 1rem;cursor:pointer;font-weight:bold}button:focus-visible,input:focus-visible{outline:3px solid #facc15}button:hover{background:#1d4ed8}#result{margin-top:1rem;overflow-wrap:anywhere}article{padding:.6rem;border:1px solid #4b5563;margin:.5rem 0;border-radius:7px}pre{white-space:pre-wrap;word-break:break-word}.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.6rem;margin:.8rem 0}.kpi{background:#111827;border:1px solid #475569;border-radius:8px;padding:.8rem}.kpi strong{display:block;font-size:1.5rem}.meter{height:12px;border-radius:7px;background:#111827;overflow:hidden;margin:.2rem 0 .7rem}.meter>span{display:block;background:#60a5fa;height:100%;min-width:0}.library-item{display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap}.library-item button{font-size:.85rem}footer{font-size:.85rem;padding:1rem}`;
 export const js=`'use strict';
 let bearer='';
+let conversationId=null;
 const $=id=>document.getElementById(id);
 const text=(id,value)=>{$(id).textContent=String(value);};
 const request=async (url,body)=>{
@@ -101,16 +104,37 @@ function render(out){
 }
 $('login').addEventListener('submit',async ev=>{ev.preventDefault();bearer='';
  try{const out=await request('/v1/login',{userId:$('userid').value,password:$('pw').value});
-   bearer=out.token;text('result','로그인 성공. 질문을 입력하세요.');await loadLibrary();}
+   bearer=out.token;conversationId=null;text('conversation-status','새 로그인: 이전 대화는 이어지지 않습니다.');
+   text('result','로그인 성공. 질문을 입력하세요.');await loadLibrary();}
  catch(e){text('result',e.message)}finally{$('pw').value='';}});
 $('logout').addEventListener('click',async()=>{try{if(bearer)await request('/v1/logout',{});}catch{}
- bearer='';clearLibrary();text('library-status','로그인이 필요합니다.');text('result','로그아웃되었습니다.');});
+ bearer='';conversationId=null;clearLibrary();text('conversation-status','로그아웃: 대화 맥락 폐기');
+ text('library-status','로그인이 필요합니다.');text('result','로그아웃되었습니다.');});
 $('query').addEventListener('submit',async ev=>{ev.preventDefault();
- try{render(await request('/v1/search',{question:$('question').value,documentIds:ids()}));}
+ try{conversationId=null;render(await request('/v1/search',{question:$('question').value,documentIds:ids()}));}
  catch(e){text('result',e.message);}});
 $('assess').addEventListener('click',async()=>{
  try{render(await request('/v1/assess',{question:$('question').value,documentIds:ids()}));}
  catch(e){text('result',e.message);}});
+
+$('conversation-start').addEventListener('click',async()=>{
+  conversationId=null;
+  try{
+    const out=await request('/v1/conversation/ask',{question:$('question').value,documentIds:ids()});
+    conversationId=out.conversation?.thread_id||null;
+    text('conversation-status',conversationId?'근거 대화 활성 · 5분 유효':'대화 시작 불가: 근거 부족/상충/권한 확인');
+    render(out);
+  }catch(e){text('result',e.message);text('conversation-status','대화 시작 거부');}
+});
+$('conversation-next').addEventListener('click',async()=>{
+  if(!conversationId){text('conversation-status','먼저 근거 대화를 시작해야 합니다.');return;}
+  try{
+    const out=await request('/v1/conversation/ask',{question:$('question').value,threadId:conversationId});
+    if(out.status==='CONTEXT_INVALID'){conversationId=null;text('conversation-status','문서 변경/권한 변경/만료: 처음부터 다시 검색');}
+    else text('conversation-status','권한·원문 무결성 재검증된 후속 검색');
+    render(out);
+  }catch(e){conversationId=null;text('result',e.message);text('conversation-status','후속 대화 중단: 다시 로그인/검색');}
+});
 const scope=()=>({userId:$('target').value,groups:$('groups').value.split(',').map(s=>s.trim()),
  projects:$('projects').value.split(',').map(s=>s.trim()),clearance:Number($('clearance').value)});
 $('operator').addEventListener('submit',async ev=>{ev.preventDefault();try{
