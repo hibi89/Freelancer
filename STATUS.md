@@ -1,5 +1,15 @@
 # CITEVAULT AX — STATUS — RAG Studio Enterprise, 2026-11-13 KST
 
+## [2026-11-13 KST] CITEVAULT AX 85% 재추진 — SQLite 영속 상태·철회·감사 원자화
+
+- **공식 목표:** 최종설계 100% 대비 85%. **현재 공식 완성률 UNASSESSED / 85% 미달성·검증 대기**, `[작업중]` 유지, `RELEASE HOLD/SALE NO-GO`.
+- **실제 구현:** 신규 `enterprise/p85-state-store.mjs` Node22 내장 SQLite (실험적): 합성 계정/문서 메타데이터를 최초에만 시드하고 재시작 때 재사용, 외부 주입 시드 재등록 거부, 문서 버전/폐기·로그·접근 철회 보존. 원본 `p85-vault.mjs`에 선택적 `stateStore`, 권한검사 후 파일 로딩, cross-process 계정 disable·폐기 반영, stale revision 거부. `p85-loopback.mjs`에 관리자 revoke API 추가. version/reindex/retire/revoke 상태 변경 및 감사 기록은 한 SQLite 트랜잭션. 원본 RAG/PREP/SMAX는 불변.
+- **실제 검증:** Linux Node v22.16.0 `node --test tests/p85-vault.test.mjs tests/p85-loopback.test.mjs tests/p85-state-store.test.mjs` **58 PASS/0 FAIL/0 SKIP**, 독립 ZIP 압축해제 후 재실행도 **58 PASS**. P50/P70/P85 Node 전수 로컬 결합 **95 total/92 PASS/0 FAIL/3 SKIP** (3개 RAG 원본 checkout 필요). 신규·수정 코드/테스트 Git blob 6개 `git hash-object` 정확 일치. 근거: `docs/P85_DURABLE_EVIDENCE_20261113.md`.
+- **CI/Windows:** `.github/workflows/citevault-p50.yml`에 기존 Ubuntu24.04/Windows2022 P85 매트릭스의 SQLite 영속성 14케이스 추가. 실제 GitHub Actions hosted job/run 및 Windows 실행 결과 **미확인**, GitHub Classic commit status 0개만으로 성공/실패 판단하지 않음.
+- **중요 미완:** 진짜 기업 사용자 IdP/영속 운영계정·테넌트별 안전한 index/물리 RAG 데이터계약, 실 승인된 PREP/SMAX→AX, PDF/DOCX 원문 페이지/문단 통합, 한국어 로컬 모델/권리 실험, 실제 고객 Windows/Gold·백업 복구. 합성 로컬 메타데이터는 상용 IAM 인증이 아니며 85% 공식 인정 불가.
+
+
+
 ## [2026-11-13 KST] CITEVAULT AX P85 사용자 목표 — 조직분리·로그인·문서 수명주기 로컬 검증
 
 - **공식 목표/판정:** 사용자 확정 최종설계도 전체 대비 **85%**. 실제 최종완성률은 **UNASSESSED**, 85% **미달성/검증 대기**, 해총 **[작업중]** 유지, **RELEASE HOLD / SALE NO-GO**.
