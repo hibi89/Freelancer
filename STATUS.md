@@ -1,5 +1,15 @@
 # CITEVAULT AX — STATUS — RAG Studio Enterprise, 2026-11-13 KST
 
+## [2026-11-13 KST] 사용자 CITEVAULT AX P70 개발 목표 — 오프라인 검색정책 구현, 최종 70% 미검증
+
+- **목표:** 사용자 최종설계 전체 대비 70%(기존 P50 선행 미검증 포함). 현재 **공식 최종완성률 UNASSESSED, 목표 70% 검증 미달**, `[작업중]` 및 `RELEASE HOLD/SALE NO-GO` 유지.
+- **이번 구현:** `enterprise/p70-policy.mjs` (synthetic-only 테넌트/부서/프로젝트/등급/유효기간 제약, 무권한 문서 제외, 전체 허가 문서 상충 보류, 로컬 모델 없는 `SEARCH_ONLY`, SMAX `REVIEW_HOLD` 강제) + `enterprise/p70-rag-bridge.mjs` (허가된 synthetic 문서 ID만 원본 RAG `knowledgeSearch` 대상으로 전달, 반환 출처 재검사). PDF 페이지 번호를 테스트용 줄 번호로 잘못 표시하지 않도록 수정.
+- **테스트:** `tests/p70.test.mjs` 24개 신규 순수 JS 테스트, **GitHub 정본 JS를 V8에서 동작시켜 24 PASS / 0 FAIL**. Node/Hosted CI가 아닌 별도 테스트 환경. `tests/p70-rag-integration.test.mjs` 6개 원본 연결 테스트 작성, 실제 Node 실행 **미검증**. 기존 P50 테스트는 이전 턴 Node22 단독 **3 PASS / 0 FAIL / 3 SKIP** (3개 RAG 통합 미실행).
+- **원본 회귀 CI 설정:** `.github/workflows/citevault-p50.yml`에 기존 RAG 정확 pin `c5867b3951f51bfa97cadd1aad8fb13e9cf9e604`와 P512 PDF/DOCX, P538 전체 상충, P540 다중 native, P549 PREP/SMAX mapping 리뷰, 신규 P70 Node 테스트 추가. **실제 CI run ID/성공 확인 없음**. 구현 근거 및 70 요구 전수 표 `docs/P70_EVIDENCE_MATRIX.md`.
+- **핵심 한계:** `SYNTHETIC_ONLY` principal은 실제 IAM이 아니고, 원본 RAG `loadPackage()`는 문서 권한 필터 전 패키지 전체를 로딩하므로 **기업 ACL-before-load 미구현**. 실기업 권한/고객 파일·진짜 승인된 PREP/SMAX→AX 전환, 모델/Windows/라이선스 미검증. 비공개 원본/토큰/고객자료·계정/배포 변경 없음.
+- **결론:** 개발 소스 반영은 검증됨. 독립 검수 없는 70% 수치 책정 불가, **[작업중] 유지**. 해총 중앙 후보표/인수인계 최신화 필요.
+
+
 
 ## [2026-11-13 KST] CITEVAULT AX P50 사용자 목표 — 통합 QA 소스 반영, 50% 미검증
 
