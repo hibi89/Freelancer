@@ -1,3 +1,11 @@
+# STATUS — 2026-11-14 KST EXE 파일 해시/크기/MZ 사용자 실기기 증거 확보 (최신)
+
+- 사용자 제공 같은 실제 Windows `WORKNOVA-Desk.exe` 파일에서 **Length 7,107,722 bytes**, **SHA256 `A7CD6B052108E5630E4AD50151841F0B812654F22E87CFE8338E22CB12A5C23E`**, 최초 두 바이트 `MZ header: PASS` 확인. 앞선 PyInstaller6.22.3 onedir EXE/COLLECT `Build complete!` 및 파일 존재의 후속 검증. 증거 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`. 사용자 콘솔 로그 기반이며 바이너리 파일 본문 직접 수신·별도 재해시 아님.
+- **아직 미검증:** 실행/WORKNOVA Tk GUI 표시·첫 빈 장부/거래처 저장·재실행 데이터 유지, Python 없는 타PC 이식, 전체 PE/코드서명·Defender, Windows 폴더 ACL·활성DB 암호화·상용권/고객법률 수용. 다음은 자식 프로세스의 `LOCALAPPDATA`만 새 TEMP 디렉터리로 격리한 GUI 실행; 실제 고객 장부·운영 환경 변수 미변경.
+- 승인 WD01~14 고정100점 중 항목 전체 수용 PASS 조건 유지, WD13 빌드+파일 기본 무결성은 **부분 수용/0점**, 정식 **0/100(구현률0 의미 아님), 목표85 미달, [작업중]/RELEASE HOLD/크몽 미등록**. 별도 유료 배포/OS 보안 수정/원본·타상품 변경 없음.
+
+---
+
 # STATUS — 2026-11-14 KST 사용자 Windows onedir EXE 실제 빌드 성공(최신)
 
 - 사용자 제공 Windows 10.0.26200 / Python3.11.9 / PyInstaller6.22.3 PowerShell 로그: 기존 `--plan`으로 생성된 PyInstaller 인자를 직접 실행, `Building EXE completed successfully`, `Building COLLECT completed successfully`, `Build complete!` 및 `WORKNOVA-Desk.exe` 파일 존재 확인. 이전 사용자 사이트 차단 문제를 우회한 **최초 실 Windows EXE 빌드 PASS(사용자 로그 기준)**.
