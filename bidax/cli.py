@@ -104,6 +104,8 @@ def main(argv=None):
     diag.add_argument("file", help="local quarantine JSON; never uploaded")
     inspect = sub.add_parser("api-inspect", help="OFFLINE structural review of one raw API quarantine packet")
     inspect.add_argument("file", help="local output JSON created by api-probe --live; no network/key")
+    page_plan = sub.add_parser("api-page-plan", help="OFFLINE safe pagination estimate from one verified packet; no calls")
+    page_plan.add_argument("file", help="existing local quarantine packet; never uploaded")
     gui = sub.add_parser("gui", help="launch offline desktop GUI (Tkinter)")
     args = p.parse_args(argv)
 
@@ -115,6 +117,9 @@ def main(argv=None):
     elif args.command == "api-inspect":
         from .response_audit import inspect_packet
         result = inspect_packet(args.file)
+    elif args.command == "api-page-plan":
+        from .response_audit import plan_remaining_pages
+        result = plan_remaining_pages(args.file)
     elif args.command == "api-probe":
         from .api_gateway import create_plan, fetch_quarantined
         plan = create_plan(args.service, read_local_json(args.params_file))

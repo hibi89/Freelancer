@@ -110,6 +110,32 @@ def inspect_packet(filename: str | Path) -> dict:
             "note": "Only an offline structure check; independent real response/rights review required"}
 
 
+def plan_remaining_pages(filename: str | Path) -> dict:
+    """OFFLINE bounded metadata-only continuation plan for a single saved page.
+
+    This does not assume any other page was fetched, does not reveal records,
+    and NEVER produces HTTP requests or authorizes bulk collection.
+    """
+    result = inspect_packet(filename)
+    if result["state"] != "STRUCTURE_CANDIDATE_REVIEW_REQUIRED":
+        return {"state": "REVIEW_HOLD", "reason": result.get("reason", "UNVERIFIED_RESPONSE"),
+                "auto_fetch_allowed": False}
+    page = result["page"]
+    pages = result["pages_expected_reported"]
+    return {
+        "state": "OFFLINE_PAGE_PLAN_ONLY", "service": result["service"],
+        "dataset_id": result["dataset_id"], "inspected_page": page,
+        "items_in_inspected_page": result["items_in_page"],
+        "reported_total_items": result["total_count_reported"],
+        "page_size": result["page_size"], "reported_total_pages": pages,
+        "next_page_if_sequential": page + 1 if page < pages else None,
+        "pages_after_inspected_page": max(0, pages - page),
+        "other_pages_verified": False, "auto_fetch_allowed": False,
+        "source_field_mapping_verified": False,
+        "note": "No additional pages fetched. Counts reported by agency are unverified metadata."
+    }
+
+
 def _has_sensitive_key(root):
     if isinstance(root, dict):
         return any(str(k).lower() in ("servicekey", "authorization", "password", "x-api-key") or _has_sensitive_key(v) for k, v in root.items())

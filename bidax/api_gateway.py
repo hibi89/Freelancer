@@ -166,9 +166,12 @@ def fetch_quarantined(plan: dict, *, service_key: str, permission: bool, db_path
             if (service_key.strip() in decoded or service_key.strip() in unquote_plus(decoded)
                     or _contains_sensitive_response_key(data)):
                 raise ValueError("agency response reflected credential; refuse persistence")
-            # Error envelopes must never count as successful official evidence.
-            header = data.get("response", {}).get("header") if isinstance(data.get("response"),dict) else None
-            if isinstance(header, dict) and str(header.get("resultCode", "00")) != "00":
+            # Accept the documented G2B nested header and the Onbid direct
+            # root header observed by the owner. Reject explicit agency errors
+            # before saving; leave unknown shapes quarantined for safe review.
+            wrapper = data.get("response")
+            header = wrapper.get("header") if isinstance(wrapper, dict) else data.get("header")
+            if isinstance(header, dict) and str(header.get("resultCode", "")) not in ("00", "0", "0000"):
                 raise ValueError("agency returned an unsuccessful response")
             proof = {"source": "OFFICIAL_API_RAW_UNVERIFIED_MAPPING", "dataset_id": plan["dataset_id"],
                      "service": plan["service"], "retrieved_at":current.astimezone(KST).isoformat(),
