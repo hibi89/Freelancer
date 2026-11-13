@@ -1,3 +1,9 @@
+## 2026-11-14 KST — 실제 Windows EXE GUI 종료 정상·격리 SQLite 파일 존재
+
+형이 제공한 PowerShell 결과에서 `ExitCode : 0`, `TestDatabaseExists : True` 확인. EXE 자식 프로세스 전용 `LOCALAPPDATA`을 새 `TEMP/worknova-gui-qa-<GUID>`로 지정한 뒤 최초 빈 장부 확인 및 메인 Tk GUI 표시, 창 종료 후 `WORKNOVA Desk/Data/desk.sqlite` 파일 존재 스모크 PASS. 사용자 제공 실제 콘솔 화면만 확인, DB 파일의 내용/스키마/무결성/재실행 데이터 지속성은 아직 검증하지 않았음. 증거 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`.
+
+WD11/13 실제 Windows EXE 기본 구동·DB 생성 부분 통과, 전체 항목 완전 인수 조건 아님. WD01~14 승인100점 중 공식 인정 **0/100(구현률0 뜻 아님), 85 미달, [작업중]/RELEASE HOLD/판매 미등록** 유지.
+
 ## 2026-11-14 KST — Windows EXE 실제 메인 GUI 화면 표시(시각 증거)
 
 사용자가 `onedir` EXE의 신규 빈 장부 확인 대화상자에 이어 메인 **WORKNOVA Desk — 로컬 계약·납품 장부** 창을 보여주는 Windows 스크린샷을 전달. 한글 안내·거래처 검색·거래처/견적·버전/계약/납품·수금 4탭·업무와 백업 버튼 UI 렌더링 확인. **EXE GUI 시작 화면 표시 PASS**(사용자 화면 증거). **ExitCode, 임시 TEST SQLite 파일 존재, 실제 버튼 실행/데이터 보존·무Python PC/서명·Defender/ACL/고객수용 미검증**. 원본 스크린샷은 개인정보/브라우저 UI가 있어 GitHub에 업로드하지 않고 내용만 기록. [증거 기록](docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md).
