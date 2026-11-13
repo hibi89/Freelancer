@@ -1,3 +1,11 @@
+# STATUS — 2026-11-14 KST Windows PyInstaller pip --user 빌드 차단 오류 수정 (최신)
+
+- **실제 실패:** Windows Python3.11 `PyInstaller --version` 6.22.3 정상. 빌드 `--plan` PASS였으나 실행시 `build.log`에 `No module named PyInstaller`. 기존 `tools/windows_build_exe.py`가 하위 Python에 `PYTHONNOUSERSITE=1`을 강제해 사용자 설치형 모듈을 숨긴 **빌드 스크립트 결함**으로 확인. 사용자 PATH/설치·고객 데이터의 문제 아님.
+- **최소 수정:** 자식 환경의 `PYTHONNOUSERSITE`를 제거하여 부모 Python의 `pip --user` 설치를 인식하도록 함. 기존 보호(새 폴더만 출력·고객 장부와 교차 거부·비서명 HOLD) 보존. 회귀 테스트 신규1개 추가; GitHub 원격 코드 readback 일치, 정확 코드 blob `10d60c3789fb2f8c654479845ec9296dbb0c890b`. 해당 정확 소스를 별도 Linux 환경으로 재구성해 **5/5 단위 mock/경로 테스트 PASS**, py_compile PASS. 전체 제품 회귀/새 저장소 테스트 전체 실행 **미검증**.
+- **상태:** 오류 정정 코드는 GitHub 반영. **수정된 Windows EXE 빌드·실행은 아직 NOT_RUN**, 앞선 네이티브 Windows 11종×2 PASS는 Python필수 합성 검증으로만 남음. 전체 WD-01~14 사용자 승인 가중치 불변, 엄격한 최종 수용 **0/100**, 목표85 미달, **[작업중]/RELEASE HOLD/미등록**. 제품 문서 `docs/P85_PYINSTALLER_USER_SITE_FIX_20261114.md`. 비용 추가0·OS 권한/패키지 설치 변경0·데이터 변경0. 다음: 새 UUID 경로로 원래 --plan의 인자를 직접 실행하거나 최신 GitHub ZIP으로 재시도, 출력 확인 후 단계별 EXE/GUI 보안 검증.
+
+---
+
 # STATUS — 2026-11-14 KST Windows owner synthetic acceptance 2회 PASS (최신)
 
 - 사용자 제공 PowerShell Windows 10.0.26200.9974 / Python3.11 실기기 출력: `tools/windows_acceptance.py` **11/11 PASS, 0FAIL/0SKIP × 독립 호출 2회**(총 22PASS), `platform=win32`, `ok=true`. 기본 Tk 창, 포터블15무결성, PowerShell dry-run/사용자 폴더 설치/업그레이드·이전 버전 보존/삭제 후 합성 DB 보존/암호화 백업·복구/임시 파일 정리 통과. **GitHub CI 아님**; 사용자 제공 로그만 확인했고 로컬 ZIP 정확 SHA는 미수집.
