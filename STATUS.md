@@ -1,3 +1,10 @@
+# BID AX 2026-11-13 P85 independent test preparation (latest)
+- User target: final 85% of full R01-R21 blueprint. **NOT VERIFIED**; official **UNASSESSED**, **[작업중] retained**, RELEASE HOLD, no Kmong listing.
+- Locally Python3.13.5 Linux **94 PASS / 0 FAIL / 0 SKIP**, compileall PASS, Python3.11 AST syntax for 20 files PASS, Python .pyz --help PASS. Added 100 SYNTHETIC notices in 5 out-of-order pages with restart and 10 FAKE review records + backup/restore. These are **NOT** 100 real official notices / 10 independent human qualification checks.
+- Created manual-only .github/workflows/bid-ax-manual-acceptance.yml 3 matrix legs (Windows3.11, Ubuntu3.11/3.13). **NOT DISPATCHED** due private Actions possible billing; no independent OS CI result, actual Windows installer or customer run yet. Existing blueprint-only workflow success is not Python CI.
+- Evidence docs/P85_CROSS_PLATFORM_ACCEPTANCE_PLAN_20261113.md. Prior baseline HEAD 78247ce6132fc1af2b05cd7fb65729711355caf6; latest HEAD to verify after docs commit. API contracts, real data/rights, Windows/EXE, real Korean PDF and customer acceptance unverified. Other branches and user data preserved.
+---
+
 # BID AX P85 보안 후속 — 2026-11-13 KST
 
 - 사용자 목표: 최종설계 전체 **85%**. 공식 최종완성률 **UNASSESSED / 목표 미검증 / [작업중] 유지 / RELEASE HOLD / 크몽 미등록**.
