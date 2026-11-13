@@ -107,3 +107,14 @@ test('HTTP unsupported URL 404 and no cookies/CORS headers',async t=>{
  assert.equal(r.status,404);assert.equal(r.headers.get('access-control-allow-origin'),null);
  assert.equal(r.headers.get('set-cookie'),null);assert.equal(r.headers.get('cache-control'),'no-store');
 });
+
+test('HTTP rejects text/plain JSON before attempting login or mutations',async t=>{
+ const f=await setup(t),r=await fetch(f.api.baseUrl+'/v1/login',{method:'POST',
+   headers:{'content-type':'text/plain'},body:JSON.stringify({userId:'alice',password:'TEST_ONLY_PASS_ALICE_123'})});
+ assert.equal(r.status,415);assert.deepEqual(await r.json(),{error:'JSON_REQUIRED'});
+});
+test('HTTP refuses oversize bodies with 413, no parser or path leakage',async t=>{
+ const f=await setup(t),r=await fetch(f.api.baseUrl+'/v1/login',{method:'POST',
+   headers:{'content-type':'application/json'},body:JSON.stringify({userId:'alice',password:'X'.repeat(5000)})});
+ assert.equal(r.status,413);assert.deepEqual(await r.json(),{error:'PAYLOAD_TOO_LARGE'});
+});
