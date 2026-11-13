@@ -1,3 +1,10 @@
+## [2026-11-14 KST] P85 PDF 원격 SHA 및 최종 인수인계 보정
+- 소스 기능 SHA **2de90f3e1231d945b8fcec322f02194003b37098**, remote **11/11 exact matches**, Author/Committer 연결 hibi89. GitHub blueprint-only CI #43504668031 SUCCESS; Python CI 미실행(비용·승인), 고객 Windows/API/100원문/10전문가 미검증.
+- Linux Python3.13.5 **151 PASS 0 FAIL 0 SKIP**, ReportLab4.4.9/pypdf5.9.0 선택 패키지에서 PDF 생성·동의·암호화/주석/손상 거절. 실제 라이선스/폰트/고객 PDF 수용 미검증. R01–R29 공식 UNASSESSED, 85 목표 [작업중] 유지, RELEASE HOLD.
+- 소스 복구 기준 이전 d295a8869689272f14a37864716e69093d5ca351, 새 문서 HEAD는 GitHub branch 조회. 비밀/고객 파일/타 브랜치·BID OWL 변경 없음.
+
+---
+
 # BID AX P85 PDF 후속 인수인계 — 2026-11-14 KST (10항)
 1. 목표/용도/최종설계: 나라장터+온비드+법원경매 고객 로컬 문서, R01–R29 전체 기준 최종85% 목표, Python/Tk/SQLite.
 2. 완료/설계: 로컬 한국어 PDF 근거 보고서(ReportLab 선택), 법원경매 PDF/TXT 동의 기반 범주형 단어 미리보기(pypdf 선택), 기존 메타 원장 보존. SaaS 비용/비밀전송 리스크보다 로컬 기능 우선.

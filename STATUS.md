@@ -1,3 +1,9 @@
+## [2026-11-14 KST] P85 PDF 기능 원격 독립 읽기 검증 완료
+- 기능 커밋 **2de90f3e1231d945b8fcec322f02194003b37098** 원격 **11/11 파일 내용 일치**, 작성자/커미터 hibi89 확인. [blueprint-only Actions #43504668031](https://github.com/hibi89/Freelancer/actions/runs/43504668031) SUCCESS이나 Python 기능 CI는 아님. Python3.13.5/Linux 로컬 151/151 PASS, PDF render 육안 PASS.
+- 최종 R01–R29 공식 **UNASSESSED**, 85% **미달성·검증 대기**; 사용자 조달청/온비드 API 이용권·실 원문/권리, 고객 Windows, 승인 가중치 없는 한 목표 완료 주장 금지. [작업중]/HOLD/미등록 계속.
+
+---
+
 ## [2026-11-14 KST] P85 한국어 PDF 보고서·법원경매 문서 안전 미리보기 기능 추가
 - 기존 R01–R29 전체 설계 유지. R13 PDF 로컬 출력(ReportLab 선택), R27–R28 동의 기반 PDF/TXT 범주형 미리보기(pypdf 선택) 보강. PDF/TXT 원문 전문 DB 미저장/권리 적합 확정 금지. README·docs/P85_PDF_LOCAL_ACCEPTANCE_20261114.md 참고.
 - 기존 136 PASS + 신규 15 PASS = **Linux Python3.13.5 로컬 151 PASS / 0 FAIL / 0 SKIP** (선택 패키지 설치된 환경), 컴파일 PASS. 실제 Win10/11·무료 공식API·100실공고/10실사례·고객/폰트권리·EXE 미검증.
