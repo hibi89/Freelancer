@@ -1,3 +1,18 @@
+# HANDOFF — 2026-11-14 KST WORKNOVA Desk EXE SHA256/MZ 실기기 증거 (최신 10항)
+
+1. **목표/기술·확정:** WD01~14 승인100점 엄격 전체 고객수용85점 목표, Python3.11+/SQLite/Tk Windows 오프라인 상품.
+2. **완료 변경:** 사용자 Win10.0.26200 + PyInstaller6.22.3에서 onedir EXE 빌드 완료, 이번에는 생성된 EXE 실제 파일 크기/SHA256/MZ 헤더 확인. 원본 코드/SQLite·DB 스키마/고객 자료 불변.
+3. **테스트/검증:** 사용자 PowerShell 보고 `Length=7107722`, `SHA256=A7CD6B052108E5630E4AD50151841F0B812654F22E87CFE8338E22CB12A5C23E`, `MZ header: PASS`, EXE 존재 및 PyInstaller 빌드 완료. 정확 파일 자체 업로드 받아 재해시한 것은 아님. 실제 EXE 실행·GUI·DB 생성/재실행·DLL 이식/타PC·Defender 등 **NOT_RUN**. 이전 Python필수 Windows 합성 11PASS×2 별도.
+4. **상태:** WD13 빌드/파일 크기/해시/MZ 부분 PASS, 항목 전체 구매자수용 0건, **공식 0/100, 85 미달, [작업중]/RELEASE HOLD/미등록**.
+5. **오류·원인/대안:** 빌더 하위 `PYTHONNOUSERSITE=1`가 설치된 모듈 숨긴 최초 실패, 사용자 --plan 출력 PyInstaller 인자 직접 실행하여 빌드 성공. EXE 기본 무결성 OK이지만 런타임 실패라 단정/성공 인증 금지, 동일 빌드 반복 불필요.
+6. **저장소·브랜치·SHA:** `hibi89/Freelancer@product/worknova-desk-local`, 증거 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`, 앞선 제품 HEAD `4837f20063abc5df68aa2103a4cbff526372d661`; 현재 새 문서 commit `40d61b7f5e51e883aca2529f42bd9dcc627ef7b3`, 원격 최종 HEAD 이후 재조회. 바이너리의 Git 소스 동일성 미확인.
+7. **환경·배포:** Windows 임시 %TEMP% onedir unsigned EXE 후보. 웹 Vercel/Production N/A. 이번 SHA256은 파일 식별용, 보안/서명 증명 아님. 차기 독립 GUI 테스트는 `ProcessStartInfo` 자식 `LOCALAPPDATA`만 새 TEMP 프로필로 설정.
+8. **원본/백업/보안:** 기존 고객 SQLite/백업·실제 LOCALAPPDATA·PayPal 원본/다른 상품·main·OS ACL/권한·유료 CI·등록완료 이력 변경 없음. 바이너리 자체는 로컬에 보존, GitHub 업로드 금지.
+9. **다음 작업/승인·완료:** 읽기 전용 SHA 확인 끝. 합성 TEMP 로컬 자식 환경 EXE 구동→새 빈 장부 첫 생성 동의→GUI 표시/종료→격리 SQLite 파일 확인. 실제 고객 자료·보안 정책 건드리지 않음. 이후 기능/보안·법무/실고객 조건 만족한 WD 항목 완전 배점합 ≥85가 승인 목표.
+10. **갱신 일시/범위:** 2026-11-14 KST, 사용자 콘솔 EXE 파일 해시/기본 헤더만 새 증거, 실행 미검증. 중앙 크몽 상태와 원장 동기화 필요, 최종 커밋 SHA 재조회.
+
+---
+
 # HANDOFF — 2026-11-14 KST WORKNOVA Desk onedir EXE 실제 Windows 빌드 성공(최신 10항)
 
 1. **목표·기술·확정 요구:** 오프라인 WORKNOVA Desk Python3.11+/SQLite/Tk Windows, 사용자 승인 WD01~14 총100점 고정·완전 고객수용85점 목표.
