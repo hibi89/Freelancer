@@ -1,3 +1,17 @@
+# BID AX v2 85% 목표 — 오프라인 엔진 로컬 개발 후 원격 코드 동기화 대기 (2026-11-13 KST)
+1. 목표·용도·확정 요구: 나라장터+온비드 무료 공식 API + 고객 동의 법원경매 오프라인 자료 분석, R01–R29/29개 최종설계 85% 목표, Python/SQLite/Tkinter.
+2. 개발 내용·이유: 오프라인 온비드 원장·증분 이력·물건/결과 조인, 법원 TXT 키워드/해시·PDF 비추출·동의 CLI/GUI 및 합성 예시 구현. 로컬 방식은 서버 비용·기밀 위험이 낮으며, API 실연동/실문서 OCR을 완료한 것은 아님.
+3. 테스트·성공/실패: 로컬 Python3.13.5 Linux 총130 PASS/0 FAIL/0 SKIP, compileall·Xvfb Tk/controller·비출시 pyz CLI smoke PASS. 신규 코드 원격 GH/Windows/Python3.11/실 API·고객·법률 수용 NOT_RUN.
+4. 상태: 이번 GitHub 문서 변경만. **로컬 소스 ZIP 생성·검증은 완료, GitHub 기능 코드 미반영·동기화 대기.** 공식 최종완성률 UNASSESSED, 85% 미입증, [작업중] 유지, RELEASE HOLD/미등록.
+5. 오류/근거/대안: 이 환경의 로컬 산출물과 GitHub connector 사이 파일바이트 전달 단계가 제공되지 않아 신규 코드 원격 커밋 미실행. 검증되지 않은 SHA/CI 성공 주장 금지. 대안: 원본 ZIP을 안전한 개발환경에 가져와 기존 해당 브랜치에 최소 diff로 commit/CI 또는 지원되는 커넥터 파일전송 경로 확보 후 readback.
+6. 저장소/브랜치/SHA: hibi89/Freelancer@product/bid-ax-public-procurement, 원격 기능 baseline ab0d92a333a18e01a585a99d6a6b5812ab0c6305; 이전 최종설계 v2 commit ab0d92a333a18e01a585a99d6a6b5812ab0c6305. 로컬 신규 경로 bidax/onbid.py,bidax/court.py,bidax/cli.py,bidax/desktop.py,tests/test_p85_expansion.py,examples/*synthetic.json/TXT. 문서 신규 SHA는 재조회.
+7. Production/실행/환경: 로컬 전용, Vercel N/A; python -Werror::ResourceWarning -m unittest discover -s tests -q. 비출시 Python pyz, Windows EXE 미생성·미검증. API 키 없음/외부 전송 없음.
+8. 원본·백업·인증관리: 기존 29개 요구 R01–R29 보존, DB와 고객 파일 비수정, ZIP은 민감정보/실고객/인증키 포함하지 않은 소스 증거. Git 변경 전 SHA에서 normal revert 가능; force push·원본 덮어쓰기 금지.
+9. 다음 우선순위·완료조건/승인: 로컬 9개 신규/수정 소스·테스트 파일을 GitHub 원격 코드로 동기화 후 정확 blob SHA 검증 → 독립 Linux/Windows Python CI 예산 승인 시 실행 → 온비드 고객 키·실 API 응답과 상용권리 확인, 법원 실 PDF 파서 보안, 실 Windows/고객 인수, R01–R29 100점 승인 가중치.
+10. 갱신일·확인범위: 2026-11-13 KST. 본 문서가 증명하는 것은 로컬 합성 테스트와 문서 최신화뿐, 원격 코드/서비스 납품/실 법적 적합 인증이 아님.
+
+---
+
 # BID AX v2 3모듈 최종설계 갱신 — 2026-11-13 KST 인수인계 (10항)
 1. 목표/용도/최종기술: 고객 PC 로컬 BID AX 기본 나라장터/확장 온비드 공식 API/프리미엄 법원경매 합법 자료 분석; Python SQLite Tk, 기존 R01–R21 + 신규 R22–R29 (총29), 최종85% 사용자 목표.
 2. 변경·결정: 3모듈 최종설계·전수 추적/권리·거래 경계 문서만 추가. 호스팅형은 고객키/원문 관리 부담, 로컬형은 저비용·기밀보호를 우선하되 PC 부재시 자동 알림 불가.
