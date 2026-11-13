@@ -34,7 +34,13 @@ RAG_STUDIO_ROOT="$(cd ../RAG_STUDIO && pwd)" node --test tests/p50.test.mjs
 
 GitHub Actions workflow uses `actions/checkout` for the product branch plus an exact pinned **public RAG** revision, permissions `contents:read`, no customer files, and runs the same command with Node 22.16.0. A push and workflow definition are **not** evidence of a passing job; check job log, run ID, test count, and exact SHA before upgrading status.
 
+## Verified local execution and current CI boundary (2026-11-13 KST)
+- On Linux with Node **v22.16.0**, the **exact GitHub blob bytes** of `enterprise/p50-gate.mjs` (`5e9080f00fcda6c92ad575e88bc6be35024f7600`) and `tests/p50.test.mjs` (`a26c758cfe9a1a79d5b83f459236a27160712a93`) were reconstructed in a temporary test directory and matched by `git hash-object`.
+- Both `node --check` commands passed. `node --test tests/p50.test.mjs` result: **6 total / 3 PASS / 0 FAIL / 3 SKIP**. The SKIP cases are the *actual* original-RAG SQL/BM25/source test and two dependent negative tests requiring `RAG_STUDIO_ROOT`, so the actual P50 integration is still **NOT VERIFIED**.
+- Workflow now checks out the exact pinned RAG source, runs `npm ci --ignore-scripts --no-audit --no-fund`, and then its real PDF-page/DOCX-paragraph extraction regression `node --test tests/p512-native-document.test.mjs`, before CITEVAULT's six tests. Workflow definition commit `54cd494e47c27a3dd89846d9d02aeda0c955f8f4`. This addition is **configured, not a passing hosted CI run**.
+- Run/job/CI check, original full tests, actual authorized SMAX→AX conversion, enterprise IAM, physical Windows and customer acceptance remain **UNVERIFIED**. Official completion remains **UNASSESSED**, P50 target not achieved.
+
 ## Follow-up for a genuine P50 milestone
 1. Observe action run and repair only reproduced failures; verify successful pinned-source 6-test gate and negative refusal cases.
-2. Add actual PDF/DOCX tests and one *reviewer-authorized* PREP/SMAX→AX transfer, or record an explicit unmet 50 criterion. Never auto-authorize `REVIEW_HOLD`.
+2. Run the **already configured original PDF/DOCX source tests** via CI and implement one *reviewer-authorized* PREP/SMAX→AX transfer, or record an explicit unmet 50 criterion. Never auto-authorize `REVIEW_HOLD`.
 3. Review blueprint requirement weights with the owner. Until all P50 acceptance conditions and official scoring gates are evidenced, retain `[작업중]`, `UNASSESSED`, `RELEASE HOLD` and mark 50 **not yet verified**.
