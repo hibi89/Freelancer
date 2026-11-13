@@ -35,7 +35,7 @@ export async function launchSyntheticLoopback(vault){
   const server=http.createServer(async(req,res)=>{
     try{
       if(req.socket.remoteAddress!=='127.0.0.1')return send(res,403,{error:'LOOPBACK_ONLY'});
-      if((req.headers['content-type']||'').includes('application/x-www-form-urlencoded'))
+      if(req.method==='POST'&&String(req.headers['content-type']||'').split(';')[0].trim().toLowerCase()!=='application/json')
         return send(res,415,{error:'JSON_REQUIRED'});
       if(req.method==='POST'&&req.url==='/v1/login'){
         const x=await body(req);
