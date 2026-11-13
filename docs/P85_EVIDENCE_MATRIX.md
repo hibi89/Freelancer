@@ -1,5 +1,14 @@
 # CITEVAULT AX — P85 original blueprint acceptance evidence (2026-11-13 KST)
 
+## [2026-11-13 KST] P85 durable-state follow-up — 58/58 Node PASS, 85% still unverified
+
+- Exact 6 implementation/test blobs: `enterprise/p85-vault.mjs` `d6be6e910f6baa995d99d78fc250f28e8ae30465`; `enterprise/p85-state-store.mjs` `de3193c5132163d60ecd142d7dbb105fdbaf5cb4`; `enterprise/p85-loopback.mjs` `573b326574127c16a8ab8a97819f867511b7c323`; `tests/p85-vault.test.mjs` `5e455611732c067bbcbcd7c5b8ea005e775e3dea`; `tests/p85-loopback.test.mjs` `147bded3723d5859f17b3a5e49710d84bcff3a09`; `tests/p85-state-store.test.mjs` `57c905aeaa7c326f01b18fc3b3694edaadc3bb9e`.
+- **Executed locally**: Linux Node22.16.0 P85 58 PASS/0 FAIL/0 SKIP; zipped source extraction rerun 58/58 PASS. P50/P70/P85 combined 95 total/92 PASS/0 FAIL/3 SKIP, 3 pinned RAG checkout integration. GitHub file blobs exactly match tested files. CI matrix definition updated, **hosted results unknown**.
+- Adds real local SQLite metadata state (not actual enterprise IAM) with restart-persistent version/retire, account revocation across processes and existing sessions, tenant-scoped audit events; version/reindex/retire/revoke changes and audit insert share one transaction. Invalid/stale generation changes have no document or audit side effects.
+- P85 full original acceptance remains **UNASSESSED**, not 85%; missing real customer IAM, native authorized PDF/DOCX+SQL/SMAX producer integration, real Korean model, Windows actual CI evidence. Standalone companion `docs/P85_DURABLE_EVIDENCE_20261113.md`.
+
+
+
 > **Target requested:** full owner-approved product blueprint 85%. **Verified product-wide final completion remains `UNASSESSED`**. This document records actual implementation evidence rather than converting local test counts into completion percentages. Keep `[작업중]`, `RELEASE HOLD` and `SALE NO-GO`.
 
 ## Design alternatives and decision
