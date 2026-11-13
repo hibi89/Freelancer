@@ -1,5 +1,19 @@
 # CITEVAULT AX — HANDOFF — RAG Studio 기업형 (10항, 2026-11-13 KST)
 
+## [2026-11-13 KST] CITEVAULT AX P85 로컬 보안 검증 — 최신 10항 인수인계
+
+1. **목표·용도·확정 요구·기술:** 최종설계 전체 기준 사용자 85% 요청. 기업형 로컬 RAG+PREP/SMAX 인가 패키지·근거 SQL/문서·직원/그룹/프로젝트 ACL, 문서 버전 폐기·재색인, 한국어 로컬모델, Linux/Windows CI. 공식률 **UNASSESSED**, 85% 미달/검증대기.
+2. **완료 기능·변경·판단 근거:** 원본 RAG `loadPackage`가 문서 접근 전 모든 바이트를 로딩하는 경계 문제를 회피하여 **별도 합성 테넌트 보관소** 구현. `enterprise/p85-vault.mjs` Node scrypt 로그인·불투명 세션·TTL/lockout·tenant/group/project/clearance ACL-before-raw-file-read·SHA256·제한된 출처 검색·상충 보류·관리자 재색인/버전 변경/폐기·tenant-scope 감사. `enterprise/p85-loopback.mjs` 127.0.0.1 로컬 HTTP QA API. 원본 RAG/PREP/SMAX 수정 없이 비용 0원.
+3. **테스트 명령/성공·실패·미검증:** Linux Node v22.16.0 `node --check enterprise/p85-vault.mjs; node --check enterprise/p85-loopback.mjs; node --test tests/p85-vault.test.mjs tests/p85-loopback.test.mjs` **42 PASS/0 FAIL/0 SKIP**(vault27/HTTP15). 이전 P50/P70 local 단위 결합 `node --test /tmp/citevault-local/tests/p50.test.mjs /mnt/data/citevault70/tests/p70-citation-contract.test.mjs /mnt/data/citevault70/tests/p70-local-review.test.mjs /mnt/data/citevault85/tests/p85-vault.test.mjs /mnt/data/citevault85/tests/p85-loopback.test.mjs` **79 TOTAL/76 PASS/0 FAIL/3 SKIP**, 3개는 pinned RAG checkout. Original RAG Hosted PDF/DOCX/SMAX CI와 실제 Windows **미검증**.
+4. **완료/진행/대기/차단:** 합성 계정 인증·객체 접근 검사·로컬 실제 파일 원문 검증·버전/재색인·HTTP 요청 회귀 일부 완료. 실기업 IdP/영속 권한·스토리지/세션·고객 승인 원문·Native PDF/DOCX/한국어 모델/고객 Windows 아직 없음. **CITEVAULT [작업중], RELEASE HOLD, SALE NO-GO**.
+5. **오류·근거·시도·재시도 금지·대안:** 원본 개발용 RAG 검색은 패키지 전체 선로딩, 단순 후처리 ACL 부적합 → 별도 synthetic-only ACL-before-file-read 채택. P85 최초 감사 이력이 다른 조직 이벤트 메타정보를 보여줄 수 있는 문제 → audit tenant scope 추가, 신규 부정 테스트 합격. HTTP content-type/body size 제한 보강. git clone github DNS 과거 실패; Node local exact blob으로 재현, GitHub connector로 원격 커밋. GitHub push workflow run 결과는 조회 미지원, 성공이라 하지 않음.
+6. **저장소·브랜치·SHA·주요 경로:** `hibi89/Freelancer@product/rag-enterprise-knowledge`; P85 변경 시작 SHA `5e063f053564313be76798e8605118e4f0736f65` (복구 기준), 원본 RAG `c5867b3951f51bfa97cadd1aad8fb13e9cf9e604`. GitHub blobs vault `378523e03e4d42fe899e702504f8c37b6c23454e`, test `5e455611732c067bbcbcd7c5b8ea005e775e3dea`, loopback `dee33df73c1f677713c11c89156f07fd4de40dfd`, HTTP test `80a30bccb792a8a37104ec5376c55ce1dce4a4f3`. CI update `af9419ad2f45b0979cffd516dac260692d00c1a1`, 근거 `docs/P85_EVIDENCE_MATRIX.md`. 정확 제품 HEAD는 본 문서 최신 커밋 후 조회.
+7. **Production/Vercel 프로젝트/실행/환경:** Linux Node 22.16.0, Windows CI matrix Node22.23.0 job 정의, 외부 접속 가능한 서비스/프로덕션/도메인 배포 **미적용**. 합성 HTTP 서버는 실행 테스트 내 ephemeral `127.0.0.1` 포트만 사용. 고객 API/권한 인증 서버로 간주·배포 금지.
+8. **원본 위치/백업/인증관리/수정 금지:** P85 시작 Git SHA가 소스 복구점; 실제 고객/개인정보/비밀 키/원본 RAG·SMAX·PREP/관리 도메인·기존 상품 등록 이력 불변. 테스트 문자열은 합성 자격증명이며 지속 저장하는 실제 세션/사용자가 아님. 문서 버전·감사는 프로세스 메모리 상태라 재실행 시 유지되지 않음.
+9. **다음 작업 우선순위/완료기준/승인:** Hosted Linux/Windows Actions 실제 run/job 로그 확인→Pinned RAG multi PDF/DOCX/SMAX→AX 승인 데이터 원본 정확 통합 통과→보안 영향 실 직원 IdP·영속 ACL·revocation·tenant별 인덱스 구현은 사용자 사전 승인→실 한국어 모델/라이선스/Windows 실사용/Gold 검증→사용자 승인한 전체 설계 가중치 재계산 후만 85 확정.
+10. **갱신 일시(KST)/확인 시점/검증 범위·문서 정본:** 2026-11-13 KST. GitHub 정확 파일 SHA vs 로컬 Node source 4개 일치, 합성 Linux Node **42PASS**, P50/P70 포함 **76PASS/3SKIP**, Hosted CI/Win/고객 IAM·Native Producer/모델·Production **미검증**. 자세한 REQ 행별 증거 `docs/P85_EVIDENCE_MATRIX.md`.
+
+
 ## [2026-11-13 KST] CITEVAULT AX P70 2차 진행 — 10항 인수인계
 
 1. **목표·확정 요구·기술:** 사용자 최종설계 전체 100% 대비 70% 목표. 고객형 로컬 RAG 문서·SQL·인용, PREP/SMAX 승인 경계, 기업 ACL/IAM, 모델없는 근거검색. 공식률 `UNASSESSED`/70 미확정, 로컬 prototype 기능을 축소된 신규 분모에 대입 금지.
