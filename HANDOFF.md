@@ -1,3 +1,17 @@
+# BID AX 온비드 첫 실제 API 응답 후속 인수인계 — 2026-11-14 KST
+1. **목표·요구·스택:** 최종설계 R01–R29 전체 100% 고정/85% 목표; G2B·온비드·고객 동의 법원 로컬자료 Python3.11+ SQLite Tk. 가중치 재승인 요구하지 않음.
+2. **이번 변경:** 사용자 Windows 로그에서 온비드 15157252 실제 HTTP 응답 1회 저장 확인, `UNRECOGNIZED_ENVELOPE`로 자동 승격 보류. 오프라인 안전 형식 진단기/CLI/단일 파일 추가. 실 API 응답 정상화/법률 자격판정 미구현.
+3. **테스트:** Linux Python3.13.5 로컬 208 PASS(기존201+신규7), compileall+Python3.11 AST PASS, 62파일 ZIP 해시 일치. 사용자 실제 응답 본문은 받지 않아 매핑 NOT_RUN; Windows 진단기 실행 NOT_RUN.
+4. **상태:** 첫 사용자 실 응답 **수신**만 확인. 키 정상 인증/유효 목록 응답 여부는 미확정; 공식 최종률 UNASSESSED, 목표 85% 미입증, [작업중]/RELEASE HOLD/미등록.
+5. **오류·근거/대안:** inspector가 표준 `response.header/body`만 인정 → 미등록 envelope 구조/오류 가능. 재호출·원본 전송 대신 안전한 공개 스키마 필드명만 로컬 진단. 패킷 디제스트 맞음은 정부 서명 검증이 아님.
+6. **저장소·브랜치·SHA/경로:** hibi89/Freelancer@product/bid-ax-public-procurement, 코드 기존 HEAD fbac278dd21f48cea13a8f2f491585f053e630b9, 신규 bidax/response_shape.py, BID_AX_API_SHAPE_DIAG.py, bidax/cli.py, tests/test_api_response_shape.py, docs/ONBID_FIRST_LIVE_RESPONSE_SCHEMA_DIAG_20261114.md. 최신 HEAD 원격 확인.
+7. **Production/실행:** 기존 사용자 BID_AX 폴더에 `BID_AX_API_SHAPE_DIAG.py`만 추가 → `py -3.11 .\\BID_AX_API_SHAPE_DIAG.py`. `local/result_001.json` 사용, 키·인터넷 필요 없음. Vercel/Windows EXE 미적용.
+8. **보안·원본:** 실 키/JSON/고객 자료 GitHub·ChatGPT 반입 없음; 기존 SQLite/추출 파일·BID OWL/타 제품 불변. Git 일반 revert로 이전 SHA 복구 가능.
+9. **다음 절차·승인:** 형이 안전 출력 결과만 전달 → 근거 있는 envelope 오류/필드 매핑 수정 → 공식 필수 필드/페이지/보안 로컬 검증, 다시 동일 패킷 오프라인 확인. 추가 API 호출·키 외부저장·고객 파일 전송/유료 CI/출시는 별도 승인.
+10. **갱신/검증 범위:** 2026-11-14 KST 사용자 제공 콘솔 15157252 결과와 로컬 모의 단위 검증. 공식 원문/다른 API 3종/실수 100/검토10/Windows 고객 인수/상용권 검증 전.
+
+---
+
 # BID AX 공식 API 수집 격리검증 인수인계 — 2026-11-14 KST (필수 10항)
 1. 목표/용도/기술: 최종설계 R01~R29 전체 100% 고정(가중치 추가 요구 없음), 목표85%, Python/SQLite/Tk, 나라장터1+온비드3 공통 본인인증키와 합법 법원 자료 로컬 분석.
 2. 완료/결정: 오프라인 격리 응답 구조·페이지/총건수/본문 형식·SHA 변경·인증키 JSON/URL 반사 안전검증과 CLI 추가; raw를 심사 엔진에 자동 승격하지 않음. 고객 PC 로컬 방식/서버비0 목표 유지.

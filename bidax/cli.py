@@ -100,6 +100,8 @@ def main(argv=None):
     api_probe.add_argument("--live", action="store_true", help="perform one authorized official request")
     api_probe.add_argument("--out", help="NEW local JSON quarantine output; required with --live")
     api_probe.add_argument("--daily-limit", type=int, default=8, help="independent local per-service daily cap 1..1000")
+    diag = sub.add_parser("api-shape", help="OFFLINE safe envelope diagnosis; prints no response values")
+    diag.add_argument("file", help="local quarantine JSON; never uploaded")
     inspect = sub.add_parser("api-inspect", help="OFFLINE structural review of one raw API quarantine packet")
     inspect.add_argument("file", help="local output JSON created by api-probe --live; no network/key")
     gui = sub.add_parser("gui", help="launch offline desktop GUI (Tkinter)")
@@ -107,6 +109,9 @@ def main(argv=None):
 
     if args.command == "restore":
         result = restore_backup(args.source, args.db)
+    elif args.command == "api-shape":
+        from .response_shape import diagnose_packet
+        result = diagnose_packet(args.file)
     elif args.command == "api-inspect":
         from .response_audit import inspect_packet
         result = inspect_packet(args.file)

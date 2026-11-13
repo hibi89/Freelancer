@@ -1,3 +1,12 @@
+## [2026-11-14 KST] 온비드 15157252 사용자 실응답 최초 수신 및 오프라인 형식 진단
+- 형이 Windows Python3.11에서 `onbid_result_list --live` 1회 실행한 출력: HTTP JSON 응답 `local/result_001.json` 15,930바이트 격리 저장. `api-inspect`는 **CANONICAL_RESPONSE_SHA256_MATCH**이나 **REVIEW_HOLD / UNRECOGNIZED_ENVELOPE**. 따라서 실제 목록 조회 정상·키 권한·필드 매핑 **미확정**. API 키/원본 파일은 전달받지 않음.
+- 오프라인 응답 구조 진단기 `bidax/response_shape.py`, `api-shape` CLI, 기존 폴더에 추가하는 단독 `BID_AX_API_SHAPE_DIAG.py`, 신규 단위 7종. 원본 JSON/키/입찰물건 정보/응답 메시지를 출력하지 않고 사전에 정의된 필드 구조/코드 분류만 반환. 네트워크 재요청 없음.
+- 기존 201 + 신규 7 = **Linux Python3.13.5 208 PASS/0 FAIL**, 컴파일 및 Python3.11 AST 문법 PASS. 사용자 실 Windows Python3.11에서 진단기 자체 실행 **미검증**, 실제 응답 원문 구조도 아직 **미확인**. 새 ZIP 62개 SHA 무결성 PASS.
+- 최종설계 R01–R29 고정, 공식 최종완성률 **UNASSESSED / 85% 미입증**, `[작업중]`/RELEASE HOLD/크몽 미등록 유지. 코드/기능 원본 보존; 유료 CI·추가 정부 요청 없음.
+- 상세: [실응답 원인/조치](docs/ONBID_FIRST_LIVE_RESPONSE_SCHEMA_DIAG_20261114.md)
+
+---
+
 ## [2026-11-14 KST] 공식 API 응답 격리·검증기 개발, R01–R29 최종 기준 유지
 - 실 외부 API/고객키를 받지 않고 개발한 `bidax/response_audit.py`와 `api-inspect` CLI: 서비스·요청·원본 SHA 점검, 페이지·총건수·상태·민감정보 응답 거부. `api_gateway.py` 키 반사(JSON/URL 인코딩) 방어 개선, 로컬 raw 응답 canonical SHA 추가. 수집 자료 자동투입·법적 적합 판정 **금지**.
 - Linux Python3.13.5 기존 188 테스트 + 신규 13 테스트 = **201/201 PASS** (실 API 0), `compileall`·비출시 pyz API 계획 smoke PASS. 실제 Python3.11/Windows/실 공식 응답/실공고100건·인간검토10건/고객·법률/상용 수용은 **미검증**.
