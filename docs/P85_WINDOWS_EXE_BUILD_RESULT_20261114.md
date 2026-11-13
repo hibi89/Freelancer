@@ -1,3 +1,15 @@
+## 2026-11-14 KST — 임시 SQLite 무결성 및 사용자 버전 읽기 전용 PASS
+
+사용자가 최초 독립 EXE 실행에서 생성한 같은 격리 임시 테스트 `desk.sqlite`에 대해 Windows Python3.11의 표준 `sqlite3`로 다음 명령을 **읽기 전용** 수행했다.
+
+```powershell
+py -3 -c "import sqlite3,sys,pathlib; p=pathlib.Path(sys.argv[1]); c=sqlite3.connect(p.resolve().as_uri()+'?mode=ro',uri=True); print('integrity_check:',c.execute('PRAGMA integrity_check').fetchone()[0]); print('user_version:',c.execute('PRAGMA user_version').fetchone()[0]); c.close()" "$db"
+```
+
+**사용자 제공 원본 출력:** `integrity_check: ok`, `user_version: 2`. 이는 SQLite의 해당 파일 전체 구조 점검 결과 및 제품의 현재 스키마 버전 번호가 예상대로임을 확인한다. 단, 테이블 내용/거래처 CRUD/추가 파일 첨부/동시성·감사기록·재실행 지속성 검증은 아직 시행하지 않았다. 본 결과는 사용자 PC 실제 출력으로, 원본 DB를 GitHub/ChatGPT에 업로드하지 않았으며 제3자가 파일을 직접 재검증한 것은 아니다.
+
+**판정:** Windows EXE onedir 생성 → 해시/MZ → GUI 및 확인창 → 종료코드0 → 새 격리 DB 파일 생성 → **`integrity_check ok` / `user_version 2` PASS**. WD08/09/11/13 일부 증거 진전, 전체 사용자 승인 WD-01~14 각 항목 최종 완전 수용은 미충족. 정식 인정 **0/100**, 목표85 미달, **[작업중] / RELEASE HOLD / 미등록**. 다음: 같은 임시 프로필의 EXE GUI 재기동 + 가짜 거래처 1건 저장 후 종료, 파일 읽기 전용 조회로 지속성/버튼 조작 검증; 고객 실데이터 금지.
+
 ## 2026-11-14 KST — Windows 네이티브 EXE 정상 종료 및 격리 SQLite 파일 생성 PASS (사용자 PowerShell)
 
 앞서 제공된 실제 Windows EXE 초기 Tk GUI 스크린샷에 이어, 사용자가 창 X 종료 후 PowerShell 프로세스 대기 결과를 전달하였다.
