@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import crypto from 'node:crypto';
+import vm from 'node:vm';
 import {LocalSyntheticVault,createSyntheticAccount} from '../enterprise/p85-vault.mjs';
 import {launchSyntheticLoopback} from '../enterprise/p85-loopback.mjs';
 import {html,js,css} from '../enterprise/p85-ui.mjs';
@@ -61,4 +62,8 @@ test('actual UI API contract issues a local account and searches cited evidence'
 test('UI assets never use a remote URL for model or user data',()=>{
  assert.doesNotMatch(js,/fetch\(['"]https?:|new WebSocket|navigator\.sendBeacon/);
  assert.doesNotMatch(html,/action=|target=_blank|http:\/\//);
+});
+
+test('delivered local UI JavaScript parses without browser eval or external dependencies',()=>{
+ assert.doesNotThrow(()=>new vm.Script(js,{filename:'citevault-ui.js'}));
 });
