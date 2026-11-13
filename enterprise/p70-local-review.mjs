@@ -125,7 +125,7 @@ export function reviewSyntheticSalesDirectory(dir){
        crypto.createHash('sha256').update(csv).digest()))fail('SOURCE_CHANGED');
   return Object.freeze({contract:'CITEVAULT_SYNTHETIC_REVIEW_V1',status:'REVIEW_HOLD',
     source_digest_verified:true,source_sha256:hash,mapping_exactly_bound:true,
-    row_lineage_verified:true,source_rows:rows.length,provisional_units:units.toString(),
+    row_lineage_verified:false,source_rows:rows.length,provisional_units:units.toString(),
     provisional_revenue_krw:revenue.toString(),tax_basis:'TAX_UNKNOWN',
     approval:'NOT_GRANTED',authenticated_reviewer:false,source_rights_verified:false,
     original_smax_verified:false,ax_package_created:false,network_calls:0});
