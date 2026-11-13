@@ -1,3 +1,15 @@
+# STATUS — PROOFQA AX P85 (2026-11-13 KST · 합성 감사·PDF/독립 기계 검증 CI 성공)
+
+- **확정 범위:** P50/P70 코드를 보존하여 원래 최종설계의 **P85 내부 기술 단계** 구현/합성 수용. 실제 기능 `hibi89/ai-code-checker@feature/proofqa-ax-p85-independent-audit`, 정확 SHA **`5bce80a870d46702eb1ef5a51faa7cae54755691`**, [Draft PR #85](https://github.com/hibi89/ai-code-checker/pull/85) (P70 기준 미병합·main/상업 브랜치 원형 유지).
+- **실제 구현:** Cloudflare `security-audit-skill`의 6단계 **방법론**을 상태·coverage-ledger로 모델링(실 Skill·fresh independent agent 미실행). P70 실 Graphify·localhost Chromium 결과를 바탕으로 별도 `proofqa_p85.py`가 `audit.json`, `coverage-ledger.json`, `findings.json`, HTML/PDF/JSON report와 해시 manifest를 create-only 생성. `proofqa_p85_verify.py` **별도 OS 프로세스**가 원본 SHA, 증거 참조·fingerprint·미검수 범위·중복/심각도, JSON Schema, HTML CSP/escape, PDF 파싱 결과가 일치하는지 검증. PDF 실제 PyMuPDF raster PASS(893×1263), **사람 검수 NOT_RUN**.
+- **결과:** 합성 검수 14항 중 **8 COMPLETED/6 NOT_COVERED**. CodeChecker 후보 **2 NEEDS_VALIDATION/0 CONFIRMED**, severity `null`. Graphify Python3/JS3/SQL2 AST 노드 및 2개 구조근사 연결, Chromium 합성 사이트 HTTP200/500·저장/재조회 실동작.
+- **GitHub exact CI:** [P85 #43383627492](https://github.com/hibi89/ai-code-checker/actions/runs/43383627492) **3/3 jobs SUCCESS**, Windows2025·Ubuntu24 Python3.13 각각 **31/31 PASS(30 악성계약 부정 + 1 정상), 0 SKIP**, 기존 P50/P70 **17 PASS**; 실제 실도구→보고서→독립 프로세스→PDF raster 성공. [기본 CI #43383627563](https://github.com/hibi89/ai-code-checker/actions/runs/43383627563) **16/16 jobs SUCCESS**, [최종설계 정책 gate #43383627881](https://github.com/hibi89/ai-code-checker/actions/runs/43383627881) SUCCESS. 30개 합성 위반 테스트는 **P95 실고객 위협모델 30항 전체를 수행한 것이 아님**.
+- **완성도/출시:** `P85 내부 합성 기능 게이트 성공`과 `공식 최종설계 85%`는 다름. 전체 100점 독립 가중치·실고객·원본 그래프 독립 재실행·OS network sandbox·실 Win10/11·권리·서면인수가 충족되지 않아 **공식 최종상품 완성률 `UNASSESSED`** 계속 유지. `PROOFQA AX [작업중]` 목표 마커 유지. `RELEASE HOLD / SALE NO-GO`, Vercel/Production 미적용.
+- **오류·복구:** 최초 P85 CI에서 실제 Python 브라우저 HTTP tuple/list 타입 차이를 차단→P85 입력단에서 3항 튜플/리스트만 정규화 후 allowlist 동일성 검증. 수정 exact SHA CI 전부 PASS; 불필요한 재실행 금지.
+- **다음:** [P85 상세 실근거](docs/P85_EXACT_SHA_ACCEPTANCE_20261113.md). P95: 실제 30 위협모델+독립 원시 source/AST replay+OS 강제 sandbox·권한받은 고객 소스/스테이징 2종+Windows10/11 Chrome/Edge 실기기/라이선스·NOTICE. P100: 실제 서면 인수·ZIP 독립 검증 및 상용 GO. 승인이 없는 실제 고객 데이터·URL 자동 접근·외부 API·수정은 금지. 중앙 다른 프로젝트 28개/상업·작업중/등록완료 마커 불변.
+
+---
+
 # STATUS — PROOFQA AX (2026-11-13 KST · P70 내부 실제 통합 검증 PASS)
 
 - **사용자 P70 목표:** 최종설계의 내부 P70 마일스톤(기존 P50+Graphify Python·JS·SQL 실 AST/Code Checker 정적 후보↔graph 관계2건/agent-browser 로컬 합성사이트 실제 클릭·HTTP·저장재조회·보안경계). 정확 기능 SHA `1c4e9b629476ac9ac76b40a207f25408b2002a18`, 코드 저장소 `hibi89/ai-code-checker@feature/proofqa-ax-p70-graph-browser`, [Draft PR #84](https://github.com/hibi89/ai-code-checker/pull/84) (P50 기반, 원본 main 미병합).
