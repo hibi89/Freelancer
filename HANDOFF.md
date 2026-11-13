@@ -1,3 +1,16 @@
+# BID AX v2 3모듈 최종설계 갱신 — 2026-11-13 KST 인수인계 (10항)
+1. 목표/용도/최종기술: 고객 PC 로컬 BID AX 기본 나라장터/확장 온비드 공식 API/프리미엄 법원경매 합법 자료 분석; Python SQLite Tk, 기존 R01–R21 + 신규 R22–R29 (총29), 최종85% 사용자 목표.
+2. 변경·결정: 3모듈 최종설계·전수 추적/권리·거래 경계 문서만 추가. 호스팅형은 고객키/원문 관리 부담, 로컬형은 저비용·기밀보호를 우선하되 PC 부재시 자동 알림 불가.
+3. 테스트: 기존 Linux Python3.13.5 94 PASS는 역사적 오프라인 모의 수용, 이번 docs-only 변경으로 새 코드/테스트 미실행. API/물리 Windows·고객/저작권 정식 수용 0.
+4. 상태: 신규 R22–29 구현0/8; 확장 설계 반영은 완료, 전체 최종 85%는 미입증. 공식 UNASSESSED, [작업중]/RELEASE HOLD/미등록 유지.
+5. 오류/전환: 승인된 R01–29 가중치와 실 원문·권리 검증이 없으므로 최종% 계산 불가. 법원 공개 사이트를 무료 API나 허가된 상용 크롤링으로 단정 금지.
+6. 저장소·브랜치·SHA·경로: hibi89/Freelancer@product/bid-ax-public-procurement; 변경 전 HEAD 42fa2aaa3e7077721ebfeb10f9bacc09ad109a8b; 최종설계 docs/FINAL_BLUEPRINT.md · docs/BID_AX_EXPANSION_REASSESSMENT_20261113.md, STATUS/HANDOFF/REQUIREMENTS/AGENTS. 신규 HEAD는 커밋 후 조회.
+7. Production·환경: 기존 오프라인 CLI/Tk GUI, Vercel N/A. 새 API/유료 서비스/실 고객 전송 없음, Python OS CI는 수동 workflow만 존재(실행 미확인).
+8. 원본·백업·보안: 코드/DB·고객키·기존 Bid_Owl/타 Freelancer 상품·중앙 29/19 등록 보존, 원본 수정/강제 푸시 없음. Git 원커밋 SHA로 복구.
+9. 다음 우선순위/승인: R01–29 가중치 승인 → 온비드 API별 실제 이용권 및 목록·상세 데이터 확인 → 물건/결과 독립 원장 → 법원 동의 로컬 문서분석 → 실 Windows/고객 권리·상품 인수→판매 승인.
+10. 확인일·범위: 2026-11-13 KST; 공식 data.go.kr 15129394,15157220,15157254와 법원 API 안내 페이지 확인; docs-only 정합 검증, 별도 코드 실행 없음.
+
+---
 # BID AX P85 acceptance readiness HANDOFF — 2026-11-13 KST (10 required items)
 1. **Goal/use/stack:** Local public tender preparation assistant, Python3.11+ SQLite/Tkinter, full R01–R21 design. User target final 85%; approved scoring weights not available.
 2. **Implemented/decision:** Existing offline P85 ledger/transport/GUI unchanged; new synthetic 100 tender/5 page interrupted resume and 10 fake review audit/backup tests, manually gated Ubuntu/Windows cross-platform CI blueprint. Local B vs hosted A retained for privacy/cost; no paid workflow automatically triggered.

@@ -38,3 +38,19 @@
 ## P85 attempted milestone — no change of R01–R21 final denominator
 
 Verified locally: page-staged partial imports, restart recovery, replay dedupe, durable reminders, mocked and capped explicit transport, safe source package. 83 synthetic/mock/portable tests and Linux Tk smoke. **Not tested:** official data collection/rights and 100/10 evidence, Win10/11+Py3.11, EXE/signature/installation, user identity/ACL, PDF, customer/legal acceptance. Official completion `UNASSESSED`; 85% goal `[작업중]` remains. See `docs/P85_STAGE_EVIDENCE_20261113.md`.
+
+
+## [2026-11-13] 사용자 확정 BID AX v2 신규 필수 요구 (최신 우선)
+
+기존 R01–R21 유지, R22–R29 추가, **전체 R01–R29 29개**가 최신 최종설계 100%. 나라장터 기본/온비드 공식 무료 API 확장/법원경매 적법한 로컬 문서 분석 프리미엄. 무허가 크롤링·법률 확정·자동입찰 금지. 사용료 무료는 이용/재배포권 전체 승인이 아님.
+
+- **R22** 온비드 API 메타데이터·권리·상용 조건/약관·참조키 — 메타데이터만 확인, 코드 0
+- **R23** 온비드 승인된 고객 키로 목록/물건/상세/페이지 증분 수집, quota/429/중단복구 — 미구현, 실호출 0
+- **R24** 공고관리번호·물건관리번호·공매조건번호 원문 링크, 가격·유찰·SHA 버전 원장 — 미구현
+- **R25** 온비드 낙찰·유찰·취소와 정정/변경 이력·중복/시점 오류 처리 — 미구현
+- **R26** 온비드 필터/관심물건·비용/점유/권리/세금/명도 위험 체크리스트; 투자판단은 인간 — 미구현
+- **R27** 적법하게 확보한 고객 법원경매 문서 동의 기반 로컬 업로드, 출처/해시/악성·민감정보 검증 — 미구현
+- **R28** 법원경매 문건·물건 연결, 권리/위험 출처 표시·미확인 REVIEW_HOLD; 법률의견 보장 금지 — 미구현
+- **R29** 3원천 ID/권한/데이터/보고 분리·tier/가이드/Windows·실고객 상업 수용 — 미구현
+
+실 API/Windows/권리/고객 수용과 요구별 승인 가중치 미확보 → 공식 **UNASSESSED**, 사용자 목표 85% [작업중], 출시 HOLD·미등록. 정본 docs/FINAL_BLUEPRINT.md, 29개 전수 docs/BID_AX_EXPANSION_REASSESSMENT_20261113.md.

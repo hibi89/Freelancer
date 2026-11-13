@@ -1,4 +1,4 @@
-# BID AX — full independent product blueprint v1
+# BID AX — final product blueprint v2 (2026-11-13; v1 retained below)
 
 **Purpose:** Public procurement preparation assistant for authorized bidder staff on a customer-owned Windows PC. Reduce manual bid search, evidence checking, deadline loss and version confusion; never autonomously submit bids or guarantee legal eligibility. This blueprint is the product's full 100% denominator, not the short prototype.
 
@@ -6,7 +6,47 @@
 
 Official authorized API+original document with source time/version → seven-day bounded incremental collection and local checkpoints → normalized immutable source-linked notice ledger (dedupes/revisions) → customer-controlled profile/verified licenses, regions, price and documents → deterministic fail-closed three-state preliminary screening + human approval → document checklist/expiry/deadline/reminder → printable Korean/JSON/PDF evidence report + backup/restore → customer acceptance.
 
-## Requirement trace (full 100% product scope, approved weights not assigned)
+## [2026-11-13 KST 사용자 승인] v2 확장 최종설계 — BID AX 3모듈
+
+이 절이 구버전 R01–R21 표보다 우선한다. **기존 R01–R21은 수정/삭제하지 않고 보존**하며 신규 **R22–R29 8개**를 추가한다. 최신 전체 100% 분모는 **R01–R29 29개 최종 요구**. 기존 21개 표와 기술 P85 숫자는 이전 설계 이력이다.
+
+| 상품 모듈 | 공식 소스/입력 | 사용자 기능 | 금지/차단 |
+|---|---|---|---|
+| A 나라장터 (기본) | 조달청 15129394 고객 승인 무료 API | 7일 범위 입찰 공고·면허·지역·서류·마감·변경·사전 검토 | 실제 자격 확정·무승인 자동입찰 금지 |
+| B 온비드 공매 (확장) | 캠코 온비드 무료 공식 API별 고객 승인 신청 | 부동산·동산·차량 물건, 최저가/감정가, 유찰, 낙찰·취소 결과, 관심목록/알림 | '투자 적합' 판정/수익 보장·미허가 원문 재판매 금지 |
+| C 법원경매 (프리미엄) | 고객이 적법하게 보유한 문서를 **로컬 직접 업로드** | 문건 연결·누락·권리/점유/비용 위험 체크, 원문 근거, 사람 최종 판단 | 공식 일반 경매 API 무료발급 확약/무허가 크롤링/법률판단 자동 확정 금지 |
+
+**공통 데이터 경계:** source namespace, agency notice/property/case ID, revision, acquisition timestamp, source URL/document SHA256을 분리 보관한다. 나라장터 입찰 자격 엔진을 온비드 투자판단·법원경매 권리분석으로 재활용하지 않는다. 모듈별 고객 키/쿼터·원문 사용권·개인정보 보존정책·human approval·파일 백업/복원을 독립 검증한다. 판매 등급은 미출시 기획이며 크몽 등록을 뜻하지 않는다.
+
+### 신규 필수 요구·수용조건
+
+| ID | 최종 수용조건 | 현재 실제 구현 |
+|---|---|---|
+| R22 | 온비드 API 메타데이터·권리·상용 조건/약관·참조키 | 메타데이터만 확인, 코드 0 |
+| R23 | 온비드 승인된 고객 키로 목록/물건/상세/페이지 증분 수집, quota/429/중단복구 | 미구현, 실호출 0 |
+| R24 | 공고관리번호·물건관리번호·공매조건번호 원문 링크, 가격·유찰·SHA 버전 원장 | 미구현 |
+| R25 | 온비드 낙찰·유찰·취소와 정정/변경 이력·중복/시점 오류 처리 | 미구현 |
+| R26 | 온비드 필터/관심물건·비용/점유/권리/세금/명도 위험 체크리스트; 투자판단은 인간 | 미구현 |
+| R27 | 적법하게 확보한 고객 법원경매 문서 동의 기반 로컬 업로드, 출처/해시/악성·민감정보 검증 | 미구현 |
+| R28 | 법원경매 문건·물건 연결, 권리/위험 출처 표시·미확인 REVIEW_HOLD; 법률의견 보장 금지 | 미구현 |
+| R29 | 3원천 ID/권한/데이터/보고 분리·tier/가이드/Windows·실고객 상업 수용 | 미구현 |
+
+### 공식 API 근거·남은 권리 확인
+
+- 나라장터 https://www.data.go.kr/data/15129394/openapi.do — 무료/이용허락 제한 없음 표시, 2026-11-10 조회기간 최대 7일. 실제 가입/운영 이용조건·실 응답·재배포 권리 미검증.
+- 온비드 공고물건 https://www.data.go.kr/data/15157220/openapi.do — 무료 REST JSON/XML, 공고관리번호 pbancMngNo로 공고 내 물건 조회. 낙찰결과상세 https://www.data.go.kr/data/15157254/openapi.do — 물건관리번호 cltrMngNo 등으로 상태 상세 조회. **두 API는 별도 신청/별도 조회대상**; 전체 목록·검색용 관련 API 추가 조사 필요. 개발계정 1,000 트래픽 표기가 실제 모든 운영 계정의 무제한 사용을 의미하지 않음.
+- 법원 사법정보공유포털 https://openapi.scourt.go.kr/kgso202m01.do — 일반 오픈API는 추후 제공 예정이고 연계 API는 publicapi@scourt.go.kr 별도 협의. 무료 일반 경매 API 키 발급·자동수집·상용 재판매 가능하다고 단정 금지.
+- 각 API 무료와 유료 소프트웨어 상용이용 및 파일/이미지/등기 관련 제3자 저작권 재배포 허용은 독립적으로 심사한다. 고객 인증키·공고 원문·고객 파일을 GitHub에 업로드하지 않는다.
+
+### 최종완성률 재산정
+
+**R01–R29 29개, 신규 요구 8개 중 구현/실행 수용 0/8. 공식 최종완성률 = UNASSESSED (재산정 대기).** 최종설계 산정 규칙 OWNER-FINAL-BLUEPRINT-100상 사용자 승인 요구별 총 100점 가중치와 정확 Git SHA·실행·원문/권리/고객 수용 증거가 없으므로 임의 85%, 0%, 기타 점수를 계산하지 않는다. 이전 Linux 합성/mock 94 PASS는 과거 P85 내부 검증이며 신규 설계에 대한 실행이 아니다. 목표 85% **[작업중]**, RELEASE HOLD, 크몽 미등록 유지.
+
+정밀 전수 상태는 [BID AX v2 29개 추적표](BID_AX_EXPANSION_REASSESSMENT_20261113.md)를 참조.
+
+---
+
+## Requirement trace (historic R01–R21 only; v2 now R01–R29)
 
 | ID | Outcome / acceptance evidence | 2026-11-13 offline prototype |
 |---|---|---|
