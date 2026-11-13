@@ -1,3 +1,5 @@
+> **최신 우선 해석 — 2026-11-14 KST:** 사용자 `배점안승인`으로 `docs/FINAL_BLUEPRINT_WEIGHT_PROPOSAL.md` WD-01~14 100점은 **이미 승인된 최종 정본**입니다. 이 파일 아래 과거 '미승인' 기록은 승인 이전의 역사적 이력이며 더는 현재 가중치 상태가 아닙니다. 기존 설계/가중치는 변경하지 않습니다. WD-13 추가 개발은 오프라인 Windows PyInstaller onedir 빌드 **준비 코드**만이며 실제 exe·Win/ACL/서명 검증은 별도입니다. 근거 `docs/P85_WINDOWS_EXE_CANDIDATE_20261114.md`; 전체 인정 0/100, [작업중], RELEASE HOLD.
+
 ## 2026-11-14 P85 schema and privacy safety follow-up
 
 - WD-01: redacted-by-default local JSON customer portfolio with amounts/status only; requires second explicit flag to include customer name. Out-of-band OS folder privacy remains user's responsibility; no multiuser authorization or retention/legal erasure.
