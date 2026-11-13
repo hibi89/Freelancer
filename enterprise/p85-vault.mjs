@@ -193,8 +193,8 @@ export class LocalSyntheticVault {
   /** Enforce server-side fixed synthetic dataset scope before opening CSV bytes. */
   authorizeSyntheticDataset(token,{tenantId,groups,projects,clearance}){
     const p=this.#principal(token);
-    if(!id(tenantId)||!list(groups)||!list(projects)||
-       !Number.isInteger(clearance)||clearance<0||clearance>3)DENY('SCOPE_INVALID');
+    if(!id(tenantId)||!list(groups)||!list(projects)||groups.length===0||projects.length===0||
+       !Number.isInteger(clearance)||clearance<1||clearance>3)DENY('SCOPE_INVALID');
     if(p.tenantId!==tenantId||p.clearance<clearance||
        (groups.length>0&&!groups.some(x=>p.groups.includes(x)))||
        (projects.length>0&&!projects.some(x=>p.projects.includes(x))))DENY('NOT_FOUND');
