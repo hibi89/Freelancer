@@ -15,3 +15,9 @@
 - CITEVAULT AX `product/rag-enterprise-knowledge@acf4936670bf1205f648d0dff5ca7e48b62fa83a`
 - SITECRAFT AX `product/rea-website-rebuild@6e2346c3b9d50dea1bde8d5ecb47b47f1567f774`
 - 각 브랜치 `docs/BRAND_POSITIONING.md` 추가. 명칭만 수정; 이 작업에서 제품 기능 코드/CI/Production 변경 및 상표·도메인 조사 없음. 기존 PROOFQA AX/ONTOINSIGHT AX SHA·문서 변경 없음.
+
+## 2026-11-13 소비자형 2개 전용 브랜치 추가(과거 5개 상품 인수인계 보존)
+
+- ECHOHOME/PAWTALK: product/echohome-pawtalk-local-ai @ 603be91d278f4cef1e8e0fe0994bfdb21ca23740, 설계만/UNASSESSED/미등록.
+- MYRADIO AI: product/myradio-ai-dj @ 5885b2b22f8e4ee7692c08ba96ddd536d2c82e26, 최종설계 docs/FINAL_BLUEPRINT.md + 오프라인 안전 카탈로그·WAV 선곡·DJ 문장·Windows SAPI GUI 프로토타입. 로컬 Python 7 PASS/0 FAIL, 실제 Windows·음원 API·자연 TTS·상용 권리 미검증, UNASSESSED/HOLD/미등록.
+- 본 main 변경은 인덱스/STATUS/HANDOFF **문서만** 업데이트, 기존 5개 제품 브랜치/소스/상용 진도/개인 원본을 수정하지 않음. 코드/실 모델·Windows 검증은 각각 product 브랜치에서 관리. 진행·등록 상태를 자동 동기화하지 않는다.

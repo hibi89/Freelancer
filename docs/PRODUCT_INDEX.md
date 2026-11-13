@@ -27,3 +27,15 @@
 - **CITEVAULT AX**: RAG Studio + SMAX²/PREP, `product/rag-enterprise-knowledge/docs/BRAND_POSITIONING.md`.
 - **SITECRAFT AX**: REA_WEB + Fable 5.1 + Astra P4 + REA Pro, `product/rea-website-rebuild/docs/BRAND_POSITIONING.md`.
 - 새 명칭은 내부에서 사용하며 상표 검색/서비스명 충돌·도메인 확보 미검증. 명칭 변경은 소프트웨어 개발률·출시율에 영향을 주지 않는다. 기존 `product/*` 브랜치는 모두 유지한다.
+
+## 2026-11-13 추가 — 개인용 로컬 AI 신상품 (기존 5개 상품 불변)
+
+기존 AZENTFLOW/CITEVAULT/SITECRAFT/PROOFQA/ONTOINSIGHT 5개 독립 브랜치와 SHA·최종설계는 **수정하지 않음**. 기존 헤더의 '5종'은 과거 기업형 카탈로그 구분이다. 다음 소비자형 2개 개발 브랜치는 별도로 추가되었다.
+
+| 상품 | 개발 브랜치 | 확인 HEAD | 공식 최종완성률 | 상용/크몽 |
+|---|---|---|---|---|
+| ECHOHOME + PAWTALK (가족 음성/반려동물 캐릭터 대화 2 SKU) | product/echohome-pawtalk-local-ai | 603be91d278f4cef1e8e0fe0994bfdb21ca23740 | UNASSESSED (기획만) | HOLD/미등록 |
+| **MYRADIO AI (개인 AI 라디오)** | **product/myradio-ai-dj** | **5885b2b22f8e4ee7692c08ba96ddd536d2c82e26** | **UNASSESSED** (Python 7 PASS 초기 오프라인 시제품) | **HOLD/미등록** |
+
+MYRADIO 최종설계 정본: https://github.com/hibi89/Freelancer/blob/product/myradio-ai-dj/docs/FINAL_BLUEPRINT.md
+MYRADIO 구현: 오프라인 WAV 카탈로그 권한필터/장르·기분 선곡/5개 DJ **대사 스타일**/Windows 기본 TTS 시연 코드 + tkinter 원형. 온라인 음악 API, 실제 자연스러운 여러 DJ 목소리, Windows 실행·라이선스 검증·배포는 미검증/미구현. 기존 상품/등록 이력 삭제·진척률 전용 금지.

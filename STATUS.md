@@ -16,3 +16,9 @@
 - [정확 SHA·경로 색인](docs/PRODUCT_INDEX.md), [기존 구직 원본 이력 복구](docs/REPOSITORY_RECOVERY.md).
 
 - **브랜드 문서 갱신 2026-11-13 KST:** 기존 3개 기업형 상품 이름을 AZENTFLOW AX, CITEVAULT AX, SITECRAFT AX로 결정하여 각 브랜치 8개 기존 문서 + 브랜드 소개 파일에 반영. 3개 제품의 실행 기능/원본/CI/완성률 변동 0, 상표 검색 전 내부명, RELEASE HOLD.
+
+## 2026-11-13 추가 신상품 인덱스 (기존 5개 과거 표/진도 보존)
+
+- ECHOHOME + PAWTALK: product/echohome-pawtalk-local-ai@603be91d278f4cef1e8e0fe0994bfdb21ca23740 — 신규 설계/미구현·UNASSESSED·HOLD·미등록.
+- MYRADIO AI: product/myradio-ai-dj@5885b2b22f8e4ee7692c08ba96ddd536d2c82e26 — 전체 최종설계 문서 + 오프라인 WAV 권리 필터/선곡/DJ 문장/Windows SAPI 시제품, 로컬 Python 7 PASS·Windows NOT_RUN·공식률 UNASSESSED·HOLD·미등록.
+- 기존 5개 브랜치, 기술·테스트·원본·SHA 및 소비자형 신상품 가격/권리/판매 승인 변경 없음. 자세한 표는 docs/PRODUCT_INDEX.md의 추가 섹션 참조.
