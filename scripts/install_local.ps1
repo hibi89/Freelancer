@@ -39,7 +39,7 @@ $required = @(
 $seen = @{}
 foreach ($entry in $manifest.files) {
     $name = [string]$entry.path
-    if ($name -notmatch '^(worknova_desk/[a-z_][a-z_0-9]*\.py|launch\.cmd|README_OFFLINE\.txt|install_local\.ps1)$') { throw ('Invalid packaged path: ' + $name) }
+    if ($name -notmatch '^(worknova_desk/[a-z_][a-z_0-9]*\.py|launch\.cmd|README_OFFLINE\.txt|install_local\.ps1|verify_portable\.py)$') { throw ('Invalid packaged path: ' + $name) }
     if ($seen.ContainsKey($name)) { throw 'Duplicate manifest path' }
     $seen[$name] = $true
     $origin = Join-Path $package ($name.Replace('/', [IO.Path]::DirectorySeparatorChar))
@@ -71,6 +71,29 @@ try {
         Copy-Item -LiteralPath (Join-Path $package $rel) -Destination $destination
         $digest = (Get-FileHash -LiteralPath $destination -Algorithm SHA256).Hash.ToLowerInvariant()
         if ($digest -ne ([string]$entry.sha256).ToLowerInvariant()) { throw ('Staging checksum mismatch: ' + $rel) }
+    }
+    # Python launcher verifies the manifest *inside* the installed folder. Earlier
+    # candidate omitted this file: install appeared successful but launch always failed.
+    $stagedManifest = Join-Path $stage 'FILE_MANIFEST.json'
+    Copy-Item -LiteralPath $manifestPath -Destination $stagedManifest
+    $sourceManifestHash = (Get-FileHash -LiteralPath $manifestPath -Algorithm SHA256).Hash
+    if ((Get-FileHash -LiteralPath $stagedManifest -Algorithm SHA256).Hash -ne $sourceManifestHash) {
+        throw 'Staging manifest digest mismatch'
+    }
+    # Recheck every staged path against the staged manifest before replacing any
+    # installed code. Customer data and the prior application have not been touched.
+    $staged = Get-Content -LiteralPath $stagedManifest -Raw -Encoding UTF8 | ConvertFrom-Json
+    if ($staged.format -ne 'worknova-p85-portable-v2' -or $staged.files.Count -ne $required.Count) {
+        throw 'Staging manifest invalid'
+    }
+    foreach ($entry in $staged.files) {
+        $rel = ([string]$entry.path).Replace('/', [IO.Path]::DirectorySeparatorChar)
+        $file = Join-Path $stage $rel
+        Assert-PlainPath $file
+        if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { throw ('Staging file missing: ' + $rel) }
+        if ((Get-Item -LiteralPath $file).Length -ne [long]$entry.bytes) { throw ('Staging size mismatch: ' + $rel) }
+        if ((Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() -ne
+            ([string]$entry.sha256).ToLowerInvariant()) { throw ('Staging file mismatch: ' + $rel) }
     }
     if (Test-Path -LiteralPath $app) { Move-Item -LiteralPath $app -Destination $previous; $oldMoved = $true }
     Move-Item -LiteralPath $stage -Destination $app

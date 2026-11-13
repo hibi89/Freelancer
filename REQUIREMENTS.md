@@ -39,3 +39,10 @@ Canonical whole-product design: `docs/FINAL_BLUEPRINT.md` (WD-01 through WD-14).
 - WD-08: add user-controlled independent hash checkpoint (six table fingerprints + audit-head; new-only JSON; separately retained SHA). Does not defend against malicious rewrite of both DB and saved checkpoint.
 - WD-13: v2 portable exact-file hash preflight in launcher; no EXE/signature, PowerShell not Windows-tested.
 - Exact local tests and outstanding acceptance: `docs/P85_HARDENING_20261113.md`. All WD-01..WD-14 remain the final denominator; their approved weights are unavailable; **official final completeness UNASSESSED / P85 objective not certified**.
+
+## 2026-11-13 further P85 safety acceptance (no scope change)
+
+- WD-09: no silent empty-DB recreation for CLI existing-ledger operations; GUI first-run confirmation; explicit CLI `init`; no automatic customer backup restoration or overwrite.
+- WD-13: Windows installation must ship its own `FILE_MANIFEST.json` and permit every required verifier file, checksum the stage before swapping app, fail on unexpected executables and `__pycache__`. Linux staging model tests are **not** physical Win10/11 validation.
+- New POSIX SQLite files should be `0600` with existing permissions unchanged; Windows ACL, encryption, signed standalone EXE and real owner access controls remain **NOT RUN / incomplete**.
+- Weighted final-score proposal `docs/FINAL_BLUEPRINT_WEIGHT_PROPOSAL.md` is explicitly **NOT OWNER APPROVED**, not permission to declare 85%. Keep central `[작업중]`, RELEASE HOLD.

@@ -69,7 +69,7 @@ def main(argv=None):
             result = restore_new(args.backup_file, args.new_db, args.sha256)
             print(json.dumps({"ok": True, "result": result}, ensure_ascii=False, sort_keys=True))
             return 0
-        desk = Desk(args.db)
+        desk = Desk(args.db, allow_create=(args.command == "init"))
         c = args.command
         value = None
         if c == "init": value = {"schema_version": desk.schema_version}

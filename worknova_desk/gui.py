@@ -239,7 +239,22 @@ def main(argv=None):
     parser=argparse.ArgumentParser(description="Offline customer desk GUI")
     parser.add_argument("--db",required=True)
     args=parser.parse_args(argv)
-    desk=Desk(args.db)
+    db_path=Path(args.db)
+    create_new = not db_path.exists() and not db_path.is_symlink()
+    if create_new:
+        # Never silently replace an owner ledger that may have been moved/deleted.
+        prompt=tk.Tk()
+        prompt.withdraw()
+        try:
+            accepted=messagebox.askyesno(
+                "새 장부 확인",
+                "해당 경로에 기존 장부가 없습니다. 파일이 이동되었다면 복구를 먼저 진행하세요."
+                "\n첫 실행으로 새 빈 장부를 만들겠습니까?", parent=prompt)
+        finally:
+            prompt.destroy()
+        if not accepted:
+            raise SystemExit("장부 신규 생성을 취소했습니다. 기존 데이터 또는 백업을 확인하세요")
+    desk=Desk(db_path, allow_create=create_new)
     if desk.schema_version!=2:
         desk.close()
         raise SystemExit("기존 v1 DB는 CLI migrate-v1 --backup-out 새백업.sqlite를 먼저 실행하세요")

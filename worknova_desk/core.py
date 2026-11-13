@@ -45,11 +45,32 @@ def _id() -> str:
 
 
 class Desk:
-    def __init__(self, path: str | Path):
+    def __init__(self, path: str | Path, *, allow_create: bool = True):
         self.path = Path(path)
-        if self.path.is_symlink() or not self.path.parent.is_dir():
-            raise DeskError("database path must be inside an existing local directory, not a symlink")
-        self.db = sqlite3.connect(str(self.path), timeout=5, isolation_level=None)
+        if self.path.is_symlink() or not self.path.parent.is_dir() or self.path.parent.is_symlink():
+            raise DeskError("database path must be inside an existing non-symlink directory")
+        if not allow_create:
+            # SQLite's default connect silently creates a fresh empty ledger. For all
+            # existing-ledger operations this can look like catastrophic data loss.
+            # URI mode=rw makes the missing-file check atomic at SQLite open time.
+            try:
+                self.db = sqlite3.connect(self.path.resolve().as_uri() + '?mode=rw',
+                                          uri=True, timeout=5, isolation_level=None)
+            except sqlite3.OperationalError as exc:
+                raise DeskError("database not found/readable; locate an existing backup, do not create a replacement") from exc
+        else:
+            # New private POSIX ledger with mode 0600. Existing file permissions are
+            # never rewritten; Windows privacy depends on OS profile ACL/BitLocker.
+            if not self.path.exists():
+                try:
+                    fd = os.open(self.path, os.O_CREAT | os.O_EXCL | os.O_RDWR, 0o600)
+                except FileExistsError:
+                    raise DeskError("database path changed during creation") from None
+                except OSError as exc:
+                    raise DeskError("cannot create new local ledger") from exc
+                else:
+                    os.close(fd)
+            self.db = sqlite3.connect(str(self.path), timeout=5, isolation_level=None)
         self.db.row_factory = sqlite3.Row
         self.db.execute("PRAGMA foreign_keys=ON")
         self.db.execute("PRAGMA busy_timeout=5000")

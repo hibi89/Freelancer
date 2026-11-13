@@ -12,6 +12,12 @@ import os
 import zipfile
 from pathlib import Path
 
+# Make the documented ``python scripts/build_portable.py`` command work from
+# a clean source checkout, not only when PYTHONPATH was exported beforehand.
+if __name__ == "__main__" and not __package__:
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from worknova_desk.core import DeskError
 
 SOURCE_FILES = ['worknova_desk/__init__.py', 'worknova_desk/__main__.py',

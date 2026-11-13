@@ -62,3 +62,18 @@ Engineering proof: [P85 trace](docs/P85_TRACE.md) (Linux 52/52 tests and virtual
 Run `python -m worknova_desk --db ./demo.sqlite checkpoint-new --out ./checkpoint-001.json` only with owner-owned synthetic/private data. Save returned `file_sha256` somewhere **outside** the database folder. Verify later: `python -m worknova_desk --db ./demo.sqlite checkpoint-verify --file ./checkpoint-001.json --expected-file-sha256 SHA`. The checkpoint includes only aggregate table counts/hashes and local audit-head; it is **not a signature or substitute for encrypted offsite backup**. A new legitimate transaction requires a new checkpoint (old checkpoint should fail, by design).
 
 `python scripts/build_portable.py --out NEW.zip` generates an unsigned Python-required ZIP. `python verify_portable.py --root EXTRACTED_DIR` checks exact source and manifest before first launch; on Windows `launch.cmd` now performs this preflight before GUI. Do not use with real customers until Windows install/rollback/Defender/Word/font rights pass. [Hardening evidence](docs/P85_HARDENING_20261113.md).
+
+## 2026-11-13 P85 installer / missing-database safety
+
+A previous candidate installer could not launch after install: the installer did
+not copy `FILE_MANIFEST.json`, and its path allowlist did not accept the required
+`verify_portable.py`. Both were repaired and regression-tested with a Linux
+staging model; **real PowerShell/Windows execution is still untested**.
+
+When using CLI on an existing ledger, initialize a *new* database explicitly:
+`python -m worknova_desk --db NEW.sqlite init` (first-run only). Other CLI
+commands refuse an absent DB rather than silently create an empty ledger.
+The desktop GUI asks before creating a missing database; if an existing DB has
+moved, decline, locate/restore it first. New POSIX DB files default to mode
+`0600`, not a Windows ACL guarantee. Portable product requires Python 3.11+,
+no code signing. See `docs/P85_INSTALL_DB_SAFETY_20261113.md`.

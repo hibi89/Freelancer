@@ -84,9 +84,11 @@ def verify(root: str | Path) -> dict:
     for candidate in root.rglob("*"):
         if candidate.is_symlink():
             raise PackageError("symlink in package tree")
-        if "__pycache__" in candidate.parts:
-            continue
-        if candidate.is_file() and candidate.suffix.lower() in (".py", ".pth", ".pyd", ".dll", ".cmd", ".ps1"):
+        # -B stops writing bytecode, not necessarily loading an existing cache.
+        # Never ignore caches that could mask a different executable payload.
+        if "__pycache__" in candidate.parts or candidate.suffix.lower() == ".pyc":
+            raise PackageError("unexpected bytecode/cache in package")
+        if candidate.is_file() and candidate.suffix.lower() in (".py", ".pyc", ".pth", ".pyd", ".dll", ".exe", ".bat", ".cmd", ".ps1", ".psm1", ".vbs", ".js", ".com", ".scr"):
             rel = candidate.relative_to(root).as_posix()
             if rel not in EXPECTED:
                 raise PackageError("unlisted executable code in package")

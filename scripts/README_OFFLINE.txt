@@ -31,3 +31,12 @@ Optional independent ledger checkpoint:
   py -3 -m worknova_desk --db PATH checkpoint-new --out NEW.json
   py -3 -m worknova_desk --db PATH checkpoint-verify --file NEW.json --expected-file-sha256 SHA
 Store JSON and its SHA away from the unencrypted customer DB.
+
+2026-11-13 safety continuation: repaired the PowerShell allowlist to admit
+verify_portable.py, and copied FILE_MANIFEST.json into staging for launch-time
+verification. Staged hashes are checked BEFORE any app swap. The launcher uses
+--root "." after pushd to avoid trailing-backslash quoting. Unexpected Python
+bytecode caches/executable files block startup. Missing owner DB prompts for
+explicit first-run confirmation in GUI; CLI existing ledger commands fail
+closed unless explicit init was first run. This was tested on Linux only;
+Windows OS execution remains NOT RUN and product is RELEASE HOLD.
