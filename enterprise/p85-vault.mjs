@@ -191,13 +191,24 @@ export class LocalSyntheticVault {
       evidence:scored.slice(0,limit).map(x=>x.c)});
   }
   /** Enforce server-side fixed synthetic dataset scope before opening CSV bytes. */
-  authorizeSyntheticDataset(token,{tenantId,groups,projects,clearance}){
+  authorizeSyntheticDataset(token,{tenantId,groups,projects,clearance},directory){
     const p=this.#principal(token);
     if(!id(tenantId)||!list(groups)||!list(projects)||groups.length===0||projects.length===0||
        !Number.isInteger(clearance)||clearance<1||clearance>3)DENY('SCOPE_INVALID');
     if(p.tenantId!==tenantId||p.clearance<clearance||
        (groups.length>0&&!groups.some(x=>p.groups.includes(x)))||
        (projects.length>0&&!projects.some(x=>p.projects.includes(x))))DENY('NOT_FOUND');
+    // Bind synthetic data authorization to the exact tenant-owned source directory.
+    // A caller-controlled scope label cannot authorize CSV bytes from another tenant.
+    const expected=path.join(this.#root,tenantId,'sales-only');
+    if(typeof directory!=='string'||!path.isAbsolute(directory)||
+      path.resolve(directory)!==expected)DENY('SALES_PATH_SCOPE_MISMATCH');
+    try{
+      for(const part of [path.join(this.#root,tenantId),expected]){
+        const st=fs.lstatSync(part);
+        if(!st.isDirectory()||st.isSymbolicLink())DENY('SALES_PATH_UNSAFE');
+      }
+    }catch(e){if(e.code==='SALES_PATH_UNSAFE')throw e;DENY('SALES_PATH_UNSAFE');}
     return true;
   }
   #admin(token){const p=this.#principal(token);if(!p.admin)DENY('NOT_AUTHORIZED');return p;}
