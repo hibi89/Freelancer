@@ -48,3 +48,9 @@ The generated documents exclude customer names by default, show quote version an
 The Windows portable ZIP includes Python source, explicit checksums, `launch.cmd`, and a candidate `install_local.ps1` for user-scoped install/upgrade/remove preserving `LOCALAPPDATA\\WORKNOVA Desk\\Data`. **Windows Python 3.11+ and Tk are prerequisites. No standalone EXE, signed MSI, font files or customer database are bundled.** Native Windows install/rollback/Defender/SmartScreen **NOT_RUN**. The PowerShell script must be reviewed and never silently bypass policy.
 
 Engineering proof: [P85 trace](docs/P85_TRACE.md) (Linux 52/52 tests and virtual-display UI smoke; **official final % UNASSESSED and RELEASE HOLD**). The previous P70 test statement above is historical rather than the current test total.
+
+## P85 independent ledger checkpoint and portable preflight (2026-11-13)
+
+Run `python -m worknova_desk --db ./demo.sqlite checkpoint-new --out ./checkpoint-001.json` only with owner-owned synthetic/private data. Save returned `file_sha256` somewhere **outside** the database folder. Verify later: `python -m worknova_desk --db ./demo.sqlite checkpoint-verify --file ./checkpoint-001.json --expected-file-sha256 SHA`. The checkpoint includes only aggregate table counts/hashes and local audit-head; it is **not a signature or substitute for encrypted offsite backup**. A new legitimate transaction requires a new checkpoint (old checkpoint should fail, by design).
+
+`python scripts/build_portable.py --out NEW.zip` generates an unsigned Python-required ZIP. `python verify_portable.py --root EXTRACTED_DIR` checks exact source and manifest before first launch; on Windows `launch.cmd` now performs this preflight before GUI. Do not use with real customers until Windows install/rollback/Defender/Word/font rights pass. [Hardening evidence](docs/P85_HARDENING_20261113.md).

@@ -22,3 +22,12 @@ DOCX/PDF must be handled as sensitive files; output is redacted by default.
 
 No real Windows/Defender/SmartScreen/installer test has been run at source.
 PRODUCT RELEASE HOLD; not an authorized legal contract or tax invoice generator.
+
+P85 hardening update: manifest format v2, pre-launch verify_portable.py fails closed
+on missing/tampered source before creating the Data folder. Installer also verifies
+exactly ten named application files. Unsigned hashes are corruption checks, NOT
+proof of authenticity; a malicious party could alter manifest and verifier.
+Optional independent ledger checkpoint:
+  py -3 -m worknova_desk --db PATH checkpoint-new --out NEW.json
+  py -3 -m worknova_desk --db PATH checkpoint-verify --file NEW.json --expected-file-sha256 SHA
+Store JSON and its SHA away from the unencrypted customer DB.

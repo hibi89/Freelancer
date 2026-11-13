@@ -24,3 +24,8 @@ Canonical whole-product design: `docs/FINAL_BLUEPRINT.md` (WD-01 through WD-14).
 - WD-13: verify deterministic ZIP source allowlist + SHA manifest and provide unsigned Windows per-user Python portable install candidate with app/data split, dry-run and rollback. A Python prerequisite/unsigned PowerShell **must not be advertised as a native EXE or signed installer**.
 - WD-14: record 10 synthetic industry cases separately from actual customer legal and accounting signoff.
 - Official final 85% not claimable without owner-approved weights/full WD-01..14 evidence; `[작업중]` and RELEASE HOLD unchanged.
+
+## Current P85 hardening gate (not completion certification)
+- WD-08: add user-controlled independent hash checkpoint (six table fingerprints + audit-head; new-only JSON; separately retained SHA). Does not defend against malicious rewrite of both DB and saved checkpoint.
+- WD-13: v2 portable exact-file hash preflight in launcher; no EXE/signature, PowerShell not Windows-tested.
+- Exact local tests and outstanding acceptance: `docs/P85_HARDENING_20261113.md`. All WD-01..WD-14 remain the final denominator; their approved weights are unavailable; **official final completeness UNASSESSED / P85 objective not certified**.

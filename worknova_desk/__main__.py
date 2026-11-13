@@ -6,6 +6,7 @@ from pathlib import Path
 
 from .core import Desk, DeskError, restore_new
 from .documents import export_document
+from .evidence import create_checkpoint, verify_checkpoint
 
 
 def main(argv=None):
@@ -46,6 +47,9 @@ def main(argv=None):
     document.add_argument("--include-customer", action="store_true", help="Include customer name in output; requires --confirm-disclosure")
     document.add_argument("--confirm-disclosure", action="store_true", help="Explicit permission to disclose customer name")
     sub.add_parser("verify")
+    cmd("checkpoint-new", ("out", True))
+    check = cmd("checkpoint-verify", ("file", True))
+    check.add_argument("--expected-file-sha256", help="Previously saved checkpoint SHA256; guard against replaced JSON")
     cmd("backup", ("out", True))
     cmd("migrate-v1", ("backup_out", True))
     cmd("restore-new", ("backup_file", True), ("new_db", True), ("sha256", True))
@@ -95,6 +99,8 @@ def main(argv=None):
                          include_customer=args.include_customer,
                          confirm_disclosure=args.confirm_disclosure)
         elif c == "verify": value = {"verified_events": desk.verify_audit()}
+        elif c == "checkpoint-new": value = create_checkpoint(desk, args.out)
+        elif c == "checkpoint-verify": value = verify_checkpoint(desk, args.file, expected_file_sha256=args.expected_file_sha256)
         elif c == "backup": value = {"backup_sha256": desk.backup(args.out)}
         elif c == "migrate-v1": value = {"backup_sha256": desk.migrate_v1(args.backup_out), "schema_version": desk.schema_version}
         print(json.dumps({"ok": True, "result": value}, ensure_ascii=False, sort_keys=True))

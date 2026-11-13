@@ -28,7 +28,13 @@ if ($Uninstall) {
 $manifestPath = Join-Path $package 'FILE_MANIFEST.json'
 if (-not (Test-Path -LiteralPath $manifestPath)) { throw 'FILE_MANIFEST.json missing' }
 $manifest = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
-if ($manifest.format -ne 'worknova-p85-portable-v1') { throw 'Invalid package manifest format' }
+if ($manifest.format -ne 'worknova-p85-portable-v2') { throw 'Invalid package manifest format' }
+$required = @(
+  'worknova_desk/__init__.py','worknova_desk/__main__.py',
+  'worknova_desk/core.py','worknova_desk/gui.py',
+  'worknova_desk/documents.py','worknova_desk/evidence.py',
+  'launch.cmd','README_OFFLINE.txt','install_local.ps1','verify_portable.py'
+)
 $seen = @{}
 foreach ($entry in $manifest.files) {
     $name = [string]$entry.path
@@ -42,7 +48,12 @@ foreach ($entry in $manifest.files) {
     $actual = (Get-FileHash -LiteralPath $origin -Algorithm SHA256).Hash.ToLowerInvariant()
     if ($actual -ne ([string]$entry.sha256).ToLowerInvariant()) { throw ('Checksum mismatch: ' + $name) }
 }
-if ($manifest.files.Count -lt 5) { throw 'Incomplete package manifest' }
+if ($manifest.files.Count -ne $required.Count -or $seen.Count -ne $required.Count) {
+    throw 'Incomplete package manifest'
+}
+foreach ($name in $required) {
+    if (-not $seen.ContainsKey($name)) { throw ('Missing required entry: ' + $name) }
+}
 if ($DryRun) { Write-Output 'DRY RUN: package hash audit OK; no program/data changes'; exit 0 }
 New-Item -ItemType Directory -Force -Path $installRoot | Out-Null
 Assert-PlainPath $installRoot
