@@ -1,3 +1,11 @@
+## [2026-11-14 KST] 온비드 15157252 실응답 첫 페이지 10/10 확인·19페이지 오프라인 계획 구현
+- 사용자 Windows 안전 출력으로 실제 `body.items.item` 리스트 **10개**, 요청 10개 **일치**. `SUCCESS_CODE_CANDIDATE`, `pageNo=1`, `numOfRows=10`, `totalCount=186`, SHA-256 저장본 일치. 186은 전체 **보고값**이지 실제 186건 다운로드 실적 아님.
+- 신규 `api-page-plan`은 기존 격리 파일만 검사하고 `reported_total_pages=19`, `next_page_if_sequential=2`, `pages_after_inspected_page=18`을 **추정 계획**으로 표시. 다른 18페이지 조회/검증 및 자동수집은 수행하지 않음.
+- `api_gateway.py`에서 온비드 직접 최상위 `header.resultCode` 비성공 오류도 저장 전 거부. G2B 기존 중첩 지원·엄격 검사·비밀 보호 유지.
+- Linux Python3.13.5 로컬 회귀 **220 PASS/0 FAIL** (215+5), compileall/Python3.11 AST PASS. 원격 제품 코드 4개 Git blob SHA **4/4** 로컬본 일치. 실제 고객 Windows 최신 CLI의 기존 격리본 재검증은 **미실행**.
+- **R01–R29 전체 최종설계 기준 공식률 UNASSESSED / 85% 미입증**, `[작업중]`, RELEASE HOLD, 크몽 미등록. 키/실원문 공유·새 정부 API 호출 0. 증거 `docs/ONBID_REAL_10_ITEMS_186_TOTAL_PAGE_PLAN_20261114.md`.
+
+---
 ## [2026-11-14 KST] 사용자 Windows 온비드 실제 응답 상태/페이지/해시 2차 확인
 - 형이 이전에 **본인 키로 요청하여 로컬 보관한** 온비드 결과목록 15157252 격리본을 PowerShell에서 **다시 HTTP 요청하지 않고** 확인함. 개인정보/원문/키 없이 안전한 출력만 수신: `STATUS_CLASS=SUCCESS_CODE_CANDIDATE`, `PAGE_INFO={pageNo:1,numOfRows:10,totalCount:186}`, `ITEMS_KIND=dict`, `HASH_MATCH=True`.
 - 결과: 비성공 상태로 분류된 것이 아니라 성공 **코드 후보**이며, API가 **총 186건을 보고**했음(실제 186건을 수집했다는 뜻은 아님). 1페이지 10건 요청; `items.item` 리스트/실제 항목 개수/실제 매핑은 아직 미검증. 해시 비교는 로컬 저장본의 정합성만 증명하고 기관 서명이나 출처 보증은 아님.

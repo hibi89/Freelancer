@@ -1,3 +1,16 @@
+# BID AX 온비드 첫 10건·19페이지 오프라인 계획 인수인계 — 2026-11-14 KST (10항)
+1. **목표·용도·기술:** R01–R29 고정 전체 설계 100% 대비 85% 목표, G2B/온비드/소유권 확인 법원자료 로컬 Python3.11+ SQLite/Tk. 배점 추가 승인 없음.
+2. **완료 기능·변경:** 사용자 Windows 실제 첫 페이지 `item` 10/10과 전체 보고 186 확인. 오프라인 `api-page-plan`으로 19페이지 예상/후속18 미검증 표시, 자동 호출 금지. 온비드 direct header 오류 응답 저장 전 차단.
+3. **테스트/검증:** Linux Python3.13.5 220 PASS/0 FAIL, compileall/3.11 AST PASS; 4개 코드 Git blob 일치. 사용자 첫 실제 페이지 1건 수신·필드 구조·요청 수 일치; 새 CLI/Windows 원본 재검증 NOT_RUN.
+4. **상태:** 실제 10항목 존재 확인, 전체 186건/다른 18페이지/실 필드 매핑·상용권 미수용. 공식률 UNASSESSED, 85% 미입증, `[작업중]`, RELEASE HOLD, 크몽 미등록.
+5. **실패·원인·대안:** 신규 전송 오류 차단으로 오류도 저장한다는 구 테스트와 충돌 1회 → 전송 저장 거부와 과거 오류 패킷 검사 보류를 별도 검증으로 수정, 220 PASS. 불확정 JSON 추측으로 정규화하지 않음.
+6. **Repo·브랜치·SHA:** `hibi89/Freelancer@product/bid-ax-public-procurement`, 기능 SHA `78bbf3f09b3f0908e946b1fb5a9c8ec62f69db92`; 수정 `bidax/api_gateway.py`, `bidax/response_audit.py`, `bidax/cli.py`, `tests/test_onbid_root_envelope.py`, 본 근거 문서/STATUS/HANDOFF. 최신 문서 HEAD 별도 확인.
+7. **Production/실행:** 최신 소스에서 `py -3.11 -m bidax.cli --db LOCAL_DB api-page-plan EXISTING_PACKET_PATH`. 네트워크 호출 없음, 기존 packet 위치 절대경로 허용. Windows EXE/판매/웹배포 미적용.
+8. **원본/백업/인증:** 원본 실격리 파일·로컬 DB·계정키·타 상품/BID OWL 무변경. 키/실원문 자료 GitHub/채팅 전송 없음. Git 정상 revert 가능.
+9. **다음 우선순위/승인:** 사용자 Windows 최신 파서 오프라인 재검증→필드명만 확인한 schema 정규화→다른 공식 API 3종/후속 페이지 검증→실100건/인간10건→설치·권리. 추가 외부 요청·외부 키 저장·유료 실행·출시는 별도 승인.
+10. **갱신/검증 범위:** 2026-11-14 KST, 사용자 콘솔과 로컬 합성/mock 220 테스트, 코드 4/4 검증만 근거. 문서 수정은 최신 HEAD 반영 후 확인.
+
+---
 # BID AX 온비드 실응답 성공 코드·186건 보고 확인 — 2026-11-14 KST (인수인계 보충)
 1. 목표: 고정 R01–R29 전체 기준 85% 목표, API 4종/Windows 로컬 Python3.11, 고객 자료·인증키 로컬 보존.
 2. 증거: 사용자 Windows PowerShell `STATUS_CLASS=SUCCESS_CODE_CANDIDATE`, `pageNo=1,numOfRows=10,totalCount=186`, `ITEMS_KIND=dict`, `HASH_MATCH=True`. 186은 전체 API 보고값, 로컬 저장 건수가 아님.
