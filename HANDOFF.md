@@ -1,3 +1,18 @@
+# HANDOFF — 2026-11-14 KST Windows EXE SQLite 무결성·스키마 v2 검증 (최신 10항)
+
+1. **목표·용도·요구/기술:** 사용자가 승인한 WD01~14 정식 최종설계100점/85점 목표, Windows 오프라인 Python3.11/SQLite/Tk 견적·계약·납품·수금 수기 장부.
+2. **완료/변경/기술 판단:** 사용자 Windows에서 PyInstaller6.22.3 onedir EXE 빌드, Tk GUI·새 임시 SQLite 생성/종료코드0 확인, **읽기전용 SQLite 전체 integrity_check `ok` + user_version `2`**. 원본 소스·운영 DB·사용자 OS 정책 변경 없음.
+3. **테스트 PASS/FAIL·미검증:** 사용자 명령 `sqlite3.connect(path.resolve().as_uri()+'?mode=ro',uri=True)`, `PRAGMA integrity_check` → `ok`, `PRAGMA user_version` → `2`. 앞선 Windows EXE GUI/DB 존재·MZ/SHA/ExitCode0와 별개 실파일 무결성 증거. SQLite 실테이블/거래처 CRUD·실 EXE 재기동/데이터 지속성·Windows ACL/서명·Defender/타PC·실고객·권리 NOT_RUN. 사용자 콘솔 로그만 확인하고 원본 데이터 파일 직접 수신 없음.
+4. **완료/진행/대기:** WD08/09/11/13 부분 수용 실증 추가, 완전 고객 수용한 WD 항목은 확인되지 않아 **공식 0/100 (구현률0 아님), 85 미달, [작업중]/RELEASE HOLD/크몽 미등록**.
+5. **오류·원인·대안:** 초기 두 겹 ZIP 경로/빌더 `PYTHONNOUSERSITE` 은 이전 정상 해결, 동일 설치/빌드 반복 금지. 현재 무결성 검사 성공. 다음은 격리 임시 데이터에 **가짜 거래처 1건만 GUI 조작** 후 read-only DB 조회·재실행. 실명/실금액 입력 금지.
+6. **저장소·브랜치·SHA/주요 경로:** `hibi89/Freelancer@product/worknova-desk-local`, 최신 증거 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md` 수정 커밋 `7b7be1adb9399b037c51a8cde48857cf9028ed74`; 문서/최종 제품 HEAD는 GitHub 재확인. 실제 임시 DB 경로는 소유자 PC에만 유지.
+7. **Production URL·환경:** Vercel/웹 프로덕션 미적용. unsigned EXE Win10.0.26200의 TEMP onedir, 자식 프로세스 한정 TEMP LOCALAPPDATA 신규 장부 생성·SQLite v2.
+8. **원본·백업·인증·수정 금지:** 운영 사용자 장부/원래 LOCALAPPDATA, 백업, 원본 PayPal/Freelancer main·타 제품/등록완료 이력, OS 보안·사용자 키 변경0. 고객 파일/스크린샷 GitHub 미업로드.
+9. **다음 우선순위·완료 기준/승인:** 이미 합성 TEMP 내 새 DB 확인한 경로를 유지한 채 EXE 재실행→가짜 거래처 입력→정상 종료·SQLite 이름 존재 조회→차기 재실행 데이터 표시 확인. 필요시 견적/계약/수금 등 합성 전체 E2E, 최종 WD 전체 항목 완전 PASS 점수 합≥85일 때만 완료. 유료/실고객자료·보안 정책은 별도 승인.
+10. **갱신 일시 KST·검증범위/문서:** 2026-11-14 KST, 사용자 실제 Windows 콘솔 `integrity_check:ok`, `user_version:2`만 이번 추가 근거. 기존 제품 코드 SHA/출력 EXE/DB는 형 PC; 중앙 감사표까지 최신화 후 브랜치 HEAD 재조회.
+
+---
+
 # HANDOFF — 2026-11-14 KST native Windows EXE 격리 DB 생성·정상 종료 증거 (최신 10항)
 
 1. **목표·용도·확정 요구·기술:** WORKNOVA Desk Windows 오프라인 Python3.11/SQLite/Tk 견적·계약·납품·수금 장부, 승인 WD01~14 총100점·완전 구매자 수용85점 목표.
