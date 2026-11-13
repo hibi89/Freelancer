@@ -1,5 +1,16 @@
 # CITEVAULT AX — STATUS — RAG Studio Enterprise, 2026-11-13 KST
 
+## [2026-11-13 KST] CITEVAULT AX P85 사용자 목표 — 조직분리·로그인·문서 수명주기 로컬 검증
+
+- **공식 목표/판정:** 사용자 확정 최종설계도 전체 대비 **85%**. 실제 최종완성률은 **UNASSESSED**, 85% **미달성/검증 대기**, 해총 **[작업중]** 유지, **RELEASE HOLD / SALE NO-GO**.
+- **신규 실제 구현:** `enterprise/p85-vault.mjs`: 오프라인 합성 계정 scrypt 로그인·시크릿 없는 난수 Bearer 세션, 15분 만료/로그아웃/잠금, 조직·그룹·프로젝트·등급 ACL 검증 **후**에만 고정 파일 원문 열람, SHA256·링크·경로·사이즈 변조 차단, 조직별 감사 이력, 버전 전환/폐기/관리자 재색인. `enterprise/p85-loopback.mjs`: `127.0.0.1`로만 바인딩되는 합성 HTTP QA, 401/403/404, `no-store`, JSON/4096 bytes 입력 제한. 실제 고객 IAM/Production 서버 아님.
+- **실행/검증:** GitHub blob SHA와 Linux Node22.16 로컬 파일 4개가 `git hash-object`로 정확 일치 (vault `378523e03e4d42fe899e702504f8c37b6c23454e`, vault test `5e455611732c067bbcbcd7c5b8ea005e775e3dea`, HTTP `dee33df73c1f677713c11c89156f07fd4de40dfd`, HTTP tests `80a30bccb792a8a37104ec5376c55ce1dce4a4f3`). `node --test tests/p85-vault.test.mjs tests/p85-loopback.test.mjs` **42 PASS/0 FAIL/0 SKIP**, 기존 P50/P70 Node 검증 포함 총 **79 중 76 PASS/0 FAIL/3 SKIP**. 3 SKIP은 실제 원본 RAG Studio checkout에 필요한 통합.
+- **보안 결함 처리:** 1차 개발 이후 관리자 감사 조회의 조직 간 이벤트 메타정보 노출 가능성을 확인→tenant별 audit 저장/조회 필터 추가 후 27/27 vault PASS. HTTP text/plain JSON 및 4096 bytes 초과 본문 차단 추가 후 15/15 PASS.
+- **CI:** `.github/workflows/citevault-p50.yml`에 `p85-loopback-contracts` Ubuntu24.04/Node22.16 + Windows2022/Node22.23 매트릭스 추가. **Hosted run/job 로그 및 Windows PASS는 확인 불가**. 이전 원본 RAG P512/P538/P540/P549도 CI 정의만 확인.
+- **미구현/미검증:** 영속 IAM/계정 데이터 저장, 조직별 실제 데이터/인덱스/세션, 실제 고객 허가된 PDF/DOCX·SMAX Native→서명 승인 AX, 한국어 실제 모델/라이선스, 실 Windows 인수/Gold·백업 복구, 사용자 최종설계 가중치 100% 재산정. `docs/P85_EVIDENCE_MATRIX.md` 필수 추적.
+- **보존:** 원본 RAG/PREP/SMAX/고객정보·계정 권한·Vercel/Production/과금 변경 없음. CI 통과를 추정하지 않고 `[작업중]` 유지.
+
+
 ## [2026-11-13 KST] 사용자 70% 목표 2차 구현 — Node 34PASS/0FAIL/3SKIP, 최종완성률 미확정
 
 - **실제 개발:** 원본 RAG 통합 브리지의 근거 없는 `FOUND` 허용 결함 확인·수정. `enterprise/p70-citation-contract.mjs` 엄격 출처 검증을 `enterprise/p70-rag-bridge.mjs`에 실제 연결. `enterprise/p70-local-review.mjs`는 실제 로컬 CSV bytes/원본 SHA-256/5열 역할 매핑/BigInt 금액 일치/보존 확인, SMAX/PREP `REVIEW_HOLD`만 출력. `row_lineage_verified:false` 등 권리·인가 과대주장 금지.
