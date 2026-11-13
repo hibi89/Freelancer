@@ -45,7 +45,7 @@ test('P70 nonexistent document IDs share identical generic refusal',async()=>{
 });
 test('P70 forged corporate identity cannot activate synthetic scope',async()=>{
   await assert.rejects(()=>queryPinnedRagSyntheticScope(options({
-    principal:{...principal(),identity_state:'ENTERPRISE_AUTHENTICATED'}}),
+    principal:{...principal(),identity_state:'ENTERPRISE_AUTHENTICATED'}})),
     {code:'IDENTITY_NOT_VERIFIED'});
 });
 test('P70 authorized doc cannot leak file paths when original RAG checkout is missing',async()=>{

@@ -11,11 +11,19 @@ export function extractVerifiedNativeBytes(bytes, kind, {python = 'python'} = {}
   if (!Buffer.isBuffer(bytes) || bytes.length < 8 || bytes.length > 2*1024*1024 ||
       !['pdf', 'docx'].includes(kind) || typeof python !== 'string' ||
       !/^(python(?:3(?:\.\d+)?)?|py)$/u.test(python)) deny();
+  // Preserve only OS runtime variables needed to launch installed Python on Windows.
+  // Do not inherit arbitrary user environment or proxy/credential variables.
+  const childEnv = {PATH: process.env.PATH ?? '', PYTHONIOENCODING: 'utf-8'};
+  if (process.platform === 'win32') {
+    for (const name of ['SystemRoot', 'WINDIR', 'TEMP', 'TMP']) {
+      if (typeof process.env[name] === 'string') childEnv[name] = process.env[name];
+    }
+  }
   let result;
   try {
     result = spawnSync(python, ['-I', '-B', script, kind], {
       input: bytes, timeout: 8000, maxBuffer: 512*1024, windowsHide: true,
-      env: {PATH: process.env.PATH ?? '', PYTHONIOENCODING: 'utf-8'},
+      env: childEnv,
       encoding: 'utf8'
     });
   } catch { deny(); }

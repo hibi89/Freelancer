@@ -13,7 +13,7 @@ const p1='operator-employee-strong-pass';
 const p2='operator-newcomer-strong-pass';
 function setup(t){
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'citevault-operator-'));
- t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+
  const dirs=[['tenantA','policy','staff','quality','반품 신청은 7일 이내 가능합니다.'],
    ['tenantA','sealed','management','audit','내부 전용 규정은 14일 이내 가능합니다.'],
    ['tenantB','foreign','staff','quality','다른 조직 비밀정보입니다.']];
@@ -30,7 +30,7 @@ function setup(t){
  const stores=[];const clients=[];
  const spawn=()=>{const store=new SyntheticVaultStateStore({root});stores.push(store);
    const vault=new LocalSyntheticVault({root,accounts,documents:docs,stateStore:store});clients.push(vault);return vault;};
- t.after(()=>stores.forEach(s=>s.close()));
+ t.after(()=>{for(const s of stores)s.close();fs.rmSync(root,{recursive:true,force:true});});
  return {root,spawn,accounts,docs};
 }
 const scope=(groups=['staff'],projects=['quality'],clearance=1)=>({groups,projects,clearance});
