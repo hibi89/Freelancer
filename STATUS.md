@@ -1,3 +1,11 @@
+## [2026-11-14 KST] 사용자 Windows 온비드 실제 응답 상태/페이지/해시 2차 확인
+- 형이 이전에 **본인 키로 요청하여 로컬 보관한** 온비드 결과목록 15157252 격리본을 PowerShell에서 **다시 HTTP 요청하지 않고** 확인함. 개인정보/원문/키 없이 안전한 출력만 수신: `STATUS_CLASS=SUCCESS_CODE_CANDIDATE`, `PAGE_INFO={pageNo:1,numOfRows:10,totalCount:186}`, `ITEMS_KIND=dict`, `HASH_MATCH=True`.
+- 결과: 비성공 상태로 분류된 것이 아니라 성공 **코드 후보**이며, API가 **총 186건을 보고**했음(실제 186건을 수집했다는 뜻은 아님). 1페이지 10건 요청; `items.item` 리스트/실제 항목 개수/실제 매핑은 아직 미검증. 해시 비교는 로컬 저장본의 정합성만 증명하고 기관 서명이나 출처 보증은 아님.
+- 이전 `UNRECOGNIZED_ENVELOPE`는 `raw_response` 최상위 `header/body`로 확인되어 코드 수정 HEAD `bd101d566d222c5a5587461202834b179ed9cf96`에 이미 반영. 이번에는 **추가 코드 변경·테스트 실행 없음**, 이전 Linux 합성 215 PASS 근거를 그대로 유지. 새 수정 검사기로 사용자 Windows 실 파일 전체 `api-inspect` 아직 미실행.
+- 다음: 원본/키 공유 없이 `body.items.item` 형태·항목 개수만 읽는 오프라인 검사 후 본인 로컬 최신 inspector 재검증. R01–R29 전체 최종설계 고정, **최종률 UNASSESSED, 85% 미입증, [작업중]/RELEASE HOLD/미등록**.
+
+---
+
 ## [2026-11-14 KST] 온비드 결과목록 실응답 root header/body 구조 수용 (오프라인)
 - 사용자 Windows 출력에서 실제 `onbid_result_list` 15157252의 JSON 최상위 키가 `header`, `body`; 하위 `header(resultCode,resultMsg)` 및 `body(items,numOfRows,pageNo,totalCount)`임을 확인. 키와 raw 값은 미수신.
 - 원인: `bidax/response_audit.py`가 `response.header/body`만 허용하여 정상 후보도 `UNRECOGNIZED_ENVELOPE`로 보류하던 *포장 구조 불일치*. direct root + 기존 nested 형식을 모두 검사하며 **혼합 구조는 `AMBIGUOUS_ENVELOPE`로 보류**, status/page/count/integrity/credential 보호 유지.

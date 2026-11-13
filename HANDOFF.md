@@ -1,3 +1,17 @@
+# BID AX 온비드 실응답 성공 코드·186건 보고 확인 — 2026-11-14 KST (인수인계 보충)
+1. 목표: 고정 R01–R29 전체 기준 85% 목표, API 4종/Windows 로컬 Python3.11, 고객 자료·인증키 로컬 보존.
+2. 증거: 사용자 Windows PowerShell `STATUS_CLASS=SUCCESS_CODE_CANDIDATE`, `pageNo=1,numOfRows=10,totalCount=186`, `ITEMS_KIND=dict`, `HASH_MATCH=True`. 186은 전체 API 보고값, 로컬 저장 건수가 아님.
+3. 검증: API 새 HTTP 0회/키 재입력 0회, 소스 변경 0회, 실제 item 리스트 수 미검증. 직전 215 Linux 합성/mock PASS는 새 테스트가 아니라 이전 결과.
+4. 상태: 응답 성공 코드 후보·저장 JSON 정합성 일부 확인; 실제 10건 item의 형태 및 공식 필드 매핑·29개 요구 85%는 미확정.
+5. 원인/조치: 중첩 `response.header/body` 전용 구형 검사기가 최상위 `header/body`를 오인 → `bd101d566d222c5a5587461202834b179ed9cf96`의 parser에서 수정됨. 필요 시 구형 경로와 새 경로 구별.
+6. 저장소: hibi89/Freelancer, product/bid-ax-public-procurement, 수정 코드 commit `bd101d566d222c5a5587461202834b179ed9cf96`, `bidax/response_audit.py`, `docs/ONBID_ROOT_ENVELOPE_FIX_20261114.md`.
+7. 실행: 원본이 있는 고객 Windows 경로에서 파이썬 오프라인 읽기로 `body.items.item` 항목 개수만 검사; 네트워크/서버/키 불필요, Vercel 미적용.
+8. 보안/원본: 원래 `result_001.json`, SQLite, 고객키, 본인 데이터/다른 제품 원본 불변; raw JSON/키를 채팅·GitHub 업로드 금지.
+9. 다음: `items.item` 구조/수량 확인 → 실제 저장본을 **수정된 최신 검사기**로 `api-inspect` 하여 안전 메타결과 수신 → 필드/매핑·수용 검증. 법적/상용권과 100건/10인간, Win 설치 별도.
+10. 기준: 2026-11-14 KST 사용자 콘솔 안전 출력만 확인, 문서 최신화 후 커밋 SHA 확인. 공식 UNASSESSED/85% 미입증/[작업중]/RELEASE HOLD/크몽 미등록.
+
+---
+
 # BID AX 온비드 최상위 header/body 응답 지원 — 2026-11-14 KST (인수인계 10항)
 1. **목표/요구/기술:** 29개 최종 R01–R29 전체 설계 100%, 85% 목표, Python 3.11+ SQLite/Tk, G2B·Onbid·동의 기반 법원자료. 가중치 추가 승인 요구 없음.
 2. **변경·결정 근거:** 고객 Windows 안전 키 진단으로 온비드 15157252 원문 구조의 최상위 `header/body` 증명. 응답 검사기는 기존 `response.header/body`와 이 root 구조를 모두 허용; 동시 혼합은 안전 보류. 원본 raw를 자동 임포트하거나 자격확인하지 않음.

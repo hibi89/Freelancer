@@ -18,3 +18,7 @@ Known structure of `raw_response` from the user is exactly root keys `header`, `
 Use the latest inspector on the ORIGINAL quarantined packet in its original `BID_AX` project, or inspect an exact-copy packet in a separate folder. Run `api-inspect` with the existing absolute path. Report only the safe summary, never `raw_response`, file contents, API key, auction asset details or personal data. A `STRUCTURE_CANDIDATE_REVIEW_REQUIRED` result proves a candidate JSON layout only, not full field mapping, authenticity, rights, or approval of auction eligibility.
 
 **Status:** 29 fixed full-design requirements. Official completion UNASSESSED, 85% NOT demonstrated, `[작업중]`, RELEASE HOLD, not listed on Kmong. Windows 3.11 actual reinspection not yet executed with updated parser.
+
+## Actual Windows offline second inspection (2026-11-14 KST)
+
+User-provided safe console values: `STATUS_CLASS: SUCCESS_CODE_CANDIDATE`, `PAGE_INFO: {'pageNo': 1, 'numOfRows': 10, 'totalCount': 186}`, `ITEMS_KIND: dict`, `HASH_MATCH: True`. No key/raw user document was sent. The reported 186 is the upstream total, **not** the number of locally saved items. This evidence supports successful code candidate, page 1 request, and canonical saved-object hash consistency, not complete response-field mapping, item count, agency-signed authenticity, legal rights, or 85% acceptance. `body.items.item` count remains the next needed offline validation; no repeat official request required.
