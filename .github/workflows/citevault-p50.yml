@@ -1,10 +1,12 @@
-name: CITEVAULT P50 pinned RAG integration
+name: CITEVAULT P50-P70 pinned RAG integration
 on:
   push:
     branches: [product/rag-enterprise-knowledge]
     paths:
       - enterprise/p50-gate.mjs
       - tests/p50.test.mjs
+      - enterprise/p70-policy.mjs
+      - tests/p70.test.mjs
       - .github/workflows/citevault-p50.yml
   workflow_dispatch:
 permissions:
@@ -41,9 +43,13 @@ jobs:
         shell: bash
         working-directory: rag
         run: node --test tests/p512-native-document.test.mjs
+      - name: Validate pinned RAG multi-native document, full-corpus conflict and PREP-SMAX review-hold
+        shell: bash
+        working-directory: rag
+        run: node --test tests/p538-full-corpus-conflict.test.mjs tests/p540-native-collection.test.mjs tests/p549-prep-smax-boundary.test.mjs
       - name: Run CITEVAULT source-bound synthetic regression
         shell: bash
         working-directory: citevault
         env:
           RAG_STUDIO_ROOT: ${{ github.workspace }}/rag
-        run: node --test tests/p50.test.mjs
+        run: node --test tests/p50.test.mjs tests/p70.test.mjs
