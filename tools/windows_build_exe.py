@@ -69,7 +69,11 @@ def build(output: Path) -> dict:
     destination.mkdir(mode=0o700)
     env = os.environ.copy()
     env['PYTHONDONTWRITEBYTECODE'] = '1'
-    env['PYTHONNOUSERSITE'] = '1'
+    # PyInstaller is commonly installed with pip --user. Disabling the user site
+    # makes `python -m PyInstaller` fail even when the parent interpreter can
+    # import it. Allow only this already-selected interpreter's user site;
+    # do not install packages, change PATH, or modify persistent OS settings.
+    env.pop('PYTHONNOUSERSITE', None)
     try:
         with (destination / 'build.log').open('x', encoding='utf-8') as log:
             proc = subprocess.run(spec['argv'], cwd=str(ROOT), env=env,
