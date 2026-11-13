@@ -77,6 +77,7 @@ export function inspectSyntheticSqlEvidence(directory){
     const evidence=db.prepare(SQL_LINES).all().map(row=>({csv_line:row.csv_line,
       order_id:row.order_id,amount_krw:String(row.amount_krw),source_sha256:review.source_sha256}));
     return Object.freeze({status:'REVIEW_HOLD',approval:'NOT_GRANTED',
+      mapping_sha256:review.mapping_sha256,
       contract:'CITEVAULT_P85_PROVISIONAL_SQL_V1',engine:'node:sqlite :memory: fixed query_only',
       orders:totals.orders,units:units.toString(),provisional_revenue_krw:exact.toString(),
       evidence,source_sha256:review.source_sha256,row_lineage_verified:false,
