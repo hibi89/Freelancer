@@ -8,6 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {authorizeSyntheticDocumentScope} from './p70-policy.mjs';
+import {validateAuthorizedCitations} from './p70-citation-contract.mjs';
 
 const safeReturn=(status)=>Object.freeze({status,answer:null,evidence:[],
   model_state:'UNAVAILABLE',enterprise_identity_verified:false,
@@ -21,19 +22,6 @@ function verifiedModuleFile(root,relative) {
   const st=fs.lstatSync(selected);
   if(!st.isFile()||st.isSymbolicLink()||st.size>512*1024)throw Error('FILE_INVALID');
   return pathToFileURL(selected).href;
-}
-function validateAuthorizedCitations(result,allowed) {
-  if(!result||typeof result!=='object'||!['FOUND','POSSIBLE_CONFLICT','NO_EVIDENCE'].includes(result.status))
-    return false;
-  if(!result.scope||result.scope.mode!=='SESSION_SELECTED_DOCUMENTS'
-     || JSON.stringify(result.scope.document_ids)!==JSON.stringify(allowed))return false;
-  for(const key of ['evidence','review_evidence','comparison']) {
-    if(!Object.hasOwn(result,key))continue;
-    if(!Array.isArray(result[key]))return false;
-    if(result[key].some(item=>!item||typeof item!=='object'||!allowed.includes(item.document_id)))
-      return false;
-  }
-  return true;
 }
 /** No raw original source data, path or exception is emitted on refusal. */
 export async function queryPinnedRagSyntheticScope({
