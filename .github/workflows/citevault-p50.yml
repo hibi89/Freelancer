@@ -13,6 +13,10 @@ on:
       - tests/p70-citation-contract.test.mjs
       - enterprise/p70-local-review.mjs
       - tests/p70-local-review.test.mjs
+      - enterprise/p85-vault.mjs
+      - tests/p85-vault.test.mjs
+      - enterprise/p85-loopback.mjs
+      - tests/p85-loopback.test.mjs
       - .github/workflows/citevault-p50.yml
   workflow_dispatch:
 permissions:
@@ -32,6 +36,34 @@ jobs:
           node-version: '22.16.0'
       - name: Verify exact-source local citation and PREP-SMAX review-only contracts
         run: node --test tests/p70-citation-contract.test.mjs tests/p70-local-review.test.mjs
+  p85-loopback-contracts:
+    name: P85 local vault and HTTP / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            node: '22.16.0'
+          - os: windows-2022
+            node: '22.23.0'
+    steps:
+      - name: Checkout CITEVAULT product branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Setup exact Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Validate P85 source and HTTP syntax
+        shell: bash
+        run: |
+          node --check enterprise/p85-vault.mjs
+          node --check enterprise/p85-loopback.mjs
+      - name: Run real local credentials, tenant isolation and lifecycle regression
+        run: node --test tests/p85-vault.test.mjs tests/p85-loopback.test.mjs
   synthetic-evidence:
     runs-on: ubuntu-24.04
     timeout-minutes: 12
