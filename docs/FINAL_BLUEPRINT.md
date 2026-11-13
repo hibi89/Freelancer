@@ -16,17 +16,17 @@ No PayPal API or other original hackathon code is imported; the original quoteâ†
 ## Complete requirement IDs (full scope; no owner-approved percent weights yet)
 | ID | Buyer-facing acceptance | Current state |
 |---|---|---|
-| WD-01 | customer/identity CRUD with safe roles and disclosure controls | local create; roles/CRUD pending |
+| WD-01 | customer/identity CRUD with safe roles and disclosure controls | local create/search/list; edit/delete/multiuser roles pending |
 | WD-02 | integer KRW line items, explicit 10% VAT/tax-exempt and rounding, invalid money rejected | core and regression tested |
-| WD-03 | immutable versioned quote and separately recorded approval | initial quote immutable with human approval; revision chain pending |
+| WD-03 | immutable versioned quote and separately recorded approval | **v2 revisions + parent lineage, distinct approvals, local tests**; buyer verification pending |
 | WD-04 | contract scope tied to approved quote, separate human activation | core and test |
 | WD-05 | one-to-many milestone sum, ordered state, validation | core and test |
 | WD-06 | delivery evidence, revision rounds, explicit buyer acceptance; robust change history | basic separate transitions tested, rich history pending |
 | WD-07 | partial manual collections, remaining balances, idempotent references, no automatic payment | core and test; external settlement not validated |
 | WD-08 | auditable append-only event integrity, detection and safer reconciliation | SHA256 hash-chain test; owner rewrite not prevented |
-| WD-09 | durable SQLite, point-in-time backup, restore drill, migration, failure isolation | backup + integrity tested; restore/migration pending |
-| WD-10 | privacy-safe client JSON/HTML, clear fee/tax wording and offline provenance | redacted JSON and restrictive CSP HTML tested |
-| WD-11 | end-user Windows GUI workflow with search, customer/quote selection and error guidance | NOT BUILT |
+| WD-09 | durable SQLite, point-in-time backup, restore drill, migration, failure isolation | v1 backup+explicit migrate, SHA-pin restore-new, integrity/audit regression; Windows recovery pending |
+| WD-10 | privacy-safe client JSON/HTML, clear fee/tax wording and offline provenance | redacted reports and quote preview with CSP escaped markup tested |
+| WD-11 | end-user Windows GUI workflow with search, customer/quote selection and error guidance | Tk prototype and Xvfb widget flow PASS; actual Windows/UX NOT_RUN |
 | WD-12 | Korean DOCX/PDF with fonts, version preservation, print UX | NOT BUILT |
 | WD-13 | secure Win10/11 install/upgrade/uninstall, local access controls, encrypted storage option | NOT BUILT |
 | WD-14 | 10+ realistic industry samples, legal/tax review, rights/NOTICE, commercial owner acceptance and support | NOT RUN |
@@ -40,7 +40,7 @@ No PayPal API or other original hackathon code is imported; the original quoteâ†
 
 ## Engineering gates vs formal completion
 - **P50:** independently implemented offline ledger, KRW/VAT, discrete human approvals, contract/milestone/receipts, event audit, backup and executable CLI/regressions.
-- **P70:** guided GUI and full quote revisions/history, recovery/migration and failure UX, document previews.
+- **P70:** guided GUI, full quote revisions/history, recovery/migration and failure UX, quote document previews. Locally implemented on Linux Python/Tk Xvfb; full Windows/customer/formal 70% **not yet certified**.
 - **P85:** robust Korean DOCX/PDF and Windows build/installer with security/retention/role tests.
 - **P95:** real Windows10/11, at least 10 scenarios, migration/backup drill and legal/license checks.
 - **P100:** end-customer acceptance, support/returns, clear full coverage and owner release approval.

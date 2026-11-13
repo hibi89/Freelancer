@@ -9,7 +9,8 @@ import html
 import json
 import os
 import sqlite3
-from contextlib import contextmanager
+import tempfile
+from contextlib import contextmanager, closing
 from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
@@ -53,7 +54,7 @@ class Desk:
         self.db.execute("PRAGMA foreign_keys=ON")
         self.db.execute("PRAGMA busy_timeout=5000")
         version = self.db.execute("PRAGMA user_version").fetchone()[0]
-        if version not in (0, 1):
+        if version not in (0, 1, 2):
             self.db.close()
             raise DeskError("unsupported schema version; backup and migrate manually")
         self.db.executescript("""
@@ -63,6 +64,7 @@ class Desk:
         CREATE TABLE IF NOT EXISTS quotes (
           id TEXT PRIMARY KEY, customer_id TEXT NOT NULL REFERENCES customers(id),
           revision INTEGER NOT NULL CHECK(revision > 0), items_json TEXT NOT NULL,
+          root_quote_id TEXT, parent_quote_id TEXT,
           subtotal_krw INTEGER NOT NULL, vat_krw INTEGER NOT NULL,
           total_krw INTEGER NOT NULL, status TEXT NOT NULL CHECK(status IN ('DRAFT','APPROVED')),
           created_at TEXT NOT NULL, approved_by TEXT,
@@ -89,8 +91,10 @@ class Desk:
           action TEXT NOT NULL, payload_json TEXT NOT NULL, previous_hash TEXT NOT NULL,
           digest TEXT NOT NULL
         );
-        PRAGMA user_version=1;
         """)
+        if version == 0:
+            self.db.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_quote_root_revision ON quotes(root_quote_id, revision)")
+            self.db.execute("PRAGMA user_version=2")
 
     def close(self):
         self.db.close()
@@ -130,9 +134,8 @@ class Desk:
             self._event("CUSTOMER_CREATED", actor, {"id": key})
         return key
 
-    def new_quote(self, customer_id: str, items: list[dict], *, taxable: bool = True,
-                  actor: str = "owner") -> str:
-        actor = _text(actor, "actor", 80)
+    @staticmethod
+    def _priced_items(items: list[dict], taxable: bool):
         if type(taxable) is not bool or not isinstance(items, list) or not (1 <= len(items) <= 100):
             raise DeskError("quote needs 1..100 line items and boolean taxable")
         normalized, subtotal = [], 0
@@ -149,15 +152,107 @@ class Desk:
             normalized.append({"description": name, "quantity": qty, "unit_krw": unit,
                                "line_total_krw": line})
         vat = (subtotal + 5) // 10 if taxable else 0  # 10% VAT, half-up to whole KRW
+        return normalized, subtotal, vat
+
+    def new_quote(self, customer_id: str, items: list[dict], *, taxable: bool = True,
+                  actor: str = "owner") -> str:
+        actor = _text(actor, "actor", 80)
+        normalized, subtotal, vat = self._priced_items(items, taxable)
         key = _id()
         with self._write():
             self._fetch("customers", customer_id)
-            self.db.execute("""INSERT INTO quotes
-                (id,customer_id,revision,items_json,subtotal_krw,vat_krw,total_krw,status,created_at)
-                VALUES (?,?,?,?,?,?,?,?,?)""",
-                (key, customer_id, 1, _json(normalized), subtotal, vat, subtotal + vat, "DRAFT", _now()))
+            if self.schema_version == 2:
+                self.db.execute("""INSERT INTO quotes
+                    (id,customer_id,revision,items_json,root_quote_id,parent_quote_id,
+                     subtotal_krw,vat_krw,total_krw,status,created_at)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
+                    (key, customer_id, 1, _json(normalized), key, None, subtotal, vat, subtotal + vat, "DRAFT", _now()))
+            else:
+                self.db.execute("""INSERT INTO quotes
+                    (id,customer_id,revision,items_json,subtotal_krw,vat_krw,total_krw,status,created_at)
+                    VALUES (?,?,?,?,?,?,?,?,?)""",
+                    (key, customer_id, 1, _json(normalized), subtotal, vat, subtotal + vat, "DRAFT", _now()))
             self._event("QUOTE_CREATED", actor, {"id": key, "total_krw": subtotal + vat, "taxable": taxable})
         return key
+
+    @property
+    def schema_version(self) -> int:
+        return self.db.execute("PRAGMA user_version").fetchone()[0]
+
+    def quote_history(self, quote_id: str) -> list[dict]:
+        quote = self._fetch("quotes", quote_id)
+        if self.schema_version != 2:
+            return [{k: quote[k] for k in ("id", "revision", "status", "created_at", "total_krw")}]
+        rows = self.db.execute("""SELECT id,revision,status,created_at,total_krw,parent_quote_id
+            FROM quotes WHERE root_quote_id=? ORDER BY revision""", (quote["root_quote_id"],))
+        return [dict(r) for r in rows]
+
+    def revise_quote(self, quote_id: str, items: list[dict], *, taxable: bool=True, actor: str="owner") -> str:
+        actor = _text(actor, "actor", 80)
+        normalized, subtotal, vat = self._priced_items(items, taxable)
+        if self.schema_version != 2:
+            raise DeskError("explicit schema migration with verified backup is required")
+        with self._write():
+            source = self._fetch("quotes", quote_id)
+            latest = self.db.execute("""SELECT id,revision FROM quotes WHERE root_quote_id=?
+                ORDER BY revision DESC LIMIT 1""", (source["root_quote_id"],)).fetchone()
+            if latest["id"] != quote_id:
+                raise DeskError("can only revise latest quote version")
+            key = _id()
+            self.db.execute("""INSERT INTO quotes
+                (id,customer_id,revision,items_json,root_quote_id,parent_quote_id,
+                 subtotal_krw,vat_krw,total_krw,status,created_at)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
+                (key, source["customer_id"], latest["revision"] + 1, _json(normalized),
+                 source["root_quote_id"], quote_id, subtotal, vat, subtotal + vat, "DRAFT", _now()))
+            self._event("QUOTE_REVISED", actor, {"id":key,"parent_id":quote_id,"root":source["root_quote_id"],
+                                                  "revision":latest["revision"]+1,"total_krw":subtotal+vat})
+            return key
+
+    def list_customers(self, search: str="") -> list[dict]:
+        if not isinstance(search,str) or len(search)>100: raise DeskError("invalid search")
+        return [dict(r) for r in self.db.execute("SELECT id,name,created_at FROM customers ORDER BY created_at DESC, rowid DESC")
+                if search.casefold() in r["name"].casefold()]
+
+    def list_quotes(self, customer_id: str) -> list[dict]:
+        self._fetch("customers", customer_id)
+        return [dict(r) for r in self.db.execute("SELECT id,revision,status,total_krw,created_at FROM quotes WHERE customer_id=? ORDER BY rowid DESC", (customer_id,))]
+
+    def list_contracts(self, customer_id: str) -> list[dict]:
+        self._fetch("customers", customer_id)
+        return [dict(r) for r in self.db.execute("""SELECT c.id,c.scope,c.status,c.quote_id FROM contracts c
+                    JOIN quotes q ON c.quote_id=q.id WHERE q.customer_id=? ORDER BY c.rowid DESC""", (customer_id,))]
+
+    def list_milestones(self, contract_id: str) -> list[dict]:
+        self._fetch("contracts", contract_id)
+        return [dict(r) for r in self.db.execute("SELECT id,title,amount_krw,status,delivered_note FROM milestones WHERE contract_id=? ORDER BY rowid", (contract_id,))]
+
+    def export_quote_html(self, quote_id: str) -> str:
+        quote = self._fetch("quotes", quote_id)
+        entries = json.loads(quote["items_json"])
+        rows = "".join("<tr><td>" + html.escape(x["description"],quote=True) + "</td><td>" +
+             str(x["quantity"]) + "</td><td>" + str(x["unit_krw"]) + "</td><td>" + str(x["line_total_krw"]) + "</td></tr>" for x in entries)
+        return ("<!doctype html><html lang='ko'><meta charset='utf-8'>"
+                "<meta http-equiv='Content-Security-Policy' content=\"default-src 'none'; style-src 'unsafe-inline'\">"
+                "<title>WORKNOVA 견적 미리보기</title><body><h1>WORKNOVA 견적 미리보기</h1>"
+                "<p>오프라인 검토용 초안 · 고객 신원 비공개 · 법적 계약 또는 전자서명 아님</p>"
+                f"<p>버전 {quote['revision']} / 상태 {html.escape(quote['status'])}</p>"
+                "<table><tr><th>항목</th><th>수량</th><th>단가(원)</th><th>합계(원)</th></tr>" + rows + "</table>"
+                f"<p>공급가 {quote['subtotal_krw']:,}원 | 세금 {quote['vat_krw']:,}원 | 총액 {quote['total_krw']:,}원</p>"
+                "<p>부가세 여부는 작성자 입력에 따릅니다. 세무 신고의 적법성은 보증하지 않습니다.</p></body></html>")
+
+    def migrate_v1(self, backup_out: str | Path) -> str:
+        if self.schema_version != 1: raise DeskError("migration requires v1 database")
+        digest = self.backup(backup_out)  # keep independently verifiable v1 copy; never overwrite
+        with self._write():
+            self.db.execute("ALTER TABLE quotes ADD COLUMN root_quote_id TEXT")
+            self.db.execute("ALTER TABLE quotes ADD COLUMN parent_quote_id TEXT")
+            self.db.execute("UPDATE quotes SET root_quote_id=id")
+            self.db.execute("CREATE UNIQUE INDEX idx_quote_root_revision ON quotes(root_quote_id,revision)")
+            self.db.execute("PRAGMA user_version=2")
+            self._event("SCHEMA_MIGRATED", "owner", {"from":1,"to":2})
+        self.verify_audit()
+        return digest
 
     def approve_quote(self, quote_id: str, actor: str):
         actor = _text(actor, "actor", 80)
@@ -165,6 +260,10 @@ class Desk:
             quote = self._fetch("quotes", quote_id)
             if quote["status"] != "DRAFT":
                 raise DeskError("quote is not draft; duplicate approval rejected")
+            if self.schema_version == 2 and self.db.execute(
+                    "SELECT 1 FROM quotes WHERE root_quote_id=? AND revision>?",
+                    (quote["root_quote_id"], quote["revision"])).fetchone():
+                raise DeskError("cannot approve superseded quote revision")
             self.db.execute("UPDATE quotes SET status='APPROVED',approved_by=? WHERE id=?", (actor, quote_id))
             self._event("QUOTE_APPROVED", actor, {"id": quote_id})
 
@@ -293,8 +392,8 @@ class Desk:
             previous = calculated
             count += 1
         integrity = self.db.execute("PRAGMA integrity_check").fetchone()[0]
-        if integrity != "ok":
-            raise DeskError("SQLite integrity_check failed")
+        if integrity != "ok" or self.db.execute("PRAGMA foreign_key_check").fetchone():
+            raise DeskError("SQLite integrity/foreign key check failed")
         return count
 
     def backup(self, destination: str | Path) -> str:
@@ -304,7 +403,7 @@ class Desk:
         self.verify_audit()
         # SQLite online backup retains a consistent snapshot even in WAL mode.
         try:
-            with sqlite3.connect(str(dst)) as out:
+            with closing(sqlite3.connect(str(dst))) as out:
                 self.db.backup(out)
                 if out.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
                     raise DeskError("backup failed integrity check")
@@ -313,3 +412,50 @@ class Desk:
         except Exception:
             dst.unlink(missing_ok=True)
             raise
+
+
+def restore_new(backup: str | Path, destination: str | Path, expected_sha256: str) -> dict:
+    """Restore only into a NEW path, from a SHA-pinned local SQLite backup.
+
+    Never overwrites original data or backup; rejects WAL sidecars and symlinks.
+    """
+    src, dst = Path(backup), Path(destination)
+    if (not isinstance(expected_sha256, str) or len(expected_sha256)!=64 or
+            any(ch not in "0123456789abcdef" for ch in expected_sha256.lower())):
+        raise DeskError("expected SHA256 required")
+    if not src.is_file() or src.is_symlink() or src.stat().st_size > 1024**3:
+        raise DeskError("backup must be regular local file <= 1 GiB")
+    if src.with_name(src.name+"-wal").exists() or src.with_name(src.name+"-shm").exists():
+        raise DeskError("uncheckpointed backup WAL sidecar; refuse restore")
+    if not dst.parent.is_dir() or dst.exists() or dst.is_symlink() or src.resolve()==dst.resolve():
+        raise DeskError("restore target must be a new local path")
+    if hashlib.sha256(src.read_bytes()).hexdigest()!=expected_sha256.lower():
+        raise DeskError("backup SHA256 mismatch")
+    # The backup API accepts SQLite only; a raw byte copy can propagate corrupt or unreadable data.
+    tmp = None
+    try:
+        fd, tmp_name = tempfile.mkstemp(prefix=".worknova-restore-", suffix=".sqlite", dir=dst.parent)
+        os.close(fd)
+        tmp = Path(tmp_name)
+        with closing(sqlite3.connect(src.resolve().as_uri()+"?mode=ro", uri=True)) as read_db:
+            if read_db.execute("PRAGMA integrity_check").fetchone()[0]!="ok":
+                raise DeskError("backup SQLite corruption")
+            if read_db.execute("PRAGMA foreign_key_check").fetchone():
+                raise DeskError("backup has invalid references")
+            with closing(sqlite3.connect(str(tmp))) as write_db:
+                read_db.backup(write_db)
+                if write_db.execute("PRAGMA integrity_check").fetchone()[0]!="ok":
+                    raise DeskError("restore corruption")
+        test = Desk(tmp)
+        try:
+            events = test.verify_audit()
+            schema = test.schema_version
+        finally:
+            test.close()
+        # Hard-link atomically fails if the target appeared in the meantime (no overwrite).
+        os.link(tmp, dst)
+        return {"restored": True,"schema_version":schema,"verified_events":events}
+    except (sqlite3.DatabaseError, OSError) as exc:
+        raise DeskError("restore rejected: "+str(exc)) from exc
+    finally:
+        if tmp is not None: tmp.unlink(missing_ok=True)

@@ -7,3 +7,11 @@ Canonical whole-product design: `docs/FINAL_BLUEPRINT.md` (WD-01 through WD-14).
 - WD-09–11: local SQLite append-only digest audit, backup integrity, privacy-minimizing script-free HTML/JSON; recovery and failure safety.
 - WD-12–14: Korean customer GUI, DOCX/PDF printable documents, signed Windows delivery, sample/real-customer acceptance and legal/licensing checks.
 - All requirements must be traced to source and executed tests; no invented final percentage. Private source, RELEASE HOLD until owner approval.
+
+
+## P70 additions (technical milestone, not full final-completion 70%)
+- Immutable v2 quote root + sequential parent links with explicit revision creation; approved original quote/contract protected. Legacy v1 DB auto-upgrade forbidden; explicit backup-before-migrate.
+- SHA-256 verified, non-clobbering backup recovery into new destination; integrity and audit check; SQL source/target comparison.
+- Korean offline Tkinter local GUI with customer filtering, quote entry/revision, owner approval, contract and milestone actions, manual partial collection and redacted review HTML.
+- P70 Linux scoped regression and GUI virtual-display smoke required, plus Windows user acceptance before commercial score.
+- Preserve all 14 canonical WD requirements; formal user final percentage remains UNASSESSED pending 100-point weights, exact-SHA acceptance and external gates.
