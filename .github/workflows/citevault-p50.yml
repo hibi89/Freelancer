@@ -38,6 +38,9 @@ on:
       - enterprise/p85-signed-provenance.mjs
       - tests/p85-signed-provenance.test.mjs
       - enterprise/p85-state-store.mjs
+      - enterprise/p85-offline-backup.mjs
+      - tests/p85-offline-backup.test.mjs
+      - scripts/p85-offline-ops.mjs
       - .github/workflows/citevault-p50.yml
   workflow_dispatch:
 permissions:
@@ -93,6 +96,8 @@ jobs:
           node --check scripts/p85-operator-demo.mjs
       - name: Run real local credentials, tenant isolation and lifecycle regression
         run: node --test tests/p85-vault.test.mjs tests/p85-loopback.test.mjs tests/p85-state-store.test.mjs tests/p85-signed-provenance.test.mjs tests/p85-operator-users.test.mjs tests/p85-operator-ui.test.mjs tests/p85-bm25.test.mjs tests/p85-signed-journey.test.mjs
+      - name: Test opt-in offline SQLite backup and create-only restore
+        run: node --test tests/p85-offline-backup.test.mjs
       - name: Verify offline operator login, UI, scoped search and revocation
         run: node scripts/p85-operator-demo.mjs --self-test
   p85-native-evidence:
