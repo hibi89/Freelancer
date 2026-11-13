@@ -114,7 +114,7 @@ class PortableTests(unittest.TestCase):
         with zipfile.ZipFile(path) as z:z.extractall(self.pack)
 
     def test_verify_extracted_portable(self):
-        self.assertEqual(verify(self.pack)["verified_files"],10)
+        self.assertEqual(verify(self.pack)["verified_files"],12)
 
     def test_tampered_python_rejected(self):
         p=self.pack/"worknova_desk/core.py"

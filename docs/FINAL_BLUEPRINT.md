@@ -1,3 +1,9 @@
+## P85 follow-up: customer editing and local evidence hashes (2026-11-13)
+
+No scope or weight changes: WD-01 includes explicit single-owner rename and safe unused-customer delete as **partial**, but multi-user roles/retention remain missing. WD-06 now has explicit local owner-selected delivery file digest (read-only, not external acceptance) as **partial**. WD-08 SHA chain and WD-13 Python-required package are still not signed/Windows-verified. Evidence and negative scenarios: `docs/P85_CUSTOMER_EVIDENCE_20261113.md`. **Formal final completion UNASSESSED; target 85% NOT CERTIFIED; RELEASE HOLD.**
+
+---
+
 # WORKNOVA Desk — complete final product blueprint
 
 Baseline: the 2026-11-12 central KMONG three-product candidate and 2026-11-13 owner P50 development command. Whole-product scope remains unchanged. A formally validated final-completion percentage requires approved weights and item-level proof; the bounded P50 engineering milestone is not automatically 50% of the final design.

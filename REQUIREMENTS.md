@@ -1,3 +1,13 @@
+## 2026-11-13 P85 customer lifecycle/evidence acceptance follow-up (no scope reduction)
+
+- WD-01 **partial local implementation:** guarded customer rename and delete only when there are no quotes; account roles/authentication and full owner privacy lifecycle still incomplete.
+- WD-06 **partial local implementation:** explicit read-only local delivered-file SHA256/size audit and reverify. No external delivery proof, buyer identity verification or binding acceptance.
+- WD-08 **partial:** inherited unsigned SHA chain. Tamper-proof external audit remains incomplete.
+- WD-13 **partial:** updated Python-required portable ZIP exact 12 file preflight/PowerShell script allowlist. Standalone signed EXE and real Windows still unverified.
+- Full WD-01..14 and 100% final blueprint unchanged, with owner-approved requirement weights still missing: official rate **UNASSESSED**, P85 goal not certified, `[작업중]`, RELEASE HOLD.
+
+---
+
 # WORKNOVA Desk — functional and delivery requirements
 
 Canonical whole-product design: `docs/FINAL_BLUEPRINT.md` (WD-01 through WD-14). Local P50 development gate is NOT final product-completion percentage.

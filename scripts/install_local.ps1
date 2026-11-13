@@ -33,6 +33,7 @@ $required = @(
   'worknova_desk/__init__.py','worknova_desk/__main__.py',
   'worknova_desk/core.py','worknova_desk/gui.py',
   'worknova_desk/documents.py','worknova_desk/evidence.py',
+  'worknova_desk/delivery_evidence.py','worknova_desk/lifecycle.py',
   'launch.cmd','README_OFFLINE.txt','install_local.ps1','verify_portable.py'
 )
 $seen = @{}

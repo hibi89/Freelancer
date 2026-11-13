@@ -7,6 +7,8 @@ from pathlib import Path
 from .core import Desk, DeskError, restore_new
 from .documents import export_document
 from .evidence import create_checkpoint, verify_checkpoint
+from .lifecycle import rename_customer, delete_unused_customer
+from .delivery_evidence import attach_file, verify_file, list_evidence
 
 
 def main(argv=None):
@@ -22,6 +24,9 @@ def main(argv=None):
 
     sub.add_parser("init")
     cmd("customer", ("name", True))
+    cmd("customer-rename", ("customer_id", True), ("new_name", True), ("expected_name", True),
+        ("actor", True), ("confirmation", True))
+    cmd("customer-delete-unused", ("customer_id", True), ("actor", True), ("confirmation", True))
     q = cmd("quote", ("customer_id", True), ("items_json", True)); q.add_argument("--no-vat", action="store_true")
     cmd("approve-quote", ("quote_id", True), ("actor", True))
     rev = cmd("revise-quote", ("quote_id", True), ("items_json", True), ("actor", True)); rev.add_argument("--no-vat", action="store_true")
@@ -34,6 +39,10 @@ def main(argv=None):
     cmd("contract", ("quote_id", True), ("scope", True), ("steps_json", True))
     cmd("activate", ("contract_id", True), ("actor", True))
     cmd("deliver", ("milestone_id", True), ("actor", True), ("note", True))
+    attach = cmd("evidence-attach", ("milestone_id", True), ("file", True), ("actor", True))
+    attach.add_argument("--confirm-local-read", action="store_true")
+    cmd("evidence-verify", ("milestone_id", True), ("file", True))
+    cmd("evidence-list", ("milestone_id", True))
     cmd("revision", ("milestone_id", True), ("actor", True), ("reason", True))
     cmd("accept", ("milestone_id", True), ("actor", True))
     cmd("collect", ("milestone_id", True), ("actor", True), ("amount_krw", True), ("reference", True))
@@ -65,6 +74,10 @@ def main(argv=None):
         value = None
         if c == "init": value = {"schema_version": desk.schema_version}
         elif c == "customer": value = {"customer_id": desk.add_customer(args.name)}
+        elif c == "customer-rename": value = rename_customer(desk, args.customer_id, args.new_name,
+            expected_name=args.expected_name, actor=args.actor, confirmation=args.confirmation)
+        elif c == "customer-delete-unused": value = delete_unused_customer(desk, args.customer_id,
+            actor=args.actor, confirmation=args.confirmation)
         elif c == "quote": value = {"quote_id": desk.new_quote(args.customer_id, json.loads(args.items_json), taxable=not args.no_vat)}
         elif c == "approve-quote": desk.approve_quote(args.quote_id, args.actor)
         elif c == "revise-quote": value = {"quote_id": desk.revise_quote(args.quote_id, json.loads(args.items_json), taxable=not args.no_vat, actor=args.actor)}
@@ -82,6 +95,10 @@ def main(argv=None):
         elif c == "contract": value = {"contract_id": desk.new_contract(args.quote_id, args.scope, json.loads(args.steps_json))}
         elif c == "activate": desk.activate_contract(args.contract_id, args.actor)
         elif c == "deliver": desk.deliver(args.milestone_id, args.actor, args.note)
+        elif c == "evidence-attach": value = attach_file(desk, args.milestone_id, args.file,
+            actor=args.actor, confirm=args.confirm_local_read)
+        elif c == "evidence-verify": value = verify_file(desk, args.milestone_id, args.file)
+        elif c == "evidence-list": value = list_evidence(desk, args.milestone_id)
         elif c == "revision": desk.request_revision(args.milestone_id, args.actor, args.reason)
         elif c == "accept": desk.accept(args.milestone_id, args.actor)
         elif c == "collect": value = {"receipt_id": desk.record_collection(args.milestone_id, int(args.amount_krw), args.reference, args.actor)}

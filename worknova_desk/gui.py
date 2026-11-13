@@ -13,6 +13,8 @@ from tkinter import ttk, simpledialog, messagebox, filedialog
 
 from .core import Desk, DeskError
 from .documents import export_document
+from .lifecycle import rename_customer, delete_unused_customer
+from .delivery_evidence import attach_file, verify_file
 
 
 def parse_rows(lines: str, *, kind: str) -> list[dict]:
@@ -80,7 +82,9 @@ class WorknovaGUI:
           ("납품",self.deliver),("수정 요청",self.revision),("납품 승인",self.accept),
           ("수금 수기 기록",self.collect),("견적 HTML 미리보기",self.preview),
           ("장부 백업",self.backup), ("견적 DOCX",self.quote_docx),
-          ("현황 DOCX",self.contract_docx), ("견적 PDF (폰트지정)",self.quote_pdf))):
+          ("현황 DOCX",self.contract_docx), ("견적 PDF (폰트지정)",self.quote_pdf),
+          ("거래처 수정",self.rename_selected_customer), ("미사용 거래처 삭제",self.delete_selected_customer),
+          ("납품 파일 해시 등록",self.attach_selected_evidence), ("납품 파일 해시 검증",self.verify_selected_evidence))):
             ttk.Button(button_rows[idx//6],text=title,command=lambda f=fn:self.action(f)).pack(side="left",padx=2,pady=3)
         self.message=tk.StringVar(value="대상 항목을 선택하세요. 확인 후에만 실제 변경됩니다.")
         ttk.Label(self.root,textvariable=self.message).pack(anchor="w",padx=10,pady=5)
@@ -150,6 +154,27 @@ class WorknovaGUI:
         except DeskError:pass
 
     def new_customer(self):return self.desk.add_customer(self.question("거래처","거래처 이름"))
+    def rename_selected_customer(self):
+        key=self.selected("customers")
+        old=self.desk._fetch("customers",key)["name"]
+        new=self.question("거래처 수정","기존 이름 확인 후 새 거래처명을 입력하세요",old)
+        self.confirmed("기존 고객의 이름만 변경합니다. 견적·계약·수금 원본은 보존됩니다. 계속할까요?")
+        return rename_customer(self.desk,key,new,expected_name=old,actor='owner',confirmation='CONFIRM_CUSTOMER_UPDATE')
+    def delete_selected_customer(self):
+        key=self.selected("customers")
+        self.confirmed("아무 견적이 없는 거래처만 삭제할 수 있습니다. 이미 거래가 있으면 삭제를 거부합니다. 계속할까요?")
+        return delete_unused_customer(self.desk,key,actor='owner',confirmation='DELETE_UNUSED_CUSTOMER')
+    def attach_selected_evidence(self):
+        milestone=self.selected("milestones")
+        file=filedialog.askopenfilename(title='원본 수정 없이 납품파일 SHA256만 검수',parent=self.root)
+        if not file:raise DeskError("증빙 파일 선택 취소")
+        self.confirmed("선택한 파일을 로컬에서 읽고 SHA256/크기만 감사 장부에 저장합니다. 원본 내용·경로·파일명은 저장하지 않습니다. 동의합니까?")
+        return attach_file(self.desk,milestone,file,actor='owner',confirm=True)
+    def verify_selected_evidence(self):
+        milestone=self.selected("milestones")
+        file=filedialog.askopenfilename(title='기존 납품파일 SHA256과 일치 여부 확인',parent=self.root)
+        if not file:raise DeskError("증빙 파일 선택 취소")
+        return verify_file(self.desk,milestone,file)
     def quote_items(self):return parse_rows(self.question("견적 품목","한 줄마다: 품목|수량|단가(원)\n예: 디자인|2|150000"),kind="quote")
     def vat(self):return messagebox.askyesno("부가세 확인","견적에 10% 부가세를 가산합니까?\n(세무 적합성은 사용자 판단)",parent=self.root)
     def new_quote(self):return self.desk.new_quote(self.selected("customers"),self.quote_items(),taxable=self.vat())

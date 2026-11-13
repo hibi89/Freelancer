@@ -1,3 +1,15 @@
+# WORKNOVA Desk P85 customer lifecycle/evidence follow-up — 2026-11-13 KST
+
+- **Official final design completion UNASSESSED / user P85 target NOT CERTIFIED**, `[작업중]` retained, **RELEASE HOLD**, no actual Kmong listing or Production. Canonical WD-01..WD-14 unchanged; owner-approved percent weights not available.
+- New functional WD-01 partial: customer rename with stale-write/explicit confirmation; delete unused customer only and preserve financial history. No customer-name hash or name in event. Single-owner strings are **not authentication**.
+- New functional WD-06 partial: explicit local file selection (<=64MiB) in DELIVERED milestone; record only SHA256, bytes, milestone ID; idempotent duplicate; later read-only reverify. No external delivery/receipt proof, no file content or path saved. CLI and Tk GUI integrated.
+- Schema v2 and existing P50/P70/P85 code/backup/quote/contract/receipt untouched. Portable Python-required ZIP allowlist updated to 12 source/script files. No EXE, paid CI or Windows install executed.
+- **Local Linux Python3.13.5: unittest 81 PASS/0 FAIL/0 SKIP; Tk8.6 Xvfb GUI 2 scripted flows PASS; compileall PASS; extracted ZIP verifier 12/12 PASS and CLI init PASS.** Local scripts do not independently prove Windows product QA. Tests and specifics: `docs/P85_CUSTOMER_EVIDENCE_20261113.md`.
+- Blockers: physical Windows10/11 PowerShell+Word/PDF+security, role auth/retention, encryption, legal/font rights, real buyer E2E and owner-approved weight matrix. `P85` remains a bounded engineering milestone, not official 85%.
+- Verified predecessor feature SHA `affb062c6251bc5ff253a8d855c7672298afe39d`; new GitHub code SHA to be read from branch after commit. Original PayPal hackathon, Freelancer main/all other branches, user DB and secrets unchanged. No Vercel/Production URL (N/A).
+
+---
+
 # STATUS — WORKNOVA Desk P85 hardening (latest, 2026-11-13 KST)
 
 - Full WD-01..WD-14 blueprint unchanged; **official final-completion UNASSESSED / target 85 NOT certified**. Candidate remains **[작업중] / RELEASE HOLD / not registered**, no Production.

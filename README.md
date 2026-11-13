@@ -1,3 +1,11 @@
+## P85 customer safety/evidence follow-up (2026-11-13)
+
+New **local-only** customer rename (stale-write + confirm), deletion of **unused** customers only, and user-selected delivery-file SHA256 capture/reverification during DELIVERED state. CLI: `customer-rename`, `customer-delete-unused`, `evidence-attach --confirm-local-read`, `evidence-list`, `evidence-verify`. GUI exposes guarded actions. Evidence hashes are not buyer signatures or actual delivery proof.
+
+Verified scoped Linux Python **81/81 tests**, Xvfb Tk **2 scripted GUI flows**, extracted portable **12-file preflight**, CLI init, Python compile. Real Win10/11, PowerShell, Word/PDF printing, signed EXE, customer rights and formal owner-approved final % all **unverified**; official `UNASSESSED`, `[작업중]`, RELEASE HOLD. Details [`docs/P85_CUSTOMER_EVIDENCE_20261113.md`](docs/P85_CUSTOMER_EVIDENCE_20261113.md).
+
+---
+
 # WORKNOVA Desk — offline local-first freelancer operations
 
 **2026-11-13 KST.** Independent Korean local customer/quote/contract/delivery/collection desk. Python 3.11+ stdlib (`sqlite3`, `tkinter`), no mandatory cloud subscription or live PayPal/AI. **Private development, not released**, official whole-product final-completion rate **UNASSESSED**; user P70 is a bounded **engineering gate** only.

@@ -1,3 +1,18 @@
+# HANDOFF — WORKNOVA Desk P85 hardening continuation (2026-11-13 KST)
+
+1. **Goal/technology:** Owner wants full blueprint P85; canonical WD-01..WD-14, offline Python3.11+/SQLite/Tk; no PayPal/AI/hosted service. Formal owner-approved 100-weight matrix absent.
+2. **Changes/architecture:** Local-first B over cloud A for cost/privacy. Add `lifecycle.py` guarded customer rename/delete-unused and `delivery_evidence.py` explicit user-file hash-only attach/list/reverify. CLI, Tk GUI, portable source manifest and PowerShell validation list updated. No DB migration or original source import.
+3. **Tests:** Linux Python3.13.5 **81 PASS/0 FAIL/0 SKIP**, Linux Xvfb Tk8.6 2 real-widget scripted E2Es PASS, compileall PASS, deterministic ZIP/extraction preflight 12 verified files and CLI init PASS. Windows/PowerShell/signed EXE/customer/real print NOT RUN.
+4. **State:** Product scoped P85 engineering advanced; **official final blueprint P85 NOT CERTIFIED / UNASSESSED**, central `[작업중]` remains, RELEASE HOLD, Kmong registration none.
+5. **Failures/alternatives:** Initial GUI scripted test hung at expected deletion-refusal modal; changed test harness to mock messagebox, isolated repeat PASS (did not remove product refusal). Signed EXE/physical Windows QA unavailable here; no paid CI without approval. Unsigned hashes and actor strings are not signatures/authentication. No blind repeats.
+6. **GitHub paths/SHA:** Private `hibi89/Freelancer@product/worknova-desk-local`; exact previous source HEAD `affb062c6251bc5ff253a8d855c7672298afe39d`. New feature SHA verify via GitHub after push. Key additions `worknova_desk/lifecycle.py`, `delivery_evidence.py`, `tests/test_p85_customer_evidence.py`, `tests/gui_lifecycle_evidence_xvfb.py`, `docs/P85_CUSTOMER_EVIDENCE_20261113.md`; central `hibi89/hackathon-command-center-2026@kmong-productization`.
+7. **Production/run/environment:** No Vercel/Production (N/A). `PYTHONPATH=. python -m unittest discover -s tests -q`; `PYTHONPATH=. xvfb-run -a python tests/gui_smoke_xvfb.py`; `PYTHONPATH=. xvfb-run -a python tests/gui_lifecycle_evidence_xvfb.py`; `python scripts/build_portable.py --out NEW.zip` then `python scripts/verify_portable.py --root EXTRACTED`. Local Linux3.13.5; target Windows10/11 NOT TESTED.
+8. **Originals/backup/access:** PayPal hackathon `lead/paypal`, Freelancer `main`, other product branches and real customer files left unchanged. Local throwaway SQLite fixtures only. Git history has rollback HEAD; do not use old v1 writer on a migrated DB; preserve backups. No secrets/PII/fonts added to GitHub.
+9. **Next priorities/completion:** Test actual Windows user-scope install/upgrade/rollback and Word/PDF on non-admin Win10/11; implement real local authorization/retention and buyer proof consent, owner-reviewed legal+font rights, >=10 real customer cases. Obtain approved 100-point WD-01..14 weights and exact-SHA required acceptance before any official P85 claim. Release remains HOLD.
+10. **Checkpoint:** 2026-11-13 KST. Commands and local results above; exact feature and central SHA must be checked after push. User original data/permissions/payments not touched; no external deployments/tests.
+
+---
+
 # HANDOFF — WORKNOVA Desk P85 hardening (latest, 2026-11-13 KST, 10 required fields)
 
 1. **Goal/requirements/tech:** Owner final 85% target; full WD-01..14 remains the unique denominator. Offline Python3.11+ SQLite/Tk Korean freelancer workflow. P85 local technical milestones are not equivalent to whole-product 85%; official **UNASSESSED**.
