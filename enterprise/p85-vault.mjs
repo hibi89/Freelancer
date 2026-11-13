@@ -7,6 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import {extractVerifiedNativeBytes} from './p85-native-extract.mjs';
 
 const ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/u;
 const SHA = /^[a-f0-9]{64}$/u;
@@ -38,7 +39,7 @@ function checkDoc(d) {
     ||!list(d.groups)||!list(d.projects)||(!d.groups.length&&!d.projects.length)
     ||!Number.isInteger(d.classification)||d.classification<0||d.classification>3
     ||typeof d.sha256!=='string'||!SHA.test(d.sha256)||d.reviewState!=='SYNTHETIC_APPROVED'
-    ||typeof d.active!=='boolean') DENY('CATALOG_INVALID');
+    ||typeof d.active!=='boolean'||(d.native_kind!==undefined&&!['txt','pdf','docx'].includes(d.native_kind))) DENY('CATALOG_INVALID');
   return Object.freeze({...d,groups:Object.freeze([...d.groups]),projects:Object.freeze([...d.projects])});
 }
 function checkedRoot(root) {
@@ -53,13 +54,14 @@ function checkedRoot(root) {
   return abs;
 }
 function readDocument(root,meta) {
-  const parent=path.join(root,meta.tenantId,meta.id), filename=path.join(parent,meta.version+'.txt');
+  const kind=meta.native_kind??'txt';
+  const parent=path.join(root,meta.tenantId,meta.id), filename=path.join(parent,meta.version+'.'+kind);
   try {
     for(const dir of [path.join(root,meta.tenantId),parent]) {
       const st=fs.lstatSync(dir);if(!st.isDirectory()||st.isSymbolicLink())DENY('UNSAFE_SOURCE');
     }
     const st=fs.lstatSync(filename);
-    if(!st.isFile()||st.isSymbolicLink()||st.nlink!==1||st.size<1||st.size>256*1024)
+    if(!st.isFile()||st.isSymbolicLink()||st.nlink!==1||st.size<1||st.size>(kind==='txt'?256*1024:2*1024*1024))
       DENY('UNSAFE_SOURCE');
     const fd=fs.openSync(filename,fs.constants.O_RDONLY|(fs.constants.O_NOFOLLOW||0));
     try {
@@ -71,6 +73,12 @@ function readDocument(root,meta) {
         after.size!==st.size||after.mtimeMs!==st.mtimeMs||fdafter.size!==st.size||
         fdafter.mtimeMs!==st.mtimeMs) DENY('SOURCE_CHANGED');
       if(!same(hash(bytes),meta.sha256))DENY('SOURCE_DIGEST_MISMATCH');
+      if(kind!=='txt'){
+        const extracted=extractVerifiedNativeBytes(bytes,kind);
+        return extracted.map(c=>({document_id:meta.id,version:meta.version,
+          source_sha256:meta.sha256,source_unit:c.source_unit,
+          [c.source_unit]:c.position,quote:c.quote}));
+      }
       const text=new TextDecoder('utf-8',{fatal:true}).decode(bytes);
       if(text.includes('\0'))DENY('SOURCE_INVALID');
       const lines=text.replace(/\r\n/g,'\n').split('\n');
@@ -80,7 +88,7 @@ function readDocument(root,meta) {
         .filter(c=>c.quote);
     } finally {fs.closeSync(fd);}
   }catch(e){if(typeof e.code==='string'&&[
-    'UNSAFE_SOURCE','SOURCE_CHANGED','SOURCE_DIGEST_MISMATCH','SOURCE_INVALID','SOURCE_BUDGET'
+    'UNSAFE_SOURCE','SOURCE_CHANGED','SOURCE_DIGEST_MISMATCH','SOURCE_INVALID','SOURCE_BUDGET','NATIVE_HOLD'
   ].includes(e.code))throw e;DENY('SOURCE_UNAVAILABLE');}
 }
 const words=text=>{
@@ -177,7 +185,7 @@ export class LocalSyntheticVault {
       return Object.freeze({...shared,status:'POSSIBLE_CONFLICT',evidence:contradictory});}
     const q=words(question), scored=chunks.map(c=>({c,score:q.reduce((n,t)=>n+
       words(c.quote).filter(w=>w===t).length,0)})).filter(x=>x.score>0)
-      .sort((a,b)=>b.score-a.score||a.c.document_id.localeCompare(b.c.document_id)||a.c.line-b.c.line);
+      .sort((a,b)=>b.score-a.score||a.c.document_id.localeCompare(b.c.document_id)||(a.c.line??a.c.page??a.c.paragraph)-(b.c.line??b.c.page??b.c.paragraph));
     this.#record('SEARCH',p.tenantId);
     return Object.freeze({...shared,status:scored.length?'SEARCH_ONLY':'INSUFFICIENT_EVIDENCE',
       evidence:scored.slice(0,limit).map(x=>x.c)});
