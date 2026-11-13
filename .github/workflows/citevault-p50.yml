@@ -27,6 +27,8 @@ on:
       - enterprise/p85-loopback.mjs
       - tests/p85-loopback.test.mjs
       - tests/p85-state-store.test.mjs
+      - enterprise/p85-signed-provenance.mjs
+      - tests/p85-signed-provenance.test.mjs
       - enterprise/p85-state-store.mjs
       - .github/workflows/citevault-p50.yml
   workflow_dispatch:
@@ -74,8 +76,9 @@ jobs:
           node --check enterprise/p85-vault.mjs
           node --check enterprise/p85-loopback.mjs
           node --check enterprise/p85-state-store.mjs
+          node --check enterprise/p85-signed-provenance.mjs
       - name: Run real local credentials, tenant isolation and lifecycle regression
-        run: node --test tests/p85-vault.test.mjs tests/p85-loopback.test.mjs tests/p85-state-store.test.mjs
+        run: node --test tests/p85-vault.test.mjs tests/p85-loopback.test.mjs tests/p85-state-store.test.mjs tests/p85-signed-provenance.test.mjs
   p85-native-evidence:
     name: P85 actual PDF/DOCX native citations / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
