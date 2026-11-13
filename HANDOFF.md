@@ -1,5 +1,20 @@
 # CITEVAULT AX — HANDOFF — RAG Studio 기업형 (10항, 2026-11-13 KST)
 
+## [2026-11-13 KST] CITEVAULT AX P85 PDF-DOCX·SQLite 실제 HTTP 통합 — 10항 HANDOFF
+
+1. **목표·용도·확정 설계·기술:** 사용자 설계 전체 대비 **85% 달성 지시**. 실제 기업 IdP/직원별 문서 ACL, PREP/SMAX 권리/서명 승인 AX, verified native PDF/DOCX 근거 + fixed read-only SQLite, 한국어 모델/Windows/고객 인수. 현재 공식 **UNASSESSED/85% 미검증**.
+2. **완료 기능·변경·선택 근거:** 기존 RAG `loadPackage` 선로딩 후 직원 ACL 방식은 원문 누출 위험으로 불채택. 별도 로컬 합성 P85 vault를 그대로 보존하며 `enterprise/p85-review-sql.mjs`로 P70 bytes/source SHA/매핑/HOLD 재검증+고정 SQLite 수치 대조, `enterprise/p85-journey.mjs`로 인증→문서/매출 접근 인가→진짜 PDF page+DOCX paragraph→잠정 매출+근거 `REVIEW_HOLD`·`answer:null`, `p85-loopback.mjs` POST /v1/assess. 매출 권한 범위 mutation/빈 group fail-closed, CSV 변조/임의 SQL 차단. `scripts/p85-synthetic-demo.mjs` 오프라인 자체 HTTP 실구동; 고객원본 불변.
+3. **명령/성공·실패·미검증:** Linux Node22.16/Python3.11 `node --test tests/p85-journey.test.mjs` **16PASS**, `node scripts/p85-synthetic-demo.mjs --self-test` **PASS**; 전체 기존 P50/P70/P85 실제 `node --test /tmp/citevault-local/tests/p50.test.mjs /mnt/data/citevault70/tests/*.test.mjs /mnt/data/citevault85/tests/*.test.mjs` **124 TOTAL/121PASS/0FAIL/3SKIP**. 독립 ZIP 압축해제 후 `node --test --test-concurrency=1 tests/*.test.mjs` **87PASS/0FAIL/0SKIP** 및 self-test PASS. 병렬 ZIP 실행은 툴 timeout, 이후 직렬 검증 성공. 3SKIP pinned RAG checkout SQL/BM25/SMAX. 새 6개 remote Git blob/로컬 SHA 정확 일치. Hosted Windows/CI 및 원본 RAG 실제 integration 미검증.
+4. **완료/진행/대기/차단:** 합성 Linux 실행형 오프라인 HTTP+PDF/DOCX/잠정 SQL·권한검사+REVIEW_HOLD 경계 구현. 진짜 고객 IdP/권한, real signed PREP/SMAX→approved AX, exact original RAG SQL+native, 실제 한국어 모델, Windows 실환경/Gold 법적 인수는 미구현/미검증. **[작업중], RELEASE HOLD/SALE NO-GO**.
+5. **오류 근거·원인·시도·재시도 금지·대안:** container Github.com DNS 차단으로 원본 RAG clone 못함, 동일 방식 무의미 재시도 금지. original `withReadOnlySales` 고정 SQL 개념만 참조, 원본을 실행했다고 주장 금지. 새 CSV SHA·mapped review HOLD 검증 후 독립 SQLite `:memory:` aggregates만 provisional로 반환. ZIP 병렬 테스트 종료 지연→isolated journey 16PASS, `--test-concurrency=1` zip 전체87PASS로 실질 개선. Hosted CI 상태 미검증으로 FAIL/PASS 추정 금지.
+6. **저장소/브랜치/SHA/주요 경로:** `hibi89/Freelancer@product/rag-enterprise-knowledge`, 시작 HEAD `22151f77eeccf4a248ca02a86ca40fc9b2290d77` (비강제 revert 기준), 원본 RAG pin `c5867b3951f51bfa97cadd1aad8fb13e9cf9e604`. current exact blobs vault `ec48e31ef796eaf76f90c8828d8071028d86d3cf`, HTTP `c849fe22f511151c0e9f8c9a1d81f608d70ab2ed`, SQL `f881b8a4a97e14a865622e5690cf2de071a3cc2a`, journey `36a2f8093d6b6852bd9df07d17255bd4ab9078b6`, test `ecd68c352609d878beda25d7263b5b4ed9ea446a`, selftest `4cfe0af457c75ec11a703a6c182ef56868f2e70c`. workflow `4e5fe24c4b25cba8bc7054c91d8e2cd4de95c193`. 문서 `docs/P85_UNIFIED_EVIDENCE_20261113.md`. 제품 실제 HEAD 본 기록 이후 재조회.
+7. **Production/Vercel·실행 명령·환경:** Linux Node22/Python3.11 `pip install -r tests/requirements-p85-native.txt`; ZIP 데모 `node scripts/p85-synthetic-demo.mjs --self-test`, 권장 테스트 `node --test --test-concurrency=1 tests/*.test.mjs`. 일반 데모 localhost 임시 바인딩만. Production URL/Vercel/외부망 배포·유료 모델/API **미적용**.
+8. **원본 위치·백업/인증·수정 금지:** 기존 RAG/PREP/SMAX/고객자료 원본·기존 브랜치 다른 상품 상태/크몽 등록완료 이력 보존. P85 시작 Git SHA 복구점, 로컬 임시 source backup `/mnt/data/citevault85/backup_integration`, ZIP 별도 transient 출력. Runtime 무작위 합성 demo password만 일시 출력, 실제 고객 자격증명/개인정보/토큰 GitHub 저장 없음.
+9. **다음 작업 우선순위·절차·완료조건/사전 승인:** exact RAG pinned source/SQL/native/SMAX 실제 hosted integration job run/log 확인→진짜 customer source rights + signed producer 승인 AX/실 직원 IdP는 보안·권한/자료 사용 사전승인 후 연결→실 한국어 licensed model 평가/Gold, 악성 PDF 프로세스 격리, Windows10/11 실제 설치→사용자 승인 최종설계 전체 요구·가중치 근거로 85% 공식 산정. 합성 PASS 숫자를 최종완성률로 전용 금지.
+10. **갱신 일시(KST)·확인 범위·문서 기준 커밋:** 2026-11-13 KST. 정확 원격 source blob·Linux 로컬 통합 121PASS/3SKIP, 별도 ZIP 87PASS, CLI selftest PASS. Hosted Actions/Windows, 원본 native RAG/PREP/SMAX 실제 승인, 실기업 IAM/모델/Production·85% 공식 미검증. `docs/P85_UNIFIED_EVIDENCE_20261113.md`가 증거 정본.
+
+
+
 ## [2026-11-13 KST] CITEVAULT AX P85 실 PDF/DOCX 증거 통합 — 최신 10항 인수인계
 
 1. **목표·용도·확정요구·기술:** 최종설계 전체 100% 대비 사용자 85% 요청. 기업로컬 근거형 RAG/정확 SQL, PREP/SMAX source-rights/승인 AX, 실 직원 인증/권한·문서 버전·재색인, PDF/DOCX/TXT/MD 출처, 한국어 모델·Win/Linux. **공식 UNASSESSED**, 목표 미검증.
