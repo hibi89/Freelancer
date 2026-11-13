@@ -91,6 +91,25 @@ class WindowsExeBuildContract(unittest.TestCase):
                     builder.build(dest)
             self.assertTrue((dest / 'build.log').is_file())
 
+    def test_user_site_pyinstaller_remains_visible_in_child_process(self):
+        # Regression: pip --user installs PyInstaller in the user site, while
+        # the previous child PYTHONNOUSERSITE=1 hid that installed package.
+        # Mocked subprocess checks env forwarding, not an actual Windows EXE.
+        with tempfile.TemporaryDirectory() as temp:
+            dest = Path(temp) / 'candidate'
+            captured_env = {}
+            def fake_run(*args, **kwargs):
+                captured_env.update(kwargs['env'])
+                return mock.Mock(returncode=1)
+            with mock.patch.object(builder.sys, 'platform', 'win32'), \
+                 mock.patch.dict(os.environ, {'PYTHONNOUSERSITE': '1'}), \
+                 mock.patch.object(builder.subprocess, 'run', side_effect=fake_run):
+                with self.assertRaisesRegex(builder.BuildError, 'PyInstaller failed'):
+                    builder.build(dest)
+            self.assertNotIn('PYTHONNOUSERSITE', captured_env)
+            self.assertEqual(captured_env.get('PYTHONDONTWRITEBYTECODE'), '1')
+            self.assertTrue((dest / 'build.log').is_file())
+
     def test_entrypoint_requires_absolute_appdata(self):
         for path in ['', 'relative/path']:
             with self.subTest(path=path), self.assertRaises(RuntimeError):
