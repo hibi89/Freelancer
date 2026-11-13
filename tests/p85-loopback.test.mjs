@@ -118,3 +118,17 @@ test('HTTP refuses oversize bodies with 413, no parser or path leakage',async t=
    headers:{'content-type':'application/json'},body:JSON.stringify({userId:'alice',password:'X'.repeat(5000)})});
  assert.equal(r.status,413);assert.deepEqual(await r.json(),{error:'PAYLOAD_TOO_LARGE'});
 });
+
+test('HTTP admin revocation invalidates issued bearer on next request',async t=>{
+ const f=await setup(t),alice=await f.login('alice','TEST_ONLY_PASS_ALICE_123');
+ const admin=await f.login('admin1','TEST_ONLY_PASS_ADMIN_123');
+ const r=await f.req('POST','/v1/admin/revoke',{userId:'alice'},admin);
+ assert.equal(r.status,200);assert.equal(r.body.status,'REVOKED');
+ assert.equal((await f.req('GET','/v1/source/public1',undefined,alice)).status,401);
+ assert.equal((await f.req('POST','/v1/login',{userId:'alice',password:'TEST_ONLY_PASS_ALICE_123'})).status,401);
+});
+test('HTTP foreign admin cannot revoke another tenant employee',async t=>{
+ const f=await setup(t),admin=await f.login('admin2','TEST_ONLY_PASS_OTHER_123');
+ const r=await f.req('POST','/v1/admin/revoke',{userId:'alice'},admin);
+ assert.equal(r.status,404);
+});
