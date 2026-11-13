@@ -15,6 +15,9 @@ on:
       - tests/p70-local-review.test.mjs
       - enterprise/p85-vault.mjs
       - enterprise/p85-native-extract.mjs
+      - tests/p85-journey.test.mjs
+      - enterprise/p85-journey.mjs
+      - enterprise/p85-review-sql.mjs
       - enterprise/p85-native-extract.py
       - tests/p85-native-fixture.py
       - tests/p85-native-integration.test.mjs
@@ -100,9 +103,12 @@ jobs:
       - name: Install pinned local PDF/DOCX parser and test fixture dependencies
         run: python -m pip install --disable-pip-version-check -r tests/requirements-p85-native.txt
       - name: Validate source before executing offline tests
-        run: node --check enterprise/p85-native-extract.mjs
+        run: |
+          node --check enterprise/p85-native-extract.mjs
+          node --check enterprise/p85-review-sql.mjs
+          node --check enterprise/p85-journey.mjs
       - name: Run actual PDF page, DOCX paragraph, ACL-before-read and SHA tests
-        run: node --test tests/p85-native-integration.test.mjs
+        run: node --test tests/p85-native-integration.test.mjs tests/p85-journey.test.mjs
   synthetic-evidence:
     runs-on: ubuntu-24.04
     timeout-minutes: 12
