@@ -190,6 +190,26 @@ export class LocalSyntheticVault {
     return Object.freeze({...shared,search_mode:'bm25_authorized_citations',
       status:evidence.length?'SEARCH_ONLY':'INSUFFICIENT_EVIDENCE',evidence});
   }
+  /** Metadata-only library: freshly recheck SQLite identity and every document ACL.
+   * Never reveal other tenants, forbidden documents, source paths, hashes or raw bytes.
+   */
+  library(token){
+    const p=this.#principal(token);
+    const docs=this.#stateStore?this.#stateStore.listDocuments(p.tenantId).map(checkDoc):
+      [...this.#docs.values()];
+    const visible=docs.filter(d=>this.#allow(p,d)).map(d=>Object.freeze({
+      id:d.id,version:d.version,collection:d.collection,
+      kind:d.native_kind??'txt',classification:d.classification
+    })).sort((a,b)=>a.collection.localeCompare(b.collection)||a.id.localeCompare(b.id));
+    const collections=Object.entries(visible.reduce((acc,d)=>{
+      acc[d.collection]=(acc[d.collection]??0)+1;return acc;
+    },Object.create(null))).map(([id,count])=>Object.freeze({id,count}))
+      .sort((a,b)=>a.id.localeCompare(b.id));
+    this.#record('LIBRARY_VIEW',p.tenantId);
+    return Object.freeze({status:'SCOPED_LIBRARY',documents:visible,collections,
+      kpi:Object.freeze({accessible_documents:visible.length,collections:collections.length,
+        generated_answers:0}),model_state:'UNAVAILABLE',network_calls:0});
+  }
   /** Enforce server-side fixed synthetic dataset scope before opening CSV bytes. */
   authorizeSyntheticDataset(token,{tenantId,groups,projects,clearance},directory){
     const p=this.#principal(token);

@@ -67,6 +67,8 @@ export async function launchSyntheticLoopback(vault,{journey=null}={}){
       }
       if(req.method==='GET'&&(/^\/v1\/source\/[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/u).test(req.url))
         return send(res,200,vault.source(token,req.url.slice('/v1/source/'.length)));
+      if(req.method==='GET'&&req.url==='/v1/library')
+        return send(res,200,vault.library(token));
       if(req.method==='POST'&&req.url==='/v1/logout'){
         vault.logout(token);return send(res,200,{status:'LOGGED_OUT'});
       }
