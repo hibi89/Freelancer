@@ -17,7 +17,7 @@ import sqlite3
 import ssl
 import time
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode, urlsplit
+from urllib.parse import urlencode, urlsplit, unquote_plus
 from urllib.request import build_opener, HTTPRedirectHandler, HTTPSHandler, ProxyHandler, Request
 
 from .core import KST, official_query
@@ -161,6 +161,11 @@ def fetch_quarantined(plan: dict, *, service_key: str, permission: bool, db_path
             data = json.loads(raw.decode("utf-8-sig"), object_pairs_hook=_safe_json_pairs)
             if not isinstance(data, dict):
                 raise ValueError("API response is not an object")
+            # Detect escaped/URL-encoded reflection as well as literal bytes.
+            decoded = json.dumps(data, ensure_ascii=False, sort_keys=True)
+            if (service_key.strip() in decoded or service_key.strip() in unquote_plus(decoded)
+                    or _contains_sensitive_response_key(data)):
+                raise ValueError("agency response reflected credential; refuse persistence")
             # Error envelopes must never count as successful official evidence.
             header = data.get("response", {}).get("header") if isinstance(data.get("response"),dict) else None
             if isinstance(header, dict) and str(header.get("resultCode", "00")) != "00":
@@ -168,7 +173,11 @@ def fetch_quarantined(plan: dict, *, service_key: str, permission: bool, db_path
             proof = {"source": "OFFICIAL_API_RAW_UNVERIFIED_MAPPING", "dataset_id": plan["dataset_id"],
                      "service": plan["service"], "retrieved_at":current.astimezone(KST).isoformat(),
                      "request_without_key":plan["parameters"], "raw_sha256":hashlib.sha256(raw).hexdigest(),
-                     "raw_response":data, "requires_human_contract_review":True}
+                     "raw_response":data, "requires_human_contract_review":True,
+                     "canonical_response_sha256":hashlib.sha256(
+                         json.dumps(data, ensure_ascii=False, sort_keys=True,
+                                    separators=(",", ":"), allow_nan=False).encode("utf-8")
+                     ).hexdigest()}
             payload = json.dumps(proof,ensure_ascii=False,indent=2).encode("utf-8")
             fd = os.open(dest, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
             try:
@@ -219,3 +228,12 @@ def _plan_to_inputs(plan: dict) -> dict:
                 "end":datetime.strptime(pars["inqryEndDt"],"%Y%m%d%H%M").replace(tzinfo=KST).isoformat(),
                 "page":pars["pageNo"],"rows":pars["numOfRows"]}
     raise ValueError("unknown API service")
+
+
+def _contains_sensitive_response_key(value):
+    if isinstance(value, dict):
+        return any(str(k).lower() in ("servicekey", "authorization", "password", "x-api-key")
+                   or _contains_sensitive_response_key(v) for k, v in value.items())
+    if isinstance(value, list):
+        return any(_contains_sensitive_response_key(v) for v in value)
+    return False

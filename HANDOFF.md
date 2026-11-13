@@ -1,3 +1,17 @@
+# BID AX 공식 API 수집 격리검증 인수인계 — 2026-11-14 KST (필수 10항)
+1. 목표/용도/기술: 최종설계 R01~R29 전체 100% 고정(가중치 추가 요구 없음), 목표85%, Python/SQLite/Tk, 나라장터1+온비드3 공통 본인인증키와 합법 법원 자료 로컬 분석.
+2. 완료/결정: 오프라인 격리 응답 구조·페이지/총건수/본문 형식·SHA 변경·인증키 JSON/URL 반사 안전검증과 CLI 추가; raw를 심사 엔진에 자동 승격하지 않음. 고객 PC 로컬 방식/서버비0 목표 유지.
+3. 테스트: Linux Python3.13.5 기존188+신규13=201 PASS/0FAIL/0SKIP, compileall/pyz 계획 스모크 PASS. 실제 정부 HTTP·본인 키·공고100·인간 검토10·Win10/11 고객 시험 0/미검증.
+4. 상태: 로컬 응답 계약 감사 기능 구현 완료, 공식 85% 미입증/UNASSESSED, [작업중], RELEASE HOLD, 미등록.
+5. 실패/근거·피벗: 미확인 온비드 15157220 세부 operation 경로 임의 추정 금지, ready=false. 기관 JSON 형식·이용권/원문 정밀 확인은 실 사용자/키 없이 미검증. 테스트 증가만으로 최종률 계산하지 않음.
+6. 저장소·브랜치/SHA: private hibi89/Freelancer@product/bid-ax-public-procurement, 전 HEAD e3ffb4fa1a6c20f640746f990cef5f0f9e88f8b3; bidax/{api_gateway,response_audit,cli}.py, tests/test_api_response_audit.py, docs/P85_API_RESPONSE_QUARANTINE_AUDIT_20261114.md. 최신 HEAD는 커밋 후 조회.
+7. Production/실행·환경: `python -Werror::ResourceWarning -m unittest discover -s tests -q`; `python -m bidax.cli --db local/bidax.db api-inspect local/result_001.json` 은 오프라인; api-probe --live 는 사용자 PC 명시동의/키 입력 필요. Vercel/Production N/A, Windows EXE 미검증.
+8. 원본/백업·보안: 원본코드/고객 DB·원문 키/기존 BID OWL 타제품 비수정, Git normal revert. Gitignore local/격리파일 추가; 실 키/실 자료 GitHub 업로드 금지. 저장된 canonical hash는 전자서명 아님.
+9. 다음 우선순위·완료기준/승인: 사용자 PC에서 4개 승인 API의 1페이지 실 요청(키 노출 없이), 15157220 공식 operation 명세·실 항목 매핑, 실공고100/인간 자격검토10, Windows3.11/EXE/PDF·고객/권리·지원, R01–29 전체 독립 수용 후 85% 판정. 유료 CI/실고객 전송/출시/권한변경 승인 전 금지.
+10. KST 시점/검증 범위: 2026-11-14, 공식 data.go.kr 15129394/15157220/15157252/15157254 메타데이터와 로컬 mock 201 PASS에 한정. GitHub source SHA·중앙 동기화 사후 readback 별도.
+
+---
+
 # BID AX API 공통키 게이트 개발 인수인계 — 2026-11-14 KST (필수 10항)
 1. 목표·최종설계·스택: BID AX R01–R29 사용자 고정 100% 기준, 목표85%; 나라장터+온비드 API와 합법 법원 로컬자료. Python/SQLite/Tk, 고객 PC 월서버비0.
 2. 변경·근거: 공공데이터포털 4개 각각 승인, 동일 키 확인. 키는 호출 때 단 1회 임시 입력·저장 안 함. G2B/온비드 결과목록/상세 host/operation 고정; 불확실 15157220 path 차단. SaaS보다 고객 PC 수동 조회 선택(개인정보/비용 감소).

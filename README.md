@@ -83,3 +83,14 @@ python packaging/build_source_zip.py ./BID_AX_SOURCE_ONLY.zip
 ## 2026-11-14 최종설계 전체 진행 보강
 
 `portfolio-report`, `onbid-filter`, `onbid-watch`, `onbid-watchlist` 명령이 승인된 로컬 스냅샷에 대해 동작합니다. 온비드 관심/검토보류/해제는 UUID 감사 이력으로 중복·변조·물건 변경을 감지합니다. Tk GUI의 '공매·경매 로컬 관리' 메뉴에도 같은 기능을 추가했습니다. 법적 자격·실시간 시세/낙찰·법원 권리 확정은 제공하지 않습니다. 로컬 전체 167 PASS, 원격 Python CI/실 Windows/실정부 API 미검증. 새 전체 R01–29 감사표: [전수 수용·미승인 가중치](docs/BID_AX_FULL_BLUEPRINT_29_ACCEPTANCE_20261114.md).
+
+
+## 2026-11-14 local API quarantine audit (nonrelease)
+
+After an authorized one-page `api-probe --live --out` command, inspect saved metadata **without network/key**:
+
+```powershell
+python -m bidax.cli --db .\local\bidax.db api-inspect .\local\result_001.json
+```
+
+The inspector returns only structural audit metadata. A passing structure is NOT an official API mapping, source signature, allowed bulk import, legal qualification or a finished saleable feature. See `docs/P85_API_RESPONSE_QUARANTINE_AUDIT_20261114.md`.

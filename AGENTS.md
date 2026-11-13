@@ -1,3 +1,5 @@
+> [BID AX 2026-11-14 최신 사용자 지시] 최종설계 R01–R29 **전체 고정**; 별도 배점/가중치 승인 요청 금지. 과거 이 문서의 R01–R21 및 '가중치 필수' 문구는 역사적 이력만 해당. 소스·실정부 데이터·Windows·법률/고객 수용 증거로 검증하고 85% 미입증 시 UNASSESSED/[작업중]/RELEASE HOLD 유지. [응답 격리 감사](docs/P85_API_RESPONSE_QUARANTINE_AUDIT_20261114.md).
+
 > [2026-11-14 BID AX v2 최신] 사용자 확정 최종설계 R01–R29 29개, 목표 85%. 3모듈 오프라인 소스 GitHub 반영 후 local 136 PASS / 신규 API 계획기는 인증키 없이 네트워크 0. **공식 최종완성률 UNASSESSED**, 목표 미인증 [작업중], RELEASE HOLD. 새 기능 SHA `2a9852bcb47a271a4119f67dfcaf8ec35ae2a632`; 실 정부 API·Windows·승인된 100점 가중치 없음. docs/P85_V2_CURRENT_ACCEPTANCE_20261114.md 및 HANDOFF/STATUS를 먼저 확인.
 
 > [2026-11-13 BID AX v2 사용자 확정 변경] 최신 최종설계는 R01–R29 총29개(기존21 보존 + 온비드/법원8 추가); docs/FINAL_BLUEPRINT.md 및 docs/BID_AX_EXPANSION_REASSESSMENT_20261113.md 정본. 아래 R01–R21 표기는 역사 이력. 공식 UNASSESSED, 목표85% [작업중], 출시 HOLD.

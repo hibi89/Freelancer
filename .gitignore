@@ -13,3 +13,8 @@ __pycache__/
 .venv/
 dist/
 build/
+
+# Customer API raw responses, never version-control
+local/
+quarantine/
+*.raw-api.json
