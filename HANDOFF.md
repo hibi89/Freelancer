@@ -1,5 +1,19 @@
 # CITEVAULT AX — HANDOFF — RAG Studio 기업형 (10항, 2026-11-13 KST)
 
+## [2026-11-13 KST] CITEVAULT AX P70 후속 작업 — 10항 최신 인수인계
+
+1. **목표·용도·확정 설계/기술:** 기업용 로컬 RAG, PREP/SMAX 데이터 검토·승인, 문서/SQL 근거, 사용자별 권한 및 모델 fallback. 이번 명시 목표 **최종설계 전체 대비 70%**, 이전 P50 검증 조건 포함. 사용자 승인 100점 가중치 부재로 공식 **UNASSESSED**, 70% 달성 미확정.
+2. **완료·변경·결정근거:** 기존 RAG 재작성 대신 기존 `RAG_STUDIO` pinned source와 CITEVAULT synthetic-only policy를 분리. 신규 `enterprise/p70-policy.mjs`/ `enterprise/p70-rag-bridge.mjs`, `tests/p70.test.mjs` 24개, `tests/p70-rag-integration.test.mjs` 6개, CI P512/P538/P540/P549 연계 설정, `docs/P70_EVIDENCE_MATRIX.md`. 원본 RAG/PREP/SMAX 변경 0. 다른 외부 연결/유료 API 0.
+3. **테스트·명령·결과:** 코드 원격 GitHub 원문과 동일한 순수 JS `enterprise/p70-policy.mjs`+`tests/p70.test.mjs`를 V8 eval 기반으로 실제 실행해 **24 PASS/0 FAIL**(최종 policy blob `de75419d049b488ea4475a560f86fb99250d7d19`, test blob `b3f741963a1f5314d2fbaf8e504c9ff7b5ae60c9`). Node22 host `node --test tests/p50.test.mjs tests/p70.test.mjs tests/p70-rag-integration.test.mjs` 및 원본 RAG `tests/p512...`, `p538...`, `p540...`, `p549...` **실행 미확인**. 과거 P50 Node standalone 3PASS/0FAIL/3SKIP는 별개.
+4. **단계·중단 지점:** P70 정책/오류거부/검색 출처 래퍼는 개발 완료. 실제 RAG 연결·기업 identity server·ACL storage-before-load·인가된 PREP/SMAX→AX 단일 end-to-end 및 다중 native 문서 Hosted 검증은 미완/미검증. **공식 UNASSESSED / 70 목표 미달성/검증 대기 / [작업중] 유지 / RELEASE HOLD**.
+5. **오류·근거·시도·재시도 금지:** container GitHub DNS 미해결(로컬 git clone 불가). GitHub connector로 원본 source/commit 확인, V8 순수 계약 검증 및 Actions workflow 코드 구성으로 전환. Hosted push run ID는 GitHub connector의 PR-only run 검색으론 확인되지 않음. **CI 실패라고 추정하지 않음**, 같은 확인법 반복 금지. 원본 native tests를 성공으로 가정하지 않는다.
+6. **저장소·브랜치·SHA·경로:** `hibi89/Freelancer@product/rag-enterprise-knowledge`; 시작 P70 HEAD `6c36d02e71a751c8473b0bb36c9dc8b2c5ed460c`, 원본 RAG `hibi89/RAG_STUDIO@c5867b3951f51bfa97cadd1aad8fb13e9cf9e604`. 신규 policy/test blob 위, CI 설정 `64b85e992877a453732ee88aceec78c83f5695ff`, P70 문서 `0a7adfbe57e31cba6b9507e92c2cbff60d348300`; 본 HANDOFF 이후 정확 HEAD 재조회.
+7. **실행/환경/Production:** Node 22.16+ 원본 node:sqlite 및 pdfjs/mammoth 의존, GitHub Ubuntu Actions read-only pinned checkout. 로컬 dummy principal only, 신뢰 ID 제공자 없음. 외부 서비스/LLM 과금 0, Vercel·Production 배포 미적용.
+8. **원본/백업/권리/금지:** P70 작업 직전 제품 SHA `6c36d02e71a751c8473b0bb36c9dc8b2c5ed460c`를 Git 복구 기준으로 보존. Private SMAX/PREP, Public RAG 원본, 고객데이터, 키/권한/도메인/배포 불변. `SYNTHETIC_ONLY`는 권한 없는 사용자를 인증한 증거가 아니며 실제 직원 서비스 노출 금지.
+9. **다음 우선순위·절차·승인:** P50/P70 original pinned RAG GitHub Actions 실 run 검증→실 PDF/DOCX 다중 검색과 상충/SMAX signed approval end-to-end→사용자 승인 후 실제 직원 서버 인증·역할 정책, 승인 철회, 기업별 저장/색인 분리→실 Windows/골드/성능→가중치 승인·최종완성률 재계산. 계정 권한/실고객자료/원본 보안 변경은 사전 승인.
+10. **갱신 일시·확인 시점·검증 범위:** 2026-11-13 KST; GitHub 정본 file/blob/CI yaml 조회, V8 순수 JS 24/24 PASS. Node full, GitHub hosted CI, Win10/11, 고객 실환경, 실제 인증·SMAX 서명, Production/상품 등록 및 최종 70 점수 **미검증**. 중앙 해총 인수인계 동기화 확인 필요.
+
+
 
 ## [2026-11-13 KST] P50 통합 QA 코드 신규 작업 — 10항 인수인계 (최신)
 
