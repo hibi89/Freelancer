@@ -19,3 +19,8 @@ Updated 2026-11-13 KST · Private `hibi89/Freelancer@product/worknova-desk-local
 ## Rollback
 
 Previous verified code `85a2a115d32d3378544ae68bb453466499aebcb8` in Git history. Do not touch owner databases, backups, main branch, PayPal source, other product statuses or licenses. Package v3 requires its paired v3 integrity verifier, do not mix with v2. Preserve source/test evidence exact SHA in central KMONG registry and `HANDOFF.md`.
+
+## Verified source and KMONG sync — 2026-11-13 KST
+- Feature/tests exact GitHub source SHA: `09a22bbd399e08b81eb979cd78184f788faf8423` (tree `871c2bb54de8f7f81cc38c078a8dc4a1c60b8a10`), code/trace committed. Local Python **104/104 PASS**, Tk GUI 3 flows PASS; v3 bundle SHA256 `3d41225a3741dfb7934f6948e7e03c62a21ff8f4388423cb3fd65f9432b00e0c` (13 verified package entries + manifest) with isolated CLI init + recovery rehearsal PASS.
+- Central KMONG updated and re-read at `hibi89/hackathon-command-center-2026@kmong-productization` HEAD `50ddf2ce3ee79f19c347f8aa81ff1c4b08a2375b`, with same code SHA, test numbers and detailed audit file `docs/audits/WORKNOVA_DESK_P85_RECOVERY_20261113.md`.
+- Exact Windows 10/11 OS/runtime/EXE/Word/real-customer acceptance remain **NOT_RUN**; formal 85% **UNASSESSED**, `[작업중]`, RELEASE HOLD.
