@@ -13,11 +13,34 @@ import {launchSyntheticLoopback} from '../enterprise/p85-loopback.mjs';
 const sha=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
 const maker=fileURLToPath(new URL('./p85-native-fixture.py',import.meta.url));
 const content='order_id,sku,quantity,unit_price_krw,amount_krw\nA001,TV,2,10000,20000\nA002,BOOK,1,37000,37000\nA003,PC,4,25000,100000\n';
+const FIXTURE_ACCOUNTS=Object.freeze([
+  createSyntheticAccount({userId:'alice',tenantId:'orgA',groups:['sales'],projects:['quality'],clearance:1,password:'synthetic-ALICE-only123'}),
+  createSyntheticAccount({userId:'bob',tenantId:'orgA',groups:['engineering'],projects:['quality'],clearance:1,password:'synthetic-BOB-only123'}),
+  createSyntheticAccount({userId:'carol',tenantId:'orgB',groups:['sales'],projects:['quality'],clearance:1,password:'synthetic-CAROL-only123'})
+]);
+let cachedNativeBytes;
+function nativeFixtureBytes(){
+ if(!cachedNativeBytes){
+  const source=fs.mkdtempSync(path.join(os.tmpdir(),'citevault-source-template-'));
+  try{
+    const result=spawnSync('python',['-I','-B',maker,source],{encoding:'utf8',timeout:12000});
+    assert.equal(result.status,0,result.stderr||'native fixture failed');
+    cachedNativeBytes=Object.freeze([
+      ['orgA/manualPdf/v1.pdf',fs.readFileSync(path.join(source,'orgA/manualPdf/v1.pdf'))],
+      ['orgA/rulesDocx/v1.docx',fs.readFileSync(path.join(source,'orgA/rulesDocx/v1.docx'))]
+    ]);
+  }finally{fs.rmSync(source,{recursive:true,force:true});}
+ }
+ return cachedNativeBytes;
+}
 function make(t){
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'citevault-journey-'));
   t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
-  const p=spawnSync('python',['-I','-B',maker,root],{encoding:'utf8',timeout:12000});
-  assert.equal(p.status,0,p.stderr||'fixture failed');
+  // Every test gets private mutable files; only immutable fixture *bytes* are cached.
+  for(const [relative,bytes] of nativeFixtureBytes()){
+    const dest=path.join(root,relative);fs.mkdirSync(path.dirname(dest),{recursive:true});
+    fs.writeFileSync(dest,bytes);
+  }
   const sales=path.join(root,'orgA','sales-only');fs.mkdirSync(sales,{recursive:true});
   fs.writeFileSync(path.join(sales,'sales.csv'),content);
   const digest=sha(Buffer.from(content));
@@ -26,11 +49,7 @@ function make(t){
   fs.writeFileSync(path.join(sales,'prep-mapping.json'),JSON.stringify({contract:'PREP_SYNTHETIC_MAPPING_V1',
     source_sha256:digest,roles:{order_id:'order_id',sku:'sku',quantity:'quantity',unit_price_krw:'unit_price_krw',amount_krw:'amount_krw'},
     tax_basis:'TAX_UNKNOWN',review_state:'REVIEW_HOLD'}));
-  const accounts=[
-    createSyntheticAccount({userId:'alice',tenantId:'orgA',groups:['sales'],projects:['quality'],clearance:1,password:'synthetic-ALICE-only123'}),
-    createSyntheticAccount({userId:'bob',tenantId:'orgA',groups:['engineering'],projects:['quality'],clearance:1,password:'synthetic-BOB-only123'}),
-    createSyntheticAccount({userId:'carol',tenantId:'orgB',groups:['sales'],projects:['quality'],clearance:1,password:'synthetic-CAROL-only123'})
-  ];
+  const accounts=FIXTURE_ACCOUNTS;
   const pdf=path.join(root,'orgA','manualPdf','v1.pdf');
   const docx=path.join(root,'orgA','rulesDocx','v1.docx');
   const documents=[{id:'manualPdf',native_kind:'pdf',file:pdf},{id:'rulesDocx',native_kind:'docx',file:docx}]
