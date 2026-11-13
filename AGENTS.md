@@ -11,3 +11,8 @@
 - 문서·기능 변경 후 `STATUS.md`, `HANDOFF.md` 10항과 Git SHA·CI PASS/FAIL/SKIP·미검증 및 복구 방법 최신화. 의미 없는 CI·재배포·빈 커밋·force push 금지.
 - 고객에게는 지원된 기능·언어/파일·페이지·수정횟수·검수 기준·모델/브라우저/서버 비용·라이선스/영수증 정책을 명시. 광고 문구에 미구현 Graphify/agent-browser/Auto Ontology 통합을 구현 완료처럼 표기하지 않는다.
 - 원본 `Freelancer` 업워크 자료는 현행 트리에서만 제거, 과거 Git 이력으로 복구 가능. 다른 3개 제품 브랜치의 기존 작업/기록 유지.
+
+## 신규 product 브랜치 생성 시 해총 중앙 원장 등록 의무 (2026-11-13 사용자 지시)
+- `product/*` 브랜치 생성 **동일 작업 단위**에서 해총 `hibi89/hackathon-command-center-2026@kmong-productization`의 `docs/audits/FREELANCER_BRANCH_COMPLETION_REGISTRY_20261113.md`에 신규 상품/브랜치/최종완성률을 등록한다. 설계만 있어도 `UNASSESSED`로 즉시 등록하며, 공식 퍼센트 산정까지 기다리지 않는다.
+- 브랜치와 상품은 1:N 가능(ECHOHOME·PAWTALK처럼 한 브랜치 두 상품). 기존 원천 29종·판매 19종 및 등록완료 이력은 덮어쓰거나 중복 집계하지 않는다.
+- 이 지침은 **담당 GPT 작업 시 즉시 동기화하는 운영 규칙**이다. 별도 무인 이벤트 자동화는 교차 저장소 인증/권한/워크플로 검증 전까지 미구현이므로 무인 자동 등록 완료라고 주장하지 않는다.
