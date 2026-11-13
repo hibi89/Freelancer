@@ -61,7 +61,7 @@ def fetch_one_page(ledger: BidLedger, *, category: str, start: datetime, end: da
     Args `opener` and `sleep` support zero-network tests. HTTP status and
     headers may be viewed in tests; live key and full URL are never returned.
     """
-    if not permission:
+    if permission is not True:
         raise PermissionError("explicit customer approval for live government request required")
     if not isinstance(service_key,str) or not service_key.strip() or len(service_key)>4096:
         raise ValueError("customer-owned API key required")
@@ -75,9 +75,9 @@ def fetch_one_page(ledger: BidLedger, *, category: str, start: datetime, end: da
     params={**plan["params_without_service_key"],"serviceKey":service_key.strip()}
     url=base+"?"+urlencode(params)
     http=opener or build_opener(_NoRedirect())
-    tested_now=now or datetime.now(timezone.utc)
     for attempt in range(max_attempts):
-        _reserve(ledger,daily_limit,tested_now)
+        # Each retry uses the current KST day unless a test clock is injected.
+        _reserve(ledger,daily_limit,now if now is not None else datetime.now(timezone.utc))
         request=Request(url,headers={"Accept":"application/json","User-Agent":"BIDAX-manual-approved/0.85"},method="GET")
         try:
             response=http.open(request,timeout=15)
@@ -97,9 +97,16 @@ def fetch_one_page(ledger: BidLedger, *, category: str, start: datetime, end: da
             error.close()
             if code not in RETRY_CODES or attempt==max_attempts-1:
                 raise ValueError("official HTTP request rejected or retries exhausted; key redacted") from None
-        except URLError:
+        except (URLError, TimeoutError, ConnectionError):
             if attempt==max_attempts-1:
                 raise ValueError("official network unavailable; key redacted") from None
+        except ValueError as error:
+            if str(error) == "duplicate response JSON key":
+                raise ValueError("duplicate response JSON key") from None
+            raise ValueError("official transport failure; key redacted") from None
+        except Exception:
+            # Unexpected openers may raise errors containing a secret-bearing URL.
+            raise ValueError("official transport failure; key redacted") from None
         if attempt<max_attempts-1:
             sleep(min(2**attempt,4))
     raise ValueError("official request failed")

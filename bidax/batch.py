@@ -49,6 +49,17 @@ def batch_status(ledger: BidLedger, batch_id: str) -> dict:
         raise KeyError("unknown offline snapshot batch")
     items = ledger.conn.execute("SELECT page_no FROM snapshot_pages WHERE batch_id=? ORDER BY page_no", (batch_id,)).fetchall()
     present = [r[0] for r in items]
+    # Completed evidence must not look healthy after its stored pages change.
+    # Verify only after completion to avoid repeated hashing during staging.
+    if row[5]:
+        pages = ledger.conn.execute(
+            "SELECT payload,fingerprint FROM snapshot_pages WHERE batch_id=?", (batch_id,)
+        ).fetchall()
+        if len(pages) != row[4] or any(
+            hashlib.sha256(payload.encode("utf-8")).hexdigest() != fingerprint
+            for payload, fingerprint in pages
+        ):
+            raise ValueError("completed snapshot batch tampered; restore verified backup")
     return {"batch_id":batch_id, "category":row[0], "period_start":row[1],
             "period_end":row[2], "total_count":row[3], "expected_pages":row[4],
             "staged_pages":present, "missing_pages":[n for n in range(1,row[4]+1) if n not in present],
