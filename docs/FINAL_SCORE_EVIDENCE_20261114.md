@@ -1,3 +1,9 @@
+## 2026-11-14 KST — 실제 Windows onedir EXE 빌드 증거 추가 (WD-13 PARTIAL)
+
+사용자 전달 PowerShell에서 Windows10.0.26200, Python3.11.9, PyInstaller6.22.3을 확인. `--plan` JSON의 PyInstaller 인자를 직접 호출한 결과 EXE·COLLECT 완료 및 `Build complete!`, `WORKNOVA-Desk.exe` 파일 존재 확인. **빌드 PASS**는 EXE 실제 실행·서명·Defender·GUI 또는 제품 전체 수용과 다름. 길이 표가 잘려 정확 파일 크기·SHA256 출력 없음, PE MZ/원격 정확 소스 SHA·실 GUI/ACL/무Python 환경·라이선스 미확인. 상세 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`.
+
+WD-13(10점)은 Windows 패키지 생성 부분 진전이지만 설치·데이터 보호·암호화·서명/고객 수용 조건 전부 충족하지 못해 **PARTIAL/0점**, WD01~12/14 판정 유지. 전체 사용자 승인100점에 대한 완전 검증 인정 **0/100**, 목표85 미달, **[작업중], RELEASE HOLD**, 판매 미등록.
+
 ## 2026-11-14 KST Windows EXE 빌드 진입 오류 및 수정 결과 — WD-13 점수 불변
 
 실 Windows에서 PyInstaller6.22.3은 사용자 계정 설치로 정상(`py -3 -m PyInstaller --version`), `--plan`도 PASS였으나 실제 `build.log`: `No module named PyInstaller`. 빌드 래퍼가 자식 `PYTHONNOUSERSITE=1`로 사용자 사이트를 비활성화한 결함을 수정하고 재발 방지 테스트 추가. 수정 파일 blob `10d60c3789fb2f8c654479845ec9296dbb0c890b` 정확 소스의 **Linux 5 mock/경로 테스트 PASS**·컴파일 PASS·GitHub readback. 실제 수정한 Windows EXE 빌드·실행/서명은 여전히 **NOT_RUN**. 상세 `docs/P85_PYINSTALLER_USER_SITE_FIX_20261114.md`.
