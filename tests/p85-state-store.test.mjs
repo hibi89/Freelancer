@@ -119,3 +119,20 @@ test('read after persistence store close fails rather than silently falling back
  one.store.close();
  assert.throws(()=>one.vault.source(user,'public'));
 });
+test('document version mutation and audit event commit together',t=>{
+ const f=fixture(t),one=f.open(),admin=login(one.vault,'adminA','durable_ADM_A_secret123');
+ one.vault.replaceVersion(admin,'public','v2',sha(f.sources['orgA/public/v2.txt']));
+ one.store.close();const two=f.open(),p=login(two.vault,'adminA','durable_ADM_A_secret123');
+ assert.equal(two.vault.audit(p).filter(x=>x.event==='VERSION_CHANGED').length,1);
+ assert.equal(two.vault.source(p,'public').citations[0].version,'v2');
+});
+test('failed stale mutation creates neither new version nor audit event',t=>{
+ const f=fixture(t),one=f.open(),two=f.open();
+ const a=login(one.vault,'adminA','durable_ADM_A_secret123');
+ one.vault.reindex(a);
+ const b=login(two.vault,'adminA','durable_ADM_A_secret123');
+ assert.throws(()=>two.vault.replaceVersion(b,'public','v2',sha(f.sources['orgA/public/v2.txt'])),{code:'STALE_GENERATION'});
+ const audit=one.vault.audit(a);
+ assert.equal(audit.filter(x=>x.event==='VERSION_CHANGED').length,0);
+ assert.equal(one.vault.source(a,'public').citations[0].version,'v1');
+});
