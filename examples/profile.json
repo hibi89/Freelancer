@@ -1,0 +1,4 @@
+{
+  "company": "합성 테스트 기업", "regions": ["부산"], "license_codes": ["S/W"],
+  "documents": {"사업자등록증":"2026-12-31"}, "max_budget_krw": 5000000
+}

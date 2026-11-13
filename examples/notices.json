@@ -1,0 +1,9 @@
+[
+  {
+    "notice_no": "R26BK000001", "revision": "000", "title": "가상 서버 유지보수 용역",
+    "category": "services", "issuer": "가상 발주기관",
+    "deadline": "2026-11-20T18:00:00+09:00", "source_url": "https://www.g2b.go.kr/",
+    "regions": ["부산"], "license_codes": ["S/W"],
+    "required_documents": ["사업자등록증"], "budget_min_krw": 3000000
+  }
+]
