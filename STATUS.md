@@ -1,3 +1,15 @@
+# STATUS — PROOFQA AX (2026-11-13 KST · P70 내부 실제 통합 검증 PASS)
+
+- **사용자 P70 목표:** 최종설계의 내부 P70 마일스톤(기존 P50+Graphify Python·JS·SQL 실 AST/Code Checker 정적 후보↔graph 관계2건/agent-browser 로컬 합성사이트 실제 클릭·HTTP·저장재조회·보안경계). 정확 기능 SHA `1c4e9b629476ac9ac76b40a207f25408b2002a18`, 코드 저장소 `hibi89/ai-code-checker@feature/proofqa-ax-p70-graph-browser`, [Draft PR #84](https://github.com/hibi89/ai-code-checker/pull/84) (P50 기반, 원본 main 미병합).
+- **Graphify 실 실행:** 패키지 `graphifyy[sql]==0.9.108`, `GRAPHIFY_BACKEND=none` + `--code-only --no-cluster`; Python AST 위치노드3·JavaScript3·SQL2, `edges` 실제 원본 출력. P50 정적 후보 2건은 Graphify EXTRACTED 구조엣지에 2/2 연결, `FILE_SCOPE_APPROXIMATE`(정확 결함 확정/런타임 증명 아님), 독립 취약점 확정0.
+- **실브라우저:** `agent-browser@0.43.0` Chromium 실제 UI, 127.0.0.1 합성 테스트서버에서 accessibility snapshot·클릭/DOM 갱신, GET200·GET500·POST save200·GET reopen200 및 새로고침 후 값 보존 확인. 고객 실URL/계정/데이터·파괴행위0.
+- **검증:** [P70 실제 E2E #43378766440](https://github.com/hibi89/ai-code-checker/actions/runs/43378766440) `completed/success`, [기존 전체 회귀 #43378766391](https://github.com/hibi89/ai-code-checker/actions/runs/43378766391) **16/16 SUCCESS**(Python3.11 Windows/Linux 각 **520/520 PASS**, 신규 P50·P70 합계17 포함), [설계 Gate #43378766710](https://github.com/hibi89/ai-code-checker/actions/runs/43378766710) SUCCESS. 본 정확 SHA와 일치.
+- **공식 수치 판정:** **P70 내부 단계의 실제 합성 기능·CI 수용 완료**. 사용자 확정 최종설계도 전체 100점의 독립 가중치·실제 고객/실기기·상용 인수 없는 공식 `최종완성률=UNASSESSED` 그대로. 중앙 `PROOFQA AX [작업중]` **유지**, 목표 임의 하향/해제 없음, `RELEASE HOLD/SALE NO-GO`.
+- **격리·권한:** 고객 ZIP/고객 staging 실제 시험 아님. P50 ZIP·SHA 사전 검증, P70 오직 신뢰된 합성 코드·localhost 서버 사용. OS 강제 네트워크 차단/컨테이너 샌드박스 미제공, 실권한·고객 감사 승인 전 실제 고객 자료 금지.
+- **다음:** P85 Cloudflare 6단계 방법론 + 독립 finding verifier + 한글 HTML/PDF/JSON 동일 증거+15개 위협 회귀; P95 실 고객·실 OS/권리/30위협·P100 서면 인수는 차단. [상세 P70 근거](docs/P70_EXACT_SHA_ACCEPTANCE_20261113.md). 중앙 다른 프로젝트·CodeChecker 원본/권한·Vercel/등록이력 변경 없음.
+
+---
+
 # STATUS — PROOFQA AX (2026-11-13 KST · P50 기능 수용 이력)
 
 ## P50 합성 개발/테스트 게이트 통과 — 공식 최종상품률 UNASSESSED 유지
