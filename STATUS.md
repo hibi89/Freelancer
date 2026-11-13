@@ -1,5 +1,13 @@
 # CITEVAULT AX — STATUS — RAG Studio Enterprise, 2026-11-13 KST
 
+## [2026-11-14 KST] CITEVAULT P85 호스티드 Ubuntu+Windows CI 복구 성공 (소스 SHA cea0ec09)
+
+- 실제 [GitHub Actions #43523337142](https://github.com/hibi89/Freelancer/actions/runs/43523337142) **6/6 SUCCESS**, 원본 pin RAG P512 11 + P538/P540/P549 24 + CITEVAULT bridge 36; Ubuntu/Windows 로컬 107×2, native PDF/DOCX 통합 31×2, Linux local-contracts 31. **378 실행 PASS/0FAIL/0SKIP**, OS별 동일 테스트 중복 포함; [최종설계 정책 gate #43523337300](https://github.com/hibi89/Freelancer/actions/runs/43523337300) SUCCESS(정책 검증만).
+- 첫 hosted 재실행에서 Windows 한국어 DOCX `NATIVE_HOLD`와 SQLite `EBUSY`가 실제 발생. Python `-I`의 환경변수 무시와 Windows 파이프 코드페이지 차이를 `-X utf8`로 대응; 테스트 저장소 close→임시파일 정리 순서 변경. 코드 source commit `cea0ec09ac4a85a16e369bd302986959fca408b0`에서 모두 실제 CI PASS. 상세 `docs/P85_HOSTED_CI_RECOVERY_20261114.md`.
+- **주의:** 사용자 조치로 공유 `hibi89/Freelancer` 전체 저장소 현재 PUBLIC; 여러 제품의 다른 브랜치·커밋도 공개. 과거 파일·민감정보 전수 검사 미실시, 원본 공개 여부 안전 판정 불가. assistant는 공개 설정을 변경하지 않음.
+- **최종설계 24항 전체에 대한 공식 완성률 UNASSESSED, 목표 85% 미입증**, `CITEVAULT AX [작업중]`, `RELEASE HOLD/SALE NO-GO` 유지. 실제 고객 IdP/권리/승인 producer, 실제 Korean model+Gold, 실제 Win10/11 설치·보안/고객 수용 없음; Production 미적용. GitHub Actions green은 최종상품 승인 아님.
+
+
 ## [2026-11-14 KST] CITEVAULT AX P85 원본 RAG/Windows CI 장애 수정·실행 계층 차단
 
 - 기능 패치 `88564c860a3da0a8d9a7c3e4dac3c99a6b2e2cbe`: 원본 RAG 통합 테스트 구문 괄호, Windows SQLite 임시파일 정리 순서, Python DOCX 안전한 Windows 환경 변수 전달을 최소 수정. GitHub 정확 blob SHA 3건 조회, 원본/고객자료/타상품 불변.

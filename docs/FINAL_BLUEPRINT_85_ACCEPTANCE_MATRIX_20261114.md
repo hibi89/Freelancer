@@ -1,5 +1,13 @@
 # CITEVAULT AX — 최종설계 100% 기준 85% 수용 증거표 (2026-11-14 KST)
 
+## [2026-11-14 KST] 최신 정확 SHA Hosted CI 6/6 성공 — 최종 설계 분모는 불변
+
+- 기능 SHA `cea0ec09ac4a85a16e369bd302986959fca408b0`, [CITEVAULT hosted #43523337142](https://github.com/hibi89/Freelancer/actions/runs/43523337142) Ubuntu/Windows 6개 작업 **모두 SUCCESS**, 원본 RAG pin source-bound P50/P70 bridge **36 PASS/0SKIP** 및 pinned upstream35PASS. Ubuntu/Windows P85 로컬 권한·SQLite·UI/서명/검색 각각107PASS, native PDF/DOCX/SQL journey 각각31PASS, local-contracts31PASS. 플랫폼 간 중복 포함 **378회 실행 PASS/0FAIL/0SKIP**. [정책 gate](https://github.com/hibi89/Freelancer/actions/runs/43523337300) SUCCESS.
+- 기존 불확실했던 호스티드 runner, 정확 원본 RAG CI 브리지 3 SKIP, Windows 한국어 DOCX, SQLite cleanup 오류는 **이번 SHA에서 실제 검증 해결**. 단, 고정 원본 RAG synthetic bridge 통과가 고객 권리 승인된 기업 제품 종단 완료라는 의미는 아님.
+- 공유 `Freelancer` 저장소 현재 PUBLIC(소유자 조치), 다른 브랜치/과거 이력 공개 위험; 전체 비밀스캔 미실시, 운영 보안 이슈 별도.
+- REQ20 CI 작업 실행 자체는 **검증-합성**, 원래 최종 24개 요구 중 IdP·고객 권리/producer·실 모델·Win10/11 물리 설치/Gold/사용자 수용은 여전히 미충족. 공식 최종완성률 **UNASSESSED**, 목표 85% **미검증**, `[작업중]/RELEASE HOLD`.
+
+
 > **판정 규칙:** 본 표의 분모는 `docs/FINAL_BLUEPRINT.md` 전체 확정 요구와 `REQUIREMENTS.md` 1~9 및 `docs/ACCEPTANCE_AND_ROADMAP.md` 수용 단계다. 테스트 PASS/비율이나 기존 RAG Studio 내부 진행률을 CITEVAULT의 최종완성률로 환산하지 않는다. 소유자 승인 가중치와 정확 커밋별 요구-증거 검증이 없어 **공식 최종완성률 UNASSESSED**. 사용자 목표 **85% 미달성/미검증**. `[작업중]`·`RELEASE HOLD`.
 
 ## 아키텍처 선택 (성능·비용·보안·유지보수)
@@ -36,7 +44,7 @@
 | 04 | 서명/권리 승인된 AX_DATA_PACKAGE_V0 발급 | **신규:** `p85-signed-review-gate.mjs` 서명 검증을 단독 계약에서 `POST /v1/assess` 실검증 경로로 연동, 위조·만료·replay/변조·타조직 차단, 성공에도 항상 REVIEW_HOLD | **부분**: 정식 signed producer + 법적/신분 승인·approved AX package 생성 미구현, 고객 권리 false |
 | 05 | PDF 페이지·DOCX 문단·TXT/MD 행 | 실제 합성 2페이지 PDF 및 한국어 DOCX 문단 검증, TXT line 해시 검증 | **검증-합성**: 복잡 문서·OCR·XLSX는 별도 |
 | 06 | 문서 2건 이상 동시 검색·인용·전용 범위 | P85 real PDF+DOCX 단일 /assess 종단·documentIds 사전 ACL, native13PASS | **검증-합성**: 고객 문서·코퍼스 검증 필요 |
-| 07 | 원본 RAG BM25 검색/IndexBuilder | **신규:** 별도 P85 실 BM25 + 한국어 n-gram 검색을 읽기 전 ACL·SHA 검증을 통과한 인용 구간에만 적용, 단위 6PASS | **부분**: 정확 원본 RAG pin BM25·대규모 인덱스 연결/CI 3SKIP 미검증 |
+| 07 | 원본 RAG BM25 검색/IndexBuilder | **신규:** 별도 P85 실 BM25 + 한국어 n-gram 검색을 읽기 전 ACL·SHA 검증을 통과한 인용 구간에만 적용, 단위 6PASS | **부분**: 정확 원본 RAG pin BM25 소스 결속 CI 36PASS(합성) 확인; 고객용 대규모 인덱스·승인된 전체 RAG 종단 미검증 |
 | 08 | 원본 RAG fixed readonly SQLite SQL/typed KPI | P85 별도 `node:sqlite :memory:` 5컬럼 고정 집계, tamper 검증/HOLD | **부분**: 원본 RAG SQL/실 매출 VAT·환불 의미 승인 없음 |
 | 09 | SQL+문서 혼합 라우터·출처 두 가지 | `p85-journey.mjs` 단일 HTTP에서 PDF/DOCX/TXT 인용·SQLite 매출 잠정 수치와 `signed_review` Ed25519 결과를 결합, 서명 불일치 시 숫자·인용 제거 | **검증-합성**: 실사용 승인 자료 조회·원본 RAG 종단 미검증 |
 | 10 | 정형 숫자 세금·환불·취소·SKU·기간 의미 통제 | 미지원 범위 `REVIEW_HOLD` 회피·비생성 검증 | **부분**: 고객 데이터 의미 확정·확장 쿼리 미구현 |
@@ -49,7 +57,7 @@
 | 17 | 한국어 실제 로컬 모델·선택 dense | 모델 미설치 fallback `SEARCH_ONLY`, 출처 없는 생성 차단 | **대기**: 실제 model weights·라이선스·Korean mini benchmark 없음 |
 | 18 | 프롬프트 인젝션·ZIP·악성 파일·권한/데이터 유출 | bytes budgets, source SHA/inode/symlink, fail-closed, no network, XSS-safe UI textContent | **부분**: 문서 파서 OS 샌드박스/TOCTOU/침투 테스트·공식 보안점검 미완 |
 | 19 | Windows10/11 오프라인 설치·백업/복구·라이선스 | Node/Python Linux localhost 셀프테스트, SQLite 재기동/문서 version 지속 | **대기**: 실제 Windows 패키지/물리 설치·백업/복구 인수 증거 없음 |
-| 20 | Win/Linux GitHub-hosted CI 0FAIL | `.github/workflows/citevault-p50.yml` Linux/Windows native/identity/signed test job 설정 | **대기**: 실제 hosted job/run·Windows 성공 상태 미확인 |
+| 20 | Win/Linux GitHub-hosted CI 0FAIL | `.github/workflows/citevault-p50.yml` Linux/Windows native/identity/signed test job 설정 | **검증-합성**: 정확 기능 SHA cea0ec09에서 Ubuntu/Windows 6/6 hosted SUCCESS, 378 중복포함 PASS; 실고객 Windows10/11 설치·운영 보안은 제외 |
 | 21 | 고객 Gold100 + negative/heldout, retrieval/latency/메모리 수용 | 합성 보안 부정 테스트 및 단위 PASS, 모델/Gold100 없음 | **대기**: 고객 실제 100문제·성과 지표 미검증 |
 | 22 | 백업/복구·삭제/보존기간·운영 정책 | 합성 SQLite account/doc/audit 저장·재시작 검증, 임시 데모 자동 삭제 | **부분**: 실 고객 보존/백업/삭제 요청·증거 이력/운영 가이드 미구현 |
 | 23 | 고객/법적·가격·지원·운영 인수 | 합성 SOURCE_RIGHTS=false/RELEASE HOLD 강제 | **대기**: 고객/소유자 승인·라이선스·실기기·지원 수용 불가 |
@@ -57,7 +65,7 @@
 
 ## 85% 목표 필수 차단 항목
 
-- 원본 `hibi89/RAG_STUDIO@c5867b3951f51bfa97cadd1aad8fb13e9cf9e604` 정확 pin 3 SKIP 통합 실행 및 original SQL/BM25/PDF/DOCX/SMAX 연결 미확인.
+- 원본 `hibi89/RAG_STUDIO@c5867b3951f51bfa97cadd1aad8fb13e9cf9e604` pinned upstream35PASS 및 CITEVAULT synthetic bridge36PASS로 이전 3 SKIP은 hosted에서 해소. **실 고객 권리 승인된 전체 기업용 SQL/BM25/PDF/DOCX/SMAX 종단은 미검증**.
 - 실제 고객형 IDP/신뢰 주체·직원·그룹·문서 권리의 고객/운영자 승인, signed PREP/SMAX→AX authoritative import 미구현. 로컬 합성 운영자 기능은 대체 증거가 될 수 없다.
 - 실제 한국어 로컬 모델(아티팩트 SHA/라이선스/질문 세트) 없음, Win/Linux Hosted CI/실 Windows 설치/Gold 수용 미확인.
 - 전체 요구의 소유자 확정 가중치 없음. 24행에서 PASS 수를 나눠 최종완성률을 임의로 추정하지 않는다.

@@ -1,5 +1,19 @@
 # CITEVAULT AX — HANDOFF — RAG Studio 기업형 (10항, 2026-11-13 KST)
 
+## [2026-11-14 KST] CITEVAULT P85 Hosted 6/6 SUCCESS — HANDOFF 10항
+
+1. **목표·용도·설계/기술:** 사용자가 확정한 전체 24항 100% 대비 최종 85% 목표, 기업용 근거형 RAG PDF/DOCX/SQLite/ACL/PREP-SMAX/모델/실 Windows 수용. 공식 UNASSESSED, 상품 판매 HOLD.
+2. **완료 기능·비교·결정 근거:** A) 계정 결제 한도 상승/전체 공개 기반 지속 운영은 비용·다른 제품 소스 노출 위험, B) 소유자가 공개 변경 후 실제 GitHub-hosted 검증으로 기존 Windows DOCX·SQLite 두 문제 재현/최소수정 선택, C) 별도 공개 코드분리/self-hosted는 차기 보안 개선안. Python `-I`와 UTF8 pipe 충돌에 `-X utf8` 명시, 테스트 cleanup SQLite close→delete 단일 훅. 기존 소스 원본/권한 방어 그대로.
+3. **테스트·성공/실패/스킵:** 제품 기능 SHA `cea0ec09ac4a85a16e369bd302986959fca408b0`, [hosted #43523337142](https://github.com/hibi89/Freelancer/actions/runs/43523337142) **6 jobs SUCCESS, 378 PASS /0 FAIL /0 SKIP**(Linux/Windows·중복 실행 포함). 원본 pin P512 11 + P538/P540/P549 24 + CITEVAULT source-bound bridge 36 PASS; Linux contracts31, Linux+Windows P85 local107씩, native31씩. [final-blueprint gate #43523337300](https://github.com/hibi89/Freelancer/actions/runs/43523337300) 정책 검증 SUCCESS, 85% 인증은 아님.
+4. **완료/진행/대기/차단:** GitHub CI runner 구동·기존 RAG pinned bridge 및 Windows synthetic PDF/DOCX/SQLite 회귀 PASS. 실제 고객 IAM/자료 rights/authorized PREP/SMAX AX producer·실 한국어 모델/Gold/Windows 물리 설치·출시 보안 미완. `[작업중]`, 공식 UNASSESSED, RELEASE HOLD/SALE NO-GO.
+5. **오류 근거·원인·재시도 금지·대안:** 과거 #43516278650 1차는 결제/소진 한도 때문에 runner 0; 2차 실제 Windows `NATIVE_HOLD`/SQLite `EBUSY` 재현, Ubuntu/RAG PASS. 2개 최소 수정 후 #43523337142 모두 PASS; 같은 오류 무의미 재시도 금지. 전체 공개가 보안 검증 대신이 아니므로 추후 private 유지·별도 CI runner/검증용 공개 repo 검토.
+6. **저장소·브랜치·SHA/주요 경로:** `hibi89/Freelancer@product/rag-enterprise-knowledge` 기능 `cea0ec09ac4a85a16e369bd302986959fca408b0`, 이전 복구점 `4f7277e70a46c24b6cf0ccf394df714450a7a719`, 원본 pin `c5867b3951f51bfa97cadd1aad8fb13e9cf9e604`. 변경 `enterprise/p85-native-extract.mjs`, `tests/p85-state-store.test.mjs`; 증거 `docs/P85_HOSTED_CI_RECOVERY_20261114.md`.
+7. **Production/Vercel·실행·환경:** Ubuntu24.04 Node22.16, Windows2022 Node22.23, Python3.11, CI `node --test` 및 operator/synthetic selftest actual PASS; 실 고객 Win10/11/오프라인 배포/브라우저 E2E/Production: 미검증·미적용.
+8. **원본·백업·권한/수정금지:** Git 이전 HEAD 복구점 보존; RAG/SMAX/PREP/타 제품 코드·고객 원본/토큰/비밀 미수정. 사용자가 `Freelancer` 전체를 PUBLIC으로 바꿈; 다른 제품 브랜치/과거 커밋도 공개 위험, 역사적 비밀 검사 미실행. 임의 private 전환/권한 변경/요금 변경 없음.
+9. **다음 우선순위·완료 기준·승인:** (a) 공유 저장소 PUBLIC 보안/제품 IP 분리 여부 owner 결정 (b) 실제 Korean model licensed weights/checksum+mini recall tests (c) 기업형 IdP/실 고객 자료 권리·서명 producer는 owner 승인 후 (d) 실제 Win10/11 portable+backup/Gold100 및 전체 24항 owner 승인 가중치. 합성 CI만으로 85% 인정 금지.
+10. **갱신일시 KST·검증 범위/문서 SHA:** 2026-11-14(KST); exact functional source `cea0ec09` Actions 전 작업 실제 SUCCESS 확인; 문서 후속 commit SHA는 갱신 후 확인. 공식 UNASSESSED/판매 HOLD.
+
+
 ## [2026-11-14 KST] CITEVAULT P85 CI 오류 분리·최소 패치 — HANDOFF 10항
 
 1. **목표·요구·기술:** 사용자 확정 `docs/FINAL_BLUEPRINT.md` 전체 24항 대비 85% 목표, 오프라인 기업 PDF/DOCX/SQLite/BM25/실직원 IAM/SMAX-PREP/Win 고객 인수. 공식 `UNASSESSED`, RELEASE HOLD.
