@@ -16,6 +16,7 @@ on:
       - enterprise/p85-vault.mjs
       - enterprise/p85-native-extract.mjs
       - tests/p85-journey.test.mjs
+      - scripts/p85-synthetic-demo.mjs
       - enterprise/p85-journey.mjs
       - enterprise/p85-review-sql.mjs
       - enterprise/p85-native-extract.py
@@ -109,6 +110,8 @@ jobs:
           node --check enterprise/p85-journey.mjs
       - name: Run actual PDF page, DOCX paragraph, ACL-before-read and SHA tests
         run: node --test tests/p85-native-integration.test.mjs tests/p85-journey.test.mjs
+      - name: Run isolated synthetic end-to-end HTTP demo (never approves export)
+        run: node scripts/p85-synthetic-demo.mjs --self-test
   synthetic-evidence:
     runs-on: ubuntu-24.04
     timeout-minutes: 12
