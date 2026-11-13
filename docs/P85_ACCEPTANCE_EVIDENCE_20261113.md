@@ -13,9 +13,9 @@
 | 신규 테스트 | `apps/ax-flow/tests/test_azentflow_p85_acceptance.py`, unittest 7개 |
 | 실 CI | [GitHub Actions #43382552489](https://github.com/hibi89/HAE/actions/runs/43382552489), 기능 SHA `a640666d...` |
 | Ubuntu | **신규 P85 7/7 PASS**. Python 총 290건: 281 PASS / 2 FAIL / 7 SKIP. 전체 CI FAILURE(기존 배송물 정합성) |
-| Windows | **CI 결과 최종 확인 중 (PENDING)** — 결과 확인 전 PASS라고 단정하지 않는다 |
+| Windows | **신규 P85 7/7 PASS**. Python 총 290건: 281 PASS / 2 FAIL / 7 SKIP. 전체 CI FAILURE(기존 배송물 정합성) |
 | 구간 P50/P70 | 기존 두 단계 3 + 7 시험은 별도로 유지. P85의 추가 7 시험은 고객형/물리 환경 출시 검증을 대신하지 않는다 |
-| Node UI | 기존 회귀 24 PASS(Ubuntu). 실제 Chrome/Edge 고객 UAT는 별도 미검증 |
+| Node UI | 기존 모의 DOM race 회귀 Ubuntu·Windows 각 24 PASS. 실제 Chrome/Edge 고객 UAT는 별도 미검증 |
 
 ## 구현/수용 항목별 실제 경로
 1. **세 업무:** 합성 고객 CSV 2행 전체 가져오기(`csv_to_sqlite`), 합성 매출 CSV 3행 중 2행 금액 기준 조건부 저장(`csv_conditional_import`), 고객 ID 조회 1행만 반환하는 읽기 전용 검색(`csv_lookup`)을 같은 localhost HAE UI→독립 LA 실행 경로에서 분리된 run_id로 완료. 저장 DB의 고객·매출 각 2건, 조회는 비즈니스 DB 쓰기 0건. 계획 미리보기 전 DB 생성 0.
@@ -25,7 +25,7 @@
 5. **위험 거부:** Gmail 전송·원격 DB 삭제 등 미지원 요청 HTTP422/실행 DB 0, 모의 공급자 POST/WRITE 0. 승인 없이 조건부 업로드는 HTTP403/양 DB 미생성.
 
 ## CI 오류/재시도
-- 신규 P85 첫 commit `39d9b4f6d01350a3adb1e4b68336e969130984a2`에서 테스트 코드가 HTTP 결과 최상위 `workflow_status/dbvora/audit_persisted`를 중첩 `integration`으로 잘못 참조하여 **1 ERROR**. 원인 확인 후 **테스트만** 수정한 `a640666db7a1bf2011c5d2abc944f13199ce455f`에서 Ubuntu P85 7 PASS. 스케줄 오류 유형도 `ApprovalRequired`·`PlanError`로 좁혀 유효 거부를 검증.
+- 신규 P85 첫 commit `39d9b4f6d01350a3adb1e4b68336e969130984a2`에서 테스트 코드가 HTTP 결과 최상위 `workflow_status/dbvora/audit_persisted`를 중첩 `integration`으로 잘못 참조하여 **1 ERROR**. 원인 확인 후 **테스트만** 수정한 `a640666db7a1bf2011c5d2abc944f13199ce455f`에서 Ubuntu·Windows 각 P85 7 PASS. 스케줄 오류 유형도 `ApprovalRequired`·`PlanError`로 좁혀 유효 거부를 검증.
 - 기존 Python full-suite 배송 2 FAIL: `test_checked_in_zipapp_matches_current_hae_and_staged_la_sources`, `test_release_zip_matches_shipped_sources_and_executes_real_la_e2e`. 오래된 원본 `hae-integrated.pyz` / `HAE-Windows-offline.zip`와 current source 불일치. **배송물 덮어쓰기·회귀 검사 건너뛰기·CI 전체 성공 주장 금지.**
 - 사용한 데이터는 전부 합성·임시 로컬 CSV/SQLite. 실제 OAuth/고객자료/LLM/유료 API/외부 네트워크·프로덕션/사용자 계정 권한 변경 0. 테스트만 원본 HAE branch에 추가했고 LA 실행 모듈·출고 ZIP·pyz·원본 DB는 그대로이다.
 
@@ -38,4 +38,4 @@
 - 전체 CI **0 FAIL**, 원본 ZIP/pyz SHA 정합성 회복 + 백업 후 안전 재생성 검증, 실 DBVORA 독립 프로세스와 schema/backup/restore, 지원 범위에 포함할 때만 실제 Google OAuth, 실제 Win10/11 Chrome·Edge 고객형 설치/업데이트·백업 복구, 실제 승인 UI.
 - 최종 100점 전수 항목·가중치 독립검수와 고객 승인 전까지 **공식 최종완성률 UNASSESSED**, `[작업중]`·`RELEASE HOLD` 유지. 외부 비용/권한/실 데이터/출고 ZIP 원본 덮어쓰기는 사전 별도 승인.
 - 재현: `cd apps/ax-flow && python -m unittest discover -s tests -p test_azentflow_p85_acceptance.py -v` (독립 LA package `packages/lightning-azent` staging 필수). 전체 회귀: `python -m unittest discover -s tests -v`; Node: `node tests/test_ui_races.cjs`.
-- 기록 기준: 2026-11-13 KST. 대상 정확 기능 SHA `a640666d...`, Actions #43382552489. **Windows 결과 확정 시 본 PENDING 줄과 중앙 STATUS/HANDOFF 최신화 필요.** Vercel Production 미적용.
+- 기록 기준: 2026-11-13 KST. 대상 정확 기능 SHA `a640666d...`, Actions #43382552489. **Windows + Ubuntu 결과 확인 완료, 제품/해총 STATUS·HANDOFF 갱신 대상.** Vercel Production 미적용.
