@@ -22,3 +22,10 @@
 - ECHOHOME + PAWTALK: product/echohome-pawtalk-local-ai@603be91d278f4cef1e8e0fe0994bfdb21ca23740 — 신규 설계/미구현·UNASSESSED·HOLD·미등록.
 - MYRADIO AI: product/myradio-ai-dj@5885b2b22f8e4ee7692c08ba96ddd536d2c82e26 — 전체 최종설계 문서 + 오프라인 WAV 권리 필터/선곡/DJ 문장/Windows SAPI 시제품, 로컬 Python 7 PASS·Windows NOT_RUN·공식률 UNASSESSED·HOLD·미등록.
 - 기존 5개 브랜치, 기술·테스트·원본·SHA 및 소비자형 신상품 가격/권리/판매 승인 변경 없음. 자세한 표는 docs/PRODUCT_INDEX.md의 추가 섹션 참조.
+
+
+## 2026-11-13 AXNODE 신규 제품 브랜치 추가
+
+- `product/axnode-sector-runtime`: 사용자 선택 독자 바이너리 파일 A안, `docs/FINAL_BLUEPRINT.md` R01~R29 전체 목표 설계·REQUIREMENTS/AGENTS/STATUS/HANDOFF 별도 등록. 기존 7개 브랜치/8개 제품 보존 후 8개 브랜치/9개 제품.
+- 별도 로컬 POC 19 PASS/0 FAIL/0 SKIP 및 5섹터/852바이트 예제. 브랜치 자체는 **설계 문서만 등록**, 원격 GitHub CI·Windows·3GB·원격 실행·HAE/LA 연결 미검증. 공식률 UNASSESSED / HOLD / 미등록.
+- 해총 kmong-productization 신규 등록부 동기화. 기존 29→19 상품화 분류/진도/등록 이력·다른 브랜치 코드 불변. 실제 GitHub Actions/완전 무료 클라우드 운영 성공 주장 금지.
