@@ -1,3 +1,9 @@
+## 2026-11-14 KST — Windows EXE 생성 격리 DB의 SQLite integrity_check / schema version 2 PASS
+
+사용자가 기존 격리된 임시 `desk.sqlite`를 Windows3.11에서 `sqlite3.connect(...'?mode=ro',uri=True)`로 열어 `PRAGMA integrity_check` → **`ok`**, `PRAGMA user_version` → **`2`** 출력 제공. 유효한 SQLite 파일 구조 및 제품 스키마 버전 확인. 실테이블 내용/거래처 CRUD·실 EXE 재실행 지속성/Word·실고객/보안·법무는 아직 미검증. 실제 파일은 수신하지 않았으며 명령 결과만 기록, [세부 증거](docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md).
+
+WD08/09/11/13 부분 PASS 경과, 승인 전체 WD01~14 100점 엄격 완전 수용 **0/100, 85미달, [작업중]/RELEASE HOLD/판매 미등록** 유지.
+
 ## 2026-11-14 KST — 실제 Windows EXE GUI 종료 정상·격리 SQLite 파일 존재
 
 형이 제공한 PowerShell 결과에서 `ExitCode : 0`, `TestDatabaseExists : True` 확인. EXE 자식 프로세스 전용 `LOCALAPPDATA`을 새 `TEMP/worknova-gui-qa-<GUID>`로 지정한 뒤 최초 빈 장부 확인 및 메인 Tk GUI 표시, 창 종료 후 `WORKNOVA Desk/Data/desk.sqlite` 파일 존재 스모크 PASS. 사용자 제공 실제 콘솔 화면만 확인, DB 파일의 내용/스키마/무결성/재실행 데이터 지속성은 아직 검증하지 않았음. 증거 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`.
