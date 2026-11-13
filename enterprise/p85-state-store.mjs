@@ -35,10 +35,10 @@ export class SyntheticVaultStateStore {
       if(!current.isFile()||current.isSymbolicLink()||current.nlink!==1)fail('DATABASE_UNSAFE');
       this.#db=new DatabaseSync(file);
       this.#db.exec('PRAGMA foreign_keys=ON; PRAGMA journal_mode=DELETE; PRAGMA busy_timeout=2000;');
-      this.#db.exec(\`CREATE TABLE IF NOT EXISTS header (id INTEGER PRIMARY KEY CHECK(id=1), format INTEGER NOT NULL, generation INTEGER NOT NULL);
+      this.#db.exec(`CREATE TABLE IF NOT EXISTS header (id INTEGER PRIMARY KEY CHECK(id=1), format INTEGER NOT NULL, generation INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS users (user_id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, record TEXT NOT NULL, disabled INTEGER NOT NULL CHECK(disabled IN (0,1)));
         CREATE TABLE IF NOT EXISTS docs (tenant_id TEXT NOT NULL, doc_id TEXT NOT NULL, record TEXT NOT NULL, PRIMARY KEY(tenant_id,doc_id));
-        CREATE TABLE IF NOT EXISTS audit (id INTEGER PRIMARY KEY AUTOINCREMENT, tenant_id TEXT NOT NULL, event TEXT NOT NULL, stamp_ms INTEGER NOT NULL);\`);
+        CREATE TABLE IF NOT EXISTS audit (id INTEGER PRIMARY KEY AUTOINCREMENT, tenant_id TEXT NOT NULL, event TEXT NOT NULL, stamp_ms INTEGER NOT NULL);`);
       fs.chmodSync(file,0o600);
     }catch(e){if(this.#db){this.#db.close();this.#db=undefined;}
       if(e.code==='DATABASE_UNSAFE'||e.code==='ROOT_INVALID')throw e;fail('DATABASE_OPEN_FAILED');}
