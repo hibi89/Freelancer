@@ -82,10 +82,34 @@ function dbVerify(dbFile){
   const db=new DatabaseSync(dbFile,{readOnly:true});
   try{
     if(db.prepare('PRAGMA quick_check').get()?.quick_check!=='ok')denied('SQLITE_CORRUPT');
+    const tables=new Set(db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all().map(x=>x.name));
+    if(!['header','users','docs','audit'].every(name=>tables.has(name)))denied('SQLITE_SCHEMA');
     const h=db.prepare('SELECT format,generation FROM header WHERE id=1').get();
     if(h?.format!==1||!Number.isSafeInteger(h.generation)||h.generation<0)denied('SQLITE_SCHEMA');
-    return h.generation;
-  }finally{db.close();}
+    const userCount=db.prepare('SELECT COUNT(*) AS n FROM users').get().n;
+    const docs=db.prepare('SELECT tenant_id,doc_id,record FROM docs').all();
+    if(userCount<1||userCount>100||docs.length<1||docs.length>256)denied('SQLITE_SCHEMA');
+    return {generation:h.generation,docs};
+  }catch(e){if(e?.code)throw e;denied('SQLITE_SCHEMA');}
+  finally{db.close();}
+}
+/** Check the durable catalog against the copied files, not against mutable source paths.
+ * A clean SQLite header alone must never count as a usable recovered vault.
+ */
+function verifyCatalog(stage,meta){
+  const ids=/^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/u;
+  for(const row of meta.docs){
+    let doc;try{doc=JSON.parse(row.record);}catch{denied('CATALOG_INVALID');}
+    if(!doc||doc.tenantId!==row.tenant_id||doc.id!==row.doc_id||
+       !ids.test(doc.tenantId)||!ids.test(doc.id)||!ids.test(doc.version)||
+       !['txt','pdf','docx'].includes(doc.native_kind??'txt')||
+       typeof doc.active!=='boolean'||typeof doc.sha256!=='string'||
+       !/^[a-f0-9]{64}$/u.test(doc.sha256))denied('CATALOG_INVALID');
+    if(!doc.active)continue; // retired documents need not retain raw source bytes.
+    const rel=[doc.tenantId,doc.id,doc.version+'.'+(doc.native_kind??'txt')].join('/');
+    let data;try{data=readSecure(stage,rel);}catch{denied('CATALOG_SOURCE_MISSING');}
+    if(sha(data)!==doc.sha256)denied('CATALOG_DIGEST_MISMATCH');
+  }
 }
 function ensureSubdir(root,rel){
   const parent=path.dirname(rel);if(parent!=='.')fs.mkdirSync(path.join(root,...parent.split('/')),{recursive:true,mode:0o700});
@@ -119,12 +143,14 @@ export async function createOfflineSnapshot({root,destination}){
     const contents=[],dbPath=path.join(stage,'citevault-synthetic-state.sqlite');
     const db=new DatabaseSync(path.join(source,'citevault-synthetic-state.sqlite'),{readOnly:true});
     try{await sqliteBackup(db,dbPath);}finally{db.close();}
-    const stateGeneration=dbVerify(dbPath);
+    const state=dbVerify(dbPath);
+    const stateGeneration=state.generation;
     for(const rel of paths){
       const data=rel==='citevault-synthetic-state.sqlite'?readSecure(stage,rel):readSecure(source,rel);
       if(rel!=='citevault-synthetic-state.sqlite')writeSecure(stage,rel,data);
       contents.push({path:rel,size:data.length,sha256:sha(data)});
     }
+    verifyCatalog(stage,state);
     const manifest={format:'CITEVAULT_OFFLINE_SNAPSHOT_V1',state_generation:stateGeneration,files:contents};
     validateManifest(manifest);
     fs.writeFileSync(path.join(stage,'manifest.json'),JSON.stringify(manifest,null,2)+'\n',{flag:'wx',mode:0o600});
@@ -153,7 +179,9 @@ export function restoreOfflineSnapshot({snapshot,destination}){
       if(data.length!==file.size||sha(data)!==file.sha256)denied('DIGEST_MISMATCH');
       writeSecure(stage,file.path,data);
     }
-    if(dbVerify(path.join(stage,'citevault-synthetic-state.sqlite'))!==m.state_generation)denied('SQLITE_GENERATION_MISMATCH');
+    const state=dbVerify(path.join(stage,'citevault-synthetic-state.sqlite'));
+    if(state.generation!==m.state_generation)denied('SQLITE_GENERATION_MISMATCH');
+    verifyCatalog(stage,state);
     fs.renameSync(stage,target);published=true;
     return {status:'RESTORED_CREATE_ONLY',files:m.files.length,state_generation:m.state_generation};
   }finally{if(!published)fs.rmSync(stage,{recursive:true,force:true});}

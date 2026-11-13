@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {DatabaseSync} from 'node:sqlite';
+import crypto from 'node:crypto';
 import {createOfflineSnapshot,restoreOfflineSnapshot} from '../enterprise/p85-offline-backup.mjs';
 
 function setup(t){
@@ -12,7 +13,15 @@ function setup(t){
   const src=path.join(root,'vault');fs.mkdirSync(src);
   const store=path.join(src,'citevault-synthetic-state.sqlite');
   const db=new DatabaseSync(store);
-  db.exec('CREATE TABLE header(id INTEGER PRIMARY KEY,format INTEGER,generation INTEGER);INSERT INTO header(id,format,generation) VALUES(1,1,4);');db.close();
+  db.exec(`CREATE TABLE header(id INTEGER PRIMARY KEY,format INTEGER,generation INTEGER);
+    INSERT INTO header(id,format,generation) VALUES(1,1,4);
+    CREATE TABLE users (user_id TEXT PRIMARY KEY,tenant_id TEXT NOT NULL,record TEXT NOT NULL,disabled INTEGER NOT NULL);
+    CREATE TABLE docs (tenant_id TEXT NOT NULL,doc_id TEXT NOT NULL,record TEXT NOT NULL,PRIMARY KEY(tenant_id,doc_id));
+    CREATE TABLE audit (id INTEGER PRIMARY KEY AUTOINCREMENT,tenant_id TEXT NOT NULL,event TEXT NOT NULL,stamp_ms INTEGER NOT NULL);`);
+  db.prepare('INSERT INTO users VALUES (?,?,?,?)').run('alice','orgA',JSON.stringify({userId:'alice',tenantId:'orgA'}),0);
+  const text='반품은 7일 이내';
+  const doc={tenantId:'orgA',id:'doc1',version:'v1',active:true,sha256:crypto.createHash('sha256').update(text).digest('hex')};
+  db.prepare('INSERT INTO docs VALUES (?,?,?)').run('orgA','doc1',JSON.stringify(doc));db.close();
   for(const [rel,text] of [
     ['orgA/doc1/v1.txt','반품은 7일 이내'],
     ['orgA/doc2/v1.md','내부 정책'],
@@ -81,4 +90,35 @@ test('snapshot has no network dependencies; human operator must opt in to backup
   assert.equal(manifest.files.length,5);
   assert.ok(manifest.files.every(x=>x.sha256.length===64));
   assert.equal(fs.readFileSync(path.join(f.src,'orgA/doc1/v1.txt')).compare(source),0);
+});
+
+test('snapshot refuses a source whose live catalog digest disagrees with document bytes',async t=>{
+  const f=setup(t);fs.appendFileSync(path.join(f.src,'orgA/doc1/v1.txt'),'TAMPER');
+  await assert.rejects(()=>createOfflineSnapshot({root:f.src,destination:f.backup}),{code:'CATALOG_DIGEST_MISMATCH'});
+  assert.equal(fs.existsSync(f.backup),false);
+});
+test('restore refuses a forged manifest and SQLite doc record even with recomputed file hashes',async t=>{
+  const f=setup(t);await createOfflineSnapshot({root:f.src,destination:f.backup});
+  const dbFile=path.join(f.backup,'citevault-synthetic-state.sqlite');
+  const db=new DatabaseSync(dbFile);
+  const old=JSON.parse(db.prepare('SELECT record FROM docs WHERE doc_id=?').get('doc1').record);
+  db.prepare('UPDATE docs SET record=? WHERE doc_id=?').run(JSON.stringify({...old,sha256:'0'.repeat(64)}),'doc1');db.close();
+  const mPath=path.join(f.backup,'manifest.json'),m=JSON.parse(fs.readFileSync(mPath,'utf8'));
+  const item=m.files.find(x=>x.path==='citevault-synthetic-state.sqlite');
+  const bytes=fs.readFileSync(dbFile);item.sha256=crypto.createHash('sha256').update(bytes).digest('hex');item.size=bytes.length;
+  fs.writeFileSync(mPath,JSON.stringify(m));
+  assert.throws(()=>restoreOfflineSnapshot({snapshot:f.backup,destination:f.restore}),{code:'CATALOG_DIGEST_MISMATCH'});
+  assert.equal(fs.existsSync(f.restore),false);
+});
+test('restore rejects a well-formed SQLite header without required vault tables',async t=>{
+  const f=setup(t);await createOfflineSnapshot({root:f.src,destination:f.backup});
+  const dbFile=path.join(f.backup,'citevault-synthetic-state.sqlite');
+  fs.rmSync(dbFile);const db=new DatabaseSync(dbFile);
+  db.exec('CREATE TABLE header(id INTEGER PRIMARY KEY,format INTEGER,generation INTEGER);INSERT INTO header VALUES(1,1,4)');db.close();
+  const mPath=path.join(f.backup,'manifest.json'),m=JSON.parse(fs.readFileSync(mPath,'utf8'));
+  const item=m.files.find(x=>x.path==='citevault-synthetic-state.sqlite');
+  const bytes=fs.readFileSync(dbFile);item.sha256=crypto.createHash('sha256').update(bytes).digest('hex');item.size=bytes.length;
+  fs.writeFileSync(mPath,JSON.stringify(m));
+  assert.throws(()=>restoreOfflineSnapshot({snapshot:f.backup,destination:f.restore}),{code:'SQLITE_SCHEMA'});
+  assert.equal(fs.existsSync(f.restore),false);
 });
