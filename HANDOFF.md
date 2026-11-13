@@ -2,7 +2,7 @@
 
 1. **목표·용도·최종설계·스택:** 공공입찰 준비 로컬 고객용 BID AX, 고객확정 R01~R21 전체 100% 기준/이번 목표 85%; Python3.11+·SQLite·Tkinter, 고객 보유 API 키의 선택형 호출(현재 실행 안 함).
 2. **완료·변경·선택 근거:** 오프라인 정규화·공고 이력·기업 프로필·서류/마감·보고서·GUI·백업 유지하면서 UUID/page/7일/총건수 스테이징·재시작 복구, SQLite 중복 알림, 공식 호스트 고정 mock 전송·일일 요청예산·신중한 재시도, 수동 Windows 패키징·화이트리스트 소스 ZIP 추가. 서버형 대비 로컬형 비용/보안 우선.
-3. **테스트·검증 범위:** Linux Python3.13.5 synthetic+mock `python -Werror::ResourceWarning -m unittest discover -s tests -q` **80 PASS/0 FAIL/0 SKIP**, compileall PASS, Tk8.6 Xvfb 기본 실행 PASS. 원격 CI/Windows3.11/EXE/실API/고객/법적 실확인 NOT_RUN. 커밋 이후 Git blob/SHA 확인.
+3. **테스트·검증 범위:** Linux Python3.13.5 synthetic+mock `python -Werror::ResourceWarning -m unittest discover -s tests -q` **83 PASS/0 FAIL/0 SKIP**, compileall PASS, Tk8.6 Xvfb 기본 실행 PASS. 원격 CI/Windows3.11/EXE/실API/고객/법적 실확인 NOT_RUN. 커밋 이후 Git blob/SHA 확인.
 4. **완료/진행/대기/차단:** P85 로컬 기술 준비 일부 수용, 공식 최종 **85% 미입증→UNASSESSED**, `[작업중]`·RELEASE HOLD·미등록 계속. 실제 나라장터 100건/자격 10건·Windows·승인 가중치 필요.
 5. **실패·근거·Pivot:** 최초 소스 ZIP 테스트는 설치된 `packaging` 패키지와 동일 이름 import 충돌 → importlib 지정 경로로 교정 후 80 PASS. 국가 API 실키·실원문 매핑·운영 한도/저작권 재검증 없음; 고객 자격 자동 적합/자동 입찰 주장 금지. 반복 실API 접속은 키·승인 전 금지.
 6. **저장소·브랜치·SHA·경로:** Private `hibi89/Freelancer@product/bid-ax-public-procurement`, 직전 HEAD `766032d6256d634469366b1125639f9aa9a6ef1c`, 새 코드 `bidax/{batch,reminders,transport,entrypoint,cli,desktop}.py`, `tests/test_p85.py`, `packaging/*`, `docs/P85_STAGE_EVIDENCE_20261113.md`, 각 STATUS/HANDOFF. 최신 SHA 원격 readback값 사용.

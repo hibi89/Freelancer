@@ -8,7 +8,7 @@
 - `bidax/reminders.py`: 사용자가 앱/CLI에서 명시적으로 실행하는 마감 알림 조회. 동일 공고 버전·상태·조회기간의 중복 이벤트는 SQLite에 기록해 방지. 컴퓨터가 꺼져 있거나 앱이 실행되지 않을 때 자동 알림을 전송하지 않음.
 - `bidax/transport.py`: **제품 CLI·GUI와 연결하지 않은 실 API 전송 라이브러리 준비**. 호출자가 `permission=True` 및 고객 소유 키를 명시적으로 넣어야 함. 공식 호스트/경로 고정·재지정 거절, 10MiB 상한, 최대 3회 제한/대기, 하루 최대 1,000회 설정 범위 안에서 로컬 시도 횟수 차감(실 운영 quota와 별도), 응답 JSON 중복 키·비JSON 거절. 테스트는 주입된 가짜 전송만 사용. 실제 정부 API 요청 **0건**. 키 저장/로그 없음. 한도 산정·정책·원문 매핑은 고객/공식 검증 전 미완성.
 - `bidax/cli.py`: `stage-page`, `stage-status`, `poll-alerts` 로컬 명령 추가. `bidax/desktop.py`: 마감 알림 버튼을 저장되는 중복 제거 조회로 전환.
-- `packaging/`: Windows 3.11 설치 없이 수동 PyInstaller 구축 스크립트, 앱 엔트리, 소스 ZIP allowlist+SHA256 manifest. Windows 바이너리/설치파일은 아직 빌드·검증되지 않았음. EXE를 판매/서명 배포하지 않음.
+- `packaging/`: Windows 3.11 설치 없이 수동 PyInstaller 구축 스크립트, 앱 엔트리, 소스 ZIP allowlist+SHA256 manifest 및 **Python3.11+ 독립 `.pyz`** 결정적 패키징/manifest/실 CLI 보고서. Windows 바이너리/설치파일은 아직 빌드·검증되지 않았음. EXE를 판매/서명 배포하지 않음.
 - 보존: 기존 P70 GUI·CLI·원본 21요구·소스·SQLite·타 상품·제외된 BID OWL. 새 기능 자동 크롤링/자동 입찰/고객 데이터 외부 전송 없음.
 
 ## 설계 비교 (초기 선택 유지)
@@ -20,10 +20,10 @@
 
 ## 검증 명령과 결과
 
-- `python -Werror::ResourceWarning -m unittest discover -s tests -q` → **80 PASS / 0 FAIL / 0 SKIP** (Linux Python3.13.5, 합성 데이터 및 mock HTTP).
+- `python -Werror::ResourceWarning -m unittest discover -s tests -q` → **83 PASS / 0 FAIL / 0 SKIP** (Linux Python3.13.5, 합성 데이터 및 mock HTTP).
 - `python -m compileall -q bidax packaging tests run_bidax.py` → PASS.
 - `xvfb-run -a python ... Tk()` → Linux Tk 8.6 기본 초기화 PASS (Windows 대체 아님).
-- 테스트: 60건 기존 회귀 + 20건 신규 batch/duplicate/retry/quota/backup/zip/CLI. 코드와 테스트 원격 readback는 커밋 이후 SHA로 별도 확인.
+- 테스트: 60건 기존 회귀 + 23건 신규 batch/duplicate/retry/quota/backup/zip/CLI. 코드와 테스트 원격 readback는 커밋 이후 SHA로 별도 확인.
 - 공식 OpenAPI: [나라장터 입찰공고정보서비스](https://www.data.go.kr/data/15129394/openapi.do); **2026-11-10 조회기간 7일**. 상용 운영 권리·실제 계정 한도·명세 1.3·원문 실 데이터 테스트는 아직 별도 확인 필요.
 - 이번 작업에서 PyInstaller/Windows EXE/Windows GUI/GitHub Python Actions/조달청 실 API/실공고 100건/자격10건/실고객·실납품·실수익 0회 **NOT_RUN**. Production/Vercel 미적용.
 
@@ -44,3 +44,10 @@
 2. Windows3.11+ tkinter/오프라인 EXE·실 설치 제거·백업 재부팅 복구·사용자 권한 파일 ACL·한국어 폰트·실 PDF 테스트.
 3. R01–R21 사용자 승인 가중치 및 독립 수용표로 최종률 재평가. 불충족 시 `[작업중]`·HOLD 유지.
 4. 원격 문제가 생기면 기능 이전 SHA `766032d6256d634469366b1125639f9aa9a6ef1c`로 코드 조회/복원 계획 수립. force push·기존 DB 덮어쓰기 금지. 새 DB로만 restore.
+
+
+## P85 추가 검증 — Python zipapp
+
+- `python -Werror::ResourceWarning -m unittest discover -s tests -q`: **83 PASS / 0 FAIL / 0 SKIP** (기존 80 + 새 zipapp 3), 실제 subprocess CLI 공고 가져오기/중복방지/보고서 저장/덮어쓰기 거절.
+- `python packaging/build_portable.py BID_AX.pyz`: 표준 라이브러리 zipapp SHA256 manifest 생성, 동일 소스 동일 바이너리 SHA, 민감정보/로컬 DB/캐시 미포함. `.pyz` 실 CLI 실행 PASS on Linux Python3.13.5.
+- Windows EXE/installer나 Python3.11/실 고객 PC 실행은 **NOT_RUN**. 비출시 `.pyz`는 Python 설치 필요. GitHub 최신 SHA·제품 CI는 별도 원격 확인 후 기록.

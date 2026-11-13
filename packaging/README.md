@@ -7,3 +7,8 @@
 - **Do not ship:** Windows EXE build, clean-VM install/uninstall, SmartScreen/antivirus review, Korean UI/fonts, data migration, file ACL, real customer acceptance and code-signing are **NOT RUN**.
 - To uninstall a test package, remove the EXE manually; `%LOCALAPPDATA%\\BidAX` retains customer data intentionally until the owner backs it up and explicitly chooses deletion.
 - For recovery, retain historical Git commit SHA; backed-up DBs must be restored to **new** paths, never overwrite.
+
+
+## Runnable but unpublished Python zipapp
+
+`python packaging/build_portable.py BID_AX.pyz` builds a deterministic `.pyz` from the whitelisted package source, with SHA-256 manifest. On Python3.11+ `python BID_AX.pyz --db local.db import examples/notices.json`. Python runtime is mandatory; GUI still depends on Tkinter installation and local display. The zipapp is **not** Windows EXE/installer, signed binary, API connector, or shipped commercial product. The independent zipapp test creates a real report using **synthetic** fixtures.

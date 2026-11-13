@@ -62,3 +62,14 @@ python packaging/build_source_zip.py ./BID_AX_SOURCE_ONLY.zip
 `stage-page` reads a **local, authorized** API-shaped JSON file; it never performs HTTP. All expected pages must be staged before promotion, incomplete batches do not modify the current notice ledger. The `bidax.transport` opt-in helper is **not enabled** in CLI/GUI. For any real request, explicit customer permission, their own government key, license/source contract verification and quota planning are mandatory. Reminders require explicit user action while PC is on. `packaging/build_windows.ps1` is a **manual, unsigned build procedure only**, not a tested installer. See [P85 evidence](docs/P85_STAGE_EVIDENCE_20261113.md).
 
 **Official final completion: UNASSESSED**, not 85%; `[작업중]`/RELEASE HOLD until weighted full-design independent acceptance.
+
+
+### Portable Python package (P85 follow-up; not Windows EXE)
+
+```bash
+python packaging/build_portable.py ./BID_AX.pyz
+python ./BID_AX.pyz --db ./local.db import examples/notices.json
+python ./BID_AX.pyz --db ./local.db screen examples/profile.json
+```
+
+This deterministic `.pyz` runs with Python 3.11+ on a PC that has Python installed. It is **not an installer**, is unsigned, does not schedule or automatically call the government API, and was only executed under Linux Python3.13.5 with synthetic data. No claim of Windows customer readiness. See `tests/test_portable.py`.
