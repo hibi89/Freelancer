@@ -193,3 +193,12 @@ test('invalid account, catalog and duplicate identity rejected before running',t
  assert.throws(()=>new LocalSyntheticVault({root:f.root,accounts:[...f.users,f.users[0]],documents:f.documents}),{code:'DUPLICATE_ACCOUNT'});
  assert.throws(()=>new LocalSyntheticVault({root:f.root,accounts:f.users,documents:[...f.documents,f.documents[0]]}),{code:'DUPLICATE_DOCUMENT'});
 });
+
+test('audit events are tenant-scoped, not only payload-redacted',t=>{
+ const f=fixture(t),u=f.login('alice');f.vault.search(u,'반품 신청',{documentIds:['policyA']});
+ const b=f.login('adminB','SYNTHETIC_TEST_ADMIN_B_123');
+ const other=JSON.stringify(f.vault.audit(b));
+ assert.doesNotMatch(other,/SEARCH|SOURCE_READ|orgA|policyA/);
+ const a=f.login('adminA','SYNTHETIC_TEST_ADMIN_A_123');
+ assert.match(JSON.stringify(f.vault.audit(a)),/SEARCH/);
+});
