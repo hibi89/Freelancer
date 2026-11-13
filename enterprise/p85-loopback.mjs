@@ -55,6 +55,9 @@ export async function launchSyntheticLoopback(vault){
       }
       if(req.method==='POST'&&req.url==='/v1/admin/reindex')
         return send(res,200,vault.reindex(token));
+      if(req.method==='POST'&&req.url==='/v1/admin/revoke'){
+        const x=await body(req);return send(res,200,vault.revokeAccount(token,x.userId));
+      }
       if(req.method==='POST'&&req.url==='/v1/admin/retire'){
         const x=await body(req);return send(res,200,vault.retire(token,x.documentId));
       }
