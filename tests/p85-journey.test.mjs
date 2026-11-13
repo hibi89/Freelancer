@@ -165,3 +165,20 @@ test('empty group or project SQL scopes fail closed',t=>{
  ]){const j=createSyntheticReviewJourney({vault:f.vault,salesDirectory:f.sales,salesScope:scope});
   assert.throws(()=>j.assess(token,QUERY,{documentIds:['rulesDocx']}),{code:'SCOPE_INVALID'});}
 });
+
+test('sales dataset path cannot be retargeted to another tenant with forged scope label',t=>{
+ const f=make(t),token=f.login('alice',ALICE);
+ const foreign=path.join(f.root,'orgB','sales-only');fs.mkdirSync(foreign,{recursive:true});
+ fs.writeFileSync(path.join(foreign,'sales.csv'),'non-authorized confidential fixture');
+ const j=createSyntheticReviewJourney({vault:f.vault,salesDirectory:foreign,
+   salesScope:{tenantId:'orgA',groups:['sales'],projects:['quality'],clearance:1}});
+ assert.throws(()=>j.assess(token,QUERY,{documentIds:['rulesDocx']}),{code:'SALES_PATH_SCOPE_MISMATCH'});
+});
+test('sales dataset symlink parent is denied before CSV read',t=>{
+ const f=make(t),token=f.login('alice',ALICE),original=f.sales,backup=original+'.real';
+ fs.renameSync(original,backup);
+ try{
+   try{fs.symlinkSync(backup,original,'dir');}catch(e){t.diagnostic('No symlink permission: '+e.code);return;}
+   assert.throws(()=>f.journey.assess(token,QUERY,{documentIds:['rulesDocx']}),{code:'SALES_PATH_UNSAFE'});
+ }finally{fs.rmSync(original,{force:true,recursive:true});fs.renameSync(backup,original);}
+});
