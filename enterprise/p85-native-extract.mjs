@@ -19,9 +19,10 @@ export function extractVerifiedNativeBytes(bytes, kind, {python = 'python'} = {}
       if (typeof process.env[name] === 'string') childEnv[name] = process.env[name];
     }
   }
+  // -I ignores PYTHONIOENCODING; -X utf8 forces UTF-8 for piped Korean DOCX text on Windows.
   let result;
   try {
-    result = spawnSync(python, ['-I', '-B', script, kind], {
+    result = spawnSync(python, ['-X', 'utf8', '-I', '-B', script, kind], {
       input: bytes, timeout: 8000, maxBuffer: 512*1024, windowsHide: true,
       env: childEnv,
       encoding: 'utf8'

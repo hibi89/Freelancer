@@ -11,7 +11,6 @@ const sha=x=>crypto.createHash('sha256').update(x).digest('hex');
 const login=(vault,id,pw)=>vault.login(id,pw).token;
 function fixture(t){
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'citevault-durable-'));
- t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
  const sources={
   'orgA/public/v1.txt':'반품 신청은 7일 이내 가능합니다.\n',
   'orgA/public/v2.txt':'반품 신청은 14일 이내 가능합니다.\n',
@@ -31,7 +30,8 @@ function fixture(t){
   {tenantId:'orgB',id:'foreign',version:'v1',groups:['directors'],projects:['p2'],classification:3,collection:'secret',active:true,reviewState:'SYNTHETIC_APPROVED',sha256:sha(sources['orgB/foreign/v1.txt'])}
  ];
  const stores=[];
- t.after(()=>{for(const s of stores)try{s.close();}catch{}});
+ // Windows cannot unlink SQLite while its handle remains open; close before removal.
+ t.after(()=>{for(const s of stores)try{s.close();}catch{}; fs.rmSync(root,{recursive:true,force:true});});
  const open=(a=accounts,d=docs)=>{
    const store=new SyntheticVaultStateStore({root});stores.push(store);
    return {store,vault:new LocalSyntheticVault({root,accounts:a,documents:d,stateStore:store})};
