@@ -1,3 +1,9 @@
+## 2026-11-14 KST Windows EXE 빌드 진입 오류 및 수정 결과 — WD-13 점수 불변
+
+실 Windows에서 PyInstaller6.22.3은 사용자 계정 설치로 정상(`py -3 -m PyInstaller --version`), `--plan`도 PASS였으나 실제 `build.log`: `No module named PyInstaller`. 빌드 래퍼가 자식 `PYTHONNOUSERSITE=1`로 사용자 사이트를 비활성화한 결함을 수정하고 재발 방지 테스트 추가. 수정 파일 blob `10d60c3789fb2f8c654479845ec9296dbb0c890b` 정확 소스의 **Linux 5 mock/경로 테스트 PASS**·컴파일 PASS·GitHub readback. 실제 수정한 Windows EXE 빌드·실행/서명은 여전히 **NOT_RUN**. 상세 `docs/P85_PYINSTALLER_USER_SITE_FIX_20261114.md`.
+
+기존 실 Windows 합성 11 PASS×2는 포터블 Python 경로 증거이며 독립 EXE 증거가 아님. 원본 WD-01~14 사용자 승인 총100점, 항목별 완전 수용 기준 **0/100**, 85 미달, [작업중], RELEASE HOLD 유지. 기능/성능/제품 scope·가중치 변경 없음.
+
 ## 2026-11-14 KST — WD-09/11/13 Windows 합성 QA 사용자 콘솔 11/11×2 PASS
 
 사용자가 실제 Windows 콘솔에서 `tools/windows_acceptance.py` 실행 결과 `platform=win32`, `ok=true`, 각 11 PASS / 0 FAIL / 0 SKIP을 **두 번** 제공. 기본 Tk 창·Python 필수 포터블 ZIP 15파일·PowerShell 합성 설치/업그레이드/삭제·합성 SQLite·선택 AES 암호화 백업/복원·원본 데이터 보존과 임시 정리가 확인됐다. GitHub-hosted CI가 아니라 **사용자 제공 콘솔 출력**으로만 확인; 다운로드된 로컬 ZIP 정확 SHA 미수집. 실행 로그 평가 `docs/P85_WINDOWS_OWNER_CONSOLE_20261114.md`.
