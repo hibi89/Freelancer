@@ -111,7 +111,7 @@ export class LocalSyntheticVault {
     for(const d0 of documents){const d=checkDoc(d0),key=d.tenantId+':'+d.id;
       if(this.#docs.has(key))DENY('DUPLICATE_DOCUMENT');this.#docs.set(key,d);}
   }
-  #record(code){this.#audit.push(Object.freeze({event:code,epoch_ms:this.#clock()}));
+  #record(code,tenantId){this.#audit.push(Object.freeze({event:code,epoch_ms:this.#clock(),tenantId}));
     if(this.#audit.length>1000)this.#audit.shift();}
   login(userId,password) {
     const a=this.#accounts.get(userId),t=this.#clock(),tries=this.#tries.get(userId)||{count:0,until:0};
@@ -121,10 +121,10 @@ export class LocalSyntheticVault {
     const valid=typeof password==='string'&&password.length<=128&&
       same(crypto.scryptSync(password,Buffer.from(salt,'hex'),32).toString('hex'),expected);
     if(!valid){const count=tries.count+1;this.#tries.set(userId,{count:count>=5?0:count,until:count>=5?t+60000:0});
-      this.#record('LOGIN_DENIED');DENY('ACCESS_DENIED');}
+      this.#record('LOGIN_DENIED',a?.tenantId??null);DENY('ACCESS_DENIED');}
     this.#tries.delete(userId);
     const token=crypto.randomBytes(32).toString('hex'),expiry=t+15*60*1000;
-    this.#sessions.set(hash(token),{userId:a.userId,expires:expiry});this.#record('LOGIN_SUCCESS');
+    this.#sessions.set(hash(token),{userId:a.userId,expires:expiry});this.#record('LOGIN_SUCCESS',a.tenantId);
     return Object.freeze({token,expires_at_ms:expiry});
   }
   #principal(token){
@@ -133,7 +133,7 @@ export class LocalSyntheticVault {
     if(!s||s.expires<=this.#clock()){this.#sessions.delete(key);DENY('UNAUTHENTICATED');}
     const p=this.#accounts.get(s.userId);if(!p)DENY('UNAUTHENTICATED');return p;
   }
-  logout(token){this.#principal(token);this.#sessions.delete(hash(token));this.#record('LOGOUT');}
+  logout(token){const p=this.#principal(token);this.#sessions.delete(hash(token));this.#record('LOGOUT',p.tenantId);}
   #allow(p,d){return p.tenantId===d.tenantId&&d.active&&p.clearance>=d.classification&&
     (!d.groups.length||d.groups.some(x=>p.groups.includes(x)))&&
     (!d.projects.length||d.projects.some(x=>p.projects.includes(x)));}
@@ -141,7 +141,7 @@ export class LocalSyntheticVault {
     const d=this.#docs.get(p.tenantId+':'+docId);
     if(!d||!this.#allow(p,d))DENY('NOT_FOUND');return d;}
   source(token,docId){const p=this.#principal(token),d=this.#get(p,docId);
-    const citations=readDocument(this.#root,d);this.#record('SOURCE_READ');
+    const citations=readDocument(this.#root,d);this.#record('SOURCE_READ',p.tenantId);
     return Object.freeze({status:'SOURCE_ONLY',citations});}
   search(token,question,{documentIds=null,collection=null,limit=5}={}){
     const p=this.#principal(token);
@@ -162,12 +162,12 @@ export class LocalSyntheticVault {
     const shared={answer:null,model_state:'UNAVAILABLE',network_calls:0,
       index_generation:this.#generation};
     const contradictory=conflict(chunks,question);
-    if(contradictory.length){this.#record('CONFLICT_HOLD');
+    if(contradictory.length){this.#record('CONFLICT_HOLD',p.tenantId);
       return Object.freeze({...shared,status:'POSSIBLE_CONFLICT',evidence:contradictory});}
     const q=words(question), scored=chunks.map(c=>({c,score:q.reduce((n,t)=>n+
       words(c.quote).filter(w=>w===t).length,0)})).filter(x=>x.score>0)
       .sort((a,b)=>b.score-a.score||a.c.document_id.localeCompare(b.c.document_id)||a.c.line-b.c.line);
-    this.#record('SEARCH');
+    this.#record('SEARCH',p.tenantId);
     return Object.freeze({...shared,status:scored.length?'SEARCH_ONLY':'INSUFFICIENT_EVIDENCE',
       evidence:scored.slice(0,limit).map(x=>x.c)});
   }
@@ -179,7 +179,7 @@ export class LocalSyntheticVault {
     // atomic in-memory cache generation, never mutates original files
     for(const key of this.#cache.keys())if(key.startsWith(p.tenantId+':'))this.#cache.delete(key);
     for(const [key,value] of next)this.#cache.set(key,value);
-    this.#generation++;this.#record('REINDEX');
+    this.#generation++;this.#record('REINDEX',p.tenantId);
     return Object.freeze({status:'REINDEXED',document_count:count,generation:this.#generation});
   }
   replaceVersion(token,docId,newVersion,sha256){
@@ -189,14 +189,14 @@ export class LocalSyntheticVault {
     readDocument(this.#root,next); // exact source bytes checked before activating
     this.#docs.set(p.tenantId+':'+docId,next);
     this.#cache.delete(p.tenantId+':'+docId+':'+d.version);
-    this.#generation++;this.#record('VERSION_CHANGED');
+    this.#generation++;this.#record('VERSION_CHANGED',p.tenantId);
     return Object.freeze({status:'VERSION_ACTIVATED',version:newVersion,generation:this.#generation});
   }
   retire(token,docId){const p=this.#admin(token),d=this.#get(p,docId);
     this.#docs.set(p.tenantId+':'+docId,Object.freeze({...d,active:false}));
     for(const key of this.#cache.keys())if(key.startsWith(p.tenantId+':'+docId+':'))this.#cache.delete(key);
-    this.#generation++;this.#record('DOC_RETIRED');
+    this.#generation++;this.#record('DOC_RETIRED',p.tenantId);
     return Object.freeze({status:'RETIRED',generation:this.#generation});
   }
-  audit(token){this.#admin(token);return Object.freeze(this.#audit.map(x=>({...x})));}
+  audit(token){const p=this.#admin(token);return Object.freeze(this.#audit.filter(x=>x.tenantId===p.tenantId).map(({event,epoch_ms})=>({event,epoch_ms})));}
 }
