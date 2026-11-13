@@ -1,3 +1,18 @@
+# HANDOFF — 2026-11-14 KST native Windows EXE 격리 DB 생성·정상 종료 증거 (최신 10항)
+
+1. **목표·용도·확정 요구·기술:** WORKNOVA Desk Windows 오프라인 Python3.11/SQLite/Tk 견적·계약·납품·수금 장부, 승인 WD01~14 총100점·완전 구매자 수용85점 목표.
+2. **완료·변경·선택 근거:** 기존 PyInstaller6.22.3 빌드·MZ/SHA256·첫 장부 팝업·메인 GUI 시각 PASS에 이어 실제 EXE GUI X 종료 및 새 로컬 SQLite 파일 생성 확인. 사용자 원본 고객데이터·제품 로직·OS 환경 설정 불변; 프로세스 전용 격리 TEMP LOCALAPPDATA 사용.
+3. **테스트 명령·검증:** 사용자 PowerShell `$p.WaitForExit()` 정상 완료, `ExitCode : 0`, `TestDatabaseExists : True` (`$qaRoot/WORKNOVA Desk/Data/desk.sqlite`), 화면 한글/업무 탭 표시 확인. Windows EXE 크기 7,107,722, SHA256 `A7CD6B052108E5630E4AD50151841F0B812654F22E87CFE8338E22CB12A5C23E`, MZ PASS 전회차. SQLite PRAGMA/integrity/schema/재실행·업무 E2E·데이터 재조회·Python없는PC 및 Defender/ACL/서명/법무·권리는 **NOT_RUN**, 원본 파일/바이너리 직접 수신·해시 재확인 아님.
+4. **완료/진행/대기:** WD11/WD13 네이티브 GUI·격리 새 DB 생성·정상 종료 기본 스모크 PASS지만 전체 WD별 구매자 완전 인수 미충족. **정식0/100(구현률0 뜻 아님), 목표85 미달, [작업중]/RELEASE HOLD/크몽 미등록**.
+5. **오류 근거·원인·시도·대안:** 첫 ZIP 중첩 경로 오류는 맞는 폴더 실행으로 해결; PyInstaller `PYTHONNOUSERSITE=1` 버그는 빌더 코드 최소 수정 및 직접 인자 호출로 회피. 이제 동일 빌드·설치 반복 금지, 임시 `desk.sqlite`의 원격 내용 대신 사용자 로컬 파일 읽기 전용 검증 권고.
+6. **저장소·브랜치·SHA·주요 경로:** `hibi89/Freelancer@product/worknova-desk-local`. 사용자의 Windows 결과 요약 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`, 이번 기록 시작 직전 제품 HEAD `ed49e1e4879d8b0c309090fe5c845f51440ea9bc`; 최종 HEAD 본 문서 후 재조회. 실제 장부는 원격 아닌 사용자 새 TEMP 경로(개인 GUID/계정명 기록 안 함).
+7. **배포/실행/환경:** Windows onedir unsigned 후보 EXE; Vercel Production 미적용. 격리 자식 `LOCALAPPDATA`에 생성된 DB, ExitCode0, 재실행 테스트 아직 없음.
+8. **원본/백업·인증·수정금지:** 실고객 SQLite·백업·운영 LOCALAPPDATA/OS 보안·PayPal 원본/Freelancer main/타상품·등록완료/서명키·라이선스 불변. 고객 개인정보·실사용자료·이전 QA 스크린샷 원본 GitHub 업로드 0.
+9. **다음 우선순위/완료·승인:** 다음 단계 실제 생성된 격리 DB의 `PRAGMA quick_check/integrity_check`·스키마 확인 후, 동의된 합성 거래처→견적→계약→납품·수금 E2E 및 GUI 재시작 지속성. 별도 고객 데이터/상용권·OS 접근정책·서명·배포 점검은 사전 동의/승인 요건 준수. WD 전체 완전 PASS 합 >=85점 달성만 최종 완료.
+10. **갱신 일시·KST/검증 범위:** 2026-11-14 KST, 사용자 제공 EXE 종료코드0·임시 DB 파일 존재·화면 시각 확인까지, 전체 기능/보안은 미검증. 최신 문서 기준 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`; 중앙 최신화 후 저장소 SHA 확인.
+
+---
+
 # HANDOFF — 2026-11-14 KST WORKNOVA Desk 네이티브 EXE 메인 GUI 시각 확인 (최신 10항)
 
 1. **목표·용도·확정 요구:** WORKNOVA Desk Windows 오프라인 수기 견적→계약→납품·수금. WD01~14 승인 총100점·전체 수용85점 목표, Python3.11/SQLite/Tk.
