@@ -1,3 +1,17 @@
+# BID AX 온비드 최상위 header/body 응답 지원 — 2026-11-14 KST (인수인계 10항)
+1. **목표/요구/기술:** 29개 최종 R01–R29 전체 설계 100%, 85% 목표, Python 3.11+ SQLite/Tk, G2B·Onbid·동의 기반 법원자료. 가중치 추가 승인 요구 없음.
+2. **변경·결정 근거:** 고객 Windows 안전 키 진단으로 온비드 15157252 원문 구조의 최상위 `header/body` 증명. 응답 검사기는 기존 `response.header/body`와 이 root 구조를 모두 허용; 동시 혼합은 안전 보류. 원본 raw를 자동 임포트하거나 자격확인하지 않음.
+3. **테스트·성공/실패:** Linux Python3.13.5 전체 **215 PASS/0 FAIL** (이전 208 + 신규 7), warnings error 및 compileall PASS. 사용자의 과거 실 HTTP 1회 로그는 존재하나, 새 검사기로 원본 패킷을 Windows에서 재실행하지 않아 실제 항목/코드/페이지 검증 **대기**.
+4. **상태:** 공식 전체 최종완성률 **UNASSESSED, 85% 미입증**; `[작업중]`, RELEASE HOLD, 미등록. 온비드 포장 구조 보강 완료, 실제 완전한 필드 매핑·100건·10명·설치 검증 미완료.
+5. **오류/근거·전환:** 과거 `UNRECOGNIZED_ENVELOPE`는 예상 외 root header/body 구조로 확인. 재호출 요구 대신 이미 저장한 기존 파일을 새 parser로 안전 검사. `resultCode/resultMsg` **값**은 미수신이므로 API 업무 성공으로 단정 금지.
+6. **repo/branch/SHA/경로:** `hibi89/Freelancer@product/bid-ax-public-procurement` 기준 이전 HEAD `e650fdbe65de25885bef0e6a4eb758c6bd4a1afa`, `bidax/response_audit.py`, `tests/test_onbid_root_envelope.py`, `docs/ONBID_ROOT_ENVELOPE_FIX_20261114.md`, STATUS/HANDOFF. 본 커밋 SHA 별도 확인.
+7. **프로덕션/실행·환경:** Windows 사용자는 기존 raw 파일 경로 보존. 최신 소스에서 `py -3.11 -m bidax.cli --db .\\local\\test.db api-inspect ABSOLUTE_EXISTING_PACKET_PATH`; **오프라인, 인증키 불필요**. Vercel 미적용/Windows EXE 미검증.
+8. **원본·백업/인증:** 사용자 원본 `result_001.json`, 원본 DB, GitHub 다른 브랜치/상품, BID OWL 불변. Git normal revert로 본 변경 복원 가능. API 키/사용자 JSON 원문은 채팅·GitHub 반입 금지.
+9. **다음 우선순위·승인:** Windows에서 기존 JSON 재검사 결과의 안전한 `state`, `reason`, `page`, `items_in_page` 만 전달받아 다음 단계 필드/페이지/권한 검증. 추가 외부 API 요청·유료 CI·키 외부 저장·출시는 별도 승인.
+10. **KST·범위/문서 SHA:** 2026-11-14 KST, 사용자 제공 스키마 필드 이름과 Linux 오프라인 합성/mock 테스트만 직접 검증. 제품 최종 Git SHA/중앙 반영은 push 후 확인하고 최신 기록 기준.
+
+---
+
 # BID AX 온비드 첫 실제 API 응답 후속 인수인계 — 2026-11-14 KST
 1. **목표·요구·스택:** 최종설계 R01–R29 전체 100% 고정/85% 목표; G2B·온비드·고객 동의 법원 로컬자료 Python3.11+ SQLite Tk. 가중치 재승인 요구하지 않음.
 2. **이번 변경:** 사용자 Windows 로그에서 온비드 15157252 실제 HTTP 응답 1회 저장 확인, `UNRECOGNIZED_ENVELOPE`로 자동 승격 보류. 오프라인 안전 형식 진단기/CLI/단일 파일 추가. 실 API 응답 정상화/법률 자격판정 미구현.

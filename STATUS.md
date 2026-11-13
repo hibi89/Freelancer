@@ -1,3 +1,12 @@
+## [2026-11-14 KST] 온비드 결과목록 실응답 root header/body 구조 수용 (오프라인)
+- 사용자 Windows 출력에서 실제 `onbid_result_list` 15157252의 JSON 최상위 키가 `header`, `body`; 하위 `header(resultCode,resultMsg)` 및 `body(items,numOfRows,pageNo,totalCount)`임을 확인. 키와 raw 값은 미수신.
+- 원인: `bidax/response_audit.py`가 `response.header/body`만 허용하여 정상 후보도 `UNRECOGNIZED_ENVELOPE`로 보류하던 *포장 구조 불일치*. direct root + 기존 nested 형식을 모두 검사하며 **혼합 구조는 `AMBIGUOUS_ENVELOPE`로 보류**, status/page/count/integrity/credential 보호 유지.
+- `tests/test_onbid_root_envelope.py` 모의테스트 신규 7개 포함 **Linux Python3.13.5 215 PASS/0 FAIL** (`-Werror::ResourceWarning`, `compileall` PASS). 사용자 Windows 실제 저장패킷에 새 버전 `api-inspect` 재실행 아직 **미검증**. 실제 인증 성공/항목 필드 매핑·상업적 이용권·29개 최종 요구의 85%는 여전히 **미확정**.
+- 가중치 변경 없음; **R01–R29 전체 기준, UNASSESSED, [작업중], RELEASE HOLD, 크몽 미등록**. 추가 키 입력/정부 API 호출/원본 JSON 공유 불필요.
+- 상세: `docs/ONBID_ROOT_ENVELOPE_FIX_20261114.md`.
+
+---
+
 ## [2026-11-14 KST] 온비드 15157252 사용자 실응답 최초 수신 및 오프라인 형식 진단
 - 형이 Windows Python3.11에서 `onbid_result_list --live` 1회 실행한 출력: HTTP JSON 응답 `local/result_001.json` 15,930바이트 격리 저장. `api-inspect`는 **CANONICAL_RESPONSE_SHA256_MATCH**이나 **REVIEW_HOLD / UNRECOGNIZED_ENVELOPE**. 따라서 실제 목록 조회 정상·키 권한·필드 매핑 **미확정**. API 키/원본 파일은 전달받지 않음.
 - 오프라인 응답 구조 진단기 `bidax/response_shape.py`, `api-shape` CLI, 기존 폴더에 추가하는 단독 `BID_AX_API_SHAPE_DIAG.py`, 신규 단위 7종. 원본 JSON/키/입찰물건 정보/응답 메시지를 출력하지 않고 사전에 정의된 필드 구조/코드 분류만 반환. 네트워크 재요청 없음.

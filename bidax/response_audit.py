@@ -61,7 +61,18 @@ def inspect_packet(filename: str | Path) -> dict:
         integrity = "CANONICAL_RESPONSE_SHA256_MATCH"
     # Do not rely on source raw_sha256: JSON was parsed/re-serialized for local
     # storage, so it is not possible to recompute the original wire bytes.
-    wrapper = body_source.get("response")
+    # G2B responses use {"response": {"header": ..., "body": ...}}.
+    # The first independently observed Onbid result-list response instead has
+    # {"header": ..., "body": ...} at the JSON root. Both share the same
+    # conservative validation below. Mixed layouts are ambiguous and rejected.
+    if "response" in body_source:
+        if "header" in body_source or "body" in body_source:
+            return _hold(service, packet["dataset_id"], integrity, "AMBIGUOUS_ENVELOPE")
+        wrapper = body_source["response"]
+    elif "header" in body_source and "body" in body_source:
+        wrapper = body_source
+    else:
+        return _hold(service, packet["dataset_id"], integrity, "UNRECOGNIZED_ENVELOPE")
     if not isinstance(wrapper, dict):
         return _hold(service, packet["dataset_id"], integrity, "UNRECOGNIZED_ENVELOPE")
     header, body = wrapper.get("header"), wrapper.get("body")
