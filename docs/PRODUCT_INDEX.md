@@ -39,3 +39,14 @@
 
 MYRADIO 최종설계 정본: https://github.com/hibi89/Freelancer/blob/product/myradio-ai-dj/docs/FINAL_BLUEPRINT.md
 MYRADIO 구현: 오프라인 WAV 카탈로그 권한필터/장르·기분 선곡/5개 DJ **대사 스타일**/Windows 기본 TTS 시연 코드 + tkinter 원형. 온라인 음악 API, 실제 자연스러운 여러 DJ 목소리, Windows 실행·라이선스 검증·배포는 미검증/미구현. 기존 상품/등록 이력 삭제·진척률 전용 금지.
+
+
+## 2026-11-13 추가 — AXNODE 독자 섹터형 실행 파일 기술
+
+| 제품 | 개발 브랜치 | 설계 정본 | 공식 최종완성률 | 출시/크몽 |
+|---|---|---|---|---|
+| **AXNODE** | `product/axnode-sector-runtime` | [최종설계 R01~R29](https://github.com/hibi89/Freelancer/blob/product/axnode-sector-runtime/docs/FINAL_BLUEPRINT.md) | **UNASSESSED** | **HOLD / 미등록** |
+
+- 사용자 확정: 신규 파일 확장자 `.axnode`의 **A안 자체 바이너리 섹터/주소표와 중앙 실행 그래프**. 여러 GitHub 저장소/브랜치로 프로그램을 나누는 기술이 아님. 실 저장/연산 자원은 로컬·NAS·승인된 원격 실행기에 존재할 수 있음.
+- 제품 브랜치 최종설계 등록·정책/요구/STATUS/HANDOFF 완료. 로컬 POC `19 PASS/0 FAIL/0 SKIP` (샘플 5섹터/852 bytes)와 GitHub 코드 통합/CI·Windows/3GB/원격 실행은 **명확히 별개**. 본 branch는 현재 설계 자료이며 POC 소스는 별도 ZIP 다운로드 산출물.
+- 해총 `kmong-productization/docs/audits/FREELANCER_BRANCH_COMPLETION_REGISTRY_20261113.md`에 신규 제품 등록. 이전 기업형 5종+소비자형 3종 그대로. 총 **8 product 브랜치 / 9 Freelancer 제품**. 기존 29종·19개 서비스에는 중복 합산하지 않음.
