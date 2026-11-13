@@ -1,3 +1,9 @@
+## 2026-11-14 KST — EXE 파일 크기·SHA256·MZ 기본 헤더 PASS (사용자 로그)
+
+Windows onedir 산출물 `WORKNOVA-Desk.exe` **7,107,722 bytes**, `SHA256=A7CD6B052108E5630E4AD50151841F0B812654F22E87CFE8338E22CB12A5C23E`, `MZ header: PASS`. 사용자 실제 PowerShell 검증 결과를 전달받아 기록. 바이너리 파일 원본은 수신하지 않아 파일 전체 직접 검증·PE 전체 유효성/서명은 주장하지 않는다. [증거](docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md). **EXE GUI 런타임·실거래처/DB 지속성·무Python PC·Defender·ACL/활성 DB 암호화·실고객/법무 수용은 NOT_RUN.**
+
+WD13(10점) 빌드 및 기본 파일 확인 **PARTIAL/0점**, 고정 전체 WD01~14 100점 중 정식 수용 PASS 합 **0/100**, 목표85 미달. **[작업중]/RELEASE HOLD/미등록** 유지.
+
 ## 2026-11-14 KST — 실제 Windows onedir EXE 빌드 증거 추가 (WD-13 PARTIAL)
 
 사용자 전달 PowerShell에서 Windows10.0.26200, Python3.11.9, PyInstaller6.22.3을 확인. `--plan` JSON의 PyInstaller 인자를 직접 호출한 결과 EXE·COLLECT 완료 및 `Build complete!`, `WORKNOVA-Desk.exe` 파일 존재 확인. **빌드 PASS**는 EXE 실제 실행·서명·Defender·GUI 또는 제품 전체 수용과 다름. 길이 표가 잘려 정확 파일 크기·SHA256 출력 없음, PE MZ/원격 정확 소스 SHA·실 GUI/ACL/무Python 환경·라이선스 미확인. 상세 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`.
