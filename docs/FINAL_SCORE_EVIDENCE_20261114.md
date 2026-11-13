@@ -25,3 +25,9 @@
 **기존 실행 근거(이전 회차):** Linux Python 3.13.5 unittest 141/141 PASS, Tk Xvfb 5/5 PASS, Python이 필요한 포터블 15개 파일 검증 PASS, 제품 기능 SHA `fb71ca9a65f8d1a067a2b53eb18fbdac0580054b`. 이 문서 승인 회차에서 제품 기능을 다시 테스트한 것은 아님. Windows 설치/GUI/Word/ACL/서명EXE, 실구매자 검수·라이선스·지원은 미검증. 
 
 **다음 우선순위:** ① 무료 Windows runner 실제 실행과 복구 ② Windows 독립 EXE·원본 권한·장부 보호 ③ 최종 사용자/법적 권리 검토 ④ WD 항목 단위 재증빙 후 정식 배점 반영. `[작업중]`, `RELEASE HOLD`, 크몽 실제 판매 미등록 유지.
+
+
+## 2026-11-14 KST WD-08/10/12 추가 검증 증거
+
+사용자 승인 전체 100점 그대로 유지. GitHub 실제 코드/테스트 SHA 5f43ff0ad1f0e3ff6b90f169c4350ec4f0d8684f. 감사 로그 마지막 행 삭제시 체인만 검사해 통과하던 오류 재현 후 seq+AUTOINCREMENT high-water 검출 구현. 체크포인트 POSIX0600, PDF 한글 TTF 상업적 사용권 GUI 추가 확인. Linux Python153 PASS/0FAIL/0SKIP, 실제 Tk Xvfb GUI5 PASS, ZIP 추출 후 15개 파일 SHA+합성 CLI PASS. Windows/법무/실고객/서명 실행은 미검증. 전체 고객 수용 점수 0/100 유지(개발률 아님), 목표85 미달·[작업중]·RELEASE HOLD.
+

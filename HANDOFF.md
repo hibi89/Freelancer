@@ -1,3 +1,18 @@
+# HANDOFF — 2026-11-14 KST WD-08 무결성·상용권 검증(최신 10항)
+
+1. 목표·스택: 승인 최종설계 WD-01~14 100점, 목표85; Python3.11+/SQLite/Tk 오프라인 Windows 도구.
+2. 변경·결정: 감사 로그 말단 삭제를 SHA체인이 놓치는 오류 실제 재현 후 sqlite_sequence 고수위와 순번 연속성 검증. 체크포인트 POSIX0600, PDF TTF 상업적 임베딩 동의 게이트. 사용자 데이터·스키마 불변.
+3. 실행 테스트: Linux Python3.13.5 153/153 PASS, 0 FAIL/SKIP; Tk8.6 Xvfb GUI5/5; compileall 및 ZIP15 SHA/합성 CLI PASS. 실제 Windows NOT_RUN.
+4. 완료/대기: 감사 복원·체크포인트/폰트 사용자확인 부분 완료. OS ACL/Word/EXE·실사용 고객·법률/라이선스 미검증. 정식 완전 수용점수 0/100, 85점 미달·[작업중]·RELEASE HOLD.
+5. 오류·원인·대안: 마지막 감사 이벤트 삭제시 원래 verify_audit 성공 → 수정후 차단. OS 소유자 전체변조는 미서명 SHA만으로 방어 불가. ResourceWarning 정밀추적 타임아웃; 성공 주장 불가. 무료 검증 우선, 유료 CI 무단 사용 금지.
+6. Repo·SHA·경로: hibi89/Freelancer, product/worknova-desk-local, 기능/테스트 SHA 5f43ff0ad1f0e3ff6b90f169c4350ec4f0d8684f, 전 원본 HEAD 2ce5f2bbd924165be4729ffbf37283551d550435. 코드 core.py/evidence.py/gui.py 및 신규 테스트 두 파일.
+7. 배포·실행 환경: Production/Vercel 미적용. PYTHONPATH=. python -m unittest discover -s tests -q, Linux Xvfb GUI 테스트. Python 필요 ZIP, 독립 EXE 아님.
+8. 원본·백업·인증: PayPal 원본/Freelancer main/다른 제품/실제 고객 DB 미변경. SQLite 기본 평문·선택 백업 암호화, 고객정보 GitHub 업로드 금지.
+9. 다음 작업·완료 기준: 실제 Win10/11 설치·복구·권한·GUI·Word, 구매자 증거 및 라이선스/지원/환불 승인, 점수 85 이상 재검증. 유료 비용/OS보안 변경 사전 승인.
+10. 갱신시점·검증: 2026-11-14 KST Linux Python3.13.5/Xvfb만 실행, 정확 소스 blob 확인. 문서·중앙 최신 SHA 재검증 필요.
+
+---
+
 # HANDOFF — 배점안 승인/전체 최종설계 점수 검증 (2026-11-14 KST, 최신)
 
 1. **목표/기술:** WORKNOVA Desk 오프라인 Windows 견적→계약→납품→수금, Python/SQLite/Tk. WD-01~WD-14 전체 최종설계 100점 분모 고정, 사용자 `배점안승인`으로 가중치 승인.

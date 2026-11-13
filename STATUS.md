@@ -1,3 +1,13 @@
+# STATUS — 2026-11-14 KST WD-08 감사 로그 말단 누락 검증 추가(최신)
+
+- 사용자 승인한 WD-01~14 전체 100점 및 85점 목표 변경 없음. 마지막 감사 이벤트 삭제 미검출 결함을 실제 재현해 seq 연속번호/high-water 검증 보강. 체크포인트 POSIX mode0600과 한글 PDF 글꼴 상용권 별도 명시 동의.
+- 직접 실행: Linux Python3.13.5 unittest 153 PASS/0 FAIL/0 SKIP, Linux Xvfb Tk GUI5 PASS, compileall PASS, ZIP 추출·15개 파일 무결성·합성 CLI init/verify PASS.
+- GitHub 코드/테스트 커밋 5f43ff0ad1f0e3ff6b90f169c4350ec4f0d8684f, source 패치 커밋 91c31ad055829f0f4cc3b20e3a68e66dc6156442. SHA가 로컬 테스트 코드와 일치함.
+- 실제 Win10/11/Word/서명 EXE/OS ACL/실고객·폰트 권리·법률은 미검증, ResourceWarning 미정리.
+- 사용자 승인 100점 기준 엄격한 완전 구매자 수용 항목 점수 0/100(개발률 아님). 목표85 미달, [작업중], RELEASE HOLD, 판매미등록. 원본/다른 제품 수정 없음.
+
+---
+
 # STATUS — 2026-11-14 KST: 최종설계 배점안 사용자 승인(최신)
 
 - 사용자 명시적 `배점안승인`: WD-01~WD-14의 기존 100점 배점을 **최종 승인**. 상세 `docs/FINAL_BLUEPRINT_WEIGHT_PROPOSAL.md`(파일명은 기존 참조를 위해 유지). 설계 범위 축소나 점수 임의 조정 없음.
