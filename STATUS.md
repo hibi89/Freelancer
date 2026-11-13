@@ -1,8 +1,7 @@
 # STATUS — ONTOINSIGHT AX (2026-11-13 KST)
 
-- **P70 엔지니어링 단계(최종설계의 50→70 수용 로드맵): 합성·원본 통합 검증 PASS.** 전체 최종설계 공식 완성률은 승인 가중치/완전한 요구별 증거표가 없어 **UNASSESSED**. 크몽 등록·상용 출시 불가 `RELEASE HOLD`, `[작업중]` 유지.
-- 원본 실행 정본: `hibi89/AI_AutoML_Analyst@feature/ontoinsight-ax-p70-20261113`, 실행 검증 SHA `34e7b16a2fef5e1b0d21f4e6d097c6faaaaf9012`, 문서 최신화 SHA `0e831106c03efb5ba6cba4d840dcfecf73ec235f`.
-- [P70 CI #43378733016](https://github.com/hibi89/AI_AutoML_Analyst/actions/runs/43378733016): Ubuntu24.04 44 PASS/0 FAIL/0 SKIP; Windows Server2025 44 PASS/0 FAIL/0 SKIP; 총 2/2 SUCCESS, compileall PASS. 실제 원본 AutoML 입력/패키지 경로에서 P50 11개+P70 31개+CLI 2개를 실행.
-- 신규: 단일 시트 XLSX/CSV 2~3개 지원, 명시적 컬럼/관계 의미 확인, 파일 원본 SHA와 매핑 승인-확인 digest, JOIN parent/cardinality 거절, 주문 단위 환불 누적 후 채널별 gross/refund/net/AOV 독립 Decimal 검산, review→attest→run 로컬 CLI. P50 보존. 합성 매출 500.00/환불35.00/순465.00/주문3건/객단가155.00.
-- 사용권·법적 동의/신원은 CLI가 인증하지 않음(로컬 담당자 확인 기록만). 같은 금액·주문의 복수 환불 이벤트 중복 판별, 실 고객 자료, 소비자 Windows10/11, 기간별 KPI, ML 누수/기준선, Excel/PDF 보고서/브라우저, 과금/NOTICE/상용 사용권은 미검증 또는 P85+ 미구현. `P70=공식 최종 70%` 주장 금지.
-- 근거: `docs/P70_ACCEPTANCE_EVIDENCE_20261113.md`; 후속 P85 → P95 → P100 원본 설계 기준 유지, 해총 크몽 `[작업중]` 완료 증빙 전 해제 금지.
+- **P85 엔지니어링 단계 수용조건: 원본 코드 + 합성/CI 증빙 PASS. 공식 최종설계 전체 완성률: `UNASSESSED`(승인 가중치·전체 수용 증거 미비). [작업중] 유지, 크몽 미등록, `RELEASE HOLD`.**
+- 실행 정본 `hibi89/AI_AutoML_Analyst@feature/ontoinsight-ax-p85-20261113` 소스 SHA `8d1bdc80ed345485591f739aace632e91112a604`, 문서 SHA `d027481b886bd86b75f5e44b73250e4e3c0948b3`. 정확한 SHA의 [CI #43383793303](https://github.com/hibi89/AI_AutoML_Analyst/actions/runs/43383793303) 2/2 SUCCESS: Linux **93 PASS/0 FAIL/0 SKIP**, Windows Server2025 **93 PASS/0 FAIL/0 SKIP**, 각각 핵심30 테스트 별도 30/30 PASS, Python compileall PASS.
+- ML 승인형 타겟/변수·누수/시간/그룹분할·Dummy baseline와 CV 및 보류/heldout, 로컬 HTML·Excel·PDF·JSON/해시 검증 ZIP/CLI 추가. P50/P70 소스 보존, 기존 AutoML 원본 동작 변경 없음. 초기 3 FAIL은 fixture/시간 중복 누수 방어 강화로 수정 후 동일 SHA 통과.
+- 36개 위협 카탈로그 중 30개 테스트 선택자 실행; 6개 미실행 및 일부 제한적 테스트(암호화 XLSX 원본 미검증), 고객 Windows10/11 실기·실 고객 자료·NOTICE/권리·원본 전체 회귀·실 PDF 비주얼 및 상용 GO **NOT VERIFIED**. P95/P100 전체 목표 그대로.
+- 상세 증거 `docs/P85_ACCEPTANCE_EVIDENCE_20261113.md`. 해총 크몽 원장은 **[작업중]** 및 `UNASSESSED`, 상품 미등록, HOLD 유지.
