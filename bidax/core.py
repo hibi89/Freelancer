@@ -1,11 +1,13 @@
 """Offline, evidence-preserving public procurement bid screening. No HTTP calls."""
 from __future__ import annotations
 
+from contextlib import closing
 from datetime import date, datetime, timedelta, timezone
 import hashlib
 import json
 from pathlib import Path
 import sqlite3
+from uuid import UUID
 from urllib.parse import urlsplit
 
 KST = timezone(timedelta(hours=9))
@@ -124,8 +126,12 @@ class BidLedger:
         self.path = Path(path)
         self.conn = sqlite3.connect(self.path)
         self.conn.execute("PRAGMA foreign_keys=ON")
+        self.conn.execute("PRAGMA busy_timeout=5000")
+        self.conn.execute("PRAGMA synchronous=FULL")
         self.conn.execute("CREATE TABLE IF NOT EXISTS notice_events (id INTEGER PRIMARY KEY, notice_no TEXT NOT NULL, revision TEXT NOT NULL, fingerprint TEXT NOT NULL, payload TEXT NOT NULL, observed_at TEXT NOT NULL, UNIQUE(notice_no, revision, fingerprint))")
         self.conn.execute("CREATE INDEX IF NOT EXISTS notice_events_lookup ON notice_events(notice_no,id DESC)")
+        self.conn.execute("CREATE TABLE IF NOT EXISTS manual_reviews (id INTEGER PRIMARY KEY, notice_no TEXT NOT NULL, fingerprint TEXT NOT NULL, reviewer TEXT NOT NULL, decision TEXT NOT NULL, note TEXT NOT NULL, reviewed_at TEXT NOT NULL, request_id TEXT NOT NULL UNIQUE)")
+        self.conn.execute("CREATE INDEX IF NOT EXISTS manual_reviews_lookup ON manual_reviews(notice_no,id DESC)")
         self.conn.commit()
 
     def __enter__(self):
@@ -148,15 +154,96 @@ class BidLedger:
                 added += cursor.rowcount
         return {"received": len(validated), "added_versions": added, "unchanged": len(validated) - added}
 
+    def verify_integrity(self) -> None:
+        """Fail closed if SQLite, stored payload hashes, or stored field contracts disagree."""
+        result = self.conn.execute("PRAGMA quick_check").fetchone()
+        if not result or result[0] != "ok":
+            raise ValueError("SQLite integrity check failed")
+        for payload, fingerprint in self.conn.execute("SELECT payload, fingerprint FROM notice_events"):
+            if hashlib.sha256(payload.encode("utf-8")).hexdigest() != fingerprint:
+                raise ValueError("Notice fingerprint mismatch; stop and restore verified backup")
+            try:
+                parsed = json.loads(payload)
+                if validate_notice(parsed) != parsed:
+                    raise ValueError("Notice contract mismatch")
+            except (TypeError, ValueError) as exc:
+                raise ValueError("Invalid notice payload in ledger") from exc
+
     def current(self) -> list[dict]:
+        self.verify_integrity()
         rows = self.conn.execute("SELECT e.payload,e.fingerprint,e.observed_at FROM notice_events e WHERE e.id = (SELECT MAX(i.id) FROM notice_events i WHERE i.notice_no=e.notice_no) ORDER BY e.notice_no").fetchall()
         return [dict(json.loads(payload), fingerprint=fingerprint, observed_at=observed) for payload, fingerprint, observed in rows]
+
+    def changes(self, notice_no: str) -> list[dict]:
+        """Field-level immutable revision trail; no overwriting the prior evidence."""
+        self.verify_integrity()
+        rows = self.conn.execute(
+            "SELECT revision,fingerprint,observed_at,payload FROM notice_events WHERE notice_no=? ORDER BY id", (notice_no,)
+        ).fetchall()
+        previous = None
+        changes = []
+        for revision, fingerprint, observed_at, payload in rows:
+            current = json.loads(payload)
+            delta = {k: {"before": (previous or {}).get(k), "after": current.get(k)}
+                     for k in sorted(set(current) | set(previous or {}))
+                     if previous is None or (previous or {}).get(k) != current.get(k)}
+            changes.append({"revision": revision, "fingerprint": fingerprint, "observed_at": observed_at,
+                            "change_kind": "NEW" if previous is None else "REVISED",
+                            "changed_fields": delta})
+            previous = current
+        return changes
+
+    def record_review(self, notice_no: str, fingerprint: str, reviewer: str, decision: str,
+                      note: str, *, request_id: str, now: datetime | None = None) -> dict:
+        """Human-authored review; never implies legal qualification or automated approval."""
+        notice_no = _text(notice_no, "notice_no")
+        fingerprint = _text(fingerprint, "fingerprint")
+        reviewer = _text(reviewer, "reviewer")
+        note = _text(note, "note")
+        if len(reviewer) > 100 or len(note) > 2000:
+            raise ValueError("reviewer/note exceeds safe length")
+        if decision not in {"확인", "보류", "반려"}:
+            raise ValueError("decision must be 확인/보류/반려")
+        try:
+            request_id = UUID(request_id).hex
+        except (TypeError, ValueError, AttributeError) as exc:
+            raise ValueError("valid UUID request_id required") from exc
+        current = now or datetime.now(KST)
+        if current.tzinfo is None or current.utcoffset() is None:
+            raise ValueError("review time must be timezone-aware")
+        self.verify_integrity()
+        active = self.conn.execute(
+            "SELECT fingerprint FROM notice_events WHERE notice_no=? ORDER BY id DESC LIMIT 1", (notice_no,)
+        ).fetchone()
+        if active is None or active[0] != fingerprint:
+            raise ValueError("source version changed; review latest notice first")
+        observed = current.astimezone(KST).isoformat()
+        with self.conn:
+            self.conn.execute(
+                "INSERT OR IGNORE INTO manual_reviews(notice_no,fingerprint,reviewer,decision,note,reviewed_at,request_id) VALUES(?,?,?,?,?,?,?)",
+                (notice_no, fingerprint, reviewer, decision, note, observed, request_id))
+        row = self.conn.execute(
+            "SELECT id,notice_no,fingerprint,reviewer,decision,note,reviewed_at FROM manual_reviews WHERE request_id=?",
+            (request_id,)).fetchone()
+        if row[1:6] != (notice_no, fingerprint, reviewer, decision, note):
+            # Same idempotency key with different content cannot silently succeed.
+            raise ValueError("request_id already used for different review")
+        return dict(zip(("id", "notice_no", "fingerprint", "reviewer", "decision", "note", "reviewed_at"), row),
+                    source_freshness="OFFLINE_NO_LEGAL_APPROVAL")
+
+    def review_history(self, notice_no: str) -> list[dict]:
+        rows = self.conn.execute(
+            "SELECT id,notice_no,fingerprint,reviewer,decision,note,reviewed_at FROM manual_reviews WHERE notice_no=? ORDER BY id",
+            (notice_no,)).fetchall()
+        names = ("id", "notice_no", "fingerprint", "reviewer", "decision", "note", "reviewed_at")
+        return [dict(zip(names, row)) for row in rows]
 
     def events(self, notice_no: str) -> list[dict]:
         rows = self.conn.execute("SELECT revision,fingerprint,observed_at FROM notice_events WHERE notice_no=? ORDER BY id", (notice_no,)).fetchall()
         return [{"revision": r, "fingerprint": fp, "observed_at": ts} for r, fp, ts in rows]
 
     def backup(self, target: str | Path):
+        self.verify_integrity()
         target = Path(target)
         if target.resolve() == self.path.resolve():
             raise ValueError("backup target equals database")
@@ -166,7 +253,7 @@ class BidLedger:
         with open(target, "xb"):
             pass
         try:
-            with sqlite3.connect(target) as dest:
+            with closing(sqlite3.connect(target)) as dest:
                 self.conn.backup(dest)
         except Exception:
             target.unlink(missing_ok=True)
@@ -217,4 +304,37 @@ def evaluate(notice: dict, profile_raw: object, now: datetime | None = None) -> 
     if not notice["required_documents"]:
         review.append("필수서류 원문 확인 필요")
     label = "부적합" if failures else "추가 확인 필요" if review else "적합"
-    return {"notice_no": notice["notice_no"], "revision": notice["revision"], "company": profile["company"], "status": label, "deterministic_mismatch": failures, "needs_review": review, "matched": passed, "deadline": notice["deadline"], "source_url": notice["source_url"], "source_fingerprint": notice.get("fingerprint"), "disclaimer": DISCLAIMER}
+    return {"notice_no": notice["notice_no"], "title": notice["title"], "revision": notice["revision"], "company": profile["company"], "status": label, "deterministic_mismatch": failures, "needs_review": review, "matched": passed, "deadline": notice["deadline"], "source_url": notice["source_url"], "source_fingerprint": notice.get("fingerprint"), "disclaimer": DISCLAIMER}
+
+
+def restore_backup(source: str | Path, target: str | Path) -> dict:
+    """Validate source and restore into a *new* SQLite file (never overwrite)."""
+    source, target = Path(source), Path(target)
+    if not source.is_file():
+        raise FileNotFoundError("backup source not found")
+    if source.resolve() == target.resolve():
+        raise ValueError("cannot restore backup over itself")
+    # URI mode=ro prevents source creation, side effects, and accidental rewrites.
+    with closing(sqlite3.connect(source.resolve().as_uri() + "?mode=ro", uri=True)) as src:
+        if src.execute("PRAGMA quick_check").fetchone()[0] != "ok":
+            raise ValueError("invalid SQLite backup")
+        has_events = src.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='notice_events'"
+        ).fetchone()
+        if not has_events:
+            raise ValueError("not a BID AX ledger backup")
+        try:
+            with target.open("xb"):
+                pass
+        except FileExistsError:
+            raise FileExistsError("restore target exists; original data preserved")
+        try:
+            with closing(sqlite3.connect(target)) as dest:
+                src.backup(dest)
+            with BidLedger(target) as restored:
+                restored.verify_integrity()
+                count = len(restored.current())
+        except Exception:
+            target.unlink(missing_ok=True)
+            raise
+    return {"restored_to_new_file": str(target), "current_notices": count, "original_preserved": True}
