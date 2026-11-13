@@ -1,5 +1,20 @@
 # CITEVAULT AX — HANDOFF — RAG Studio 기업형 (10항, 2026-11-13 KST)
 
+## [2026-11-14 KST] P85 백업 Catalog/문서 무결성 + 404 PASS — HANDOFF 10항
+
+1. **목표·확정 기술:** 최종 24개 항목 100% 대비 85% 사용자 목표. Offline RAG + rights-aware PDF/DOCX/SQL + 기업 identity/ACL + PREP/SMAX signed package + Korean local model + Windows 인수. 공식 UNASSESSED.
+2. **완료·선택 이유:** 기존 SHA-only manifest 방법(A)은 DB 카탈로그 변경·manifest SHA 재계산 공격 감지 실패; 단일 파일 무작정 restore 불가. 실제 데이터 DB+문서 SHA 결속(B) 선택, 비용0, 기존 원본/유효 데이터 무변경. 외부 서명 서비스/실기업 인증(C)은 별도 소스·권리 필요.
+3. **테스트:** 정확 기능 SHA `d32f530e2425da0129a4eb2e9a4a7aef6708dab8`, [CI #43527372030](https://github.com/hibi89/Freelancer/actions/runs/43527372030) Ubuntu/Win **6/6 SUCCESS 404 executed PASS/0FAIL/0SKIP**, 백업 test 12+12, original pinned RAG upstream 35 + bridge 36, 100 synthetic per OS run via one test harness each. Linux 로컬 12PASS.
+4. **완료/진행/대기/차단:** 백업 snapshot/staged 복구의 active doc SHA↔SQLite metadata 일치 증거 구현. 실고객 무중단/장기 백업, IdP, 실제 source-rights+AX package, Korean model, Windows10/11 physical install+customer Gold100, owner weight sign-off 대기. [작업중], RELEASE HOLD/SALE NO-GO.
+5. **오류/원인/재시도금지/대안:** 기존 snapshot의 `quick_check`+header만 검사하던 경계를 보강. 새 부정 3개가 정확 오류 코드로 거부됨(서명 자체 보장 아님). GitHub tree API에 39자리 잘못 붙여넣은 SHA 1회 422, 정확 40자리 blob 조회 후 비강제 업데이트로 개선(코드 오류/CI 장애 아님); 동일 오류 반복 금지.
+6. **저장소·브랜치·SHA:** `hibi89/Freelancer@product/rag-enterprise-knowledge` 기능 `d32f530e2425da0129a4eb2e9a4a7aef6708dab8`, 이전 기능 `0cf969fb2908cca985f4655d2c713ad7e030d168`, 이전 문서 HEAD `fca436f5cc6f58f10f7e41fa8810f1e39d86b1f7`; 원본 RAG pin `c5867b3951f51bfa97cadd1aad8fb13e9cf9e604`; 변경 `enterprise/p85-offline-backup.mjs`, `tests/p85-offline-backup.test.mjs`.
+7. **프로덕션 URL·운영명령:** GitHub Windows2022/Ubuntu24.04 Node22, CI `node --test tests/p85-offline-backup.test.mjs`; `scripts/p85-offline-ops.mjs snapshot|restore --source ABS --dest NEW_ABS`는 수동 오프라인·서비스 중지 필수. 실고객 Production/Vercel 미적용, 물리 Win10/11 미검증.
+8. **원본·백업·비밀·금지:** Git 이전 SHA 복구점, 고객원본/실계정/암호/토큰/원본 RAG·SMAX·PREP/타상품 수정0. `Freelancer` 저장소 사용자 선택으로 PUBLIC, 전체 브랜치/역사 비밀 전수 감사 없음. 실제 고객 정보 추가 금지.
+9. **다음 우선순위/완료기준/승인:** 라이선스·SHA 확인된 실제 Korean local model mini-qa, 허용된 고객 IdP+signed producer 데이터·사용권(실권한 자료는 정당 승인 필요), 실제 물리 Win10/11 설치/복구·브라우저·고객 Gold/공격·운영 인수, 전체 24항 owner 수용 점수. 단순 404PASS는 공식85 인정 불가.
+10. **기준시점·문서 커밋:** 2026-11-14 KST, exact `d32f530e` runner 6/6 및 합성 404PASS 직접 로그 확인, 문서 HEAD는 갱신 후 GitHub 조회. 공식 UNASSESSED/RELEASE HOLD.
+
+
+
 ## [2026-11-14 KST] 사용자 승인 후 P85 오프라인 복구+합성100 CI — HANDOFF 10항
 
 1. **목표·용도·확정 기술:** CITEVAULT AX 기업형 근거 검색 전체 최종설계 24항 100% 대비 85% 목표. RAG pinned/PREP-SMAX/SQLite ACL/Win Linux CI+고객 실제 수용. 공식 `UNASSESSED`, 제품 판매 HOLD.

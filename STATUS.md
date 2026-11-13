@@ -1,5 +1,14 @@
 # CITEVAULT AX — STATUS — RAG Studio Enterprise, 2026-11-13 KST
 
+## [2026-11-14 KST] P85 SQLite 백업 문서 목록↔원문 일치 보안 보강 — 정확 SHA d32f530e
+
+- **최신 기능 SHA `d32f530e2425da0129a4eb2e9a4a7aef6708dab8`:** [hosted CI #43527372030](https://github.com/hibi89/Freelancer/actions/runs/43527372030) Ubuntu/Windows **6/6 SUCCESS; 404 실행 PASS/0FAIL/0SKIP**(OS 중복·합성100 반복은 스위트 각1개). 기존 pinned 원본 RAG35+CITEVAULT bridge36도 성공.
+- **변경:** `p85-offline-backup.mjs` 스냅샷/복구에서 SQLite 정식 header/users/docs/audit 테이블, state generation, 사용자/문서 수·active 문서의 정확 tenant/id/version/native_kind SHA256와 staged 원문 bytes를 교차 검증. 이전에는 manifest SHA 재계산 시 DB 문서 목록↔원문 불일치를 막지 못함. 신규 부정 테스트 3개(원문 변조·SQLite+manifest 합성 위조·header-only DB) 추가, 양 OS backup 12/12 PASS, 합계 404PASS. 상세 `docs/P85_SNAPSHOT_CATALOG_INTEGRITY_20261114.md`.
+- **완성률:** 24개 전체 기준 공식 `UNASSESSED`, 사용자 목표85% 아직 미인증, `[작업중]` 유지. 실제 고객 IdP/사용권/승인된 producer·한국어 실제 모델·물리 Win10/11/Gold·운영 보안·가중치 수용 미완. 서비스 중지한 합성 백업만 검증, Production 미적용. 추가 비용/실고객자료/원본 RAG·SMAX·PREP 변경0.
+- 공유 Freelancer PUBLIC에 다른 제품/과거 브랜치 포함 공개 위험; 이력 비밀 전수 스캔 미실행.
+
+
+
 ## [2026-11-14 KST] 사용자 승인 후 P85 백업·복구 및 합성100 질의 성능/권한 CI 완료
 
 - **기능 SHA** `0cf969fb2908cca985f4655d2c713ad7e030d168` (직전 백업 구현 `e1d25c18c3fb0ddaf6957ce91b6d54e15199582f`). 실제 [GitHub Actions #43525453183](https://github.com/hibi89/Freelancer/actions/runs/43525453183) **6/6 SUCCESS, 398 실행 PASS/0FAIL/0SKIP**(Linux/Windows 반복 test 포함): P70 31, RAG pinned 11+24+36, Windows/Linux P85 local 각107+백업 각9+합성100 작업 각1, Windows/Linux native 각31. 신규 정책 gate도 SHA별 별도 확인 필요.

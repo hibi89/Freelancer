@@ -1,5 +1,12 @@
 # CITEVAULT AX — 최종설계 100% 기준 85% 수용 증거표 (2026-11-14 KST)
 
+## [2026-11-14 KST] REQ22 실코드 보강: SQLite active catalog↔백업 원문 SHA 정확 일치
+
+- 기능 `d32f530e2425da0129a4eb2e9a4a7aef6708dab8`, [CI #43527372030](https://github.com/hibi89/Freelancer/actions/runs/43527372030) Win/Ubuntu **6/6 SUCCESS, 404 PASS/0FAIL/0SKIP**(반복 포함).
+- REQ22 실제 추가 검증: SQLite 4개 스키마 + format/gen + live active metadata `tenant/id/version/kind/SHA`와 snapshot 원문 bytes 교차 검증, 카탈로그 변조+manifest 재해시/HDR-only DB 거부. 로컬12PASS, 양 OS 각각12PASS. `docs/P85_SNAPSHOT_CATALOG_INTEGRITY_20261114.md`.
+- **유효 백업 제품·실 고객 데이터 사용권·소유자 서명 승인·운영중 서비스 복구 보장은 아직 아님.** 공식 UNASSESSED, 85% 미입증, [작업중]/RELEASE HOLD.
+
+
 ## [2026-11-14 KST] 수동 SQLite 백업·복구, 합성100 질의 양 OS 실검증 추가
 
 - 정확 기능 `0cf969fb2908cca985f4655d2c713ad7e030d168`, [GitHub hosted #43525453183](https://github.com/hibi89/Freelancer/actions/runs/43525453183) **Ubuntu+Windows 6/6 SUCCESS, 398 PASS/0FAIL/0SKIP**(중복 OS 횟수 포함); 기존 pinned RAG 35 upstream + CITEVAULT bridge36도 PASS.
@@ -67,7 +74,7 @@
 | 19 | Windows10/11 오프라인 설치·백업/복구·라이선스 | Node/Python Linux localhost 셀프테스트, SQLite 재기동/문서 version 지속 | **대기**: 실제 Windows 패키지/물리 설치·백업/복구 인수 증거 없음 |
 | 20 | Win/Linux GitHub-hosted CI 0FAIL | `.github/workflows/citevault-p50.yml` Linux/Windows native/identity/signed test job 설정 | **검증-합성**: 정확 기능 SHA cea0ec09에서 Ubuntu/Windows 6/6 hosted SUCCESS, 378 중복포함 PASS; 실고객 Windows10/11 설치·운영 보안은 제외 |
 | 21 | 고객 Gold100 + negative/heldout, retrieval/latency/메모리 수용 | 신규 한국어 합성100건(20×5 유형) Windows/Linux 모두 PASS, p95 Ubuntu0.328ms/Win1.001ms | **부분**: 합성 반복 계약 테스트이며 고객의 Gold100·진짜 heldout·모델 성능/고객 합격 기준 미검증 |
-| 22 | 백업/복구·삭제/보존기간·운영 정책 | Node22 SQLite backup API, 합성 문서 SHA manifest, create-only offline restore 양 OS 각9PASS, 원본 불변·변조·링크·중복·덮어쓰기 거부 | **부분**: 실 고객 운용 중 무중단 백업/보존·삭제·물리 Windows10/11 복구/권한·개인정보 미검증 |
+| 22 | 백업/복구·삭제/보존기간·운영 정책 | Node22 SQLite backup API, 합성 문서 SHA manifest, create-only offline restore; **신규 SQLite 4개 테이블·실 active doc source SHA 바인딩**, 양 OS 각12PASS(기존9+신규3), 원본 불변·변조·링크·중복·덮어쓰기 거부 | **부분**: 실 고객 운용 중 무중단 백업/보존·삭제·물리 Windows10/11 복구/권한·개인정보 미검증 |
 | 23 | 고객/법적·가격·지원·운영 인수 | 합성 SOURCE_RIGHTS=false/RELEASE HOLD 강제 | **대기**: 고객/소유자 승인·라이선스·실기기·지원 수용 불가 |
 | 24 | 5개 RAG 유형/대시보드/후속 질문 | 단일 문서·다중 문서·narrow SQL+문서 합성, 간단 UI | **부분**: conversational context, 실제 RAG 원본 end-to-end 미검증 |
 

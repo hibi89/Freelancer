@@ -1,5 +1,12 @@
 # CITEVAULT AX — Offline snapshot/restore evidence (2026-11-14 KST)
 
+## [2026-11-14 KST] SQLite 스키마·현재 문서 원문 SHA 추가 검증 (최신)
+
+- exact source `d32f530e2425da0129a4eb2e9a4a7aef6708dab8`, [CI #43527372030](https://github.com/hibi89/Freelancer/actions/runs/43527372030) **6/6 SUCCESS**, offline suite **Ubuntu12/12·Windows12/12 PASS**, 전체중복합산404PASS/0FAIL/0SKIP.
+- Active document가 DB의 digest와 다른 파일을 가리키면 snapshot 단계에서도 거부. Restore 단계에서 위조된 SQLite DB/manifest 복구를 차단. `header`만 있는 DB는 더 이상 복구로 인정하지 않음.
+- 오프라인 서비스 중지형 synthetic vault 전용. 동시운영 고객백업/카탈로그 승인신원/골든100 대체 아님. 별도 상세 `docs/P85_SNAPSHOT_CATALOG_INTEGRITY_20261114.md`.
+
+
 Scope: opt-in, offline, SYNTHETIC vault only. The service must be stopped and SQLite handles closed before use. This is not a production customer backup service.
 
 Architecture choice: A) plain copy/overwrite risks inconsistent SQLite and data loss (rejected); B) SQLite backup API + SHA-256 per-file manifest + create-only atomic directory publication (selected; 0 external API fees); C) managed online/cloud backup requires separate customer authorization and infrastructure.
