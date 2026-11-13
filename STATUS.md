@@ -1,5 +1,15 @@
 # CITEVAULT AX — STATUS — RAG Studio Enterprise, 2026-11-13 KST
 
+## [2026-11-13 KST] P85 재진행 — 실제 PDF/DOCX 바이트 파서·권한/인용 통합 검증
+
+- **목표:** 사용자 최종설계 전체 기준 85%, 공식 최종완성률 **UNASSESSED / 85% 미확정**. `[작업중]` 유지, `RELEASE HOLD/SALE NO-GO`. 기준 복구 HEAD `6fb66efd14dd95dd64ebfb1305ef872478ff1524`.
+- **이번 실제 개발:** 기존 합성 LocalSyntheticVault에 native_kind=`txt/pdf/docx` 구현. 계정·테넌트·그룹/프로젝트/등급 사전 ACL→원본 링크·바이트 SHA256→최대 2MiB 승인된 **실제 PDF/DOCX 버퍼**→독립 Python `pypdf` 페이지·`python-docx` 문단 추출→고유 페이지/문단 인용. 오프라인 경계, 문서 상충 보류/검색모델 없는 SEARCH_ONLY, SQLite 문서 버전·퇴출 기존 기능 통합. 새 소스 `enterprise/p85-native-extract.py`/`.mjs`, `tests/p85-native-fixture.py`, `tests/p85-native-integration.test.mjs`, `tests/requirements-p85-native.txt`. 원본 RAG/PREP/SMAX 수정 0, 기업 실제 파일 업로드/계정 변경/배포/유료 호출 0.
+- **실제 검증:** Linux Node22.16/Python3.11, 실제 2페이지 PDF·한국어 DOCX 2개 등 합성 파일로 P85 신규 테스트 **13 PASS/0 FAIL/0 SKIP**. 전체 P50/P70/P85 로컬 테스트 **108 total/105 PASS/0 FAIL/3 SKIP**. 3 SKIP은 pin `RAG_STUDIO@c5867b3951f51bfa97cadd1aad8fb13e9cf9e604` 원본 체크아웃 필요 SQL/BM25/SMAX 통합, 신규 native PASS와 혼동 금지. 원격 GitHub 6개 파일 SHA와 로컬 검증 파일 `git hash-object` 1:1 일치. 증거 `docs/P85_NATIVE_EVIDENCE_20261113.md`.
+- **CI:** `.github/workflows/citevault-p50.yml` 신규 Ubuntu24.04+Windows2022 `p85-native-evidence` Python3.11/Node22 job, PDF/DOCX pinned dependencies 설치·실 테스트. **Hosted 실행 결과 및 Windows PASS 미검증**; 기존 원본 RAG P512/P538/P540/P549 job도 미검증. 실행 정의만으로 최종완성률 상승 주장 금지.
+- **한계:** 원본 RAG Studio native parser/SQL 직결이 아닌 별도 합성 증거 경로, 고객 실제 기업 IAM/법적 사용권, signed PREP/SMAX→AX, 한국어 실제 모델·라이선스/정확도, Gold/물리 Windows10/11·상용 샌드박스 보안 미구현·미검증. PDF OCR/복잡한 DOCX 구조/악성 파일 풀샌드박스 미지원. 기존 회귀/원본 보존.
+
+
+
 ## [2026-11-13 KST] CITEVAULT AX 85% 재추진 — SQLite 영속 상태·철회·감사 원자화
 
 - **공식 목표:** 최종설계 100% 대비 85%. **현재 공식 완성률 UNASSESSED / 85% 미달성·검증 대기**, `[작업중]` 유지, `RELEASE HOLD/SALE NO-GO`.
