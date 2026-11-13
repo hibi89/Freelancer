@@ -7,6 +7,8 @@ on:
       - tests/p50.test.mjs
       - enterprise/p70-policy.mjs
       - tests/p70.test.mjs
+      - enterprise/p70-rag-bridge.mjs
+      - tests/p70-rag-integration.test.mjs
       - .github/workflows/citevault-p50.yml
   workflow_dispatch:
 permissions:
@@ -52,4 +54,4 @@ jobs:
         working-directory: citevault
         env:
           RAG_STUDIO_ROOT: ${{ github.workspace }}/rag
-        run: node --test tests/p50.test.mjs tests/p70.test.mjs
+        run: node --test tests/p50.test.mjs tests/p70.test.mjs tests/p70-rag-integration.test.mjs
