@@ -1,3 +1,17 @@
+# BID AX 2026-11-14 최종설계 85% 목표 후속 인수인계 (필수 10항)
+1. 목표/용도/확정설계/스택: R01–R29 29개 완제품 100% 기준, 나라장터+온비드 공식API+동의 받은 법원자료 분석, 로컬 Python/SQLite/Tk; 최종 85% 사용자 목표.
+2. 변경/설계: 온비드 관심목록·감사 이벤트·UUID 멱등·변조/버전 경고·필터, 3원천 통합 현황 GUI/CLI/pyz. 기존 로컬형을 유지(서버비 0 목표, 비밀/개인자료 불송신). 다른 원본 기능·BID OWL 무변경.
+3. 테스트/실증: Linux Python3.13.5 167/167 PASS, compileall/Tk smoke PASS, 비출시 zipapp CLI subprocess PASS, 소스 코드 Git blob 3/3 일치. Python GitHub CI/Windows10/11·실정부 API/고객 NOT_RUN.
+4. 상태: 기능 추가 및 원격 코드 동기화 완료, 전체 공식 완성률 UNASSESSED(85% 미입증), [작업중] 유지/RELEASE HOLD/크몽 미등록.
+5. 장애/근거·Pivot: 통합 현황에서 미등록 SQLite DB에 테이블 자동 생성 위험을 사전 검출→출처별 스키마 게이트, 없는 원장은 빈 항목. 초기 regression 1 FAIL을 재설계/복구해 167 PASS, 동일 실패 방식 반복 금지.
+6. 저장소·브랜치·SHA·경로: hibi89/Freelancer@product/bid-ax-public-procurement, 기능 SHA `8aa19f3aa4873ff17ecc188a097bd1c59f146a7b`, 포트폴리오 소스/CLI/GUI, tests/test_portfolio_watchlist.py/tests/test_portable.py, docs/BID_AX_FULL_BLUEPRINT_29_ACCEPTANCE_20261114.md; 최종 HEAD 재확인.
+7. Production·실행/환경: python -Werror::ResourceWarning -m unittest discover -s tests -q; python -m bidax.cli --db DB portfolio-report 및 onbid-filter/watch/watchlist. Vercel N/A, Windows EXE/실배포 없음.
+8. 백업/원본·보안: 기존 정상 코드는 parent SHA 및 git 정상 revert로 복구, 고객 SQLite 삭제/이관·API키/개인정보 전송 없음. 감사 이력은 append-only, 파일 해시 검증 및 데이터 출처 분리.
+9. 다음/승인·완료기준: 29개 요구별 배점 제안 사용자 승인 전 공식 숫자 금지; 나라장터/온비드 무료 API 발급 및 권리·실응답 100건/사람 검토10건, 실제 Win10/11 EXE/보안·고객 인수, 상용약관; 유료 Actions/외부전송 사전승인.
+10. KST·확인시점/범위: 2026-11-14, 합성 로컬 테스트와 원격 3개 코드 Blob, 사용자 최종설계 29개 증거표만 확인. 실 OS/원문/권리 미검증, 이번 기준 커밋은 최신 브랜치 조회 필요.
+
+---
+
 ## [2026-11-14 KST] P85 PDF 원격 SHA 및 최종 인수인계 보정
 - 소스 기능 SHA **2de90f3e1231d945b8fcec322f02194003b37098**, remote **11/11 exact matches**, Author/Committer 연결 hibi89. GitHub blueprint-only CI #43504668031 SUCCESS; Python CI 미실행(비용·승인), 고객 Windows/API/100원문/10전문가 미검증.
 - Linux Python3.13.5 **151 PASS 0 FAIL 0 SKIP**, ReportLab4.4.9/pypdf5.9.0 선택 패키지에서 PDF 생성·동의·암호화/주석/손상 거절. 실제 라이선스/폰트/고객 PDF 수용 미검증. R01–R29 공식 UNASSESSED, 85 목표 [작업중] 유지, RELEASE HOLD.

@@ -58,3 +58,26 @@ class PortableTests(unittest.TestCase):
             module.build(self.zip)
 
 if __name__=="__main__": unittest.main()
+
+
+class PortableCrossSourceAcceptance(unittest.TestCase):
+    def test_packaged_zipapp_three_source_overview_and_watch(self):
+        with tempfile.TemporaryDirectory() as td:
+            dest = Path(td)/'portable.pyz'
+            module.build(dest)
+            db = Path(td)/'evidence.sqlite'
+            def cmd(*args):
+                p = subprocess.run([sys.executable, str(dest), '--db', str(db), *args],
+                                   cwd=ROOT, capture_output=True, text=True, timeout=12, check=True)
+                return json.loads(p.stdout)
+            cmd('import', str(ROOT/'examples'/'notices.json'))
+            cmd('onbid-import', str(ROOT/'examples'/'onbid_assets_synthetic.json'))
+            portfolio = cmd('portfolio-report')
+            self.assertGreater(portfolio['g2b']['count'], 0)
+            self.assertGreater(portfolio['onbid']['count'], 0)
+            self.assertEqual(portfolio['court']['count'], 0)
+            self.assertFalse(portfolio['legal_or_investment_approval'])
+            prop = portfolio['onbid']['assets'][0]
+            self.assertTrue(cmd('onbid-watch', prop['property_id'], prop['condition_id'],
+                                '관심', '원문 검증 예정')['written'])
+            self.assertEqual(cmd('onbid-watchlist')['active_count'], 1)

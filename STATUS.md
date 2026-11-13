@@ -1,3 +1,10 @@
+## [2026-11-14 KST] 최종설계 R01–R29 기준 온비드·통합 현황 보강
+- 현행 R01–R29 총29개 **최종설계 전체**를 기준으로 개발. 신규 로컬 온비드 관심목록·가격/유찰 필터·변경·감사 보호·법원/온비드/나라장터 구분 portfolio, GUI/CLI/.pyz 지원; 기능 정확 SHA `8aa19f3aa4873ff17ecc188a097bd1c59f146a7b`, 본 문서 commit HEAD는 브랜치 최신값 별도 조회.
+- Linux Python3.13.5 **167 PASS/0 FAIL/0 SKIP**, compileall PASS, Tk8.6 Xvfb smoke PASS. 이번 신규 코드 원격 3/3 Git blob 일치. 이번 푸시 전 GitHub Python CI/Windows/실공식 API/실고객 NOT_RUN.
+- [29요구 전수 추적·100점 배점 **승인 전 초안**](docs/BID_AX_FULL_BLUEPRINT_29_ACCEPTANCE_20261114.md). 최종 85% **미입증**, 공식 **UNASSESSED**, **[작업중]/RELEASE HOLD/크몽 미등록** 유지. 원본과 다른 제품 불변.
+
+---
+
 ## [2026-11-14 KST] P85 PDF 기능 원격 독립 읽기 검증 완료
 - 기능 커밋 **2de90f3e1231d945b8fcec322f02194003b37098** 원격 **11/11 파일 내용 일치**, 작성자/커미터 hibi89 확인. [blueprint-only Actions #43504668031](https://github.com/hibi89/Freelancer/actions/runs/43504668031) SUCCESS이나 Python 기능 CI는 아님. Python3.13.5/Linux 로컬 151/151 PASS, PDF render 육안 PASS.
 - 최종 R01–R29 공식 **UNASSESSED**, 85% **미달성·검증 대기**; 사용자 조달청/온비드 API 이용권·실 원문/권리, 고객 Windows, 승인 가중치 없는 한 목표 완료 주장 금지. [작업중]/HOLD/미등록 계속.

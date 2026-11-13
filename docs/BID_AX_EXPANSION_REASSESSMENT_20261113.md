@@ -1,3 +1,10 @@
+## [2026-11-14 KST] 최종설계 R01–R29 기준 온비드·통합 현황 보강
+- 현행 R01–R29 총29개 **최종설계 전체**를 기준으로 개발. 신규 로컬 온비드 관심목록·가격/유찰 필터·변경·감사 보호·법원/온비드/나라장터 구분 portfolio, GUI/CLI/.pyz 지원; 기능 정확 SHA `8aa19f3aa4873ff17ecc188a097bd1c59f146a7b`, 본 문서 commit HEAD는 브랜치 최신값 별도 조회.
+- Linux Python3.13.5 **167 PASS/0 FAIL/0 SKIP**, compileall PASS, Tk8.6 Xvfb smoke PASS. 이번 신규 코드 원격 3/3 Git blob 일치. 이번 푸시 전 GitHub Python CI/Windows/실공식 API/실고객 NOT_RUN.
+- [29요구 전수 추적·100점 배점 **승인 전 초안**](docs/BID_AX_FULL_BLUEPRINT_29_ACCEPTANCE_20261114.md). 최종 85% **미입증**, 공식 **UNASSESSED**, **[작업중]/RELEASE HOLD/크몽 미등록** 유지. 원본과 다른 제품 불변.
+
+---
+
 # BID AX v2 사용자확정 최종설계 R01–R29 전수 재산정 — 2026-11-13 KST
 
 기준 리포지토리: hibi89/Freelancer@product/bid-ax-public-procurement. 변경 전 verified HEAD 42fa2aaa3e7077721ebfeb10f9bacc09ad109a8b. 이번 작업은 **문서만 변경**, 기존 코드 미수정·새 기능 실행 0. 기존 Linux Python3.13.5 합성 94 PASS(이전 기록), 실나라장터/온비드/API/Windows/고객 시험 미수행.

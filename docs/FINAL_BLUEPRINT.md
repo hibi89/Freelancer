@@ -92,3 +92,8 @@ The 50-stage prototype target is an independent offline engine, input/output con
 ## 2026-11-13 P70 follow-up
 Source 027c4592e7aed1d806a9218269efe534952a8f04. Added offline G2B-format snapshot contract quarantine (never live HTTP), saved/reusable local multi-company SQLite profiles, and duplicate JSON key checks. Local Python3.13.5: 60/60 PASS, Tk Xvfb smoke PASS; six Git blobs match. Actual API response/Win10-11/Python3.11/customer/CI not verified. See docs/P70_HARDENING_EVIDENCE_20261113.md.
 Full R01-R21 final completion remains UNASSESSED (approved owner weighting absent), target 70% [작업중] retained and RELEASE HOLD. Local DB profiles are plaintext, keep filesystem access restricted; never put real customer data or credentials into repo.
+
+
+## 2026-11-14 최종설계 전체 진행 보강
+
+`portfolio-report`, `onbid-filter`, `onbid-watch`, `onbid-watchlist` 명령이 승인된 로컬 스냅샷에 대해 동작합니다. 온비드 관심/검토보류/해제는 UUID 감사 이력으로 중복·변조·물건 변경을 감지합니다. Tk GUI의 '공매·경매 로컬 관리' 메뉴에도 같은 기능을 추가했습니다. 법적 자격·실시간 시세/낙찰·법원 권리 확정은 제공하지 않습니다. 로컬 전체 167 PASS, 원격 Python CI/실 Windows/실정부 API 미검증. 새 전체 R01–29 감사표: [전수 수용·미승인 가중치](docs/BID_AX_FULL_BLUEPRINT_29_ACCEPTANCE_20261114.md).
