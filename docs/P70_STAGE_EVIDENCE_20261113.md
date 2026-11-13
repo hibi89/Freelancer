@@ -9,7 +9,7 @@
 - Local test: `python -Werror::ResourceWarning -m unittest discover -s tests -v` → **45 PASS / 0 FAIL / 0 SKIP** after P70 feature work. Python **3.13.5** is the observed runner, not proof of Windows10/11/Python3.11 compatibility.
 - GUI headless smoke: `xvfb-run -a python [Tk launch with timed destroy]` → `TK_GUI_SMOKE_PASS`, Tk **8.6**, Linux virtual display. Actual customer Windows GUI acceptance **NOT_RUN**.
 - Other local negative cases: DB payload tamper, stale source version review, duplicate review replay, CSV formula, HTML injection, existing DB/report overwrite, unrelated/corrupted backup, invalid JSON and atomic import all checked.
-- Source code/commit SHA GitHub readback to be confirmed after commit, CI/real browser/Windows/official API/real bidder/customer acceptance **NOT_RUN**. No developer key, real customer data, payment, external requests or third-party AI.
+- Source code commit `22d44f5e2fb39024703331903b881bec7bfd6521` remote **17/17 exact-content matches**. Pre-existing [final blueprint gate #43379099736](https://github.com/hibi89/Freelancer/actions/runs/43379099736) **SUCCESS**; this gate is not a Python test CI. Python functionality remains local-only; Windows/official API/real bidder/customer acceptance **NOT_RUN**. No developer key, real customer data, payment, external requests or third-party AI.
 
 ## 21 full-scope requirements — latest bounded implementation status
 
