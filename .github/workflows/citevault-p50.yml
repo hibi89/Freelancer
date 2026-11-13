@@ -17,6 +17,8 @@ on:
       - tests/p85-vault.test.mjs
       - enterprise/p85-loopback.mjs
       - tests/p85-loopback.test.mjs
+      - tests/p85-state-store.test.mjs
+      - enterprise/p85-state-store.mjs
       - .github/workflows/citevault-p50.yml
   workflow_dispatch:
 permissions:
@@ -62,8 +64,9 @@ jobs:
         run: |
           node --check enterprise/p85-vault.mjs
           node --check enterprise/p85-loopback.mjs
+          node --check enterprise/p85-state-store.mjs
       - name: Run real local credentials, tenant isolation and lifecycle regression
-        run: node --test tests/p85-vault.test.mjs tests/p85-loopback.test.mjs
+        run: node --test tests/p85-vault.test.mjs tests/p85-loopback.test.mjs tests/p85-state-store.test.mjs
   synthetic-evidence:
     runs-on: ubuntu-24.04
     timeout-minutes: 12
