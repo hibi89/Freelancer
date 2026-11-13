@@ -1,3 +1,12 @@
+# BID AX P85 보안 후속 — 2026-11-13 KST
+
+- 사용자 목표: 최종설계 전체 **85%**. 공식 최종완성률 **UNASSESSED / 목표 미검증 / [작업중] 유지 / RELEASE HOLD / 크몽 미등록**.
+- 새 기능 SHA `9a895ad6ac6d47941d0cf5c5a3ec908e4a298947`: 완료된 수집 배치 사후변조 거부, API 승인 bool 엄격화, 오류문구 내 서비스키 노출 방어, 타임아웃 유한 재시도·KST 일일 호출예산.
+- Linux Python3.13.5에서 전체 로컬 회귀 **90 PASS/0 FAIL/0 SKIP**, compileall PASS (기존83 + 신규7); 실제 정부 API 호출·고객자료 전송 없음. [증거](docs/P85_SECURITY_FOLLOWUP_20261113.md).
+- 이번 기능 코드/테스트 3개 GitHub readback 완료; 새 커밋 Python CI 결과, Python3.11, 실 Windows10/11, 실제 공고100건·자격10건·권리/고객 인수 미검증. 기존 BID OWL과 다른 제품 보존.
+
+---
+
 # BID AX P85 engineering checkpoint — 2026-11-13 KST
 
 - **목표:** 사용자 확정 최종설계 전체 **85%**. **공식 최종완성률 `UNASSESSED` / 85% 미입증 / `[작업중]` 유지 / RELEASE HOLD / 미등록**.

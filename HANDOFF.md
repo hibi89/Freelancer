@@ -1,3 +1,18 @@
+# BID AX P85 보안 후속 인수인계 — 2026-11-13 KST (10항)
+
+1. 목표/최종설계: 사용자 목표 최종 85%; 독립 R01–R21 전체 설계, Python3.11+·SQLite·Tkinter 로컬형.
+2. 완료/설계 결정: 완료 배치 사후변조 거부, API 승인값 bool 강제, 오류문의 비밀 URL 차단, 타임아웃 유한 재시도; 호스팅형보다 비용·기밀·지원 범위를 통제하는 로컬형 유지.
+3. 테스트: Linux Python3.13.5 로컬 **90 PASS/0 FAIL/0 SKIP**, compileall PASS; 원격 신규 3개 파일 readback, GitHub Python CI/Windows/실 API/고객 검증 NOT_RUN.
+4. 완료/진행/차단: P85 오프라인 기술 단계 보강, **공식 최종85% 미입증 → UNASSESSED**, [작업중] 유지, RELEASE HOLD, 미등록.
+5. 오류/원인/시도: 네트워크 예외에 고객 인증키 포함 URL 노출 위험 발견; 예외 차단 후 구형 중복 JSON 진단 테스트 1건 충돌 수정, 전체 회귀 90 PASS. 동일 실패 방식 반복 금지.
+6. 저장소/브랜치/SHA: Private `hibi89/Freelancer@product/bid-ax-public-procurement`, 이전 HEAD `a5266b4044cfb4217aa620d555094407beaab71e`, 기능 SHA `9a895ad6ac6d47941d0cf5c5a3ec908e4a298947`; `bidax/batch.py`, `bidax/transport.py`, `tests/test_p85_security.py`, `docs/P85_SECURITY_FOLLOWUP_20261113.md`.
+7. 배포/환경: Python CLI/로컬 Tk GUI, 실행 `python -m unittest discover -s tests -q`; Windows EXE/실 설치/Vercel Production 없음; .pyz는 Python 필수 비출시용.
+8. 원본/백업/비밀: 제외 BID OWL·타 Freelancer 브랜치·중앙29/19 상품·공고DB 변경 없음; Git 이력으로 복원. 고객 API 키/PII/고객원본 업로드·외부 호출 금지.
+9. 다음 작업/완료조건/승인: 사용자 본인 실 API 키·현재 API 운영권리/원문·첨부 확인, 실공고100·자격10 대조, Win10/11+3.11/EXE·한글 PDF/암호화·실고객 검증, R01–R21 승인 가중치 독립 수용. 확인 전 공식률/출시 변경 금지.
+10. 갱신/증거 범위: 2026-11-13 KST; 신규 SHA 원격 확인, 90건은 로컬 mock/합성 기준이며 GitHub CI·실정부 API·Windows·고객·계약권은 미검증.
+
+---
+
 # BID AX P85 latest HANDOFF — 2026-11-13 KST (10 items)
 
 1. **목표·용도·최종설계·스택:** 공공입찰 준비 로컬 고객용 BID AX, 고객확정 R01~R21 전체 100% 기준/이번 목표 85%; Python3.11+·SQLite·Tkinter, 고객 보유 API 키의 선택형 호출(현재 실행 안 함).

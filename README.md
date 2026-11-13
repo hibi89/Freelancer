@@ -1,3 +1,5 @@
+> **P85 후속 보안 점검 (2026-11-13)**: 완료된 공고 배치 SHA 변조 탐지, API 승인 boolean True 검증, 비밀 포함 urllib 예외 redaction 및 타임아웃 재시도. 로컬 회귀 90 PASS(합성), [근거](docs/P85_SECURITY_FOLLOWUP_20261113.md). 공식 최종완성률 UNASSESSED·출시 HOLD.
+
 # BID AX — offline public procurement preparation (prototype)
 
 **Private candidate; not for sale.** Separate from the excluded BID OWL project. Standalone Python 3.11+ standard-library engine; SQLite file stays on the customer's PC. No background daemon, HTTP traffic, account, embedded API key, ML, or subscription. This is **preliminary screening**, never a substitute for original bid documents or a licensed professional.

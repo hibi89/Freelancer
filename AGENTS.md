@@ -1,3 +1,5 @@
+> [BID_AX_P85_SECURITY_FOLLOWUP_20261113] R01–R21 전체 최종설계 85% 목표는 **미달성/미산정**; [작업중]·RELEASE HOLD 유지. 기능 SHA `9a895ad6ac6d47941d0cf5c5a3ec908e4a298947`는 완료배치 사후변조 차단·네트워크 인증키 오류 방어, 로컬 90 PASS/0 FAIL. 실제 고객/Windows/공식 API 미검증. [후속 근거](docs/P85_SECURITY_FOLLOWUP_20261113.md).
+
 > [BID_AX_P85_20261113] 사용자 최종설계 R01~R21 전체 85% 목표. 검증 가능한 오프라인 P85 범위와 최종완성률을 혼동하지 않는다. 공식 `UNASSESSED`·`[작업중]`·`RELEASE HOLD` 유지. [이번 기술 범위](docs/P85_STAGE_EVIDENCE_20261113.md). 원본 `Bid_Owl`·타 브랜치/고객 DB 미수정. 유료 CI·실 API 전송·배포·원본/보안 권한 변경 사전승인.
 
 # BID AX branch operating rules
