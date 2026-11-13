@@ -1,5 +1,15 @@
 # CITEVAULT AX — STATUS — RAG Studio Enterprise, 2026-11-13 KST
 
+## [2026-11-14 KST] P85 통합 PREP·SMAX 서명 검토 실경로 검증 — 합계 138 PASS
+
+- **기준·판정:** 사용자 최종설계 전체 `docs/FINAL_BLUEPRINT.md` 100% 대비 85% 목표 **UNASSESSED, 아직 미달성/미검증**; `[작업중]`, RELEASE HOLD/SALE NO-GO. `docs/FINAL_BLUEPRINT_85_ACCEPTANCE_MATRIX_20261114.md`의 24개 REQ 정확 수용표만 사용, 합성 테스트 통과율로 85% 조작 금지.
+- **이번 실제 기능:** 이전에 단독만 검증됐던 Ed25519 서명 기능을 실제 `POST /v1/assess` 검토 전용 PDF/DOCX/TXT+readonly SQLite 요청에 연결. `p70-local-review.mjs`에서 직접 파일로 읽은 PREP 매핑 원문 bytes SHA·재검증, `p85-review-sql.mjs` SQLite 잠정 매출 결과에 mapping digest 결속, 신규 `p85-signed-review-gate.mjs` host-trusted 공개키·조직·key ID·원본 CSV SHA·PREP mapping SHA·version/expiry 검사, `p85-journey.mjs`서 오류/위조·스키마 변조·재사용·만료 시 데이터/인용 누출 없는 REVIEW_HOLD·answer:null. 유효한 서명도 source_rights_verified false, customer_approval false, ax_package_created false. **실제 고객/SMAX producer/권리 승인 아님**.
+- **검증:** Linux Node22.16/Python3.13.5 이번 변경 후 개별 완료 P85 테스트 10파일 **138PASS/0FAIL/0SKIP**(기존 합성 129+신규 signed SQL journey 9), 총합은 **각 파일 별도 실행 결과**, 단일 묶음 테스트 명령은 timeout으로 **미완료**. 새 9건은 실 API HTTP/서명 변조/원본·매핑 SHA/조직 경계/버전·만료 부정까지 PASS. 기존 P85 journey 18, HTTP17, actual native PDF/DOCX13, state14, vault27, operator10, UI6, BM25 6, 서명 단독18 개별 통과. 독립 ZIP 28파일 CRC검증·압축해제 신규 9 PASS/데모 PASS; SHA256 `84a9ea2725fe8391451a6942f5ec4628471c86f0d66bb9bc3d3b8fab3d4aa99e`. 소스/테스트 5파일 GitHub remote blob/local `git hash-object` 정확 SHA 일치. 상세 `docs/P85_SIGNED_REVIEW_INTEGRATION_EVIDENCE_20261114.md`.
+- **CI/RAG 구분:** Ubuntu24.04/Windows2022 GitHub Actions P85 job 신규 source/test 확인 및 실행 정의(실 Hosted run ID/CI SHA/Windows PASS **미검증**). 원본 RAG Studio 과거 workflow run ID `43231121679`는 Windows/Ubuntu 성공 확인했지만 CITEVAULT pinned `c5867b3951f51bfa97cadd1aad8fb13e9cf9e604` exact 3SKIP 증거는 아님. 원본 develop과 pin 분기 상태 유지.
+- **잔량/승인:** 실제 기업 IAM/신뢰 사용자·고객 source rights/키 관리·실 PREP/SMAX 승인 패키지, pinned 원본 RAG native/SQL/BM25 실제 실행, 한국어 실제 local pretrained model/라이선스+성능, Windows/Linux hosted CI/물리 설치·Gold·인수, 최종설계 owner 승인 가중치 모두 대기. 추가 비용·권한 변경·원본/고객자료·Production/Vercel·타 크몽 상품 변경 0.
+
+
+
 ## [2026-11-14 KST] CITEVAULT AX 최종설계 85% 목표 실구현 — 로컬 사용자관리·UI·BM25
 
 - **공식 판정:** 최종완성률은 `docs/FINAL_BLUEPRINT.md` 전체 100% 기준. **UNASSESSED · 85% 달성 미검증**, `[작업중]`, `RELEASE HOLD / SALE NO-GO`. 전체 24요구 수용표 `docs/FINAL_BLUEPRINT_85_ACCEPTANCE_MATRIX_20261114.md`; 임의 가중치·합성 PASS 기반 최종점수 산정 금지.
