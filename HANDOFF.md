@@ -1,3 +1,15 @@
+## 2026-11-13 BID AX 별도 공공입찰 준비상품 신규 구현 — main 인수인계 10항
+1. **목표/요건:** 신규 BID AX P50 전체 최종설계 목표, R01~R21 및 Python stdlib/SQLite local-first.
+2. **구현/결정:** Hosted(A) 대 local(B) 중 사용자 소유 데이터·키 보호/고정운영비를 고려 B 채택; pure API 7일 제한/원문 링크·검증/이벤트 저장/프로필 적합성/서류/CLI/backup 구현.
+3. **테스트:** Python local unittest 19 PASS/0 FAIL/0 SKIP, CLI 수동 smoke PASS; remote source readback 12/12 identical, GitHub CI/Windows/실 API/고객 NOT_RUN.
+4. **상태:** P50 오프라인 엔진 단계, 최종설계 전체 공식 UNASSESSED/[작업중]/HOLD/미등록; 기존 다른 제품은 변화 없음.
+5. **장애/한계:** 고객 승인 API 키/공고 원문 부재, 공식 API 2026-11-10 7일로 제한. fail-closed 유지, 라이선스·실 자격 확인 전 자동 인정 금지.
+6. **Repo/SHA:** `hibi89/Freelancer@product/bid-ax-public-procurement` code `d614c08e611ef15d388865034ada215e10c8da6e`; docs/FINAL_BLUEPRINT.md, bidax/core.py, tests/test_core.py. 기존 main HEAD 이력 보존.
+7. **Production/환경:** Python 3.11+ local CLI, Vercel·Production 미적용, no external HTTP.
+8. **Backup/secret:** 별도 신규 브랜치, Bid_Owl/기존 8 product 변경 없음. 신규 backup 경로만; 고객키·자료 없음.
+9. **Next/approval:** 실 API 권한/100건·10건, 원문/GUI/Windows/실고객·법무/판매 권리 및 공식 21항 승인 가중치 검증 후 50 최종률 판단. 목표 미충족 마커 유지.
+10. **KST/commit:** 2026-11-13 local19/19, remote12/12 confirmed. 중앙 `kmong-productization@98abf0cf1fb96733ed59a35ca65406661a56d22c`; 본 main 최신 SHA는 원격 ref readback 기준.
+
 # HANDOFF — Freelancer 5상품 크몽 설계 허브 (10항, 2026-11-13 KST)
 1. **목표·용도·확정기술:** Private Freelancer 문서 저장소에서 기존 3종 AZENTFLOW AX(HAE+LA)/CITEVAULT AX(RAG+SMAX)/SITECRAFT AX(REA+Fable-Astra)와 신규 **PROOFQA AX**(CodeChecker+Graphify+agent-browser+Cloudflare 보안 검증 방법), **ONTOINSIGHT AX**(AutoML+NVIDIA Auto Ontology 개념+데이터/KPI/ML) 5개 독립 최종상품 기준을 유지.
 2. **완료/변경/결정 근거:** 기존 3 branch의 상세 기술 설계는 보존하되 내부 상품명·브랜드 소개·문서 표제만 갱신. 신규 product 브랜치 2개 생성, 각 FINAL_BLUEPRINT/기술/30 또는 36 테스트/50→100/상품·보안 문서 작성. PROOFQA는 구조·동작·근거 교차검증, ONTOINSIGHT는 경량 ontology-lite/수치 검증·누수방지 선택. 전체 NVIDIA Stack/자동 고객 소스 실행은 초기에 배제.
