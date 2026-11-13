@@ -1,5 +1,14 @@
 # CITEVAULT AX — STATUS — RAG Studio Enterprise, 2026-11-13 KST
 
+## [2026-11-13 KST] 사용자 70% 목표 2차 구현 — Node 34PASS/0FAIL/3SKIP, 최종완성률 미확정
+
+- **실제 개발:** 원본 RAG 통합 브리지의 근거 없는 `FOUND` 허용 결함 확인·수정. `enterprise/p70-citation-contract.mjs` 엄격 출처 검증을 `enterprise/p70-rag-bridge.mjs`에 실제 연결. `enterprise/p70-local-review.mjs`는 실제 로컬 CSV bytes/원본 SHA-256/5열 역할 매핑/BigInt 금액 일치/보존 확인, SMAX/PREP `REVIEW_HOLD`만 출력. `row_lineage_verified:false` 등 권리·인가 과대주장 금지.
+- **정확 검증 범위:** Linux Node **v22.16.0**, 원격 GitHub 코드와 로컬 4개 신규 source/test Git blob SHA 일치: 인용 계약 **14 PASS/0 FAIL**, CSV/매핑 review-only **17 PASS/0 FAIL** → **31 PASS/0 FAIL/0 SKIP**. 기존 P50 standalone 3 PASS/3 SKIP와 동시 명령 실행 기준 **37 total / 34 PASS / 0 FAIL / 3 SKIP**. SKIP 3은 실제 pinned RAG checkout 불가로 SQL/BM25/SMAX 통합 미수행. P70 original-source BM25/충돌/근거 계약 **순수 V8 in-memory 5 PASS**, 로컬 자료/Node native RAG 대신 증명하지 않음. `docs/P70_EVIDENCE_MATRIX.md`의 정확 blob과 실행 근거.
+- **CI:** GitHub Actions `.github/workflows/citevault-p50.yml`의 독립 `local-contracts` job으로 31 Node 테스트 구성, `synthetic-evidence`는 원본 RAG pin과 P512/P538/P540/P549 연결. 실제 GitHub Actions run ID/job status **미검증**.
+- **남은 목표:** P50 실 원본 RAG package import 통합 3개 SKIP 해결, PDF/DOCX 2+ 실제 source CI/Windows, PREP/SMAX 실제 인증 승인→AX 전환, 기업 서버 Identity 및 ACL-before-load, 사용자 승인 최종설계 100% 가중치 전수 평가. 순수 synthetic 도구를 실 IAM/법적 승인으로 간주 금지.
+- **판정:** 공식 최종완성률 **UNASSESSED**, 70% 사용자 목표 **미달성·검증 대기**, `[작업중]` 유지, `RELEASE HOLD / SALE NO-GO`, Production 배포 미적용. 이번 변경은 기존 원본/고객자료/자격증명/기타 상품 무변경.
+
+
 ## [2026-11-13 KST] 사용자 CITEVAULT AX P70 개발 목표 — 오프라인 검색정책 구현, 최종 70% 미검증
 
 - **목표:** 사용자 최종설계 전체 대비 70%(기존 P50 선행 미검증 포함). 현재 **공식 최종완성률 UNASSESSED, 목표 70% 검증 미달**, `[작업중]` 및 `RELEASE HOLD/SALE NO-GO` 유지.
