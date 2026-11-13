@@ -1,5 +1,15 @@
 # CITEVAULT AX — STATUS — RAG Studio Enterprise, 2026-11-13 KST
 
+## [2026-11-14 KST] CITEVAULT AX P85 서명 검토 경계 — 독립 18 PASS
+
+- **목표와 판정:** 사용자 최종설계 전체 대비 85% 목표. **공식 UNASSESSED / 85% 미달성·미검증**, `[작업중]`, `RELEASE HOLD/SALE NO-GO`. 기존 합성 local Node 통합 기능을 실제 기업 인증이나 고객 승인으로 전용 금지.
+- **추가 구현:** `enterprise/p85-signed-provenance.mjs`에서 Ed25519 오프라인 서명 생성/검증. 테넌트·외부 신뢰 공개키 ID·source CSV SHA256·PREP mapping SHA256·정렬된 문서 SHA/types·issue/expiry·생산자 버전 일치 검증. 위조된 `approved`·`rights_verified:true`·타 조직·가짜 키·만료/replay 시 HOLD. 모든 성공 반환도 `REVIEW_HOLD`, `source_rights_verified:false`, `ax_package_created:false`, `answer:null`. 본 기능은 실제 PREP/SMAX producer 통합이 아닌 **합성 메타데이터 전용 검증 계약**.
+- **실제 검증:** Linux Node22.16.0 `node --check enterprise/p85-signed-provenance.mjs` PASS, `node --test tests/p85-signed-provenance.test.mjs` **18PASS/0FAIL/0SKIP**, GitHub 원격 2파일 blob SHA `78b777505a4325230ad7f780907bf08538dc7783` / `ef21059e67ce5b2e4c7b5043d6ed0e738c151232` 로컬 `git hash-object`와 동일. 지난 전체 P85 89/89 PASS는 **변경 이전 기록**, 이번 전체 직렬 실행은 HTTP 테스트 이후 native 단계에서 도구 제한시간 초과하여 **미완료**, 신규 전체 107PASS라고 주장하지 않음.
+- **CI:** `.github/workflows/citevault-p50.yml` Ubuntu/Windows P85 matrix에 신규 서명 파일 syntax 및 테스트 추가; 실제 Hosted Actions run/log/Windows 실행은 **미검증**.
+- **남은 필수:** 정확 pin 원본 RAG SQL/BM25/PDF/DOCX·SMAX 3SKIP, 실제 고객 임직원 IdP/권한과 자료권리 승인·실 PREP/SMAX signed producer 연동, 한국어 실제 로컬모델·라이선스, Windows 물리/CI, 고객 Gold·가중치 수용. 실제 기업 IdP/고객 문서/원본 RAG/PREP/SMAX/외부 API/Prod 변경 없음. 증거 `docs/P85_SIGNATURE_GATE_20261114.md`.
+
+
+
 ## [2026-11-14 KST] CITEVAULT P85 권한-매출 폴더 바인딩 검수 — 89PASS
 
 - **설계 전체 목표:** 사용자 최종설계 100% 대비 85%. 공식 완성률은 **UNASSESSED**, 85% **검증 미달**, 크몽 `[작업중]`, **RELEASE HOLD/SALE NO-GO**.
