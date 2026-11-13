@@ -1,3 +1,11 @@
+## [2026-11-14 KST] BID AX 무료 API 4개 공통 인증키/서비스별 호출 게이트 (실 API 미호출)
+- 사용자 확인: 나라장터 15129394, 온비드 15157220/15157252/15157254 활용신청 **4개 완료**, **인증키 문자열 동일**. 키 원문 미접수·미저장·미전송; 프로그램은 단일 키 대화형 입력 후 서비스별 승인/쿼터를 분리 관리.
+- 신규 bidax/api_gateway.py: 공식 명세 기반 고정 endpoint(G2B 물품/용역/공사/외자, 온비드 결과목록/상세)·요청 검증, 수동 --live --out, 서비스별 KST 내구성 요청 예산, 무 프록시·리다이렉션/TLS/10MiB/JSON 중복키/응답 키반사 차단, 새 경로 원문 격리. 15157220 공고물건 필드/기본 URL만 검증됨 → operation 미검증으로 **실 호출 차단**.
+- 기존 167회 + 신규 **21회** = Linux Python3.13.5 전체 **188 PASS/0 FAIL/0 SKIP**, compileall/pyz 오프라인 API 계획 CLI smoke PASS. 공식 API **실제 키/호출/원문 0**, Python3.11 실런타임·Windows/EXE/고객/법률권리 미검증.
+- 상세 docs/API_GATEWAY_SHARED_KEY_20261114.md. 사용자 '최종완성률 고정·가중치 없음' 지시 유지: 최종설계 R01–R29 전체를 축소 없이 기준으로 하며 별도 가중치 승인을 요구하지 않는다. **공식 85% 미달성·UNASSESSED/[작업중]/RELEASE HOLD/크몽 미등록** 유지.
+
+---
+
 ## [2026-11-14 KST] 최종설계 R01–R29 기준 온비드·통합 현황 보강
 - 현행 R01–R29 총29개 **최종설계 전체**를 기준으로 개발. 신규 로컬 온비드 관심목록·가격/유찰 필터·변경·감사 보호·법원/온비드/나라장터 구분 portfolio, GUI/CLI/.pyz 지원; 기능 정확 SHA `8aa19f3aa4873ff17ecc188a097bd1c59f146a7b`, 본 문서 commit HEAD는 브랜치 최신값 별도 조회.
 - Linux Python3.13.5 **167 PASS/0 FAIL/0 SKIP**, compileall PASS, Tk8.6 Xvfb smoke PASS. 이번 신규 코드 원격 3/3 Git blob 일치. 이번 푸시 전 GitHub Python CI/Windows/실공식 API/실고객 NOT_RUN.

@@ -93,11 +93,30 @@ def main(argv=None):
     watch.add_argument("note")
     watch.add_argument("--request-id", default=None, help="stable UUID for retry-safe replay")
     sub.add_parser("onbid-watchlist", help="audited Onbid preferences and source staleness")
+    api_probe = sub.add_parser("api-probe", help="prepare official API query; --live explicitly fetches ONE quarantined page")
+    api_probe.add_argument("service", choices=("g2b_goods", "g2b_services", "g2b_construction", "g2b_foreign",
+                                               "onbid_announcement_assets", "onbid_result_list", "onbid_result_detail"))
+    api_probe.add_argument("params_file", help="local JSON request inputs; NEVER put the service key in this file")
+    api_probe.add_argument("--live", action="store_true", help="perform one authorized official request")
+    api_probe.add_argument("--out", help="NEW local JSON quarantine output; required with --live")
+    api_probe.add_argument("--daily-limit", type=int, default=8, help="independent local per-service daily cap 1..1000")
     gui = sub.add_parser("gui", help="launch offline desktop GUI (Tkinter)")
     args = p.parse_args(argv)
 
     if args.command == "restore":
         result = restore_backup(args.source, args.db)
+    elif args.command == "api-probe":
+        from .api_gateway import create_plan, fetch_quarantined
+        plan = create_plan(args.service, read_local_json(args.params_file))
+        if args.live:
+            if not args.out:
+                raise ValueError("--live requires --out NEW local filename")
+            from getpass import getpass
+            key = getpass("Data.go.kr serviceKey (not saved): ")
+            result = fetch_quarantined(plan, service_key=key, permission=True, db_path=args.db,
+                                       output_path=args.out, daily_limit=args.daily_limit)
+        else:
+            result = plan
     elif args.command == "onbid-plan":
         from .onbid_plan import build_plan
         result = build_plan(args.kind, read_local_json(args.params_json), page=args.page, rows=args.rows)

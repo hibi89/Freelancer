@@ -1,3 +1,17 @@
+# BID AX API 공통키 게이트 개발 인수인계 — 2026-11-14 KST (필수 10항)
+1. 목표·최종설계·스택: BID AX R01–R29 사용자 고정 100% 기준, 목표85%; 나라장터+온비드 API와 합법 법원 로컬자료. Python/SQLite/Tk, 고객 PC 월서버비0.
+2. 변경·근거: 공공데이터포털 4개 각각 승인, 동일 키 확인. 키는 호출 때 단 1회 임시 입력·저장 안 함. G2B/온비드 결과목록/상세 host/operation 고정; 불확실 15157220 path 차단. SaaS보다 고객 PC 수동 조회 선택(개인정보/비용 감소).
+3. 테스트: Python3.13.5 Linux 오프라인 가짜 HTTP 총188/188 PASS(기존167+신규21), compileall 및 Python zipapp api-probe dry-run PASS. GitHub SHA·Actions는 새 커밋 뒤 확인. 실정부 HTTP 0, 고객키0, Windows/고객 미검증.
+4. 상태: 오프라인 API 연결기·CLI 완성, 실 응답 연동/공식 스키마·원문/납품 권리는 미검증. **전체 공식률 UNASSESSED / 85% 미입증 / [작업중] / RELEASE HOLD / 미등록**.
+5. 장애·대안: SQLite 자원경고는 테스트 connection 누락 및 새 예산 커넥션 정리 후 188 PASS. 15157220의 operation 이름 미확인→임의 추측 대신 차단. 실키/실 API·사용자 외부 전송 전 별도 승인/PC 수동 테스트만.
+6. repo/branch/SHA: private hibi89/Freelancer@product/bid-ax-public-procurement, 변경 전 HEAD 04d5b5e563be70ff32b08e49ea46c6e3f37693e9; 새 bidax/api_gateway.py, cli.py, tests/test_api_gateway_shared_key.py, examples 3개, docs/API_GATEWAY_SHARED_KEY_20261114.md, STATUS/HANDOFF/README. 새 SHA는 readback 확인.
+7. 실행·환경·Production: python -Werror::ResourceWarning -m unittest discover -s tests -q; python -m bidax.cli --db LOCAL_DB api-probe onbid_result_list examples/onbid_result_list_plan_LOCAL_ONLY.json(무HTTP); --live --out NEW_PATH는 고객 동의 키 입력. Windows/EXE 미실행, Vercel/배포 N/A.
+8. 원본·백업·인증: 기존 transport.py/G2B/온비드/법원 원장·BID OWL/다른 제품/고객 DB 불변. 키/실데이터 GitHub 업로드 금지. Git normal revert from 04d5b5e563be70ff32b08e49ea46c6e3f37693e9; force push 금지.
+9. 다음 우선순위: 15157220 공식 오퍼레이션 확인, 승인된 로컬 키로 각 서비스의 소량 실 응답을 사용자 PC에서 별도 허가 후 확인, pagination/실원문 정규화·100건/10인간, Win10/11/설치/상용권리/고객인수. 사용자 고정 최종완성률 기준 유지, 가중치 승인 재요구 금지.
+10. 갱신 기준: 2026-11-14 KST, Python3.13.5 Linux fake HTTP 검증만. 서비스 명세 data.go.kr 15129394,15157220,15157252,15157254; 188/188 테스트·원격 브랜치 HEAD는 각각 별개 근거.
+
+---
+
 # BID AX 2026-11-14 최종설계 85% 목표 후속 인수인계 (필수 10항)
 1. 목표/용도/확정설계/스택: R01–R29 29개 완제품 100% 기준, 나라장터+온비드 공식API+동의 받은 법원자료 분석, 로컬 Python/SQLite/Tk; 최종 85% 사용자 목표.
 2. 변경/설계: 온비드 관심목록·감사 이벤트·UUID 멱등·변조/버전 경고·필터, 3원천 통합 현황 GUI/CLI/pyz. 기존 로컬형을 유지(서버비 0 목표, 비밀/개인자료 불송신). 다른 원본 기능·BID OWL 무변경.
