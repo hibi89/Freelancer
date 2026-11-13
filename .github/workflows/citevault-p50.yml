@@ -1,0 +1,41 @@
+name: CITEVAULT P50 pinned RAG integration
+on:
+  push:
+    branches: [product/rag-enterprise-knowledge]
+    paths:
+      - enterprise/p50-gate.mjs
+      - tests/p50.test.mjs
+      - .github/workflows/citevault-p50.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic-evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Checkout CITEVAULT product branch
+        uses: actions/checkout@v4
+        with:
+          path: citevault
+          persist-credentials: false
+      - name: Checkout pinned public RAG source (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: hibi89/RAG_STUDIO
+          ref: c5867b3951f51bfa97cadd1aad8fb13e9cf9e604
+          path: rag
+          persist-credentials: false
+      - name: Node 22 for built-in SQLite
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Verify pinned RAG commit
+        shell: bash
+        run: test "$(git -C rag rev-parse HEAD)" = "c5867b3951f51bfa97cadd1aad8fb13e9cf9e604"
+      - name: Run CITEVAULT source-bound synthetic regression
+        shell: bash
+        working-directory: citevault
+        env:
+          RAG_STUDIO_ROOT: ${{ github.workspace }}/rag
+        run: node --test tests/p50.test.mjs
