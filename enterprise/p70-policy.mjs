@@ -65,7 +65,7 @@ function terms(input) {
 }
 const citation = (d,idx,quote) => Object.freeze({
   document_id:d.id,document_version:d.version,source_sha256:d.source_sha256,
-  source_kind:d.kind,source_unit:d.kind === 'pdf' ? 'page' : d.kind === 'docx' ? 'paragraph' : 'line',
+  source_kind:d.kind,source_unit:'synthetic_line',
   source_number:idx+1,quote
 });
 function conflictInCorpus(chunks,question) {
