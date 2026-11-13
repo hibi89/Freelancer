@@ -1,5 +1,30 @@
 # CITEVAULT AX — P70 implementation and verification matrix (2026-11-13 KST)
 
+## [2026-11-13 KST] P70 second push — executed Node guard and local byte-bound PREP/SMAX review
+
+**New source (GitHub source and test blobs exactly matched by local `git hash-object`):**
+- `enterprise/p70-citation-contract.mjs` blob `03f09a31ded87cefe728f381511512f93b44b6b8`: extracted shared validator for original RAG bridge. A `FOUND` result with zero citations now **rejects**; validates original RAG file_id, source line, quote budget, scoped ID list, `NO_EVIDENCE` abstention and distinct conflicting day periods.
+- `tests/p70-citation-contract.test.mjs` blob `c62eeeed6958d771fd6a0ddfe633d6da8eed6b59`: 14 Node22 assertion tests; `enterprise/p70-rag-bridge.mjs` imports this exact validator rather than the previous inline function.
+- `enterprise/p70-local-review.mjs` blob `0e8929298b879947117fd2c1bd30d3074bbdcfcc`: reads only three bounded fixed-named local files (`sales.csv`, `smax-review.json`, `prep-mapping.json`) for **synthetic** PREP/SMAX review. Checks real bytes SHA-256; symlink/hardlink/TOCTOU bounds; UTF-8/CSV/field mapping/tax unknown/row-count; BigInt quantity × price = amount with exact provisional total. **Always** returns `REVIEW_HOLD`/`approval NOT_GRANTED`, no AX package, no customer ownership or native SMAX signature, `row_lineage_verified:false`. It is **not** an actual SMAX producer or commercial importer.
+- `tests/p70-local-review.test.mjs` blob `9d87f01fc53b06d7592db2a347788ce5f9361345`: 17 Node22 tests with temp synthetic CSV/JSON files including actual file byte reads, 5-column mapping, digest failures, fake approval, tamper, symlink/hardlink, Excel formula-like CSV ID and source unchanged checks.
+
+**Actual execution**, container Linux Node v22.16.0, 2026-11-13 KST:
+```sh
+node --test tests/p70-citation-contract.test.mjs tests/p70-local-review.test.mjs
+# 31 PASS / 0 FAIL / 0 SKIP, 31 total
+```
+Combined with the previous exactly source-bound P50 standalone tests: **37 total / 34 PASS / 0 FAIL / 3 SKIP**. The three skipped cases are the original RAG checkout SQL/BM25/SMAX integration. **Node integration tests for original RAG/PDF/DOCX, Hosted Actions, real identity and real producer approval still not executed.**
+
+**Original RAG code-path inspection and in-memory V8 execution:** Actual original `src/document-search.mjs` blob `4a39383e37f33532c2ee5f94bcc52bb1c04b861f` + `src/knowledge-base.mjs` blob `3dfd6495ad1e7a59ef4f7b5661bb3350e0afe608` (pinned `c5867b39`) were evaluated against exact public returns/shipping fixture text in a separate pure JS harness (no filesystem package loading). **5 positive comparison assertions passed** including FOUND, NO_EVIDENCE, full-corpus conflicting 7/14 days, and forged empty evidence refusal. This does **not** prove original `loadPackage`/SHA/runtime native PDF integration.
+
+**Discovered and corrected:** previous `enterprise/p70-rag-bridge.mjs` accepted `status:'FOUND'` without any `evidence` because its inline validator checked only items in arrays that existed. New helper enforces citation cardinality and documented source units, with 14 Node regression tests. Hosted run still unverified.
+
+**Workflow:** `.github/workflows/citevault-p50.yml` now has independent `local-contracts` Node22 job (no package installation, 31 tests) plus original pinned `synthetic-evidence` job (P50/P70 and RAG P512/P538/P540/P549). GitHub Actions push run and job logs **unknown**, not declared PASS.
+
+**Final-design boundary:** P70 enterprise **model** and local synthetic source mapping review tests are stronger. Production ACL-before-load, authenticated employee identity, native customer-authorized PREP/SMAX → signed/approved AX export and real native PDF/DOCX app E2E remain missing/unverified. Official final-design completion **UNASSESSED**; 70% goal **not verified**. `[작업중]` and `RELEASE HOLD` retained.
+
+
+
 **Owner goal:** 70% of the *complete approved* enterprise blueprint. **Result:** partial implementation; official score **UNASSESSED** and 70% milestone **NOT VERIFIED**. Keep `[작업중]`, `RELEASE HOLD`, `SALE NO-GO`. This document cannot redefine the approved 100% denominator.
 
 ## Architecture decision (previous blueprint solution B retained)
