@@ -1,12 +1,25 @@
-# REQUIREMENTS — Freelancer 5대 상품의 최종설계 기준
-1. 총 **5개** 제품 전용 브랜치: AZENTFLOW AX(HAE+LA), CITEVAULT AX(RAG+SMAX/PREP), SITECRAFT AX(REA+Fable/Astra), PROOFQA AX, ONTOINSIGHT AX. 각 브랜치에 FINAL_BLUEPRINT/TECHNOLOGY_MAP/ACCEPTANCE_AND_ROADMAP/COMMERCIAL_AND_SECURITY와 STATUS/HANDOFF 저장.
-2. 공통: 개발 기능과 계획을 분리, 전체 100% 기준·50/70/85/95 단계, 고객 자료 권리/라이선스/개인정보/실 Windows 설치·검수, 원본 불변·장애/재시도/재현/데이터 정합성, 구독·API비 별도 표시.
-3. HAE: HAE 정책/승인 + LA 결정적 실행 + SQLite 분리 + DBVORA 자산/복구 + 선택 SOVIA; Google OAuth 고객형 미검증.
-4. RAG: RAG Studio 문서·SQL 근거 + PREP/SMAX 데이터 정형화 + 기업 권한/생성 답변 보류, 로컬 모델 선택형.
-5. REA: 고객 허가 사이트 Fable/Playwright 관찰→Astra 증거→고객 승인→Pro 독립 웹앱 생성→브라우저 비교; DATA2WEB와 별도.
-6. **PROOFQA AX**: AI Code Checker 정적 검사 + Graphify code/SQL graph + agent-browser 실 사이트 E2E + Cloudflare security-audit-skill의 독립 검증 방법론. 코드를 무단 실행하지 않고 확인/미검증/기각 결론에 정확 증거 연결.
-7. **ONTOINSIGHT AX**: AI AutoML Analyst + NVIDIA Auto Ontology **개념 참고**의 의미·관계/KPI 계약 + Excel/CSV 안전 ingest+SMAX/PREP 선택형, leakage-safe AutoML + 수치 재검증·근거형 보고서.
-8. 상품명 PROOFQA/ONTOINSIGHT는 상표 검토 전 내부명. 제3자 GitHub OSS는 정확한 버전/라이선스/NOTICE/상용 배포 조건 검토 전 내장·판매 금지. 외부 기업 제휴/보안 인증 주장 금지.
-9. 해총 기존 16종 진척과 신규 결합 상품 진척률은 독립. 신규 2개는 현재 `UNASSESSED`, 코딩/통합 미착수, `RELEASE HOLD`.
+# REQUIREMENTS — MYRADIO AI
 
-10. 기존 세 기업형 판매 상품의 내부 브랜드는 `AZENTFLOW AX`, `CITEVAULT AX`, `SITECRAFT AX`이며, 고객 약속 기능과 기술이 보존되는 이름표다. 원본 HAE/RAG/REA 저장소/기술명 및 구 브랜치명을 강제 변경하지 않는다. `docs/BRAND_POSITIONING.md`와 각 branch `FINAL_BLUEPRINT.md`에서 명칭 확인.
+공식 전체 제품 설계 100% 분모 (R01~R15). 현재 0.1.0 기초 프로토타입, 공식 완성률 UNASSESSED.
+
+| ID | 목표 기능 | 현재 상태 |
+|---|---|---|
+| R01 | Windows 10/11 설치·제거, 접근 가능한 GUI·설정 | GUI 원형 / 실 Windows 미검증 |
+| R02 | 기분/장르/시간/취향 선곡·중복 방지 | 기분/장르/시드 선곡만 구현 |
+| R03 | CC0/CC BY 등 오픈 음악 검색·원본 권리/ToS 검증 | 수동 권리 메타만, 온라인 미구현 |
+| R04 | 정상 음악 재생·다음 곡·오류복구·오프라인 | Windows WAV 재생 코드만/미검증 |
+| R05 | 곡 간 개인화 AI DJ 멘트·사연 소개 | 5개 규칙형 멘트만 |
+| R06 | 여러 실제 DJ 음색, 톤·감정·속도·발성 프리셋 | 문장 스타일 5개, OS 음성 하나 가능/검증 필요 |
+| R07 | 마이크/텍스트 청취자 요청·대화·반응 | 미구현 |
+| R08 | 방송 편성·재생큐·취향 저장/복원·장시간 사용 | 간단 목록 선택만 |
+| R09 | 일시정지·음량·건너뛰기·중지·상태/가청 품질 | GUI '곡 종료 후 중지' 원형만 |
+| R10 | 로컬 완전 오프라인 모드·온라인 모드 데이터 동의 | 로컬 원형만 |
+| R11 | 음악/청취기록 로컬 보존·삭제·프라이버시 | 미구현 |
+| R12 | 모델·라이선스·NOTICE·음원 권리 증거·보안 | 수동 경로/권한 게이트 일부만 |
+| R13 | 고객 지원 PC 성능 측정/패키징/롤백/복구 | 미구현 |
+| R14 | 30,000원 판매 패키지, 크몽 심사/환불/원가 | 기획만/미등록 |
+| R15 | 실제 Windows E2E·법률/라이선스·보안/음성/회귀 검수 | 로컬 Python 7 tests PASS만 |
+
+R16 (별도 후속 승인): AI 작곡 30~60초, 보컬/연주곡, 모델 상업용 라이선스와 저사양 PC 실증. 현재 1차 출시 분모 제외.
+
+상호 의존 순서: 재생권 증빙 > 제공처 adapter > DJ TTS 실제 화자 > 선곡/큐·취향 저장 > Windows 배포·고객 UX. 각 기능 검증 전 출시/판매 불가.

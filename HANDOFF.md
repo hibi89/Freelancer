@@ -1,17 +1,12 @@
-# HANDOFF — Freelancer 5상품 크몽 설계 허브 (10항, 2026-11-13 KST)
-1. **목표·용도·확정기술:** Private Freelancer 문서 저장소에서 기존 3종 AZENTFLOW AX(HAE+LA)/CITEVAULT AX(RAG+SMAX)/SITECRAFT AX(REA+Fable-Astra)와 신규 **PROOFQA AX**(CodeChecker+Graphify+agent-browser+Cloudflare 보안 검증 방법), **ONTOINSIGHT AX**(AutoML+NVIDIA Auto Ontology 개념+데이터/KPI/ML) 5개 독립 최종상품 기준을 유지.
-2. **완료/변경/결정 근거:** 기존 3 branch의 상세 기술 설계는 보존하되 내부 상품명·브랜드 소개·문서 표제만 갱신. 신규 product 브랜치 2개 생성, 각 FINAL_BLUEPRINT/기술/30 또는 36 테스트/50→100/상품·보안 문서 작성. PROOFQA는 구조·동작·근거 교차검증, ONTOINSIGHT는 경량 ontology-lite/수치 검증·누수방지 선택. 전체 NVIDIA Stack/자동 고객 소스 실행은 초기에 배제.
-3. **테스트/성공·실패:** 새 GitHub branch 두 HEAD·Git Trees 각각12 blob·문서 원격 재읽기 확인 PASS. 실제 제품 기능/CI·Windows/고객 보안·판매 0회 NOT_RUN. 기존 CodeChecker/AutoML 역사 CI는 신규 상품 검증과 구분.
-4. **상태:** 두 신규 패키지 **기획 완료, 기능 통합 미착수/완성률 UNASSESSED/RELEASE HOLD**, 기존 3개 제품도 상용출시 HOLD. 등록/판매가·고객 인수 전 기술 라이선스·증빙 별도 검증.
-5. **오류·원인·시도·재시도 금지:** 신규 브랜치 큰 통합 서비스는 정적 탐지만으로 웹·보안 결론을 확정할 수 없고, 매출 의미·join·target leakage 위험. 외부 Graphify/skill의 패키지/버전·비밀정보 전송 옵션과 NVIDIA NIM 비용은 검토/사전 승인. 무한 CI/force push·무단 원본 수정 금지.
-6. **저장소/브랜치/정확 SHA:** `hibi89/Freelancer` Private, `main` 기존 `b80423da5...`, 새 `product/proofqa-ax-delivery-audit@54b718f5d5520fae912d1fcc2e70a87ebd8f173c`, `product/ontoinsight-ax-data-analytics@afda6eac0802d50cbcd44eb0b99d3daeffbf0922`, 기존 세 상품의 최신 브랜드 갱신 SHA는 `docs/PRODUCT_INDEX.md`에 기재.
-7. **Production/프로젝트/환경:** 이 저장소는 실행 불필요한 기획 Repo; Vercel Production 미적용. 실제 Python3.11+ CodeChecker·AutoML 소스/브라우저/OSS 종속성은 각각 원본 repo에서 검증 후 제품화.
-8. **원본/백업/인증 관리/금지:** 구직 원본 SHA `d47239f...` Git history 복구 가능, 기존 3 브랜치/코드 및 해총 기존16종 완성률 불변. 고객 코드/PII/키/업무자료/원본 DB는 GitHub·외부 모델로 무단 송신 금지.
-9. **다음 우선순위·절차/승인:** 신규 상품 각 `HANDOFF→STATUS→AGENTS→REQUIREMENTS→FINAL_BLUEPRINT→원본 CodeChecker/AutoML source·tests`→실행 가능 범위 설계 재확인→사용자 제품 개발 승인→최소 adapter/semantic contract 구현→CI/OS/실고객/라이선스→크몽 판매 승인. 해총 `[작업중]`는 기능 착수 시 사용자 규칙에 따라.
-10. **갱신 KST·확인 범위·커밋 기준:** 2026-11-13 KST, GitHub READ/CREATE/UPDATE/검증. 이번 문서 최신 hub SHA는 수정 후 GitHub main 원격 ref 확인값 사용, 제품 코드 TEST/Production 미실행.
+# HANDOFF — MYRADIO AI (10항 / 2026-11-13 KST)
 
-### 2026-11-13 브랜드 갱신 후속 기록
-- AZENTFLOW AX `product/hae-la-automation@a578aee2300ae053bafe5cdaf1dd8e23385ff47b`
-- CITEVAULT AX `product/rag-enterprise-knowledge@acf4936670bf1205f648d0dff5ca7e48b62fa83a`
-- SITECRAFT AX `product/rea-website-rebuild@6e2346c3b9d50dea1bde8d5ecb47b47f1567f774`
-- 각 브랜치 `docs/BRAND_POSITIONING.md` 추가. 명칭만 수정; 이 작업에서 제품 기능 코드/CI/Production 변경 및 상표·도메인 조사 없음. 기존 PROOFQA AX/ONTOINSIGHT AX SHA·문서 변경 없음.
+1. 목표·용도·확정기술: Windows 개인용 자동 AI 라디오. 감정/장르/시간/취향 선곡, 저작권·서비스 약관 허용 음악 검색·재생, 실제 여러 다른 한국어 DJ 음색/감정·속도·방송 멘트, 로컬/온라인 모드, 청취자 대화. 희망 판매가 30,000원; 작곡 모델은 후속 선택.
+2. 완료 기능·변경·결정 근거: 새 product/myradio-ai-dj 브랜치, 최종설계와 권리·판매·검증 문서; 오프라인 WAV 카탈로그 초안/수동 rights 확인/seed 필터 선곡/다섯 DJ 대사 스타일/Windows SAPI·WAV 재생 코드 및 tkinter GUI. A local-first(선정) / B cloud(기본형 제외) / C 무단 크롤링(배제) 비교. 외부 API 호출 0.
+3. 테스트 명령/성공·실패·미검증: python -m unittest discover -s tests -v 7 PASS/0 FAIL/0 SKIP, python -m compileall -q myradio PASS, python -m myradio --help PASS (로컬 샌드박스). 실 Windows GUI·PowerShell SAPI·음악 재생·API·실 자연 TTS NOT_RUN/NOT_IMPLEMENTED. 테스트 실행 기록과 GitHub 코드 일치 확인 전 원격 테스트 성공 보장 금지.
+4. 완료/진행/대기/차단·중단 지점: 계획+초기 오프라인 기능만. DJ 자연음성, 실 사이트 검색·권리 자동검증/정식 스트리밍, 상용 EXE/크몽 등록 대기. 최종설계 기준 UNASSESSED/RELEASE HOLD.
+5. 오류·근거·원인·시도·대안: 현 7 로컬 단위검사 실패 없음. 위험은 사이트별 상업 앱 플레이 허용과 2+ 실제 TTS 화자/저사양 성능. 허가 불명 음악 강제 재생/다운로드 금지→허가된 로컬 파일/대체 승인 소스. Windows SAPI 실제 품질 미검증→신경망 모델/기본 보이스 비교. 동일 실패 반복 무진전 중단.
+6. 저장소·브랜치·SHA·경로: Private hibi89/Freelancer @ product/myradio-ai-dj, base main@fe4bbfea9b515d85b6e77b77c57e63851bd2964d. 문서 기준 GitHub SHA는 최종 원격 ref 확인 후 최종 작업 보고. 핵심 myradio/core.py, playback.py, gui.py, __main__.py, tests/test_radio.py, docs/FINAL_BLUEPRINT.md.
+7. Production/Vercel/명령·환경: Production URL/Vercel 미적용. Python 3.11+ stdlib, Windows 10/11 목표. python -m myradio init PATH --output PATH/catalog.json → 승인/음악 메타 → python -m myradio plan --catalog PATH/catalog.json; Windows 실제 play/GUI는 각각 python -m myradio play --catalog PATH/catalog.json / python -m myradio.gui.
+8. 원본/백업·인증 관리·수정금지: 기존 Freelancer main/other product 브랜치 미수정. 원본 구직 자료 Git 이력 d47239f961fc895592147c2afa969ecf64f2bd00 복구 가능. 고객 노래·가족 음성·개인정보·모델 weights·.env/API키 GitHub/클라우드 무단 전송 금지. 커밋/브랜치로 rollback.
+9. 다음 작업 우선순위/승인/완료: Windows 실 재생·GUI 테스트 → 다중 DJ 자연음성 코드/weights commercial 라이선스/자원 실측 → Openverse/ccMixter 원본 ToS 및 음원별 허가 확인 → 공식 검색 API + 정상 플레이어 → LLM/STT/취향/큐 → 패키지/보안/고객 수용 → 사용자 판매 최종 승인. 신규 유료 호출·외부 원본 전송·권한·설치 원본 수정 사전 승인.
+10. 갱신 KST/검증 범위/문서기준: 2026-11-13, 샌드박스 Python 단위·구문 검증 중심, 실제 Windows/외부 API/배포 미확인. 이 브랜치 최신 commit SHA와 blob readback을 본 작업 최종 보고로 교차확인. STATUS/REQUIREMENTS/FINAL_BLUEPRINT 동기화. 
