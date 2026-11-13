@@ -1,3 +1,5 @@
+> **2026-11-14 KST 최신 WD-13 준비:** 무료 오프라인 Windows PyInstaller **onedir GUI EXE 후보**를 위한 `tools/windows_gui_entry.py`, `tools/windows_build_exe.py`, `tests/test_windows_exe_build.py` 추가. 격리 Linux 신규 테스트 **12 PASS**, 코드 SHA `59513923fa36c26da980080123cd0f7897755fe1`. **실 Windows EXE 빌드·서명·실행은 미검증**; 실제 EXE 파일이 완성됐다고 주장하지 않음. [실행 절차·근거](docs/P85_WINDOWS_EXE_CANDIDATE_20261114.md). 승인된 전체 WD-01~14 **100점**, 엄격한 정식 인정 **0점**, 목표85 미달. **[작업중] / RELEASE HOLD**.
+
 ## P85 customer safety/evidence follow-up (2026-11-13)
 
 New **local-only** customer rename (stale-write + confirm), deletion of **unused** customers only, and user-selected delivery-file SHA256 capture/reverification during DELIVERED state. CLI: `customer-rename`, `customer-delete-unused`, `evidence-attach --confirm-local-read`, `evidence-list`, `evidence-verify`. GUI exposes guarded actions. Evidence hashes are not buyer signatures or actual delivery proof.
