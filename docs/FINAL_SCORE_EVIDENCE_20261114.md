@@ -1,3 +1,7 @@
+## 2026-11-14 KST WD-13 무료 onedir EXE 빌드 **준비 코드** 추가 — 정식 점수 불변
+
+승인 WD-01~WD-14 전체 100점과 항목별 완전 수용 PASS 원칙은 불변. WD-13(10점)은 Windows Python 없는 EXE를 만들 수 있는 선택적 PyInstaller **오프라인 빌드 경로 코드** 및 로컬 데이터 경로 기본 차단을 추가했다. 신규 단위 테스트 **12/12 PASS**(Linux Python3.13.5, mock 포함), compileall PASS, GitHub 3 신규 파일 readback 동일; 기능/테스트 SHA `59513923fa36c26da980080123cd0f7897755fe1`. **PyInstaller/Win EXE 실제 빌드·GUI 실행·서명·OS ACL/암호화/Win 설치 복구/실고객 수용은 NOT_RUN.** 이는 WD-13 **PARTIAL/0점**을 계속 의미한다. 나머지 WD-01~12,14는 이전 판정 유지. 승인 기준 합계 **0/100**, 목표85 미달, [작업중], RELEASE HOLD, 판매 미등록. 기존 Python153/Tk5/ZIP15 PASS는 과거 SHA 증거이며 이번 통합 재실행 아니다. 자세히 `docs/P85_WINDOWS_EXE_CANDIDATE_20261114.md`.
+
 # WORKNOVA Desk — 승인 배점 기준의 전체 최종설계 검증 원장
 
 **2026-11-14 KST:** 사용자가 WD-01~WD-14의 **100점 배점안을 승인**. 기준점수 합계 100, 목표 85. 원본 설계/범위는 변경하지 않음. 이번 변경은 **평가기준 승인·증거 재분류**이며 소스 구현이나 Windows 실기기 검증이 아님.
