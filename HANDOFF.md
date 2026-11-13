@@ -1,3 +1,18 @@
+# HANDOFF — 2026-11-14 KST WORKNOVA Desk 네이티브 EXE 메인 GUI 시각 확인 (최신 10항)
+
+1. **목표·용도·확정 요구:** WORKNOVA Desk Windows 오프라인 수기 견적→계약→납품·수금. WD01~14 승인 총100점·전체 수용85점 목표, Python3.11/SQLite/Tk.
+2. **완료·변경·근거:** PyInstaller6.22.3 `onedir --windowed` 실제 빌드, SHA/MZ 사용자 Windows 확인에 이어 **실 Windows EXE의 WORKNOVA 메인 Tk 창 한글/탭/버튼 렌더링 시각 확인**. 코드/고객장부/OS설정 변경 없음.
+3. **테스트 검증/미검증:** 사용자 제공 화면에 창 제목·오프라인 안내·거래처 검색·4탭·견적/계약/납품/수금/백업/암호화 버튼 표시. GUI 실행 초기 표시 PASS(시각). 윈도우 프로세스 `ExitCode`, `TestDatabaseExists` 최종 출력, 기능 버튼 E2E·데이터 지속성, Python 없는 타기기·AV/서명·OS ACL·법적 실고객 검증 **NOT_RUN/미수신**. 원본 스크린샷은 채팅에만 존재, 원격 GitHub에는 텍스트 요약만.
+4. **완료·진행·대기:** WD11/13 GUI 초기 표시 부분 PASS, WD전체 구매자 수용 전부 완료 항목 미인증. **정식 0/100, 목표85 미달, [작업중], RELEASE HOLD, 크몽 미등록**.
+5. **오류·원인·조치·대안:** 이전 사용자 PyInstaller 설치 가림 문제는 `PYTHONNOUSERSITE=1` 하위 프로세스 차단; GitHub 수정 및 사용자는 인자 직접 실행해 빌드 완료. 다음은 기존 실행 GUI 정상 종료 후 PowerShell 결과 조회; 빌드/설치 반복 필요 없음.
+6. **저장소·브랜치·SHA:** `hibi89/Freelancer@product/worknova-desk-local`; 이전 소스/점수 HEAD `e21aff02b7049ca2b4a917c00c5cf5013d43270b`, GUI 텍스트 근거 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`, 기록 커밋 `4eb6087d065d193a57b1c1dd633db262aefac5e9`. 현재 HEAD 최종 확인.
+7. **Production·환경:** 사용자가 EXE를 %TEMP% onedir에서 새 TEMP 프로세스 `LOCALAPPDATA`와 함께 실행한 정황/화면, 네이티브 Windows TK. Vercel/Production N/A. 데이터 격리와 종료 코드는 검사 결과 미도착으로 미확인.
+8. **원본·백업·인증:** 실고객 SQLite/백업·실 LOCALAPPDATA/원래 PayPal 및 Freelancer main/타 크몽 상품 등록 이력/OS ACL 불변. 개인 UI 포함 스크린샷 GitHub 업로드 금지, 실제 개인 고객자료 기록 없음.
+9. **다음 작업/승인/기준:** 사용자는 GUI 창만 X로 닫고 기존 PowerShell `ExitCode`와 `TestDatabaseExists` 결과 전달. 그런 뒤 합성 거래처/견적 E2E·DB 유지/재실행을 별도 계획, OS ACL·서명/권리/실고객 85점 정식 게이트 충족까지 HOLD. 유료/실데이터/OS 보안 변경 시 사용자 승인.
+10. **갱신 일시/근거:** 2026-11-14 KST, GUI 시각 렌더링만 새 입증; 버튼 작동/저장 증거 없음. 상세 문서 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`, 크몽 중앙 원장 동기화 예정.
+
+---
+
 # HANDOFF — 2026-11-14 KST WORKNOVA Desk EXE SHA256/MZ 실기기 증거 (최신 10항)
 
 1. **목표/기술·확정:** WD01~14 승인100점 엄격 전체 고객수용85점 목표, Python3.11+/SQLite/Tk Windows 오프라인 상품.
