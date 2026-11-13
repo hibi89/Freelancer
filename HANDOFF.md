@@ -1,5 +1,20 @@
 # CITEVAULT AX — HANDOFF — RAG Studio 기업형 (10항, 2026-11-13 KST)
 
+## [2026-11-13 KST] CITEVAULT AX P85 영속화 후속 — 10항 인수인계
+
+1. **목표·기술/확정요구:** CITEVAULT AX 최종설계 전체 85% 사용자 목표. RAG Studio SQL/PDF/DOCX 증거, PREP/SMAX 권리 승인, 실제 기업 인증·조직/문서 ACL, 버전/폐기/재색인, 한국어 로컬 모델, Windows+Linux CI. **공식 UNASSESSED/85 미확정**.
+2. **완료·설계 비교/근거:** 인메모리 단일 프로세스 대신, Node22 내장 SQLite 파일로 합성 메타데이터 영속화(별도 JSON 스냅샷은 원자성 불리; 외부 IdP/서버는 승인·비용·실고객자료 필요). 신규 `enterprise/p85-state-store.mjs`, 테스트 `tests/p85-state-store.test.mjs`. 기존 vault는 optional store를 통해 cross-process revoke, 폐기, 동시 revision 거부; HTTP 로컬 관리자 revoke 추가. 영속 credential은 scrypt derived만, 세션 token은 메모리만. 트랜잭션으로 상태 변경과 감사 동일 원자화. 원본 RAG/PREP/SMAX 변경 0.
+3. **실제 테스트·성공/실패·SKIP:** Linux Node22.16.0 `node --test tests/p85-vault.test.mjs tests/p85-loopback.test.mjs tests/p85-state-store.test.mjs` **58 PASS/0 FAIL/0 SKIP**. 독립 ZIP 해제 후 재실행도 58 PASS. P50/P70/P85 로컬 결합 **95 TOTAL/92 PASS/0 FAIL/3 SKIP**, SKIP 3개 pinned RAG checkout 통합. 정확 Git blob SHA 위 `docs/P85_DURABLE_EVIDENCE_20261113.md` 참조. `node --check` vault/store/loopback 3 PASS. GitHub hosted CI/Windows/원본 RAG PDF/DOCX/SMAX 실제 통합 **미검증**.
+4. **완료/진행/대기/차단:** 합성 원문 source SHA, ACL-before-read, HTTP 권한 차단, SQLite restart/폐기/계정 철회/동시성 일부 완료. 실제 고객 IdP, 보안 감사·영속 기업실사용권한, 원본 Native RAG SQL/PDF/DOCX, signed SMAX→AX, 모델/Windows QA 미완. `[작업중]`·`RELEASE HOLD`.
+5. **오류 근거·시도/재시도·대안:** 영속화 초기 폐기 문서 재조회의 `CATALOG_INVALID` 회귀 발견, inactive schema 검증 수정 후 기존42 PASS. SQLite 동시 인스턴스의 stale generation 덮어쓰기 문제를 세대 비교로 막음, 감사 레코드 누락 위험을 단일 DB 트랜잭션으로 처리; 58 PASS. 이전 container github.com DNS 차단으로 원본 checkout은 GitHub connector 소스확인+CI 명령만. 동일한 불가 도구 재시도·허위 CI PASS 금지.
+6. **저장소/브랜치/SHA/주요 경로:** `hibi89/Freelancer@product/rag-enterprise-knowledge`, 작업 시작 `f2ccc5623440b44433ea41ebf814e4de61c74541` 안전 복구점. 신규 최신 파일 blobs vault `d6be6e910f6baa995d99d78fc250f28e8ae30465`, store `de3193c5132163d60ecd142d7dbb105fdbaf5cb4`, HTTP `573b326574127c16a8ab8a97819f867511b7c323`, 테스트 `5e455611732c067bbcbcd7c5b8ea005e775e3dea`/`147bded3723d5859f17b3a5e49710d84bcff3a09`/`57c905aeaa7c326f01b18fc3b3694edaadc3bb9e`; 원본 pinned `RAG_STUDIO@c5867b3951f51bfa97cadd1aad8fb13e9cf9e604`. 최신 HEAD는 본 HANDOFF 이후 확인.
+7. **Vercel/Production URL·실행/환경:** Node22 Linux 로컬 합성 QA, `node:sqlite` 실험적. CI Ubuntu Node22.16/Windows2022 Node22.23 정의만. 원격/프로덕션 배포 미적용, HTTP `127.0.0.1` 임시 테스트만, 비밀·유료 API/외부 데이터송신 없음.
+8. **원본·백업·인증관리/수정금지:** 원본 RAG/PREP/SMAX·고객 파일·고객 계정·기존 데이터 0 수정. P85 시작 SHA를 비강제 git revert로 복구 가능, 제품 테스트 ZIP은 로컬 임시 산출물 별도. SQLite에는 실고객 자료 없음, Node 테스트가 생성한 임시 합성 메타데이터만, 세션 키 저장 0. 원본 시스템 권한/환경변수 배포 변경 금지.
+9. **다음 우선순위·절차·완료조건/사전 승인:** 정확 SHA GitHub Actions job log 및 Windows 실행 확인→원본 pinned RAG native PDF/DOCX 2+와 SQLite 인용 실 E2E→고객 데이터 권리/승인된 PREP-SMAX 서명 AX (승인·실파일 사전 동의)→실기업 IdP/테넌트 인덱스/고객 본인 계정·도메인 정책 (보안·권한 사전 승인)→한국어 로컬 모델/라이선스, 실제 Windows 10/11 고객 Gold 수용→사용자 승인 가중치로 공식 85% 판단.
+10. **갱신 시각 KST·확인시점·검증 범위:** 2026-11-13 KST; GitHub remote file exact blob readback와 Linux Node local 58PASS, combined95/92PASS/3SKIP, ZIP extraction rerun 증거. 원본 RAG PDF/DOCX, 실기업 IAM, Vercel/Production, Hosted Windows & Actions, 공식 85% **미검증**. 증거 정본 `docs/P85_DURABLE_EVIDENCE_20261113.md`.
+
+
+
 ## [2026-11-13 KST] CITEVAULT AX P85 로컬 보안 검증 — 최신 10항 인수인계
 
 1. **목표·용도·확정 요구·기술:** 최종설계 전체 기준 사용자 85% 요청. 기업형 로컬 RAG+PREP/SMAX 인가 패키지·근거 SQL/문서·직원/그룹/프로젝트 ACL, 문서 버전 폐기·재색인, 한국어 로컬모델, Linux/Windows CI. 공식률 **UNASSESSED**, 85% 미달/검증대기.
