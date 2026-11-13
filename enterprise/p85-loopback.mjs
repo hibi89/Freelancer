@@ -1,5 +1,6 @@
 /** Local-only synthetic HTTP harness for P85 vault, not a production customer API. */
 import http from 'node:http';
+import {html,css,js} from './p85-ui.mjs';
 
 const MAX_BODY=4096;
 const send=(res,status,data)=>{
@@ -35,6 +36,17 @@ export async function launchSyntheticLoopback(vault,{journey=null}={}){
   const server=http.createServer(async(req,res)=>{
     try{
       if(req.socket.remoteAddress!=='127.0.0.1')return send(res,403,{error:'LOOPBACK_ONLY'});
+      if(req.method==='GET'&&['/','/ui.js','/ui.css'].includes(req.url)){
+        const data=req.url==='/'?html:req.url==='/ui.js'?js:css;
+        const type=req.url==='/'?'text/html; charset=utf-8':req.url==='/ui.js'?
+          'text/javascript; charset=utf-8':'text/css; charset=utf-8';
+        res.writeHead(200,{'content-type':type,'cache-control':'no-store',
+          'x-content-type-options':'nosniff','x-frame-options':'DENY',
+          'referrer-policy':'no-referrer',
+          'content-security-policy':"default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'",
+          'content-length':Buffer.byteLength(data)});
+        return res.end(data);
+      }
       if(req.method==='POST'&&String(req.headers['content-type']||'').split(';')[0].trim().toLowerCase()!=='application/json')
         return send(res,415,{error:'JSON_REQUIRED'});
       if(req.method==='POST'&&req.url==='/v1/login'){
@@ -60,6 +72,12 @@ export async function launchSyntheticLoopback(vault,{journey=null}={}){
       }
       if(req.method==='POST'&&req.url==='/v1/admin/reindex')
         return send(res,200,vault.reindex(token));
+      if(req.method==='POST'&&req.url==='/v1/admin/provision'){
+        const x=await body(req);return send(res,201,vault.provisionUser(token,x));
+      }
+      if(req.method==='POST'&&req.url==='/v1/admin/access'){
+        const x=await body(req);return send(res,200,vault.changeUserAccess(token,x.userId,x));
+      }
       if(req.method==='POST'&&req.url==='/v1/admin/revoke'){
         const x=await body(req);return send(res,200,vault.revokeAccount(token,x.userId));
       }
@@ -77,7 +95,9 @@ export async function launchSyntheticLoopback(vault,{journey=null}={}){
         code==='NOT_AUTHORIZED'?403:code==='NOT_FOUND'||code==='INVALID_DOCUMENT_ID'?404:
         code==='PAYLOAD_TOO_LARGE'?413:code==='SOURCE_DIGEST_MISMATCH'||
         code==='SOURCE_CHANGED'||code==='SOURCE_UNAVAILABLE'||code==='UNSAFE_SOURCE'?409:
-        code==='INVALID_PAYLOAD'||code==='QUERY_INVALID'||code==='VERSION_INVALID'?422:500;
+        code==='INVALID_PAYLOAD'||code==='QUERY_INVALID'||code==='VERSION_INVALID'||
+        code==='ACCOUNT_SCOPE_INVALID'||code==='ACCOUNT_INVALID'?422:
+        code==='ACCOUNT_EXISTS'||code==='USER_EXISTS'||code==='USER_LIMIT'?409:500;
       if(status===500&&typeof code==='string'&&
         /^(?:SALES_|CSV_|SMAX_|PREP_|INPUT_|REVIEW_|SQL_)/.test(code))
         return send(res,409,{error:'REVIEW_HOLD'});
