@@ -1,3 +1,15 @@
+## [2026-11-13 약 15:21 KST] AZENTFLOW AX 70기술 단계 — 10항 인수인계
+1. **목표/용도/확정 요구/기술:** AZENTFLOW AX 최종설계 0→70 단계, 독립 HAE UI·정책/IR, Lightning Azent 엔진, 로컬 승인 SQLite/감사. 전체 100점 설계 분모·요구를 축소하지 않음.
+2. **완료 기능·변경·선택:** 원본 서비스 코어를 복제(이중 관리/불일치/보안비용)하지 않고 기존 HAE API↔LA 계약 실증(로컬 비용0/통합유지) 방식을 채택. 고객 전체 CSV vs 한국어 조건부 매출 CSV 2경로, 실제 독립 LA CLI child process, durable status/restart, 동시 승인 중복행0, 승인/변경 원본 403/409, 20s 작은 요청 상한 및 oversized CSV 차단 수용시험 7개.
+3. **검증 명령/성공·실패:** 실 테스트 SHA `12987055802c1e2e3dbf7eb5c5820382a52daef4`, [Actions #43377368138](https://github.com/hibi89/HAE/actions/runs/43377368138) Windows/Ubuntu 각각 P70 7/7 PASS, 기존 P50 3/3 PASS, HAE-LA smoke 6/6 PASS/adapter5/5 PASS/Node UI24PASS; Python full 283=274PASS/2FAIL/7SKIP(배포 parity). `cd apps/ax-flow && python -m unittest discover -s tests -p test_azentflow_p70_acceptance.py -v` (독립 LA staged).
+4. **진도·대기·차단:** **70구간 합성 기술 게이트 PASS**, 공식 최종완성률 **UNASSESSED**, 판매/배포 **HOLD**, 크몽 미등록. UI 실제 Chrome/Edge/Windows 비개발자·실 공급자·보안 검수·가중치 승인 미실시.
+5. **오류/시도/재시도 금지/대안:** 첫 test SHA `4d7c824a...` 변경 복구 계획이 parser 422로 차단돼 목표한 409 확인 불가; `12987055...`에서 valid plan으로 고친 후 7/7 두OS PASS. 원본 ZIP/pyz parity 2 FAIL(기존), 무백업 바이너리 덮어쓰기/CI skip/force push 금지. 백업 후 regenerate/side-by-side diff.
+6. **저장소/브랜치/SHA/경로:** `hibi89/Freelancer@product/hae-la-automation`, `docs/P70_ACCEPTANCE_EVIDENCE_20261113.md`; 실제 엔진 원본 `hibi89/HAE@feature/axflow-mvp@12987055802c1e2e3dbf7eb5c5820382a52daef4`, LA HEAD 조회 `feature/lightning-azent@36f9882eb50e0de9e85eedb320a5778c8321cda5`. 제품 HEAD는 반영 후 readback.
+7. **Production/URL/환경:** GitHub-hosted Ubuntu+Windows Python3.11/Node22, loopback server + Python CLI, 합성 2행/3행 CSV, 로컬 SQLite. Vercel·고객 Production 미적용.
+8. **원본/백업/보안:** HAE 시작 HEAD `cfa9881b701c9520f67e44a38619c333b65cbdf6`, Freelancer 시작 `507d857a091b18886cfaf2357f6b856ce47f90f8`; Git 이력 복구. 기존 HAE/LA 실행 코드·원본 ZIP·고객 DB/권한·토큰·외부 전송·비용 변경0.
+9. **다음 작업/우선순위/승인/완료 기준:** 해총 `[작업중]` 유지한 채 70→85 3개 업무/DBVORA mock contract/감사 영수증/제한 스케줄·두OS CI; 출고 parity 2건 safe repair; LA pin 검증. 공식 100점 가중치/독립 항목 전수검수 이후에만 공식 완성률 수정. 고객/실 Google/OAuth/개인자료/유료/보안·원본 변경 사전 승인.
+10. **KST 갱신/확인/검증범위:** 2026-11-13 약 15:21 KST; HAE CI #43377368138 양 OS 각 7/7, Python 2 parity FAIL, Node UI24, 소스 SHA 확인; 실 고객 브라우저/배포/실 DBVORA·SOVIA 미검증, Vercel N/A. 문서 SHA는 최종 GitHub HEAD readback 기준.
+
 ## [2026-11-13 약 15:03 KST] AZENTFLOW AX P50 기술 수용 결과 — 10항
 1. **목표·확정 설계·기술:** 사용자 `ㄱ`에 따라 AZENTFLOW AX 최종설계 0→50 구간 기술 충족 목표. `docs/FINAL_BLUEPRINT.md` 전체 100% 분모 변경 금지; HAE UI/IR + 독립 LA + 로컬 SQLite + 승인/감사, DBVORA·SOVIA 이후 통합.
 2. **완료 기능·선택 근거:** 기존 HAE/LA 실행 코어 보존. 독립 LA 코드를 Freelancer에 복제(A: 소스/보안 드리프트) 대신 원본 HAE adapter에 실제 LA 엔진을 staged 검증(B: 버전 계약 fail-closed) 방식 채택. `apps/ax-flow/tests/test_azentflow_p50_acceptance.py` 3개 통과, 제품 브랜치 증빙 문서 생성.
