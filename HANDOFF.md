@@ -1,3 +1,18 @@
+# HANDOFF — 2026-11-14 KST WORKNOVA Desk native Windows QA 사용자 증거 인수인계 (최신 10항)
+
+1. **목표·확정 요구·기술:** WD-01~14 승인 전체100점(고정) 중 최종구매자 수용85점, Python3.11+/SQLite/Tk 오프라인 Windows 앱.
+2. **완료 기능·결정:** 기존 Windows 안전성 runner를 형이 실제 Windows에서 2회 실행, 각 11/11 PASS. 이중 압축 해제 폴더로 인한 첫 경로 오류 해결. Python 필수 포터블/PowerShell 설치·합성 백업복구를 실기기 검증, 데이터/코드 스키마 불변. 독립 EXE 준비 도구 3파일은 앞선 커밋에서 구현, 실제 EXE는 미생성.
+3. **테스트·검증:** 사용자 제공 Windows10.0.26200.9974+PowerShell5.1+Python3.11 출력 `win32/ok:true`, **11 PASS×2, 0 FAIL/0 SKIP**. 항목: Tk 생성·15파일 SHA·ZIP/CLI·PS dry-run/설치/갱신·롤백/삭제 후 합성 DB·암호화 백업복구. Windows 사용자 콘솔 전달 기록만; 호스팅 CI/현지 ZIP SHA/전체 GUI 기능·독립 EXE는 **NOT_RUN/미증빙**. 기존 Linux153PASS/Tk5/ZIP15 및 이번 분리 Python12PASS는 각각 이전 SHA 근거.
+4. **상태:** WD-09/11/13 부분 수용 추가이나 항목 전체 구매자 기준 PASS 항목 0, **정식 0/100 (구현률0 뜻 아님), 목표85 미달, [작업중], RELEASE HOLD, 크몽 미등록**.
+5. **오류·원인·재시도·대안:** 상대경로에 중첩된 한 겹 폴더로 첫 파일 찾기 실패, 실제 `Get-ChildItem` 절대경로를 확인하여 정상 실행·재실행. 무관 `bidax.cli`은 WORKNOVA 앱 오류 아님. OS/서명/권리/실고객 수용 생략해서 85 계산하지 않는다. private Actions 비용 미확인으로 실행 금지.
+6. **저장소·브랜치·SHA:** `hibi89/Freelancer@product/worknova-desk-local`. 검증기 파일의 이전 정본 소스 HEAD `8455b2950b1d59d3f2167b3b4d7652262573c7c1`, 신규 Windows 사용자 결과 문서 커밋 `e1ae26264ca081d8bba99e333c6c5cc741f78f10`, 증거 `docs/P85_WINDOWS_OWNER_CONSOLE_20261114.md`. 원격 HEAD 이 문서 이후 재조회.
+7. **Production/URL·명령·환경:** Vercel/Production N/A. 형의 유효 명령 `py -3 -B .\\Freelancer-product-worknova-desk-local\\tools\\windows_acceptance.py` (중첩 ZIP 외부 폴더에서). 다음 최소 확인 `py -3 -m PyInstaller --version`, 자동설치/외부요금 없음.
+8. **원본·복구·비밀:** 실제 고객 DB·OS 보안 정책·PayPal 원본·Freelancer main/다른 크몽 제품·등록완료 및 사용자 폰트/인증키 불변. 이전 소스 HEAD가 코드 복구 기준. 사용자 로그에서 계정 관련 로컬 절대경로는 증거문서에 옮기지 않음.
+9. **다음 우선순위·승인:** 설치된 PyInstaller 확인→비용 없는 실제 onedir EXE 후보 생성·격리 테스트→Windows 실 UI/ACL/복원·한글 Word·폰트 권리→실고객 10건·지원/환불·라이선스/서명. 14항의 *전체* PASS 배점 합 >=85 이후만 목표 충족. 유료/실데이터/OS 보호 변경·판매는 사전 승인.
+10. **일시·검증·문서 SHA:** 2026-11-14 KST. 사용자 제공 콘솔 실제 출력 2회로 합성 Windows QA만 확인, 서버 CI·고객/제품 독립 EXE 및 현지 소스 SHA 미확인. 증거 `docs/P85_WINDOWS_OWNER_CONSOLE_20261114.md`; 중앙 원장 동기화 후 SHA 확인.
+
+---
+
 # HANDOFF — WORKNOVA Desk 2026-11-14 KST WD-13 독립 EXE 준비 (최신 10항)
 
 1. **목표·기술·요구:** 사용자 승인 WD-01~14 정식 100점(8,7,6,6,6,7,7,8,10,5,8,6,10,6), 최종 구매자 수용 증거 85점 목표. 로컬 Python3.11+/SQLite/Tk/Windows10·11, 오프라인 수동 견적·계약·납품·수금.
