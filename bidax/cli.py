@@ -61,6 +61,11 @@ def main(argv=None):
     status.add_argument("batch_id", help="UUID of the staged batch")
     poll = sub.add_parser("poll-alerts", help="save-once due reminder observations; PC must be on")
     poll.add_argument("--hours", type=int, default=72)
+    onbid_plan = sub.add_parser("onbid-plan", help="validate official metadata query inputs OFFLINE, no network/key")
+    onbid_plan.add_argument("kind", choices=("announcement_assets", "result_list", "result_detail"))
+    onbid_plan.add_argument("params_json", help="local object of documented required query parameters, without serviceKey")
+    onbid_plan.add_argument("--page", type=int, default=1)
+    onbid_plan.add_argument("--rows", type=int, default=10)
     onbid_imp = sub.add_parser("onbid-import", help="import authorized normalized LOCAL Onbid asset/result snapshot")
     onbid_imp.add_argument("json_file")
     sub.add_parser("onbid-report", help="report locally imported Onbid assets and results")
@@ -76,6 +81,9 @@ def main(argv=None):
 
     if args.command == "restore":
         result = restore_backup(args.source, args.db)
+    elif args.command == "onbid-plan":
+        from .onbid_plan import build_plan
+        result = build_plan(args.kind, read_local_json(args.params_json), page=args.page, rows=args.rows)
     elif args.command in {"onbid-import", "onbid-report"}:
         from .onbid import OnbidStore
         with OnbidStore(args.db) as store:
