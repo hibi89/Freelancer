@@ -1,3 +1,18 @@
+# HANDOFF — WORKNOVA Desk P85 Windows gate (2026-11-14 KST)
+
+1. **Scope/stack:** WD-01..14 complete offline Windows freelancer tool, local Python3.11+/SQLite/Tk, Korean DOCX, optional PDF, no PayPal/cloud; no scope reduction.
+2. **Change/decision:** Selected free isolated native Windows smoke over potentially charged private GitHub Windows Actions. Added one-command no-admin TEMP/LOCALAPPDATA-sandboxed QA runner; no business code/schema changes.
+3. **Tests:** Linux Python3.13.5 125 PASS/0 FAIL/0 SKIP; four Tk Xvfb GUI flows PASS; source script compile and non-Windows refusal PASS. Native Windows run NOT RUN and may fail pending user execution.
+4. **Status:** Formal completion UNASSESSED; owner P85 NOT certified, [작업중], RELEASE HOLD; no listing.
+5. **Errors/alternatives:** Repeated undercount due missing final 100-point approval and Win/real buyer/legal/EXE evidence, not lack of Linux test repetition. Do not bypass PowerShell policy or claim Win verification from Linux. Paid hosted runner approval not granted.
+6. **Repo/paths/SHA:** hibi89/Freelancer@product/worknova-desk-local; new tools/windows_acceptance.py, tests/test_windows_acceptance_runner.py, docs/P85_WINDOWS_GAP_20261114.md, README/STATUS/HANDOFF. Commit SHA supplied by GitHub; preceding head 7ffa1c078016f9a4fedb78a3831899202cc1eb9c.
+7. **Production/commands:** Production N/A. Linux tests: PYTHONPATH=. python -m unittest discover -s tests -q. User Windows: py -3 -B tools\\windows_acceptance.py. No ongoing service.
+8. **Original/data/security:** Real owner DB untouched. QA script creates only synthetic temporary data and cleans it; source rollback via preceding SHA. Unencrypted SQLite and unsigned ZIP remain release blockers.
+9. **Next:** Owner runs single Win smoke and shares summary; owner approves or edits weighted rubric; then resolve Windows auth/encryption, signed EXE, font/Word/rights, buyer acceptance before scoring 85%.
+10. **Updated/evidence:** 2026-11-14 KST. Local Linux validated only; feature code SHA and central registry must be confirmed. [작업중]/RELEASE HOLD.
+
+---
+
 # HANDOFF — WORKNOVA Desk P85 schema/privacy follow-up (2026-11-14 KST, 10 fields)
 
 1. **Goal/full scope/stack:** Owner target formal 85% of canonical full WD-01–WD-14. Offline single-owner Python3.11+ SQLite/Tk Windows-first quote/contract/milestone/manual collection; no external API. Whole-product scoring rubric NOT APPROVED; formal **UNASSESSED**.

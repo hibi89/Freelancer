@@ -1,3 +1,12 @@
+# STATUS — WORKNOVA Desk Windows acceptance readiness (2026-11-14 KST)
+
+- Owner objective: verified **85% of full WD-01..14**. **UNASSESSED / NOT CERTIFIED**, [작업중], RELEASE HOLD. Proposed 100-point rubric still unapproved; never equate local engineering stage with final percent.
+- New: no-fee, isolated, disposable Windows acceptance helper `tools/windows_acceptance.py` and two regression checks. Linux 125 Python PASS / 0 FAIL / 0 SKIP, four Linux Xvfb Tk GUI flows PASS. On Linux Windows helper explicitly exits with status 3; native Windows10/11 PowerShell/Word/Defender/user acceptance **NOT RUN**.
+- Owner-only later: run one local Windows command, return sanitized JSON; approve/change WD weights and customer/legal signoff. Still missing signed standalone EXE, validated OS access protection, commercial rights. Exact evidence: `docs/P85_WINDOWS_GAP_20261114.md`.
+- No original customer DB, PayPal hackathon, Freelancer main or other products modified. GitHub SHA is the commit containing this update; no Vercel/Production.
+
+---
+
 # STATUS — WORKNOVA Desk P85 schema/privacy safety (2026-11-14 KST)
 
 **Official final design completion UNASSESSED / owner 85% goal NOT CERTIFIED.** Product remains `[작업중]`, RELEASE HOLD, no Kmong sale and no production service. WD-01–WD-14 remains authoritative; proposed weights in `docs/FINAL_BLUEPRINT_WEIGHT_PROPOSAL.md` are unapproved.

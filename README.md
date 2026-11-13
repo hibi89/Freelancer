@@ -91,3 +91,8 @@ Valid WORKNOVA owner ledgers are created by the explicit `init` command. Existin
 `python -m worknova_desk --db YOUR_EXISTING.sqlite export-customer-summary --customer-id UUID --out NEW-summary.json` creates a NEW local summary with **customer name redacted** and without free text/bank references. The monetary values and random IDs remain confidential. Only to intentionally include customer name, pass *both* `--include-name --confirm-disclosure`. The GUI has a redacted selected-customer export. Do not share any output without reviewing its data; this is not legally certified data portability or bank proof.
 
 Tests: `PYTHONPATH=. python -m unittest discover -s tests -q` and Linux-only `PYTHONPATH=. xvfb-run -a python tests/gui_customer_summary_xvfb.py`. Packaging: `python scripts/build_portable.py --out NEW.zip` then extract `python verify_portable.py --root .` (14 hashed source/script entries + manifest, Python required; not an EXE). Real Win10/11 test and commercial sale approval remain PENDING.
+
+
+## Native Windows QA (not yet run)
+
+Run from the complete source checkout on an owned Windows 10/11 machine with Python 3.11+ Tk: `py -3 -B tools\\windows_acceptance.py`. This one-command synthetic test uses a disposable temporary LOCALAPPDATA, no real customer DB, no admin, network or policy bypass, and checks PowerShell installation/upgrade/uninstall/data preservation. On Linux it deliberately fails, so results must not be confused with real Windows success. See `docs/P85_WINDOWS_GAP_20261114.md`. This is not a signed EXE or commercial approval.
