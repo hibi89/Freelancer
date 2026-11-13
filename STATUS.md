@@ -1,3 +1,11 @@
+# STATUS — 2026-11-14 KST Windows EXE 종료코드 0 / 격리 SQLite 파일 존재 PASS (최신)
+
+- 실제 소유자 Windows PowerShell에서 `ProcessStartInfo.UseShellExecute=false`, EXE 자식 프로세스의 `LOCALAPPDATA`만 새 `TEMP/worknova-gui-qa-<GUID>` 폴더로 분리하여 실행, 새 빈 장부 확인 후 실제 Tk 메인 GUI 표시→X 종료→`WaitForExit()` 완료. 사용자 콘솔 **`ExitCode=0`, `TestDatabaseExists=True`**(`WORKNOVA Desk/Data/desk.sqlite` 경로) 확인. 이것은 실제 Windows **EXE 기본 GUI 실행·정상 종료·격리된 새 SQLite 파일 생성 PASS** 증거이며, 사용자가 제공한 콘솔 결과에 의존. 기존 Win onedir 빌드 PASS·EXE 7,107,722바이트·SHA256 `A7CD6B052108E5630E4AD50151841F0B812654F22E87CFE8338E22CB12A5C23E`·MZ PASS와 연결. [근거](docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md).
+- **남은 미검증:** SQLite 무결성/업무 테이블·거래처 CRUD·재실행 데이터 보존, onedir 타PC 배포·Python없는PC, OS ACL·상시 DB 암호화·서명·Defender/SmartScreen·상업권/Word/고객·법무 수용. 단순 파일 존재를 기능 전수 PASS로 계산하지 않는다. 고객 원본/OS 정책·타상품 변경 없음.
+- 사용자 승인 WD01~14 최종 100점 각 항목 완전수용 채점 불변, WD11/13 부분 검증 진전에도 공식 **0/100(구현률0 의미 아님), 85점 미달, [작업중], RELEASE HOLD, 크몽 미등록**.
+
+---
+
 # STATUS — 2026-11-14 KST 네이티브 Windows EXE 실제 Tk 메인 GUI 표시 증거 (최신)
 
 - 사용자 제공 스크린샷에서 **WORKNOVA Desk — 로컬 계약·납품 장부** 메인 창이 Windows에서 실제 열린 것을 확인. 한글 안내·거래처 검색/새 거래처, 4개 업무 탭, 견적·계약·납품·수금·백업·암호화 복원 등 GUI 컨트롤이 그려짐. 이전 `onedir` EXE 빌드·7,107,722바이트·SHA256 `A7CD6B052108E5630E4AD50151841F0B812654F22E87CFE8338E22CB12A5C23E`·MZ PASS, 첫 장부 생성 팝업을 잇는 실제 GUI 구동 증거. 스크린샷 원본은 개인 UI가 있어 GitHub 업로드하지 않고 텍스트 관찰만 기록: `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`.
