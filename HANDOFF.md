@@ -21,3 +21,12 @@
 - ECHOHOME/PAWTALK: product/echohome-pawtalk-local-ai @ 603be91d278f4cef1e8e0fe0994bfdb21ca23740, 설계만/UNASSESSED/미등록.
 - MYRADIO AI: product/myradio-ai-dj @ 5885b2b22f8e4ee7692c08ba96ddd536d2c82e26, 최종설계 docs/FINAL_BLUEPRINT.md + 오프라인 안전 카탈로그·WAV 선곡·DJ 문장·Windows SAPI GUI 프로토타입. 로컬 Python 7 PASS/0 FAIL, 실제 Windows·음원 API·자연 TTS·상용 권리 미검증, UNASSESSED/HOLD/미등록.
 - 본 main 변경은 인덱스/STATUS/HANDOFF **문서만** 업데이트, 기존 5개 제품 브랜치/소스/상용 진도/개인 원본을 수정하지 않음. 코드/실 모델·Windows 검증은 각각 product 브랜치에서 관리. 진행·등록 상태를 자동 동기화하지 않는다.
+
+
+## 2026-11-13 AXNODE 신규 브랜치 인수인계 추가
+
+- **목적/설계 정본:** 사용자 선택 독자 바이너리 파일 형식 A안. `product/axnode-sector-runtime/docs/FINAL_BLUEPRINT.md` 29개 수용 ID. 중앙 제어 섹터·고유 주소/실행 순서·로컬/원격 자원 접근·복구·배포·AX 생태계 연계·상품화 조건.
+- **상태/검증:** 별도 로컬 Python POC unittest 19 PASS/0 FAIL/0 SKIP (5섹터/852B 합계 350.00). 브랜치 코드는 기획 문서만 등록; GitHub CI·실 Windows·원격 모듈·3GB·고객·Vercel 미실행/미적용. 공식률 UNASSESSED / RELEASE HOLD / 크몽 미등록.
+- **저장소/원장:** `hibi89/Freelancer@product/axnode-sector-runtime`; 해총 `kmong-productization/docs/audits/FREELANCER_BRANCH_COMPLETION_REGISTRY_20261113.md` 신규 AXNODE 행. 기존 29종/19개 판매 서비스/3 소비자형 신상품 보존.
+- **안전/백업:** 제품은 별도 새 브랜치에만 추가. 이전 main·7개 product 브랜치 commit history 보존. POC 로컬 ZIP은 영구 저장소가 아니므로 검증된 소스/테스트 영구 GitHub 반영이 다음 작업. 원격/유료/고객 전송 및 권한 변경은 별도 승인.
+- **다음 우선순위/기준:** 사용자 29개 요구별 가중치 확인 → 원본 소스/테스트 정확 SHA 저장 → 정식 파일 규격/typed DAG/fuzz → safe resolver+cache → 승인/로그·중복 방지·재시작 → GitHub 이벤트 → HAE·LA·SOVIA·DBVORA → Windows/고객·권리/상용 검증. 2026-11-13 KST 문서 확인·GitHub 원격 반영, 최종 SHA는 실제 최신 HEAD 기준.
