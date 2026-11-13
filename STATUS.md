@@ -1,5 +1,16 @@
 # CITEVAULT AX — STATUS — RAG Studio Enterprise, 2026-11-13 KST
 
+## [2026-11-13 KST] CITEVAULT AX 통합 서비스 85% 목표 재추진 — PDF/DOCX·SQLite 리뷰 HTTP 종단 PASS
+
+- **공식 판정:** 전체 최종설계 100% 대비 사용자 **85% 목표**, 현재 **UNASSESSED · 85% 미달/검증 대기**, `[작업중]` 유지, `RELEASE HOLD / SALE NO-GO`. P85 synthetic-only 테스트 수를 전체 고객제품 완성률로 환산 금지.
+- **이번 실제 통합 개발:** 기존 P85 합성 account/session+tenant/group/project ACL/SQLite document lifecycle/실 PDF page+DOCX paragraph에 **하나의** `POST /v1/assess` 오프라인 종단 경로 구현. `enterprise/p85-review-sql.mjs`는 `p70-local-review.mjs` 실제 CSV bytes/SMAX/PREP source SHA review HOLD 재확인 후, 좁은 5컬럼 합성 subset을 SQLite `:memory:` 고정 읽기 전용 SQL로 재계산·P70 BigInt totals 대조한다. `enterprise/p85-journey.mjs`는 문서 원문 접근/시스템 고정 매출데이터 범위 인가→선별 PDF/DOCX 검색→CSV 권리 미승인 근거/잠정 매출 명시→**answer null/REVIEW_HOLD**. 임의 SQL/기간별 매출/출처 변경·허위 승인/타조직 누출 거부.
+- **실행 가능한 demo:** `scripts/p85-synthetic-demo.mjs --self-test`가 127.0.0.1 임시 HTTP·무작위 합성 자격증명·실 PDF/DOCX+CSV를 생성, 로그인→통합 запрос→REVIEW_HOLD 검증 및 임시파일 삭제. **PASS**, 외부 API/모델 0. 일반 실행은 로컬에서 데모 세션 제공하지만 상용 고객 데이터 입력/배포 금지.
+- **실제 테스트:** Linux Node v22.16.0/Python3.11 신규 통합 **16PASS/0FAIL/0SKIP**, 전체 로컬 P50/P70/P85 **124 TOTAL/121 PASS/0FAIL/3SKIP**(3개 pinned 원본 RAG checkout). 신 소스/테스트/스크립트 6개 GitHub blob과 로컬 `git hash-object` exact 일치. 새 ZIP 독립 압축해제: `node scripts/p85-synthetic-demo.mjs --self-test` PASS, `node --test --test-concurrency=1 tests/*.test.mjs` **87 PASS/0 FAIL/0 SKIP**(약 56s). 이전 병렬 zip run 툴 시간 초과, 직렬 재실행 정상 PASS. 증거 `docs/P85_UNIFIED_EVIDENCE_20261113.md`.
+- **CI:** Ubuntu24.04/Windows2022 Python3.11/Node22 native job에 16개 통합 테스트와 실제 로컬 데모 self-test 추가. GitHub workflow blob `4e5fe24c4b25cba8bc7054c91d8e2cd4de95c193`; **Hosted CI/Windows 실통과 확인 불가**. 원본 RAG `c5867b3951f51bfa97cadd1aad8fb13e9cf9e604` checkout/SQL/native 연동 3SKIP 미해결.
+- **구현 미완과 보존:** 실제 직원 IdP/기업 IAM, 원본 RAG/PREP/SMAX signed approved AX, 한국어 실제 로컬모델·라이선스·악성문서 sandbox, 실제 물리 Windows/customer Gold/권리/완성률 owner 가중치 미확정. 원본·권한/환경변수/고객데이터/타상품 불변. Production/Vercel 미적용.
+
+
+
 ## [2026-11-13 KST] P85 재진행 — 실제 PDF/DOCX 바이트 파서·권한/인용 통합 검증
 
 - **목표:** 사용자 최종설계 전체 기준 85%, 공식 최종완성률 **UNASSESSED / 85% 미확정**. `[작업중]` 유지, `RELEASE HOLD/SALE NO-GO`. 기준 복구 HEAD `6fb66efd14dd95dd64ebfb1305ef872478ff1524`.
