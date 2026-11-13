@@ -1,12 +1,12 @@
-# REQUIREMENTS — Freelancer 5대 상품의 최종설계 기준
-1. 총 **5개** 제품 전용 브랜치: AZENTFLOW AX(HAE+LA), CITEVAULT AX(RAG+SMAX/PREP), SITECRAFT AX(REA+Fable/Astra), PROOFQA AX, ONTOINSIGHT AX. 각 브랜치에 FINAL_BLUEPRINT/TECHNOLOGY_MAP/ACCEPTANCE_AND_ROADMAP/COMMERCIAL_AND_SECURITY와 STATUS/HANDOFF 저장.
-2. 공통: 개발 기능과 계획을 분리, 전체 100% 기준·50/70/85/95 단계, 고객 자료 권리/라이선스/개인정보/실 Windows 설치·검수, 원본 불변·장애/재시도/재현/데이터 정합성, 구독·API비 별도 표시.
-3. HAE: HAE 정책/승인 + LA 결정적 실행 + SQLite 분리 + DBVORA 자산/복구 + 선택 SOVIA; Google OAuth 고객형 미검증.
-4. RAG: RAG Studio 문서·SQL 근거 + PREP/SMAX 데이터 정형화 + 기업 권한/생성 답변 보류, 로컬 모델 선택형.
-5. REA: 고객 허가 사이트 Fable/Playwright 관찰→Astra 증거→고객 승인→Pro 독립 웹앱 생성→브라우저 비교; DATA2WEB와 별도.
-6. **PROOFQA AX**: AI Code Checker 정적 검사 + Graphify code/SQL graph + agent-browser 실 사이트 E2E + Cloudflare security-audit-skill의 독립 검증 방법론. 코드를 무단 실행하지 않고 확인/미검증/기각 결론에 정확 증거 연결.
-7. **ONTOINSIGHT AX**: AI AutoML Analyst + NVIDIA Auto Ontology **개념 참고**의 의미·관계/KPI 계약 + Excel/CSV 안전 ingest+SMAX/PREP 선택형, leakage-safe AutoML + 수치 재검증·근거형 보고서.
-8. 상품명 PROOFQA/ONTOINSIGHT는 상표 검토 전 내부명. 제3자 GitHub OSS는 정확한 버전/라이선스/NOTICE/상용 배포 조건 검토 전 내장·판매 금지. 외부 기업 제휴/보안 인증 주장 금지.
-9. 해총 기존 16종 진척과 신규 결합 상품 진척률은 독립. 신규 2개는 현재 `UNASSESSED`, 코딩/통합 미착수, `RELEASE HOLD`.
+# REQUIREMENTS — AXNODE 독자 섹터형 실행 규격
+**기준:** 2026-11-13 KST · **정본:** [최종설계](docs/FINAL_BLUEPRINT.md) · 제품 ID AXNODE · 공식 완성률 **UNASSESSED**, 출시 HOLD, 크몽 미등록.
 
-10. 기존 세 기업형 판매 상품의 내부 브랜드는 `AZENTFLOW AX`, `CITEVAULT AX`, `SITECRAFT AX`이며, 고객 약속 기능과 기술이 보존되는 이름표다. 원본 HAE/RAG/REA 저장소/기술명 및 구 브랜치명을 강제 변경하지 않는다. `docs/BRAND_POSITIONING.md`와 각 branch `FINAL_BLUEPRINT.md`에서 명칭 확인.
+사용자 확정 요구: GitHub 저장소를 분할하는 것이 아니라 **단일 신규 확장자 파일**에 중앙 실행 순서/섹터/주소/연결/로컬·원격 참조를 담는 완전 **독자 바이너리 A안**. 전용 런타임이 참조를 지연 획득하고 단계별로 실행·확인·복구한다. 파일이 가벼워져도 원래 필요한 3GB 자원·메모리·처리 비용은 사라지지 않는다. 원격 무료 서비스는 제공자 요금/할당량/약관을 준수한다.
+
+## 최종 제품 요구 ID
+`docs/FINAL_BLUEPRINT.md §6`의 **R01~R29 전체가 공식 100% 설계의 요구 집합**이다. 단위 기능과 수용시험은 본문에 명시. 파일 규격·섹터/그래프 R01~05, 로컬/원격 접근·보안 R06~11, 패키징/UX/트리거 R12~15, 복구·감사 R16~20, 대용량 실측·AX연동 R21~24, OS/SDK/판매 R25~29. 사용자 가중치 100점 승인과 정확 SHA 증거가 없으면 절대 퍼센트 지정 금지.
+
+## 현재 근거와 공백
+POC v0.1은 로컬 Python 표준 라이브러리로 자체 64바이트 헤더/70바이트 인덱스+이름, 5섹터 CSV 분석, 3가지 허용 opcodes, 외부 상대경로/인라인 자원, 기본 무결성·경로 거부 구현. 2026-11-13 `python -m unittest discover -s tests -v`: 19 PASS / 0 FAIL / 0 SKIP; 3행 CSV 합계 350.00, 평균 116.6666666666666666666666667, 외부 참조 파일 852 bytes. **별도 로컬 시제품에 대한 근거**이며 이번 브랜치에서 tests 재실행·GitHub Actions CI·Windows·3GB·원격 코드 호출·HAE/LA/SOVIA/DBVORA 고객 E2E 수행 안 함.
+
+단계 M0 개념증명 → M1 정식 포맷/typed 그래프/fuzz → M2 로컬/NAS/HTTPS/캐시 → M3 승인/복구/트리거 → M4 HAE-LA 연동 → M5 고객 Windows/상용. 외부 전송/권한/요금/원본 수정은 사전 승인. 고객 실검증 없으면 판매 보류.
