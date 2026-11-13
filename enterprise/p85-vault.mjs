@@ -8,6 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {extractVerifiedNativeBytes} from './p85-native-extract.mjs';
+import {rankAuthorizedBM25} from './p85-bm25.mjs';
 
 const ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/u;
 const SHA = /^[a-f0-9]{64}$/u;
@@ -184,12 +185,10 @@ export class LocalSyntheticVault {
     const contradictory=conflict(chunks,question);
     if(contradictory.length){this.#record('CONFLICT_HOLD',p.tenantId);
       return Object.freeze({...shared,status:'POSSIBLE_CONFLICT',evidence:contradictory});}
-    const q=words(question), scored=chunks.map(c=>({c,score:q.reduce((n,t)=>n+
-      words(c.quote).filter(w=>w===t).length,0)})).filter(x=>x.score>0)
-      .sort((a,b)=>b.score-a.score||a.c.document_id.localeCompare(b.c.document_id)||(a.c.line??a.c.page??a.c.paragraph)-(b.c.line??b.c.page??b.c.paragraph));
+    const evidence=rankAuthorizedBM25(chunks,question,limit);
     this.#record('SEARCH',p.tenantId);
-    return Object.freeze({...shared,status:scored.length?'SEARCH_ONLY':'INSUFFICIENT_EVIDENCE',
-      evidence:scored.slice(0,limit).map(x=>x.c)});
+    return Object.freeze({...shared,search_mode:'bm25_authorized_citations',
+      status:evidence.length?'SEARCH_ONLY':'INSUFFICIENT_EVIDENCE',evidence});
   }
   /** Enforce server-side fixed synthetic dataset scope before opening CSV bytes. */
   authorizeSyntheticDataset(token,{tenantId,groups,projects,clearance},directory){
