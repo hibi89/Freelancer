@@ -1,3 +1,11 @@
+# STATUS — 2026-11-14 KST 사용자 Windows onedir EXE 실제 빌드 성공(최신)
+
+- 사용자 제공 Windows 10.0.26200 / Python3.11.9 / PyInstaller6.22.3 PowerShell 로그: 기존 `--plan`으로 생성된 PyInstaller 인자를 직접 실행, `Building EXE completed successfully`, `Building COLLECT completed successfully`, `Build complete!` 및 `WORKNOVA-Desk.exe` 파일 존재 확인. 이전 사용자 사이트 차단 문제를 우회한 **최초 실 Windows EXE 빌드 PASS(사용자 로그 기준)**.
+- EXE 파일 `Length` 출력은 열 폭으로 `22...` 잘림, SHA256 출력은 제공되지 않음. **정확 크기·SHA256/MZ 헤더·EXE 실제 GUI 실행·무Python 환경·기능·Defender/SmartScreen/서명/라이선스/Windows ACL·활성 DB 암호화는 NOT_VERIFIED**. 빌드는 기존 ZIP의 인자로 진행했으며 빌드 소스의 exact Git SHA도 미수집. 사용자 합성 Windows 소스형 11PASS×2 이전 증거 유지. 새 증거 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`.
+- 승인 WD-01~14 배점 총100점 및 항목 전체 고객 수용 PASS만 인정하는 규칙 유지. WD-13 **PARTIAL/0점**, 최종 인정 **0/100**(구현률 0 아님), **목표85 미달, [작업중], RELEASE HOLD, 미등록**. 실제 사용자 DB/설정/원본/타상품 수정·유료 실행 없음.
+
+---
+
 # STATUS — 2026-11-14 KST Windows PyInstaller pip --user 빌드 차단 오류 수정 (최신)
 
 - **실제 실패:** Windows Python3.11 `PyInstaller --version` 6.22.3 정상. 빌드 `--plan` PASS였으나 실행시 `build.log`에 `No module named PyInstaller`. 기존 `tools/windows_build_exe.py`가 하위 Python에 `PYTHONNOUSERSITE=1`을 강제해 사용자 설치형 모듈을 숨긴 **빌드 스크립트 결함**으로 확인. 사용자 PATH/설치·고객 데이터의 문제 아님.
