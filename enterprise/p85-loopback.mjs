@@ -29,7 +29,7 @@ const auth=req=>{
   return typeof h==='string'&&/^Bearer [a-f0-9]{64}$/u.test(h)?h.slice(7):'';
 };
 /** Opens an ephemeral IPv4-loopback listener only; no listener host override. */
-export async function launchSyntheticLoopback(vault){
+export async function launchSyntheticLoopback(vault,{journey=null}={}){
   if(!vault||typeof vault.login!=='function'||typeof vault.search!=='function'||
     typeof vault.source!=='function'||typeof vault.retire!=='function')throw Error('VAULT_REQUIRED');
   const server=http.createServer(async(req,res)=>{
@@ -42,6 +42,11 @@ export async function launchSyntheticLoopback(vault){
         return send(res,200,vault.login(x.userId,x.password));
       }
       const token=auth(req);
+      if(req.method==='POST'&&req.url==='/v1/assess'&&journey){
+        const x=await body(req);
+        return send(res,200,journey.assess(token,x.question,{
+          documentIds:x.documentIds??null,collection:x.collection??null}));
+      }
       if(req.method==='POST'&&req.url==='/v1/search'){
         const x=await body(req);
         return send(res,200,vault.search(token,x.question,{
@@ -73,6 +78,9 @@ export async function launchSyntheticLoopback(vault){
         code==='PAYLOAD_TOO_LARGE'?413:code==='SOURCE_DIGEST_MISMATCH'||
         code==='SOURCE_CHANGED'||code==='SOURCE_UNAVAILABLE'||code==='UNSAFE_SOURCE'?409:
         code==='INVALID_PAYLOAD'||code==='QUERY_INVALID'||code==='VERSION_INVALID'?422:500;
+      if(status===500&&typeof code==='string'&&
+        /^(?:SALES_|CSV_|SMAX_|PREP_|INPUT_|REVIEW_|SQL_)/.test(code))
+        return send(res,409,{error:'REVIEW_HOLD'});
       send(res,status,{error:status===500?'INTERNAL_ERROR':code});
     }
   });
