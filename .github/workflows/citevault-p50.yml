@@ -9,11 +9,29 @@ on:
       - tests/p70.test.mjs
       - enterprise/p70-rag-bridge.mjs
       - tests/p70-rag-integration.test.mjs
+      - enterprise/p70-citation-contract.mjs
+      - tests/p70-citation-contract.test.mjs
+      - enterprise/p70-local-review.mjs
+      - tests/p70-local-review.test.mjs
       - .github/workflows/citevault-p50.yml
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
+  local-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout CITEVAULT code only
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Node 22 local contracts
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Verify exact-source local citation and PREP-SMAX review-only contracts
+        run: node --test tests/p70-citation-contract.test.mjs tests/p70-local-review.test.mjs
   synthetic-evidence:
     runs-on: ubuntu-24.04
     timeout-minutes: 12
