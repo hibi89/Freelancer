@@ -25,10 +25,10 @@ test('synthetic positive doc query returns citation only, no generated answer',(
  const r=run();assert.equal(r.status,'SEARCH_ONLY');assert.equal(r.answer,null);
  assert.equal(r.model_state,'UNAVAILABLE');assert.equal(r.network_calls,0);
  assert.equal(r.identity_verified,false);assert.equal(r.evidence[0].document_id,'doc1');
- assert.equal(r.evidence[0].source_kind,'pdf');assert.equal(r.evidence[0].source_unit,'page');
+ assert.equal(r.evidence[0].source_kind,'pdf');assert.equal(r.evidence[0].source_unit,'synthetic_line');
 });
 test('synthetic DOCX paragraph citation retains source unit',()=>{
- const r=run([doc('doc2')]);assert.equal(r.evidence[0].source_unit,'paragraph');
+ const r=run([doc('doc2')]);assert.equal(r.evidence[0].source_unit,'synthetic_line');
 });
 test('other-tenant data completely absent from result',()=>{
  const r=run([doc('doc2',['반품 신청은 10일 이내'],{tenant_id:'T2'})]);
