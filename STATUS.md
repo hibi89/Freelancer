@@ -15,7 +15,7 @@ Windows10/11 native PowerShell/installer/upgrade/uninstall, true signed standalo
 
 ## GitHub/rollback
 
-Feature branch `hibi89/Freelancer@product/worknova-desk-local`, prior exact head `4e8adf0f61281006bcb570aa2f6282925168b0f7`; code commit SHA determined after branch push and GitHub Blob readback. Restore previous feature code only, do not revert owner SQLite v2 with old v1 writer. No changes to Freelancer main, original PayPal hackathon, other product branches. Central Kmong `[작업중]` synchronization after code confirmation. **RELEASE HOLD**.
+Feature branch `hibi89/Freelancer@product/worknova-desk-local`, prior exact head `4e8adf0f61281006bcb570aa2f6282925168b0f7`; source commit SHA `4d116918cc096d0a87605d07a4dd80da3ce35959`, GitHub 18/18 blob parity checked; documentation head advanced by this metadata commit. Restore previous feature code only, do not revert owner SQLite v2 with old v1 writer. No changes to Freelancer main, original PayPal hackathon, other product branches. Central Kmong `[작업중]` synchronization after code confirmation. **RELEASE HOLD**.
 
 ---
 
