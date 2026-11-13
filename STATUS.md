@@ -17,6 +17,6 @@ WD-01 real roles and data lifecycle, WD-06 external delivery evidence, WD-08 tam
 
 - PayPal hackathon source, Freelancer main and other product branches and existing customer DB untouched. P70 predecessor Git commit `16d08b79621a303e190835a74885d58d75d513d9` is the rollback code reference; **do not use older writer against a migrated v2 DB**.
 - Backups/new exports are explicitly user-owned and never silently overwritten or transmitted. No font included. Installer scripts have not been executed on Windows. Sensitive SQLite remains unencrypted; user must protect folder with OS permissions/encryption.
-- Product SHA to be filled by exact GitHub source commit readback. No Actions Windows/Production run for this SHA, no actual payment or commercial test.
+- Exact P85 source SHA `106e6a8f3c0b2b547344b8ef40dcf15c22b0529a`, local source Git blobs compared to remote tree. GitHub blueprint gate `#43383886013` SUCCESS at same source SHA, but NOT Python/Windows product CI. No Actions Windows/Production run for this SHA, no actual payment or commercial test.
 
 Evidence: `docs/P85_TRACE.md` (full WD-01..WD-14 rows). **RELEASE HOLD**.

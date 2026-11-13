@@ -53,3 +53,9 @@
 5. Next: real Windows10/11 Python3.11+ Tk smoke and actual Word/DOCX/PDF printing, install/upgrade/uninstall/rollback, explicit buyer-safe data privacy/role policy, optional signed EXE after cost/permission approval, at least ten *realistic customer-accepted* cases, third-party rights/NOTICE and legal/owner approval. Full final-weight consensus before official 85% claim.
 
 **CI/Production:** Vercel N/A; no public production. **RELEASE HOLD**. When pushed, record exact product commit SHA, Central KMONG sync SHA and updated KST below; P85 scoped functional outputs are not the final-product rate.
+
+## Verified GitHub source checkpoint
+
+- **Feature commit:** [`106e6a8f3c0b2b547344b8ef40dcf15c22b0529a`](https://github.com/hibi89/Freelancer/commit/106e6a8f3c0b2b547344b8ef40dcf15c22b0529a), product branch `product/worknova-desk-local`; GitHub tree source files match locally hashed `documents.py 83fccf11`, `gui.py db96b28c`, `__main__.py 550af134`, `install_local.ps1 fa6b8035`, P85 tests `bff26539`.
+- **GitHub workflow** [`#43383886013`](https://github.com/hibi89/Freelancer/actions/runs/43383886013) SUCCESS at feature commit. This workflow verifies the repository blueprint/policy content; it does **not** run Python 52-test product suite or Windows installer tests.
+- **Local package** Python-dependent source ZIP `WORKNOVA_Desk_P85_Windows_Python_Portable.zip`: 22,485 bytes SHA256 `ebaf31a3b087d6fed4418a8c2c522d5a515da1c65769a78ee4dd95785cb5b352`; ZIP CRC/content verified and extracted source CLI `init` succeeded. No signed EXE, no physical Windows tests, no customer data/fonts.
