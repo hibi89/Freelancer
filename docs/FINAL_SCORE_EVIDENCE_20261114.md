@@ -1,3 +1,9 @@
+## 2026-11-14 KST — Windows EXE 실제 메인 GUI 화면 표시(시각 증거)
+
+사용자가 `onedir` EXE의 신규 빈 장부 확인 대화상자에 이어 메인 **WORKNOVA Desk — 로컬 계약·납품 장부** 창을 보여주는 Windows 스크린샷을 전달. 한글 안내·거래처 검색·거래처/견적·버전/계약/납품·수금 4탭·업무와 백업 버튼 UI 렌더링 확인. **EXE GUI 시작 화면 표시 PASS**(사용자 화면 증거). **ExitCode, 임시 TEST SQLite 파일 존재, 실제 버튼 실행/데이터 보존·무Python PC/서명·Defender/ACL/고객수용 미검증**. 원본 스크린샷은 개인정보/브라우저 UI가 있어 GitHub에 업로드하지 않고 내용만 기록. [증거 기록](docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md).
+
+WD-11/13 일부 GUI 검증 강화, 완전 수용 불충족으로 각 PARTIAL/0. 전체 승인 WD01~14/100 **정식 0/100, 목표85 미달, [작업중]/RELEASE HOLD/미등록** 유지.
+
 ## 2026-11-14 KST — EXE 파일 크기·SHA256·MZ 기본 헤더 PASS (사용자 로그)
 
 Windows onedir 산출물 `WORKNOVA-Desk.exe` **7,107,722 bytes**, `SHA256=A7CD6B052108E5630E4AD50151841F0B812654F22E87CFE8338E22CB12A5C23E`, `MZ header: PASS`. 사용자 실제 PowerShell 검증 결과를 전달받아 기록. 바이너리 파일 원본은 수신하지 않아 파일 전체 직접 검증·PE 전체 유효성/서명은 주장하지 않는다. [증거](docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md). **EXE GUI 런타임·실거래처/DB 지속성·무Python PC·Defender·ACL/활성 DB 암호화·실고객/법무 수용은 NOT_RUN.**
