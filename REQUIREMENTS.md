@@ -30,3 +30,7 @@
 5. Current copyright/commercial-use and API agreements, contract/liability texts, support policy, owner launch approval.
 
 **Completion scoring:** user-approved per-requirement weights are not available. The official final-blueprint completion remains `UNASSESSED`; a unit-test pass or this 50-stage checkpoint is not mathematically 50% of R01-R21.
+
+## 2026-11-13 P70 follow-up
+Source 027c4592e7aed1d806a9218269efe534952a8f04. Added offline G2B-format snapshot contract quarantine (never live HTTP), saved/reusable local multi-company SQLite profiles, and duplicate JSON key checks. Local Python3.13.5: 60/60 PASS, Tk Xvfb smoke PASS; six Git blobs match. Actual API response/Win10-11/Python3.11/customer/CI not verified. See docs/P70_HARDENING_EVIDENCE_20261113.md.
+Full R01-R21 final completion remains UNASSESSED (approved owner weighting absent), target 70% [작업중] retained and RELEASE HOLD. Local DB profiles are plaintext, keep filesystem access restricted; never put real customer data or credentials into repo.

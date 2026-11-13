@@ -1,3 +1,16 @@
+# BID AX P70 reinforced handoff — 2026-11-13 KST (latest 10 points)
+1. Goal/full design/stack: owner 70% of entire R01-R21 blueprint target; local Python/SQLite/Tkinter; approved weights unavailable.
+2. Implemented/decision: official-shaped local snapshot parser with fail-closed manual-review status; versioned local multi-company profiles; duplicate JSON rejection; old customer workflow untouched. Local design B preferred over costly hosted A.
+3. Tests: Python3.13.5 Linux 60 PASS 0 FAIL 0 SKIP; compileall PASS; Tk Xvfb basic smoke PASS; 6/6 remote Git blob matches. GitHub Python CI, actual Windows and real API NOT RUN.
+4. Status: technical P70 hardened; actual final 70% NOT VERIFIED; official UNASSESSED; [작업중] kept; RELEASE HOLD; Kmong unpublished.
+5. Failures/alternatives: lack of approved API keys/live contract prevents credential usage or real qualification assertions. Quarantine unknown or malformed data. No unapproved paid CI, external transfer or automatic bid.
+6. Repo/branch/SHA: hibi89/Freelancer private, product/bid-ax-public-procurement, source SHA 027c4592e7aed1d806a9218269efe534952a8f04; paths bidax/{core,official,cli,desktop,workflow}.py, tests/test_p70_hardening.py, docs/P70_HARDENING_EVIDENCE_20261113.md.
+7. Production/environment: Python3.13.5 local Linux only; Python3.11 target unverified; gui via python -m bidax.cli --db PATH gui; Vercel N/A.
+8. Originals/backup/security: historical excluded Bid_Owl and other branches unchanged, SQLite profiles plaintext local only, never commit customer data/keys, preserve previous HEAD and new-path backup/restore.
+9. Next/approval: real API v1.3, retries/quota, 100 real notices, 10 human checks, Win10/11/EXE/customer rights, R01–R21 owner weights and independent validation before official number or sale.
+10. Time/confirmation: 2026-11-13 KST, exact source/test hash verified with six blobs; no live API/Windows/customer/production tests. Documentation HEAD is independently read after write.
+---
+
 # BID_AX_P70_DOC_SYNC_20261113 — BID AX P70 최신 인수인계 (2026-11-13 KST, 10항)
 
 1. **목표/확정설계/스택:** 사용자 목표 전체 최종완성률 70%; 전체 R01–R21 최종설계·현 로컬 Python3.11+ 목표/Tkinter/SQLite, 공식 가중치 미승인.

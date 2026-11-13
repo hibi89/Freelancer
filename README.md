@@ -42,3 +42,7 @@ The pure `official_query()` helper creates a **request plan only** (no key, netw
 ## Data contracts and guardrails
 
 See `docs/FINAL_BLUEPRINT.md` and `REQUIREMENTS.md`. There are no secrets in this repository. API documentation: https://www.data.go.kr/data/15129394/openapi.do (modified 2026-11-10: max 7-day query window, developer 1,000 requests, free entry, license displayed as no restrictions). This metadata is **not** an end-to-end legal authorization for every customer's commercial scenario and related data/attachments. Do not ship the product or promise eligibility without formal acceptance and current source verification.
+
+## 2026-11-13 P70 follow-up
+Source 027c4592e7aed1d806a9218269efe534952a8f04. Added offline G2B-format snapshot contract quarantine (never live HTTP), saved/reusable local multi-company SQLite profiles, and duplicate JSON key checks. Local Python3.13.5: 60/60 PASS, Tk Xvfb smoke PASS; six Git blobs match. Actual API response/Win10-11/Python3.11/customer/CI not verified. See docs/P70_HARDENING_EVIDENCE_20261113.md.
+Full R01-R21 final completion remains UNASSESSED (approved owner weighting absent), target 70% [작업중] retained and RELEASE HOLD. Local DB profiles are plaintext, keep filesystem access restricted; never put real customer data or credentials into repo.

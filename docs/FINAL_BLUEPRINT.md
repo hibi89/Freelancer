@@ -48,3 +48,7 @@ The 50-stage prototype target is an independent offline engine, input/output con
 ## 2026-11-13 P70 engineering follow-up (not a change of final scope)
 
 [Offline P70 acceptance and R01–R21 actual status](P70_STAGE_EVIDENCE_20261113.md). Local customer GUI, local version-diff + human review ledger, on-demand deadlines, JSON/CSV/HTML report and create-only backup/restore are tested in Python3.13.5 (45/45 PASS); Tkinter GUI Linux Xvfb smoke passed. Live official procurement, actual Windows, customer pilot, role separation, installation, PDF and seller/legal rights remain unverified. Official final completion `UNASSESSED`; approved weighted R01–R21 rubric missing; P70 is only a local engineering milestone and must not be marketed as final 70%.
+
+## 2026-11-13 P70 follow-up
+Source 027c4592e7aed1d806a9218269efe534952a8f04. Added offline G2B-format snapshot contract quarantine (never live HTTP), saved/reusable local multi-company SQLite profiles, and duplicate JSON key checks. Local Python3.13.5: 60/60 PASS, Tk Xvfb smoke PASS; six Git blobs match. Actual API response/Win10-11/Python3.11/customer/CI not verified. See docs/P70_HARDENING_EVIDENCE_20261113.md.
+Full R01-R21 final completion remains UNASSESSED (approved owner weighting absent), target 70% [작업중] retained and RELEASE HOLD. Local DB profiles are plaintext, keep filesystem access restricted; never put real customer data or credentials into repo.

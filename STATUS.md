@@ -1,3 +1,11 @@
+# BID AX 2026-11-13 P70 hardening status (latest)
+- User target: 70% of entire R01-R21 final blueprint. Official final completion UNASSESSED; target NOT VERIFIED, [작업중] retained, RELEASE HOLD, no listing.
+- Source SHA 027c4592e7aed1d806a9218269efe534952a8f04; 6/6 GitHub blob hashes identical to local. Tested Linux Python3.13.5 60 PASS/0 FAIL/0 SKIP; compileall/Tk8.6 Xvfb smoke PASS.
+- Local official-shaped JSON snapshot parser (no real API) forces REVIEW_HOLD and source hash; multi-company immutable-version profile storage, local CLI/GUI selection, JSON duplicate-key rejection.
+- No real API/key/100 notices/10 qualification reviews, Win10/11, signed EXE, customer acceptance, Python CI or deploy. Details docs/P70_HARDENING_EVIDENCE_20261113.md.
+- No modification to excluded Bid_Owl, other products, sale listings, original source/history.
+---
+
 # BID_AX_P70_DOC_SYNC_20261113 — BID AX 현행 상태 (2026-11-13 KST)
 
 - **이번 사용자 목표:** 최종설계 전체 70%; 기술 **P70 오프라인 로컬 엔지니어링 수용 PASS**, 전체 최종설계 공식률 **UNASSESSED**(R01–R21 승인 가중치 미확정), `[작업중]` **유지**, RELEASE HOLD/크몽 미등록.
