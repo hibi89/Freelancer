@@ -1,5 +1,16 @@
 # CITEVAULT AX — STATUS — RAG Studio Enterprise, 2026-11-13 KST
 
+## [2026-11-14 KST] CITEVAULT AX 최종설계 85% 목표 실구현 — 로컬 사용자관리·UI·BM25
+
+- **공식 판정:** 최종완성률은 `docs/FINAL_BLUEPRINT.md` 전체 100% 기준. **UNASSESSED · 85% 달성 미검증**, `[작업중]`, `RELEASE HOLD / SALE NO-GO`. 전체 24요구 수용표 `docs/FINAL_BLUEPRINT_85_ACCEPTANCE_MATRIX_20261114.md`; 임의 가중치·합성 PASS 기반 최종점수 산정 금지.
+- **실제 구현:** `p85-state-store.mjs` SQLite `createUser/loadAccount/replaceUserAccess` 트랜잭션·audit; `p85-vault.mjs` 관리자 로컬 `provisionUser/changeUserAccess`, 조직·관리자 권한 범위 상속, 모든 로그인·세션 사용 시 최신 SQLite 자격/그룹 재조회, 교차 프로세스 revoke/실시간 축소 반영. `p85-loopback.mjs`에 `POST /v1/admin/provision`, `/v1/admin/access` 및 `GET /`·`/ui.js`·`/ui.css` 정적 localhost UI, CSP/no-store/CORS 미허용. `p85-ui.mjs` 로그인·근거검색·운영자 권한 UI(토큰 메모리, DOM textContent). `p85-bm25.mjs` 실제 BM25+한국어 ngram, 사전 ACL·source SHA 통과한 citations만 rank. 독립 시연 `scripts/p85-operator-demo.mjs --self-test`.
+- **실행 검증:** Linux Node22.16/Python3.13 `node --test --test-concurrency=1 tests/*.test.mjs` **129 PASS/0 FAIL/0 SKIP**(현재 P85 standalone synthetic, 원본 RAG 3SKIP 포함 아님). 신규 운영자/계정 테스트 10PASS·UI/API 6PASS·BM25 6PASS. 기존 P85 vault27/HTTP17/SQLite14/native PDF-DOCX13/SQL journey18/Ed25519 18도 회귀 PASS. `node scripts/p85-operator-demo.mjs --self-test` PASS. 정확 GitHub blob/local `git hash-object` 수정/신규 9파일 9/9 동일. 증거/요구 표 `docs/FINAL_BLUEPRINT_85_ACCEPTANCE_MATRIX_20261114.md`.
+- **ZIP 독립 검증:** `CITEVAULT_AX_P85_operator_bm25_20261114.zip` 25파일, SHA256 `161bb8bc4069e8e6e51fa3b70d54e77911d9e884155c042517170b3119b2d5ca`. 압축해제 후 operator selftest PASS, BM25+UI 12 PASS/0 FAIL. 기존 파일/원본·고객 데이터 변경 없음. Linux local only.
+- **CI/실서비스:** `.github/workflows/citevault-p50.yml` Ubuntu24.04/Windows2022 Node22 행렬에 새 operator/visible UI/BM25 tests+셀프테스트 추가(정의만), **Hosted 실제 workflow job/run SHA/Windows 실행 결과 미확인**. Chromium local 실제 렌더 시도는 조직 정책에서 `127.0.0.1` 차단 `chrome-error://chromewebdata/` → 미검증, 우회 안 함. Vercel/Production/실기업 계정 미적용.
+- **중요 잔량:** 원본 RAG Studio 정확 pin `c5867b...` BM25/SQL/native/PREP-SMAX 통합 3SKIP, 실제 고객 신분/IdP·원본 이용권 승인·진짜 signed PREP/SMAX→AX producer, 실제 한국어 모델 체크섬/권리/품질, Windows/Linux Hosted CI·물리 Windows10/11/Gold100/고객 수용 미구현/미검증. 합성 로컬 운영자 ≠ 기업 IdP. 사용자 불필요 개입 중단 조건은 아님, 실제 개인정보/권한/고객 승인은 추후 요청.
+
+
+
 ## [2026-11-14 KST] CITEVAULT AX P85 서명 검토 경계 — 독립 18 PASS
 
 - **목표와 판정:** 사용자 최종설계 전체 대비 85% 목표. **공식 UNASSESSED / 85% 미달성·미검증**, `[작업중]`, `RELEASE HOLD/SALE NO-GO`. 기존 합성 local Node 통합 기능을 실제 기업 인증이나 고객 승인으로 전용 금지.
