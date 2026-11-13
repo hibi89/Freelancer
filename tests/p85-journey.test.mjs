@@ -103,7 +103,8 @@ test('SQL review actual SHA and totals reconcile independently',t=>{
 });
 test('reviewed CSV symlink blocked and never followed',t=>{
  const f=make(t),file=path.join(f.sales,'sales.csv');fs.renameSync(file,file+'.real');
- try{fs.symlinkSync(file+'.real',file);assert.throws(()=>inspectSyntheticSqlEvidence(f.sales));}
+ try{try{fs.symlinkSync(file+'.real',file);}catch(e){t.diagnostic('OS symlink permission unavailable: '+e.code);return;}
+   assert.throws(()=>inspectSyntheticSqlEvidence(f.sales));}
  finally{fs.rmSync(file,{force:true});fs.renameSync(file+'.real',file);}
 });
 test('reviewed CSV schema changes (even with fresh fabricated SHA) cannot bypass fixed SQL role contract',t=>{
