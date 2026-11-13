@@ -33,6 +33,7 @@ test('P70 real bytes, exact digest, role-bound row amounts produce REVIEW_HOLD o
   assert.equal(r.source_sha256,digest(before));assert.equal(r.mapping_exactly_bound,true);
   assert.equal(r.ax_package_created,false);assert.equal(r.approval,'NOT_GRANTED');
   assert.equal(r.original_smax_verified,false);assert.equal(r.authenticated_reviewer,false);
+  assert.equal(r.row_lineage_verified,false);
   assert.equal(r.network_calls,0);assert.equal(r.tax_basis,'TAX_UNKNOWN');
   assert.deepEqual(fs.readFileSync(path.join(x.dir,'sales.csv')),before);
   assert.doesNotMatch(JSON.stringify(r),/ORD-001|N-01|citevault-p70-review-/);
