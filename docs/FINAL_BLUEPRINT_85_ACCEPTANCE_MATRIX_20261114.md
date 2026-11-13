@@ -18,6 +18,12 @@
 - 실제 Chromium 렌더링 시도는 정책상 `chrome-error://chromewebdata/` / `Your organization doesn’t allow you to view this site`를 반환. 브라우저 접근 정책 우회 없이 중단; **브라우저 UI 렌더/Console/Network 미검증**, HTTP/static/js syntax 확인과 혼동 금지.
 - 기업형 로컬 사용자·상시 검증 BM25의 **기술 범위는 확대**, 고객 실직원 IAM/IdP, source rights/producer approval, 실제 한국어 모델, 원본 RAG, Windows/고객 인수의 최종 수용 조건은 여전히 대기. **공식 UNASSESSED** 유지.
 
+## [2026-11-14 KST] PREP/SMAX Ed25519 실 경로 통합 추가 (추가 증거)
+
+- **실제 개발:** 합성 검토 `p70-local-review.mjs`의 PREP 매핑 파일 bytes SHA256 검증, `p85-review-sql.mjs` 정확 SQLite 결과로 매핑 digest 전달, `p85-journey.mjs` / `p85-signed-review-gate.mjs`가 host-trusted Ed25519 key·source SHA·mapping SHA·tenant·key ID·version/expiry 검사. `POST /v1/assess`에서 서명 실패 시 수치/인용 불반환. 유효한 서명에도 **answer null/REVIEW_HOLD**, 사용권·권한 승인 기능 없음.
+- **검증:** Linux Node22/Python3.13 이번 변경 후 **10개 P85 독립 테스트 파일 합산 138PASS/0FAIL/0SKIP**, HTTP 서명 통합 신규9PASS, 기존 doc+SQL journey18PASS·HTTP17PASS 등. **단일 전체 runner invocation은 timeout**이므로 hosted CI/one-shot PASS라고 주장하지 않음. ZIP CRC+압축해제 신규9PASS/운영자 E2E PASS. 소스5파일 local Git/GitHub remote blob exact. 근거 `docs/P85_SIGNED_REVIEW_INTEGRATION_EVIDENCE_20261114.md`.
+- **원본 RAG CI:** RAG Studio 과거 run 43231121679 Windows+Ubuntu SUCCESS를 확인했으나 **CITEVAULT pinned SHA 연동이나 이 제품의 CI 결과가 아니다**. 원본 3SKIP·고객 IdP/권리·실 한국어 모델·Win 실제 hosted/물리 인수·Gold 여전히 미검증.
+
 ## 전체 설계 항목별 수용 표
 
 **상태 구분:** `검증-합성` = 특정 합성 시나리오에서 실제 코드 실행 테스트 통과(실고객 완료 아님); `부분` = 일부 기술 검증/미완; `대기` = 실제 수용 증거 없음. 파일·검증 근거는 제품 브랜치 정본.
@@ -25,14 +31,14 @@
 | 번호 | 사용자 확정 100% 설계 요구 | 현재 근거/실행 사실 | 상태 / 완료를 막는 것 |
 |---:|---|---|---|
 | 01 | 파일/데이터 소유권·사용권·개인정보·컬럼 검수 | `p70-local-review.mjs`·`p85-review-sql.mjs` 합성 CSV SHA/매핑 검토 HOLD | **부분**: 실제 고객 사용권·검토자 승인 없음 |
-| 02 | PREP 실 파일 매핑/결측/반려 행 | P70 좁은 합성 5컬럼 mapping·review 검증 | **부분**: 실제 PREP 원본/고객 데이터 매핑 승인 없음 |
-| 03 | SMAX² 정형 producer/typed normalization/행 계보 | 합성 원본 SHA와 P70 잠정 매출 교차 검증, 실제 typed producer 미연동 | **부분**: 원본 SMAX typed 직렬화 미검증 |
-| 04 | 서명/권리 승인된 AX_DATA_PACKAGE_V0 발급 | `p85-signed-provenance.mjs` Ed25519 metadata 검증 18PASS, 항상 REVIEW_HOLD | **대기**: 진짜 producer/외부 신뢰키·법적 승인·정식 패키지 없음 |
+| 02 | PREP 실 파일 매핑/결측/반려 행 | **신규 통합:** 검증된 `prep-mapping.json` 실제 파일 바이트 SHA256 + 원본 CSV SHA 바인딩, 서명 없는 수정/단순 공백 재직렬화도 거부(실 테스트) | **부분**: 실제 PREP 원본 생산자/승인된 고객 필드 매핑·의미 검증 미완 |
+| 03 | SMAX² 정형 producer/typed normalization/행 계보 | **신규 통합:** 실제 합성 SMAX review + PREP 매핑 + Ed25519 원본·매핑 해시를 SQLite 검산과 HTTP 조회에 연결, 신규 9PASS | **부분**: 실제 원본 SMAX typed producer/서명키·고객 검토자 미연동 |
+| 04 | 서명/권리 승인된 AX_DATA_PACKAGE_V0 발급 | **신규:** `p85-signed-review-gate.mjs` 서명 검증을 단독 계약에서 `POST /v1/assess` 실검증 경로로 연동, 위조·만료·replay/변조·타조직 차단, 성공에도 항상 REVIEW_HOLD | **부분**: 정식 signed producer + 법적/신분 승인·approved AX package 생성 미구현, 고객 권리 false |
 | 05 | PDF 페이지·DOCX 문단·TXT/MD 행 | 실제 합성 2페이지 PDF 및 한국어 DOCX 문단 검증, TXT line 해시 검증 | **검증-합성**: 복잡 문서·OCR·XLSX는 별도 |
 | 06 | 문서 2건 이상 동시 검색·인용·전용 범위 | P85 real PDF+DOCX 단일 /assess 종단·documentIds 사전 ACL, native13PASS | **검증-합성**: 고객 문서·코퍼스 검증 필요 |
 | 07 | 원본 RAG BM25 검색/IndexBuilder | **신규:** 별도 P85 실 BM25 + 한국어 n-gram 검색을 읽기 전 ACL·SHA 검증을 통과한 인용 구간에만 적용, 단위 6PASS | **부분**: 정확 원본 RAG pin BM25·대규모 인덱스 연결/CI 3SKIP 미검증 |
 | 08 | 원본 RAG fixed readonly SQLite SQL/typed KPI | P85 별도 `node:sqlite :memory:` 5컬럼 고정 집계, tamper 검증/HOLD | **부분**: 원본 RAG SQL/실 매출 VAT·환불 의미 승인 없음 |
-| 09 | SQL+문서 혼합 라우터·출처 두 가지 | `p85-journey.mjs` localhost /v1/assess 실 PDF/DOCX+잠정 SQL 단일 요청 | **검증-합성**: 승인자료 기준 고객 조회 불가 |
+| 09 | SQL+문서 혼합 라우터·출처 두 가지 | `p85-journey.mjs` 단일 HTTP에서 PDF/DOCX/TXT 인용·SQLite 매출 잠정 수치와 `signed_review` Ed25519 결과를 결합, 서명 불일치 시 숫자·인용 제거 | **검증-합성**: 실사용 승인 자료 조회·원본 RAG 종단 미검증 |
 | 10 | 정형 숫자 세금·환불·취소·SKU·기간 의미 통제 | 미지원 범위 `REVIEW_HOLD` 회피·비생성 검증 | **부분**: 고객 데이터 의미 확정·확장 쿼리 미구현 |
 | 11 | 풀코퍼스 정책 상충·거절/insufficient | 특정 7/14일 반품 상충 `POSSIBLE_CONFLICT`, 무권한 문서 차단 | **부분**: 전체 도메인/한국어 정책 Gold 불충분 |
 | 12 | 권한 있는 문서만 읽고 인덱싱 (tenant/group/project/classification) | vault는 ACL before byte read, SHA/inode/mtime/symlink/hardlink, 타조직 sales path 결속, 개별 테스트 | **검증-합성**: 생산형 multi-tenant index/TLS/파일 race 보안 미검증 |
