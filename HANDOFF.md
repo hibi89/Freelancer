@@ -1,3 +1,18 @@
+# HANDOFF — WORKNOVA Desk 2026-11-14 KST WD-13 독립 EXE 준비 (최신 10항)
+
+1. **목표·기술·요구:** 사용자 승인 WD-01~14 정식 100점(8,7,6,6,6,7,7,8,10,5,8,6,10,6), 최종 구매자 수용 증거 85점 목표. 로컬 Python3.11+/SQLite/Tk/Windows10·11, 오프라인 수동 견적·계약·납품·수금.
+2. **완료·설계·결정:** A) 로컬 Windows PyInstaller onedir는 Windows 플랫폼에서 EXE 생성·Python 독립 실행 가능, GUI/DB 기존 경로 재사용, B) private GitHub Windows Actions는 할당 초과 과금 가능·onefile 운영 복잡. 비용0 우선 A의 빌드 준비 코드만 신규 3파일 추가, 기존 정본/로직/스키마/소스형 ZIP 보존. 링크/재파스·기존 출력/고객 DB 경로 차단, 오프라인 계획 옵션, EXE MZ/SHA 검사. 실제 EXE **미생성**.
+3. **테스트·PASS/FAIL/SKIP:** Linux Python3.13.5 신규 격리 12 PASS/0FAIL/0SKIP, compileall PASS, 읽기전용 --plan PASS. GitHub 신규 3파일 읽기 일치. 이전 전체 제품 153PASS/Tk5PASS/ZIP15PASS는 이전 코드 시점 증거. 전체 제품 통합 회귀, 네이티브 Windows/EXE/Word/권한·사용자 수용 **NOT_RUN**.
+4. **진행·대기·차단:** WD-13 빌드 경로 후보는 코드 준비·제한된 Linux 안전성 시험 완료. 실제 Win 빌드·EXE 실행·서명·권리·ACL·고객 수용 전 **정식 0/100(구현률 0 뜻 아님), 85 미달, [작업중], RELEASE HOLD, 미등록**.
+5. **오류·근거·대안:** 현재 실행 호스트 Linux, PyInstaller 미설치. PyInstaller 비크로스 컴파일러여서 Linux EXE 산출 불가; private Actions는 월 무료량/과금 미확인. 원본 Windows 실행 성공이라 주장 금지. 독립 PC 소유자 허가 테스트가 무료 대안, 유료 runner/보안정책 변경은 금지. 최초 --plan 저장소 내부 출력 거부는 정상 fail-closed이며, 외부 경로로 교정해 확인.
+6. **저장소·브랜치·SHA·주요 파일:** `hibi89/Freelancer@product/worknova-desk-local`, 이전 복구 HEAD `a1517ad41c26a9d8de374c29c44f98ca1b07971c`, 신규 기능/테스트 SHA `59513923fa36c26da980080123cd0f7897755fe1`; `tools/windows_gui_entry.py`, `tools/windows_build_exe.py`, `tests/test_windows_exe_build.py`, `docs/P85_WINDOWS_EXE_CANDIDATE_20261114.md`. 최종 문서 HEAD는 GitHub 갱신 후 원격 재조회.
+7. **환경·배포·실행:** Production/Vercel 미적용. 격리 Linux `python -B -m unittest discover -s tests -v` 12건. 실제 소유 Windows에서 `py -3 -B tools\\windows_acceptance.py` 또는 이미 PyInstaller 설치 시 `py -3 -B tools\\windows_build_exe.py --out "$env:TEMP\\worknova-exe-candidate"` 실행 전 원본 데이터 격리. 웹서비스 없음.
+8. **원본·백업·인증:** 기존 고객 SQLite, 백업, `Freelancer/main`, 원본 PayPal 저장소, 다른 크몽 제품·등록 이력, OS 보안 설정·환경변수 변경 없음. 고객정보/키/폰트/서명 인증서를 GitHub에 업로드하지 않음. 이전 Git HEAD가 소스 복구 기준이며 기존 ZIP은 그대로.
+9. **다음 작업·승인·완료 기준:** Windows10/11 무관리자 설치·복구·GUI/독립 EXE/한글 Word 실제 재현, ACL/장부 평문 접근보호·서명/진본성, 실고객 수용10건·법률/상용폰트/지원/환불 서면 승인. 요구별 전체 PASS 합 85점 이상을 확인해야 목표 달성. Windows 장비/실사용·유료 인증서/OS 정책/고객자료 등은 별도 소유자 허가.
+10. **확인 시점·범위·문서 기준:** 2026-11-14 KST, 신규 단위 테스트만 로컬 재현·GitHub 신규 3파일 원문 동일. 현 호스트에서 실제 Windows 실행/원제품 통합 회귀 **미검증**. 중앙 크몽 표는 사용자 승인 100점 및 **[작업중]/0점**으로 유지·동기화 필요.
+
+---
+
 # HANDOFF — 2026-11-14 KST WD-08 무결성·상용권 검증(최신 10항)
 
 1. 목표·스택: 승인 최종설계 WD-01~14 100점, 목표85; Python3.11+/SQLite/Tk 오프라인 Windows 도구.
