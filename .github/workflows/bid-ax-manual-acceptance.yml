@@ -1,0 +1,54 @@
+name: BID AX manual cross-platform acceptance (not deployment)
+
+# Private GitHub Actions may consume billed minutes. Manual dispatch only.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bid-ax-manual-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-acceptance:
+    if: github.ref == 'refs/heads/product/bid-ax-public-procurement'
+    name: ${{ matrix.os }} Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python: '3.11'
+          - os: windows-latest
+            python: '3.11'
+          - os: ubuntu-latest
+            python: '3.13'
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONIOENCODING: 'utf-8'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Compile
+        run: python -m compileall -q bidax tests packaging run_bidax.py
+      - name: Offline full unittest suite
+        run: python -W error::ResourceWarning -m unittest discover -s tests -q
+      - name: Offline Python portable build
+        run: python packaging/build_portable.py BID_AX_CI_UNRELEASED.pyz
+      - name: Portable CLI smoke
+        run: python BID_AX_CI_UNRELEASED.pyz --help
+      - name: Package exclusion check
+        shell: python
+        run: |
+          import zipfile
+          with zipfile.ZipFile('BID_AX_CI_UNRELEASED.pyz') as archive:
+              assert 'BIDAX_MANIFEST.json' in archive.namelist()
+              assert all(not name.endswith(('.sqlite', '.db', '.env', '.pem')) for name in archive.namelist())
