@@ -1,5 +1,16 @@
 # CITEVAULT AX — STATUS — RAG Studio Enterprise, 2026-11-13 KST
 
+## [2026-11-14 KST] CITEVAULT P85 권한-매출 폴더 바인딩 검수 — 89PASS
+
+- **설계 전체 목표:** 사용자 최종설계 100% 대비 85%. 공식 완성률은 **UNASSESSED**, 85% **검증 미달**, 크몽 `[작업중]`, **RELEASE HOLD/SALE NO-GO**.
+- **발견·실제 수정:** `authorizeSyntheticDataset`가 사용자 tenant/group/project 권한만 검증하면서 `salesDirectory`를 인증된 테넌트의 물리 폴더에 결속하지 않는 취약 경계를 발견. `enterprise/p85-vault.mjs`가 고정 `<root>/<tenantId>/sales-only` 절대 경로·조직 폴더/세일즈 폴더의 디렉터리 타입·심볼릭 링크를 **CSV 읽기 전에** 확인하도록 변경, `enterprise/p85-journey.mjs`에서 server-configured 실제 폴더를 인가 함수로 전달. `tests/p85-journey.test.mjs`에 타조직 경로 바꿔치기·매출 폴더 심볼릭 링크 거부 2개 추가. 합성 PDF/DOCX 생성물의 immutable byte template만 재사용하여 각 테스트는 여전히 독립된 파일에서 실제 native parsing 및 승인 HOLD 실행.
+- **정확 소스 SHA:** remote GitHub blob/local `git hash-object` 정확 일치 vault `3256d1e52fed8bcf4748060478b381e9c5afe542`, journey `7e194a8def953e851e8413f217212338d033a994`, test `40a171cadb662275f34c62f5f602ae3cdb7ab4d8`. 세 파일 GitHub 반영 완료. 상세 `docs/P85_TENANT_PATH_AND_QA_20261114.md`.
+- **실행 테스트:** 이 세 파일 포함 독립 ZIP 로컬 Linux Node22.16/Python3.13.5: P85 journey **18PASS/0FAIL/0SKIP**(기존16+새2), 인증 vault27PASS, loopback17PASS, state-store14PASS, real native PDF/DOCX13PASS. **`node --test --test-concurrency=1 tests/*.test.mjs` = 89PASS/0FAIL/0SKIP**, JSON HTTP demo `--self-test` PASS. Journey 실행시간 이 환경 약 66.7s → 28.0s (fixture 생성 반복 제거). 이전 P50/P70/P85 결합 결과 124total/121PASS/3SKIP은 선행 이력이며, 이번 업데이트를 반영한 확장 결합 126개 명령은 **이번 턴 미실행**.
+- **원본 RAG SHA 정책:** 기존 pin `c5867b3951f51bfa97cadd1aad8fb13e9cf9e604` 보존. `develop` 최근 HEAD `bb8529ed689c1e95ccd7bbb722d4d6616eb46130`와 분기가 달라 자동 교체하지 않음. 정확 원본 RAG checkout/SMAX SQL 3SKIP 및 GitHub Hosted Actions job/Windows 실실행 확인 불가. GitHub workflow 정의만 CI PASS로 간주 금지.
+- **출시 및 승인:** 실제 기업 IdP/영속 직원 권한·실고객 소스 권리와 서명 승인 PREP/SMAX→AX, 원본 pinned RAG native SQL/문서 검색 연결, 실제 한국어 모델/라이선스/Win10·11/Gold, 취약 입력·TOCTOU 보안 검증 등이 미완. 원본 RAG/PREP/SMAX·고객 계정·타상품·Production/Vercel·환경변수·결제 변경 없음.
+
+
+
 ## [2026-11-13 KST] CITEVAULT AX 통합 서비스 85% 목표 재추진 — PDF/DOCX·SQLite 리뷰 HTTP 종단 PASS
 
 - **공식 판정:** 전체 최종설계 100% 대비 사용자 **85% 목표**, 현재 **UNASSESSED · 85% 미달/검증 대기**, `[작업중]` 유지, `RELEASE HOLD / SALE NO-GO`. P85 synthetic-only 테스트 수를 전체 고객제품 완성률로 환산 금지.
