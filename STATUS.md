@@ -1,3 +1,11 @@
+# STATUS — 2026-11-14 KST 네이티브 Windows EXE 실제 Tk 메인 GUI 표시 증거 (최신)
+
+- 사용자 제공 스크린샷에서 **WORKNOVA Desk — 로컬 계약·납품 장부** 메인 창이 Windows에서 실제 열린 것을 확인. 한글 안내·거래처 검색/새 거래처, 4개 업무 탭, 견적·계약·납품·수금·백업·암호화 복원 등 GUI 컨트롤이 그려짐. 이전 `onedir` EXE 빌드·7,107,722바이트·SHA256 `A7CD6B052108E5630E4AD50151841F0B812654F22E87CFE8338E22CB12A5C23E`·MZ PASS, 첫 장부 생성 팝업을 잇는 실제 GUI 구동 증거. 스크린샷 원본은 개인 UI가 있어 GitHub 업로드하지 않고 텍스트 관찰만 기록: `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`.
+- **검증대기:** 형이 창을 닫은 뒤 PowerShell `ExitCode` 및 `TestDatabaseExists` 출력. 메인 GUI 화면 확인만으로 임시 SQLite DB 생성/존재/재실행, 버튼 전수 기능, Windows ACL/DB 암호화·서명·Defender·Python 없는 PC 이식, 실제 고객/법률/라이선스 수용을 PASS로 처리하지 않는다. 기존 고객 자료/환경설정 변경 증거 없음.
+- 사용자 승인 WD-01~14 정식 전체100·완전 구매자 수용 배점만 인정. WD-11/13 GUI 표시 **부분 검증**, 전체 인정 **0/100**(구현률0 뜻 아님), 목표85 미달, **[작업중]/RELEASE HOLD/크몽 미등록** 유지.
+
+---
+
 # STATUS — 2026-11-14 KST EXE 파일 해시/크기/MZ 사용자 실기기 증거 확보 (최신)
 
 - 사용자 제공 같은 실제 Windows `WORKNOVA-Desk.exe` 파일에서 **Length 7,107,722 bytes**, **SHA256 `A7CD6B052108E5630E4AD50151841F0B812654F22E87CFE8338E22CB12A5C23E`**, 최초 두 바이트 `MZ header: PASS` 확인. 앞선 PyInstaller6.22.3 onedir EXE/COLLECT `Build complete!` 및 파일 존재의 후속 검증. 증거 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`. 사용자 콘솔 로그 기반이며 바이너리 파일 본문 직접 수신·별도 재해시 아님.
