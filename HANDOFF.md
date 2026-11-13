@@ -1,3 +1,18 @@
+# HANDOFF — 2026-11-14 KST WORKNOVA Desk onedir EXE 실제 Windows 빌드 성공(최신 10항)
+
+1. **목표·기술·확정 요구:** 오프라인 WORKNOVA Desk Python3.11+/SQLite/Tk Windows, 사용자 승인 WD01~14 총100점 고정·완전 고객수용85점 목표.
+2. **완료 기능·선택:** 이전 PyInstaller `PYTHONNOUSERSITE=1` 차단 버그 수정 후, 사용자 로컬 구형 ZIP `--plan` 인자 직접 호출(추가 설치/과금 없음)로 Windows `onedir --windowed` EXE 후보 빌드 최초 성공. 원본 DB/스키마/프로그램 기능 변경 없음.
+3. **테스트·검증/미검증:** 사용자 로그 Windows10.0.26200, Python3.11.9, PyInstaller6.22.3의 `Building EXE`/COLLECT 완료 및 `Test-Path` 성공 후 EXE 파일 표시. 실제 SHA256·정확 크기 출력 누락, EXE 실행 GUI·PE MZ·무Python PC·패키지 전체 검증 NOT_RUN. 이전 Windows Python 포터블 11PASS×2, Linux 기존153/Tk5 및 신규5 mock PASS는 별도 근거.
+4. **진행/대기:** WD13 EXE 빌드 부분 수용 진전, WD01~14 항목 전체 수용은 여전히 없음. **정식0/100(구현률 0 아님), 85 미달, [작업중]/RELEASE HOLD/크몽 미등록**.
+5. **오류·원인·대안:** 첫 빌드 `No module named PyInstaller`는 코드가 서브프로세스 PYTHONNOUSERSITE를 차단한 원인. 수정 후 직접 빌드 실행 성공. 이전 실패 출력 폴더 재사용 금지. PyInstaller 설치 재반복·PATH/OS정책 변경 불필요. 후속 SHA/MZ 확인→임시 LOCALAPPDATA 격리 GUI 실행.
+6. **저장소·브랜치·SHA:** `hibi89/Freelancer@product/worknova-desk-local`. 최근 패치 문서 HEAD `4862937b8e1a03c59c0a68ab8d5fc58a711f52af`; 최신 빌드 증거 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`. 소스 과거 rollback `d8ab09beae722607a180390dcc3807801fc569cb`. 로컬 ZIP과 원격 HEAD 동일 SHA는 미확인.
+7. **Production·실행 환경:** 웹/Vercel Production 미적용. 제품은 미서명 Windows onedir 빌드 후보, 결제/네트워크 미적용. 사용자 콘솔 $out의 dist/WORKNOVA-Desk/WORKNOVA-Desk.exe 생성.
+8. **원본/백업/인증 관리:** 실제 고객 DB/백업·GitHub 원본 PayPal/main/타 크몽 제품·등록완료·OS 권한·민감자료 변경 없음, 서명키/외부 데이터 유출 없음. EXE 공유/상품 판매 미승인.
+9. **다음 작업·완료 기준·승인:** 읽기 전용 EXE 정확 Length/SHA256/MZ 헤더→합성 임시 LOCALAPPDATA 환경 실제 GUI/DB 생성 보존→배포 이식·Windows ACL·서명/Defender·상업 폰트/Word·실고객/법률 지원 수용. 전체 WD 완전 PASS 배점 ≥85에서만 목표 달성, 사전 유료/고객 자료·보안 변경 승인 필요.
+10. **갱신·검증 범위:** 2026-11-14 KST, 사용자 제공 Windows 콘솔 빌드 출력만 PASS; 실제 파일 자체를 ChatGPT가 수신한 것 아님. 정본 문서 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`; 이 문서 커밋 후 제품/중앙 HEAD 확인.
+
+---
+
 # HANDOFF — 2026-11-14 KST WORKNOVA Desk PyInstaller user-site 오류 수정 (최신 10항)
 
 1. **목표·기술·승인:** WD-01~14 고정 100점·최종 사용자 수용85점, Python3.11/SQLite/Tk Windows 로컬 오프라인 프로그램. 비용0 유지.
