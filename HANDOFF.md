@@ -1,5 +1,19 @@
 # CITEVAULT AX — HANDOFF — RAG Studio 기업형 (10항, 2026-11-13 KST)
 
+## [2026-11-14 KST] CITEVAULT P85 CI 오류 분리·최소 패치 — HANDOFF 10항
+
+1. **목표·요구·기술:** 사용자 확정 `docs/FINAL_BLUEPRINT.md` 전체 24항 대비 85% 목표, 오프라인 기업 PDF/DOCX/SQLite/BM25/실직원 IAM/SMAX-PREP/Win 고객 인수. 공식 `UNASSESSED`, RELEASE HOLD.
+2. **완료 기능·변경·선택 근거:** 무의미한 CI 재실행(A) 대신 GitHub 실제 오류를 읽고 구문/테스트 cleanup/Windows Python env 3건(B)을 최소 패치. 원본 RAG 교체·무단 권한 변경·유료 runner(C) 불채택. Linux 기존 기능 유지, Windows 파서 수정은 원인 가설/미검증.
+3. **테스트·PASS/FAIL/SKIP:** 이전 pinned 원본 RAG upstream 11+24 PASS, CITEVAULT bridge SyntaxError, Windows EBUSY/NATIVE_HOLD. 패치 SHA `88564c86` hosted CITEVAULT [#43516278650](https://github.com/hibi89/Freelancer/actions/runs/43516278650) 및 final blueprint [#43516279187](https://github.com/hibi89/Freelancer/actions/runs/43516279187) all failed before actual steps (runner_id 0); **패치 코드는 새 테스트 0건 실행/0 PASS 주장**. 이전 합성138 PASS는 다른 SHA.
+4. **완료·진행·대기·차단:** 3곳 코드 패치 GitHub 반영 완료, 패치 실제 Node/Windows CI·원본 RAG 통합 3건 미검증. [작업중]/85% 미인증/판매 HOLD 유지.
+5. **오류·원인·재시도 금지·대안:** 지난 실구동 CI SyntaxError, Win EBUSY, Win DOCX NATIVE_HOLD. 신규 exact SHA CI jobs 0 steps, runner 미배정, 원인 미확인. 동일 무의미 rerun 금지; runner 증거 확보 후 CI 또는 정확 원본 로컬 독립 검증. 유료 대안은 별도 승인.
+6. **저장소·브랜치·SHA·경로:** `hibi89/Freelancer@product/rag-enterprise-knowledge` 기능 commit `88564c860a3da0a8d9a7c3e4dac3c99a6b2e2cbe`; 이전 복구 HEAD `c213f72a4978bfbbee3004cefe6f5ecf9a8ff362`. 수정 `tests/p70-rag-integration.test.mjs`, `tests/p85-operator-users.test.mjs`, `enterprise/p85-native-extract.mjs`; 증거 `docs/P85_HOSTED_CI_TRIAGE_20261114.md`.
+7. **운영·배포:** GitHub Actions Ubuntu24.04/Windows2022 Node22·Python3.11, 원본 RAG pinned SHA `c5867b3951f51bfa97cadd1aad8fb13e9cf9e604`. Vercel/Production 미적용; localhost synthetic only.
+8. **원본·백업·인증관리:** 이전 commit 복구점 보존, 원본 RAG/PREP/SMAX·고객자료/토큰·계정 권한·비용·타상품·등록완료 기록 불변. force push/재배포 없음.
+9. **다음 작업·완료 조건·사용자 승인:** runner 실제 할당된 CI와 원본 3 브리지 성공→Windows DOCX/SQLite PASS→실모델/라이선스/Gold/Win 설치→고객 자료 사용권·IdP/서명된 승인 AX 및 24항 owner 검수. 여기서 실고객/권한/원천 데이터/유료 runner는 형의 별도 승인이 있어야 85% 확정 가능. 지금 단계 사용자 작업 0.
+10. **갱신일시·검증 범위/문서 기준:** 2026-11-14 KST, GitHub blobs 3/3·Actions IDs 원격 직접 조회. 패치 코드 실행 미검증, runner 실패 사유 미확정. 신규 문서 갱신 후 해당 HEAD를 다시 조회해야 함.
+
+
 ## [2026-11-14 KST] CITEVAULT P85 실제 서명 PREP/SMAX 경로 + SQL/문서 결속 — 10항 인수인계
 
 1. **목표·용도·확정 요구·기술:** CITEVAULT AX `docs/FINAL_BLUEPRINT.md` 100% 전체의 85% 목표, 기업용 ACL-before-read PDF/DOCX·fixed SQLite·BM25/실 한국어 모델·실 employee IdP, PREP/SMAX signed reviewed/approved AX, Windows/Linux CI/고객 수용. 공식 `UNASSESSED`; 합성 코드 성과로 85% 부풀리기 금지.

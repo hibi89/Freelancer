@@ -1,5 +1,12 @@
 # CITEVAULT AX — STATUS — RAG Studio Enterprise, 2026-11-13 KST
 
+## [2026-11-14 KST] CITEVAULT AX P85 원본 RAG/Windows CI 장애 수정·실행 계층 차단
+
+- 기능 패치 `88564c860a3da0a8d9a7c3e4dac3c99a6b2e2cbe`: 원본 RAG 통합 테스트 구문 괄호, Windows SQLite 임시파일 정리 순서, Python DOCX 안전한 Windows 환경 변수 전달을 최소 수정. GitHub 정확 blob SHA 3건 조회, 원본/고객자료/타상품 불변.
+- 이전 hosted [#43514206340](https://github.com/hibi89/Freelancer/actions/runs/43514206340): pinned RAG 원본 체크아웃 및 원본 35개 테스트는 통과했으나 CITEVAULT 브리지 SyntaxError; Windows DOCX NATIVE_HOLD, Windows SQLite EBUSY 확인. 신규 정확 SHA [#43516278650](https://github.com/hibi89/Freelancer/actions/runs/43516278650) 및 최종설계 gate [#43516279187](https://github.com/hibi89/Freelancer/actions/runs/43516279187) **FAIL before runner allocation** (steps 0/runner 0/로그 없음), 코드 테스트는 실행되지 않음. 계정 할당/쿼터 원인 미확정, 무의미한 재실행/과금 변경 금지.
+- 사용자 최종설계 24항 전체 대비 **공식 UNASSESSED, 85% 미검증**, 이전 로컬 합성138PASS는 과거 SHA 증거로만 보존. `CITEVAULT AX [작업중]`, RELEASE HOLD/SALE NO-GO. 85% 확정에는 실기업 IAM·자료 사용권/승인·서명된 원본 PREP/SMAX·실 한국어 모델·Windows/Gold/수용 가중치 증거가 추가로 필요. 정본 `docs/P85_HOSTED_CI_TRIAGE_20261114.md`.
+
+
 ## [2026-11-14 KST] P85 통합 PREP·SMAX 서명 검토 실경로 검증 — 합계 138 PASS
 
 - **기준·판정:** 사용자 최종설계 전체 `docs/FINAL_BLUEPRINT.md` 100% 대비 85% 목표 **UNASSESSED, 아직 미달성/미검증**; `[작업중]`, RELEASE HOLD/SALE NO-GO. `docs/FINAL_BLUEPRINT_85_ACCEPTANCE_MATRIX_20261114.md`의 24개 REQ 정확 수용표만 사용, 합성 테스트 통과율로 85% 조작 금지.
