@@ -1,3 +1,12 @@
+# STATUS — 2026-11-14 KST WD-13 독립 Windows EXE 빌드 준비 (최신)
+
+- **현재 HEAD 변경 근거:** 사용자 승인 WD-01~WD-14 100점 배점 고정, 85점 목표 변동 없음. `tools/windows_gui_entry.py`, `tools/windows_build_exe.py`, `tests/test_windows_exe_build.py` 신규 생성, 코드/테스트 커밋 `59513923fa36c26da980080123cd0f7897755fe1`. 자세한 문서 `docs/P85_WINDOWS_EXE_CANDIDATE_20261114.md`.
+- **실행 범위:** Linux Python3.13.5에서 신규 파일 3개 대상 12/12 단위 테스트 PASS(0FAIL/0SKIP), compileall PASS, 읽기전용 --plan PASS. GitHub 신규 파일 3개 readback 내용 일치. 기존 **153개 제품 회귀·5 Xvfb GUI·15 source ZIP PASS는 전 회차 기록**이며 새 전체 소스로 재실행한 것이 아님.
+- **남은 핵심 게이트:** PyInstaller 자체 미설치·현재 Linux 호스트. 실제 Win10/11 onedir EXE 빌드·실행·PowerShell/Word·OS ACL/암호화·Defender·상용권/실고객/서명은 **NOT_RUN**. private Actions 과금 가능해 실행하지 않음. Python 필요 기존 ZIP은 변경·삭제하지 않음, 고객 DB/복구본/타 브랜치/원본 미변경.
+- **공식 인정점수:** 전 14항목 구매자 전체 수용 미완, 승인 기준 **0/100(제품 구현률 0 아님)**. **85 미달 · [작업중] · RELEASE HOLD · 실제 상품 미등록** 유지. Production/Vercel N/A, 유료 사용 0원. 향후 Windows 로컬 실검증 및 실고객·권리 승인 후 요구 항목별 재채점.
+
+---
+
 # STATUS — 2026-11-14 KST WD-08 감사 로그 말단 누락 검증 추가(최신)
 
 - 사용자 승인한 WD-01~14 전체 100점 및 85점 목표 변경 없음. 마지막 감사 이벤트 삭제 미검출 결함을 실제 재현해 seq 연속번호/high-water 검증 보강. 체크포인트 POSIX mode0600과 한글 PDF 글꼴 상용권 별도 명시 동의.
