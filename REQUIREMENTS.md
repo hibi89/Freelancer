@@ -1,12 +1,32 @@
-# REQUIREMENTS — Freelancer 5대 상품의 최종설계 기준
-1. 총 **5개** 제품 전용 브랜치: AZENTFLOW AX(HAE+LA), CITEVAULT AX(RAG+SMAX/PREP), SITECRAFT AX(REA+Fable/Astra), PROOFQA AX, ONTOINSIGHT AX. 각 브랜치에 FINAL_BLUEPRINT/TECHNOLOGY_MAP/ACCEPTANCE_AND_ROADMAP/COMMERCIAL_AND_SECURITY와 STATUS/HANDOFF 저장.
-2. 공통: 개발 기능과 계획을 분리, 전체 100% 기준·50/70/85/95 단계, 고객 자료 권리/라이선스/개인정보/실 Windows 설치·검수, 원본 불변·장애/재시도/재현/데이터 정합성, 구독·API비 별도 표시.
-3. HAE: HAE 정책/승인 + LA 결정적 실행 + SQLite 분리 + DBVORA 자산/복구 + 선택 SOVIA; Google OAuth 고객형 미검증.
-4. RAG: RAG Studio 문서·SQL 근거 + PREP/SMAX 데이터 정형화 + 기업 권한/생성 답변 보류, 로컬 모델 선택형.
-5. REA: 고객 허가 사이트 Fable/Playwright 관찰→Astra 증거→고객 승인→Pro 독립 웹앱 생성→브라우저 비교; DATA2WEB와 별도.
-6. **PROOFQA AX**: AI Code Checker 정적 검사 + Graphify code/SQL graph + agent-browser 실 사이트 E2E + Cloudflare security-audit-skill의 독립 검증 방법론. 코드를 무단 실행하지 않고 확인/미검증/기각 결론에 정확 증거 연결.
-7. **ONTOINSIGHT AX**: AI AutoML Analyst + NVIDIA Auto Ontology **개념 참고**의 의미·관계/KPI 계약 + Excel/CSV 안전 ingest+SMAX/PREP 선택형, leakage-safe AutoML + 수치 재검증·근거형 보고서.
-8. 상품명 PROOFQA/ONTOINSIGHT는 상표 검토 전 내부명. 제3자 GitHub OSS는 정확한 버전/라이선스/NOTICE/상용 배포 조건 검토 전 내장·판매 금지. 외부 기업 제휴/보안 인증 주장 금지.
-9. 해총 기존 16종 진척과 신규 결합 상품 진척률은 독립. 신규 2개는 현재 `UNASSESSED`, 코딩/통합 미착수, `RELEASE HOLD`.
+# REQUIREMENTS — 확정 요구사항 / 수용 기준
 
-10. 기존 세 기업형 판매 상품의 내부 브랜드는 `AZENTFLOW AX`, `CITEVAULT AX`, `SITECRAFT AX`이며, 고객 약속 기능과 기술이 보존되는 이름표다. 원본 HAE/RAG/REA 저장소/기술명 및 구 브랜치명을 강제 변경하지 않는다. `docs/BRAND_POSITIONING.md`와 각 branch `FINAL_BLUEPRINT.md`에서 명칭 확인.
+**전체 최종설계 100%가 공식 분모. 현재 UNASSESSED / 제품 구현 미착수.**
+
+## 상품 공통
+- COM-01 Windows 10/11 x64 개인용 설치·오프라인 실행, 모델 설치 후 기본형 네트워크 없이 사용 가능해야 함.
+- COM-02 사용자 마이크→음성 인식→일반 대화 AI→합성 음성 출력. 텍스트 입력 및 재생/중지 컨트롤 보조.
+- COM-03 음성 원본/설정/기록 고객 PC 저장. 외부 전송 기본 불가; 숨은 API/원격 측정/클라우드 폴백 없음.
+- COM-04 동일 앱 내부의 분리된 SKU/권한 설정으로 개별 30,000원, 묶음 50,000원 제품 구성. 상품별 분리 설치파일은 검증 후 선택.
+- COM-05 AI 합성임 표시·로컬 데이터 초기화·삭제·권한확인·오류복구·모델 라이선스 제공.
+- COM-06 저사양/CPU와 GPU 성능을 실측하여 지원 사양 명시. 속도·설치 용량·배터리/발열 과장 금지.
+
+## ECHOHOME (사람 음성)
+- FAM-01 고객이 적법한 이용 권한이 있는 사람 목소리 샘플 **1~2개**(우선 WAV, MP3은 변환기 라이선스 검증 후)를 등록·취소·교체.
+- FAM-02 소량 샘플 기반 zero-shot/적응형 TTS, 사전 청취·품질 부족 안내 및 일반 음성으로 폴백; 유사도 약속 전 객관 검증.
+- FAM-03 질문 내용은 범용 로컬 LLM이 독립 생성; 실제 사람의 기억/발언/성격 자동 재구성 없음.
+- FAM-04 매 세션 사용자에게 AI 생성 음성임을 분명히 표시; 생존/사망 사칭 및 고인의 확정 의사표시 금지.
+- FAM-05 권한확인 절차 + 제3자 무단 이용 금지, 특히 고인 음성은 적법한 이용 권한 검토를 별도 판매 게이트로 둠.
+
+## PAWTALK (반려동물)
+- PET-01 강아지/고양이 모드 및 선택 가능한 가상 사람 목소리와 캐릭터 스타일.
+- PET-02 울음소리/짖음의 소리 이벤트 감지. 의미·감정이 명확하지 않으면 인식 불가/놀이용 추측 표기.
+- PET-03 주인의 음성 또는 텍스트 질문에 캐릭터 대화 엔진이 응답, 음성 출력. 동물이 사람말을 이해하거나 답한 것으로 표기 금지.
+- PET-04 실제 음성→텍스트 번역/건강·행동 진단은 제품 범위 밖. 이용자 제공 상황 설정은 오직 선택 입력.
+- PET-05 마이크 전환(사람/동물), 오탐 억제/수동 정정, 타 반려동물 음성과 비교한 허위 단정 금지.
+
+## 비기능/출시
+- SEC-01 악용 방지: 대량 TTS, 전화/보이스피싱 통화 연결, 타인 사칭용 전송·대량 음성 내보내기 미지원.
+- SEC-02 설치파일 무결성, 개인정보 최소화, 입력파일 크기·형식·경로 제한, 불필요한 로그 금지.
+- QA-01 각 요구 ID의 단위·E2E·보안·Windows 실기기·오프라인 테스트와 실제 통과 근거.
+- LEG-01 제3자 OSS/모델 weights/상용 재배포·음성권리·한국 법령·이용약관 검토 후 출고 승인.
+- SALE-01 실제 크몽 등록 증거 전 상태 미등록; 상품 이력 삭제 없이 변경 보존.

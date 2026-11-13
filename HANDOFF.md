@@ -1,17 +1,11 @@
-# HANDOFF — Freelancer 5상품 크몽 설계 허브 (10항, 2026-11-13 KST)
-1. **목표·용도·확정기술:** Private Freelancer 문서 저장소에서 기존 3종 AZENTFLOW AX(HAE+LA)/CITEVAULT AX(RAG+SMAX)/SITECRAFT AX(REA+Fable-Astra)와 신규 **PROOFQA AX**(CodeChecker+Graphify+agent-browser+Cloudflare 보안 검증 방법), **ONTOINSIGHT AX**(AutoML+NVIDIA Auto Ontology 개념+데이터/KPI/ML) 5개 독립 최종상품 기준을 유지.
-2. **완료/변경/결정 근거:** 기존 3 branch의 상세 기술 설계는 보존하되 내부 상품명·브랜드 소개·문서 표제만 갱신. 신규 product 브랜치 2개 생성, 각 FINAL_BLUEPRINT/기술/30 또는 36 테스트/50→100/상품·보안 문서 작성. PROOFQA는 구조·동작·근거 교차검증, ONTOINSIGHT는 경량 ontology-lite/수치 검증·누수방지 선택. 전체 NVIDIA Stack/자동 고객 소스 실행은 초기에 배제.
-3. **테스트/성공·실패:** 새 GitHub branch 두 HEAD·Git Trees 각각12 blob·문서 원격 재읽기 확인 PASS. 실제 제품 기능/CI·Windows/고객 보안·판매 0회 NOT_RUN. 기존 CodeChecker/AutoML 역사 CI는 신규 상품 검증과 구분.
-4. **상태:** 두 신규 패키지 **기획 완료, 기능 통합 미착수/완성률 UNASSESSED/RELEASE HOLD**, 기존 3개 제품도 상용출시 HOLD. 등록/판매가·고객 인수 전 기술 라이선스·증빙 별도 검증.
-5. **오류·원인·시도·재시도 금지:** 신규 브랜치 큰 통합 서비스는 정적 탐지만으로 웹·보안 결론을 확정할 수 없고, 매출 의미·join·target leakage 위험. 외부 Graphify/skill의 패키지/버전·비밀정보 전송 옵션과 NVIDIA NIM 비용은 검토/사전 승인. 무한 CI/force push·무단 원본 수정 금지.
-6. **저장소/브랜치/정확 SHA:** `hibi89/Freelancer` Private, `main` 기존 `b80423da5...`, 새 `product/proofqa-ax-delivery-audit@54b718f5d5520fae912d1fcc2e70a87ebd8f173c`, `product/ontoinsight-ax-data-analytics@afda6eac0802d50cbcd44eb0b99d3daeffbf0922`, 기존 세 상품의 최신 브랜드 갱신 SHA는 `docs/PRODUCT_INDEX.md`에 기재.
-7. **Production/프로젝트/환경:** 이 저장소는 실행 불필요한 기획 Repo; Vercel Production 미적용. 실제 Python3.11+ CodeChecker·AutoML 소스/브라우저/OSS 종속성은 각각 원본 repo에서 검증 후 제품화.
-8. **원본/백업/인증 관리/금지:** 구직 원본 SHA `d47239f...` Git history 복구 가능, 기존 3 브랜치/코드 및 해총 기존16종 완성률 불변. 고객 코드/PII/키/업무자료/원본 DB는 GitHub·외부 모델로 무단 송신 금지.
-9. **다음 우선순위·절차/승인:** 신규 상품 각 `HANDOFF→STATUS→AGENTS→REQUIREMENTS→FINAL_BLUEPRINT→원본 CodeChecker/AutoML source·tests`→실행 가능 범위 설계 재확인→사용자 제품 개발 승인→최소 adapter/semantic contract 구현→CI/OS/실고객/라이선스→크몽 판매 승인. 해총 `[작업중]`는 기능 착수 시 사용자 규칙에 따라.
-10. **갱신 KST·확인 범위·커밋 기준:** 2026-11-13 KST, GitHub READ/CREATE/UPDATE/검증. 이번 문서 최신 hub SHA는 수정 후 GitHub main 원격 ref 확인값 사용, 제품 코드 TEST/Production 미실행.
-
-### 2026-11-13 브랜드 갱신 후속 기록
-- AZENTFLOW AX `product/hae-la-automation@a578aee2300ae053bafe5cdaf1dd8e23385ff47b`
-- CITEVAULT AX `product/rag-enterprise-knowledge@acf4936670bf1205f648d0dff5ca7e48b62fa83a`
-- SITECRAFT AX `product/rea-website-rebuild@6e2346c3b9d50dea1bde8d5ecb47b47f1567f774`
-- 각 브랜치 `docs/BRAND_POSITIONING.md` 추가. 명칭만 수정; 이 작업에서 제품 기능 코드/CI/Production 변경 및 상표·도메인 조사 없음. 기존 PROOFQA AX/ONTOINSIGHT AX SHA·문서 변경 없음.
+# HANDOFF — ECHOHOME + PAWTALK (10항)
+1. **목표·용도·확정 기술:** 로컬 개인용 가족 음성 AI 대화(ECHOHOME)와 반려동물 캐릭터 AI 대화(PAWTALK) 2SKU. 샘플 1~2개 가족 목소리 등록, 일반 AI 답변 음색 변경. 동물은 정확한 언어 번역 아닌 이벤트 감지→놀이 대화. 공통 오프라인 STT+LLM+TTS, 선택적 펫 이벤트 엔진. 가격 각 30,000원, 묶음 50,000원.
+2. **완료 기능·변경·근거:** 새 product/echohome-pawtalk-local-ai branch와 최종설계/모듈/안전/상업/41 수용시험 문서 작성. A 로컬 vs B 클라우드 vs C 고정문구 비교 후 로컬 플러그인형 채택. 1~2개의 샘플로 동일성 보장하지 않음.
+3. **시험 명령/성공·실패·미검증:** 코드/테스트 미작성, 실행 명령 없음, 신규 테스트 0 PASS/0 FAIL/0 SKIP, 41 계획 사례 전체 NOT_RUN; 향후 Windows10/11·성능/화자 유사도·오프라인 트래픽/권한/설치 검증 필요.
+4. **완료/진행/대기/차단·중단 지점:** 브랜치 및 설계 작업만 완료. 실제 소프트웨어 개발 NOT_STARTED; 제품 최종설계 공식률 UNASSESSED, RELEASE HOLD, 크몽 미등록. 브랜드 상표 검토 미완.
+5. **오류·원인·시도·재시도/대안:** 현재 실패 없음. 핵심 리스크는 1~2파일 음색 품질, CPU 로컬 추론 지연, 한국어 TTS 상용 라이선스, 음성 사칭 악용. 실측/사전듣기/기본 음성 폴백, 라이선스 불가면 대체 모델·보류. 유료·클라우드로 무단 전환 금지.
+6. **저장소·브랜치·SHA·경로:** Private hibi89/Freelancer@product/echohome-pawtalk-local-ai, branch base main SHA fe4bbfea9b515d85b6e77b77c57e63851bd2964d. 새 문서 커밋 SHA는 GitHub 원격 ref 검증 후 기록. docs/FINAL_BLUEPRINT.md가 최종설계 정본.
+7. **Production URL/Vercel/실행 환경:** 실행 서비스 미구현, Vercel 미적용. 목표 Windows10/11 x64 개인 PC, 기본 오프라인; 최소 사양 실제 벤치마크 전 미확정.
+8. **원본 위치·백업·인증·수정금지:** 원본 main 및 5개 기존 product 브랜치/과거 Upwork 기록은 Git에 보존; 기준 SHA와 Git parent로 복구 가능. 고객 녹음/원본·민감정보/음성 벡터/토큰·모델 weights를 GitHub·클라우드로 전송/커밋하지 말 것.
+9. **다음 우선순위·완료기준·승인:** 모델/weights 라이선스·정확 버전 선정 및 성능 실측 설계→고객 UI→오프라인 엔진 E2E→41수용시험·보안·권리/법률·Windows 실기기→크몽 상품 인수/지원/환불·최종 사용자 승인. 금전·외부 데이터/권한 변경 및 원본 수정은 사전 승인.
+10. **KST·확인 시점·범위·문서 기준 커밋:** 2026-11-13 KST 기준 소유자 최종 범위 반영; GitHub branch/doc 원격 재조회 이후 SHA 확정 예정. 문서 설계 성공과 소프트웨어 제품 완성/상용 판매는 구분.
