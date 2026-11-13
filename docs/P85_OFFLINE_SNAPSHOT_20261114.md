@@ -13,6 +13,6 @@ Commands (offline only):
   node scripts/p85-offline-ops.mjs restore --source ABSOLUTE_BACKUP_DIR --dest NEW_ABSOLUTE_RESTORE_DIR
 
 Local verification: Linux Node22.16, node --test tests/p85-offline-backup.test.mjs = 9 PASS / 0 FAIL / 0 SKIP. Synthetic bytes only.
-Windows/Ubuntu GitHub Actions: matrix test added in citevault-p50.yml; exact-SHA hosted outcome PENDING at commit creation. CI success later must be separately checked.
+Windows/Ubuntu GitHub Actions: exact feature SHA 0cf969fb2908cca985f4655d2c713ad7e030d168 [#43525453183](https://github.com/hibi89/Freelancer/actions/runs/43525453183) 6/6 SUCCESS. Offline snapshot test 9 PASS/0 FAIL/0 SKIP on each OS; full hosted suite 398 PASS/0 FAIL/0 SKIP across Linux+Windows/RAG jobs. Physical Windows10/11 and live customer backup remain UNVERIFIED.
 Not verified: live concurrent multi-process source consistency, customer IdP, real source rights, actual Korean local model, physical Win10/11 deployment, customer Gold100.
 Official final-blueprint 24 requirement score UNASSESSED; 85% unverified; [작업중] / RELEASE HOLD / SALE NO-GO; original upstream and customer data unchanged.

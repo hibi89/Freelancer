@@ -1,5 +1,14 @@
 # CITEVAULT AX — STATUS — RAG Studio Enterprise, 2026-11-13 KST
 
+## [2026-11-14 KST] 사용자 승인 후 P85 백업·복구 및 합성100 질의 성능/권한 CI 완료
+
+- **기능 SHA** `0cf969fb2908cca985f4655d2c713ad7e030d168` (직전 백업 구현 `e1d25c18c3fb0ddaf6957ce91b6d54e15199582f`). 실제 [GitHub Actions #43525453183](https://github.com/hibi89/Freelancer/actions/runs/43525453183) **6/6 SUCCESS, 398 실행 PASS/0FAIL/0SKIP**(Linux/Windows 반복 test 포함): P70 31, RAG pinned 11+24+36, Windows/Linux P85 local 각107+백업 각9+합성100 작업 각1, Windows/Linux native 각31. 신규 정책 gate도 SHA별 별도 확인 필요.
+- **실기능:** `p85-offline-backup.mjs` local state SQLite backup API + SHA256 manifest + document bytes, 원본 무변경·동일 경로/덮어쓰기·symlink/hardlink·추가/변조·경로 위조 거부, atomic create-only restore. `p85-offline-ops.mjs` 명령형 수동 실행만. Windows/Linux hosted 각 9PASS, 추가 비용/외부 네트워크 0. **서비스 정지·DB 닫은 상태에서만** 사용하며 생산형 고객 동시 백업/자동복구 아님.
+- **합성 QA:** `tests/p85-synthetic100.test.mjs` 합성 한국어 질의 100회/OS, 근거검색20·근거부족20·원문 충돌20·기밀 직접조회 차단20·혼합 권한조회 차단20. CI 각 OS 1 테스트 스위트 PASS; p95 Ubuntu **0.328ms**, Windows **1.001ms** (작은 합성자료/측정 당시 runner, 고객 성능/Gold100 아님). 실 고객 질문/모델·정확도 외삽 불가.
+- 24항 최종설계의 **공식 완성률 UNASSESSED / 85% 미검증**, `CITEVAULT AX [작업중]`, `RELEASE HOLD/SALE NO-GO` 유지. Real IdP/원본 사용권/실 signed PREP-SMAX·승인 AX/실 Korean local model/실 Win10/11 설치/고객 Gold100/수용 가중치·법적 검수 미완. Public 공유 repo 전 브랜치/이력 보안 위험 미해결; 고객자료·비밀/타상품/원본 RAG/Production 무수정.
+- 증거: `docs/P85_OFFLINE_SNAPSHOT_20261114.md`, `docs/P85_SYNTHETIC100_EVIDENCE_20261114.md`.
+
+
 ## [2026-11-14 KST] CITEVAULT P85 호스티드 Ubuntu+Windows CI 복구 성공 (소스 SHA cea0ec09)
 
 - 실제 [GitHub Actions #43523337142](https://github.com/hibi89/Freelancer/actions/runs/43523337142) **6/6 SUCCESS**, 원본 pin RAG P512 11 + P538/P540/P549 24 + CITEVAULT bridge 36; Ubuntu/Windows 로컬 107×2, native PDF/DOCX 통합 31×2, Linux local-contracts 31. **378 실행 PASS/0FAIL/0SKIP**, OS별 동일 테스트 중복 포함; [최종설계 정책 gate #43523337300](https://github.com/hibi89/Freelancer/actions/runs/43523337300) SUCCESS(정책 검증만).

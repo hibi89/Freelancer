@@ -1,5 +1,19 @@
 # CITEVAULT AX — HANDOFF — RAG Studio 기업형 (10항, 2026-11-13 KST)
 
+## [2026-11-14 KST] 사용자 승인 후 P85 오프라인 복구+합성100 CI — HANDOFF 10항
+
+1. **목표·용도·확정 기술:** CITEVAULT AX 기업형 근거 검색 전체 최종설계 24항 100% 대비 85% 목표. RAG pinned/PREP-SMAX/SQLite ACL/Win Linux CI+고객 실제 수용. 공식 `UNASSESSED`, 제품 판매 HOLD.
+2. **완료·선택 근거:** A) 디렉터리 단순복사/덮어쓰기 SQLite 손상 위험으로 거절, B) 기존 Node22 `node:sqlite` backup+SHA256 manifest·새 폴더만 원자 공개(0 유료 API, 원본 안정) 선택, C) 실고객 무중단/클라우드 자동백업은 권한·운영 검증 별도. CLI 수동 스냅샷/복구 + synthetic100 Korean retrieval/insufficient/conflict/denial regression 구축. 기존 기능 보존.
+3. **실행·테스트·PASS/FAIL:** 기능 SHA `0cf969fb2908cca985f4655d2c713ad7e030d168` GitHub [CITEVAULT CI #43525453183](https://github.com/hibi89/Freelancer/actions/runs/43525453183) **Ubuntu/Windows 6개 job SUCCESS, 총 398번 test 실행 PASS/0FAIL/0SKIP**(OS 반복 포함). 신규 각 OS 백업 9, 합성 한국어 100질의 평가 1개 test (100회 반복). p95 0.328ms Ubuntu/1.001ms Windows, 작은 합성 데이터 기준.
+4. **완료/진행/대기/차단:** 공식 85% 미입증, `[작업중]`. 합성 vault snapshot/restore·SHA/중복/링크 거부 테스트 완료. 실제 customer rights/IdP/producer, licensed Korean local model, physical Win10/11 install/backup/customer Gold100/보안 수용 미완. `RELEASE HOLD`.
+5. **오류·원인·시도/재시도 금지·대안:** 지난 단계 Actions 결제 제한 및 Windows DOCX Unicode/SQLite EBUSY는 기능 SHA `cea0ec09`에서 해결, 이번 `0cf969fb` CI 전부 재검증 성공. 원본 디렉터리에 backup 내부 생성/링크/변조/기존 대상 덮어쓰기는 실패하도록 검증, 회피 금지. 100건은 합성 반복 5유형이며 실제 Gold100으로 중복 계산 금지.
+6. **repo/branch/SHA/주요 위치:** `hibi89/Freelancer@product/rag-enterprise-knowledge`, 기능 `0cf969fb2908cca985f4655d2c713ad7e030d168`, 전단 복구 `2aa61be989ab72f59a6f71f722c4daec608dc9b1`, RAG pin `c5867b3951f51bfa97cadd1aad8fb13e9cf9e604`. 신규 `enterprise/p85-offline-backup.mjs`, `scripts/p85-offline-ops.mjs`, `tests/p85-offline-backup.test.mjs`, `tests/p85-synthetic100.test.mjs`, CI YAML.
+7. **운영 환경·Production:** Node22 Ubuntu24.04/Windows2022 hosted, Python3.11 native PDF/DOCX; 수동 `node scripts/p85-offline-ops.mjs snapshot|restore --source ABSOLUTE --dest NEW_ABSOLUTE`. Vercel/Production 미적용, 고객 물리 Win10/11 미검증.
+8. **원본·백업·인증 관리·수정 금지:** Git SHA 복구점 보존, 원본 RAG/SMAX/PREP/타제품/고객 원본/실계정·토큰 무변경. 보안상 `Freelancer` 현재 PUBLIC (사용자 변경), 모든 브랜치/역사 공개 위험; 전수 비밀점검 미실시, 모델은 visibility/permissions 무변경. 합성 임시 데이터만 테스트.
+9. **다음 우선순위·절차·완료조건/승인:** (1) 실제 로컬 한국어 모델/라이선스·질문 소규모 benchmark (2) 기업 고객 IdP·자료 권리·서명 승인 생산자 AX는 실고객 인증/동의 필요 (3) 실제 Win10/11 오프라인 실행/인증·KPI UI/권한/Gold100+백업복구 (4) full blueprint 24건 검증+owner 가중치 최종 점수. 본 사용자 개발 진행 승인은 수령했으나 존재하지 않는 고객 승인/라이선스/실장비 증거는 대신할 수 없음.
+10. **확인시점·검증범위/문서 기준:** 2026-11-14 KST, exact `0cf969fb` six hosted jobs completed SUCCESS and tested; doc SHA HEAD는 갱신 후 조회, functional runner and doc commit distinguish. 출시 NO-GO, 완성률 UNASSESSED.
+
+
 ## [2026-11-14 KST] CITEVAULT P85 Hosted 6/6 SUCCESS — HANDOFF 10항
 
 1. **목표·용도·설계/기술:** 사용자가 확정한 전체 24항 100% 대비 최종 85% 목표, 기업용 근거형 RAG PDF/DOCX/SQLite/ACL/PREP-SMAX/모델/실 Windows 수용. 공식 UNASSESSED, 상품 판매 HOLD.

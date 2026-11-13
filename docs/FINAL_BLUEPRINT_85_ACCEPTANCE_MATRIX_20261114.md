@@ -1,5 +1,13 @@
 # CITEVAULT AX — 최종설계 100% 기준 85% 수용 증거표 (2026-11-14 KST)
 
+## [2026-11-14 KST] 수동 SQLite 백업·복구, 합성100 질의 양 OS 실검증 추가
+
+- 정확 기능 `0cf969fb2908cca985f4655d2c713ad7e030d168`, [GitHub hosted #43525453183](https://github.com/hibi89/Freelancer/actions/runs/43525453183) **Ubuntu+Windows 6/6 SUCCESS, 398 PASS/0FAIL/0SKIP**(중복 OS 횟수 포함); 기존 pinned RAG 35 upstream + CITEVAULT bridge36도 PASS.
+- REQ22: 오프라인 **합성** SQLite+문서 수동 snapshot/복구를 SHA256 manifest+원자적 create-only 방식으로 구현, Windows/Linux 각9PASS. 실제 고객 자료·장시간 보존정책/무중단 복구·복구 운영자 권한 미완.
+- REQ21: **합성** 한국어 100 질의(문서검색20/근거부족20/충돌20/비인가 직접조회20/혼합권한20) 양 OS 각1개 harness PASS, p95 Ubuntu0.328ms / Windows1.001ms. **실 고객 Gold100, retrieval recall/heldout, model 정확도 및 계약 성능 미검증**.
+- REQ19: Win2022 hosted 기능 검증 ≠ 실제 Windows10/11 고객 프로그램 설치/복구 완료; REQ17 실 한국어 로컬 모델 미확보. 공식 `UNASSESSED`, 사용자 목표 85% 미검증, `[작업중]` 및 `RELEASE HOLD` 유지.
+
+
 ## [2026-11-14 KST] 최신 정확 SHA Hosted CI 6/6 성공 — 최종 설계 분모는 불변
 
 - 기능 SHA `cea0ec09ac4a85a16e369bd302986959fca408b0`, [CITEVAULT hosted #43523337142](https://github.com/hibi89/Freelancer/actions/runs/43523337142) Ubuntu/Windows 6개 작업 **모두 SUCCESS**, 원본 RAG pin source-bound P50/P70 bridge **36 PASS/0SKIP** 및 pinned upstream35PASS. Ubuntu/Windows P85 로컬 권한·SQLite·UI/서명/검색 각각107PASS, native PDF/DOCX/SQL journey 각각31PASS, local-contracts31PASS. 플랫폼 간 중복 포함 **378회 실행 PASS/0FAIL/0SKIP**. [정책 gate](https://github.com/hibi89/Freelancer/actions/runs/43523337300) SUCCESS.
@@ -58,8 +66,8 @@
 | 18 | 프롬프트 인젝션·ZIP·악성 파일·권한/데이터 유출 | bytes budgets, source SHA/inode/symlink, fail-closed, no network, XSS-safe UI textContent | **부분**: 문서 파서 OS 샌드박스/TOCTOU/침투 테스트·공식 보안점검 미완 |
 | 19 | Windows10/11 오프라인 설치·백업/복구·라이선스 | Node/Python Linux localhost 셀프테스트, SQLite 재기동/문서 version 지속 | **대기**: 실제 Windows 패키지/물리 설치·백업/복구 인수 증거 없음 |
 | 20 | Win/Linux GitHub-hosted CI 0FAIL | `.github/workflows/citevault-p50.yml` Linux/Windows native/identity/signed test job 설정 | **검증-합성**: 정확 기능 SHA cea0ec09에서 Ubuntu/Windows 6/6 hosted SUCCESS, 378 중복포함 PASS; 실고객 Windows10/11 설치·운영 보안은 제외 |
-| 21 | 고객 Gold100 + negative/heldout, retrieval/latency/메모리 수용 | 합성 보안 부정 테스트 및 단위 PASS, 모델/Gold100 없음 | **대기**: 고객 실제 100문제·성과 지표 미검증 |
-| 22 | 백업/복구·삭제/보존기간·운영 정책 | 합성 SQLite account/doc/audit 저장·재시작 검증, 임시 데모 자동 삭제 | **부분**: 실 고객 보존/백업/삭제 요청·증거 이력/운영 가이드 미구현 |
+| 21 | 고객 Gold100 + negative/heldout, retrieval/latency/메모리 수용 | 신규 한국어 합성100건(20×5 유형) Windows/Linux 모두 PASS, p95 Ubuntu0.328ms/Win1.001ms | **부분**: 합성 반복 계약 테스트이며 고객의 Gold100·진짜 heldout·모델 성능/고객 합격 기준 미검증 |
+| 22 | 백업/복구·삭제/보존기간·운영 정책 | Node22 SQLite backup API, 합성 문서 SHA manifest, create-only offline restore 양 OS 각9PASS, 원본 불변·변조·링크·중복·덮어쓰기 거부 | **부분**: 실 고객 운용 중 무중단 백업/보존·삭제·물리 Windows10/11 복구/권한·개인정보 미검증 |
 | 23 | 고객/법적·가격·지원·운영 인수 | 합성 SOURCE_RIGHTS=false/RELEASE HOLD 강제 | **대기**: 고객/소유자 승인·라이선스·실기기·지원 수용 불가 |
 | 24 | 5개 RAG 유형/대시보드/후속 질문 | 단일 문서·다중 문서·narrow SQL+문서 합성, 간단 UI | **부분**: conversational context, 실제 RAG 원본 end-to-end 미검증 |
 
