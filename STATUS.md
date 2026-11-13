@@ -1,3 +1,11 @@
+# STATUS — 2026-11-14 KST Windows owner synthetic acceptance 2회 PASS (최신)
+
+- 사용자 제공 PowerShell Windows 10.0.26200.9974 / Python3.11 실기기 출력: `tools/windows_acceptance.py` **11/11 PASS, 0FAIL/0SKIP × 독립 호출 2회**(총 22PASS), `platform=win32`, `ok=true`. 기본 Tk 창, 포터블15무결성, PowerShell dry-run/사용자 폴더 설치/업그레이드·이전 버전 보존/삭제 후 합성 DB 보존/암호화 백업·복구/임시 파일 정리 통과. **GitHub CI 아님**; 사용자 제공 로그만 확인했고 로컬 ZIP 정확 SHA는 미수집.
+- 첫 시도 경로 누락 오류는 이중 압축 해제 경로 수정으로 해소. `bidax.cli` 오류는 별개 상품 명령이며 WORKNOVA Desk 검사 무관. 사용자 증거 요약 `docs/P85_WINDOWS_OWNER_CONSOLE_20261114.md`, 수집 전 제품 코드 HEAD `8455b2950b1d59d3f2167b3b4d7652262573c7c1`.
+- **여전히 미검증:** Python 없는 독립 EXE 생성·실행, 실제 본제품 전체 Tk UI/접근성, Win ACL·활성 장부 암호화/서명·Defender, Word 한글 출력·글꼴 상업권, 실제 고객 수용/법률·지원. WD-09/11/13 **부분 실증 강화**이나 사용자 승인 WD-01~14 엄격한 완전 수용 기준 정식 인정점수 **0/100**, 목표85 미달. **[작업중] / RELEASE HOLD / 미등록** 그대로. 사용자는 비용 없는 `py -3 -m PyInstaller --version`만 확인하도록 요청, 실제 빌드 전 보안·고객자료 변경 없음.
+
+---
+
 # STATUS — 2026-11-14 KST WD-13 독립 Windows EXE 빌드 준비 (최신)
 
 - **현재 HEAD 변경 근거:** 사용자 승인 WD-01~WD-14 100점 배점 고정, 85점 목표 변동 없음. `tools/windows_gui_entry.py`, `tools/windows_build_exe.py`, `tests/test_windows_exe_build.py` 신규 생성, 코드/테스트 커밋 `59513923fa36c26da980080123cd0f7897755fe1`. 자세한 문서 `docs/P85_WINDOWS_EXE_CANDIDATE_20261114.md`.
