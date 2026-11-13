@@ -1,3 +1,9 @@
+## 2026-11-14 KST — WD-09/11/13 Windows 합성 QA 사용자 콘솔 11/11×2 PASS
+
+사용자가 실제 Windows 콘솔에서 `tools/windows_acceptance.py` 실행 결과 `platform=win32`, `ok=true`, 각 11 PASS / 0 FAIL / 0 SKIP을 **두 번** 제공. 기본 Tk 창·Python 필수 포터블 ZIP 15파일·PowerShell 합성 설치/업그레이드/삭제·합성 SQLite·선택 AES 암호화 백업/복원·원본 데이터 보존과 임시 정리가 확인됐다. GitHub-hosted CI가 아니라 **사용자 제공 콘솔 출력**으로만 확인; 다운로드된 로컬 ZIP 정확 SHA 미수집. 실행 로그 평가 `docs/P85_WINDOWS_OWNER_CONSOLE_20261114.md`.
+
+변경: WD-09/WD-11/WD-13의 일부 Windows 미검증 게이트를 **실기기 합성 시나리오 PASS**로 세분화. 실제 전체 GUI·Python 독립 Windows EXE·OS ACL/상시 DB 암호화·서명/Defender·Word 한글 인쇄·실고객/법률·글꼴 상용권은 아직 NOT_RUN. 승인 WD-01~14 가중치/범위 불변, 전체 구매자 수용완료된 항목이 아직 없으므로 **전항목 PARTIAL/정식 인정 0/100, 목표85 미달** (개발률 0% 뜻 아님). `[작업중]`, `RELEASE HOLD`, 크몽 미등록 유지.
+
 ## 2026-11-14 KST WD-13 무료 onedir EXE 빌드 **준비 코드** 추가 — 정식 점수 불변
 
 승인 WD-01~WD-14 전체 100점과 항목별 완전 수용 PASS 원칙은 불변. WD-13(10점)은 Windows Python 없는 EXE를 만들 수 있는 선택적 PyInstaller **오프라인 빌드 경로 코드** 및 로컬 데이터 경로 기본 차단을 추가했다. 신규 단위 테스트 **12/12 PASS**(Linux Python3.13.5, mock 포함), compileall PASS, GitHub 3 신규 파일 readback 동일; 기능/테스트 SHA `59513923fa36c26da980080123cd0f7897755fe1`. **PyInstaller/Win EXE 실제 빌드·GUI 실행·서명·OS ACL/암호화/Win 설치 복구/실고객 수용은 NOT_RUN.** 이는 WD-13 **PARTIAL/0점**을 계속 의미한다. 나머지 WD-01~12,14는 이전 판정 유지. 승인 기준 합계 **0/100**, 목표85 미달, [작업중], RELEASE HOLD, 판매 미등록. 기존 Python153/Tk5/ZIP15 PASS는 과거 SHA 증거이며 이번 통합 재실행 아니다. 자세히 `docs/P85_WINDOWS_EXE_CANDIDATE_20261114.md`.
