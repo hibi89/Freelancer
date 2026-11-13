@@ -61,11 +61,32 @@ def main(argv=None):
     status.add_argument("batch_id", help="UUID of the staged batch")
     poll = sub.add_parser("poll-alerts", help="save-once due reminder observations; PC must be on")
     poll.add_argument("--hours", type=int, default=72)
+    onbid_imp = sub.add_parser("onbid-import", help="import authorized normalized LOCAL Onbid asset/result snapshot")
+    onbid_imp.add_argument("json_file")
+    sub.add_parser("onbid-report", help="report locally imported Onbid assets and results")
+    court_imp = sub.add_parser("court-import", help="store SHA/checklist of user-owned LOCAL court PDF/TXT")
+    court_imp.add_argument("file")
+    court_imp.add_argument("--case-id", required=True)
+    court_imp.add_argument("--source-note", required=True, help="why user has permission to inspect file")
+    court_imp.add_argument("--consent", action="store_true", help="owner explicitly agrees to local import")
+    court_rep = sub.add_parser("court-report", help="local-only human-review checklist")
+    court_rep.add_argument("case_id")
     gui = sub.add_parser("gui", help="launch offline desktop GUI (Tkinter)")
     args = p.parse_args(argv)
 
     if args.command == "restore":
         result = restore_backup(args.source, args.db)
+    elif args.command in {"onbid-import", "onbid-report"}:
+        from .onbid import OnbidStore
+        with OnbidStore(args.db) as store:
+            result = (store.import_snapshot(read_local_json(args.json_file))
+                      if args.command == "onbid-import" else store.report())
+    elif args.command in {"court-import", "court-report"}:
+        from .court import CourtStore
+        with CourtStore(args.db) as store:
+            result = (store.import_document(args.file, case_id=args.case_id, user_consent=args.consent,
+                                            source_note=args.source_note)
+                      if args.command == "court-import" else store.case_report(args.case_id))
     elif args.command == "gui":
         from .desktop import launch
         launch(args.db)

@@ -1,0 +1,7 @@
+{
+  "source":"ONBID_LOCAL_AUTHORIZED_SNAPSHOT",
+  "dataset":"assets",
+  "documentation_url":"https://www.data.go.kr/data/15157220/openapi.do",
+  "obtained_at":"2026-11-13T16:00:00+09:00",
+  "records":[{"property_id":"SYN-P-0001","condition_id":"SYN-C-01","announcement_id":"SYN-A-1","title":"합성 예시 온비드 부동산(실제물건 아님)","property_type":"부동산","appraised_krw":200000000,"minimum_bid_krw":160000000,"failed_rounds":1,"bid_start":"2026-11-20T09:00:00+09:00","bid_end":"2026-11-25T17:00:00+09:00","source_url":"https://www.data.go.kr/data/15157220/openapi.do"}]
+}

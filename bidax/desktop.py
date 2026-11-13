@@ -47,6 +47,26 @@ class LocalController:
         self.last_report = None
         return result
 
+    def import_onbid(self, path: str | Path) -> dict:
+        from .onbid import OnbidStore
+        with OnbidStore(self.database) as store:
+            return store.import_snapshot(read_local_json(path))
+
+    def onbid_report(self) -> dict:
+        from .onbid import OnbidStore
+        with OnbidStore(self.database) as store:
+            return store.report()
+
+    def import_court(self, path: str | Path, case_id: str, source_note: str, *, consent: bool) -> dict:
+        from .court import CourtStore
+        with CourtStore(self.database) as store:
+            return store.import_document(path, case_id=case_id, source_note=source_note, user_consent=consent)
+
+    def court_report(self, case_id: str) -> dict:
+        from .court import CourtStore
+        with CourtStore(self.database) as store:
+            return store.case_report(case_id)
+
     def screen(self) -> dict:
         if self.profile is None:
             raise ValueError("기업 프로필을 먼저 선택하세요")
@@ -227,9 +247,34 @@ def launch(database: str | Path) -> None:
             return
         return controller.review(record["notice_no"], record["source_fingerprint"], reviewer, decision.strip(), note)
 
+    def onbid_import():
+        path = filedialog.askopenfilename(title="권한 있는 온비드 정규화 JSON",filetypes=[("JSON", "*.json")])
+        return controller.import_onbid(path) if path else None
+
+    def onbid_show():
+        return controller.onbid_report()
+
+    def court_import():
+        path = filedialog.askopenfilename(title="적법 보유 법원 문서", filetypes=[("Documents", "*.txt *.pdf")])
+        if not path:
+            return
+        case_id = simpledialog.askstring("사건번호", "공식 사건번호를 입력하세요", parent=root)
+        if not case_id:
+            return
+        note = simpledialog.askstring("자료 취득 근거", "문서를 적법하게 입수한 경위를 입력하세요",parent=root)
+        if not note:
+            return
+        consent = messagebox.askyesno("법원 자료 로컬 취급 동의", "자료를 로컬 DB에 해시와 체크리스트로만 저장합니다. 원문을 네트워크 전송하지 않으며 법률판단이 아닙니다. 진행합니까?")
+        return controller.import_court(path, case_id, note, consent=consent)
+
+    def court_show():
+        case_id = simpledialog.askstring("사건번호", "저장된 사건번호", parent=root)
+        return controller.court_report(case_id) if case_id else None
+
     actions = [("공고 가져오기", import_file), ("기업 프로필", choose_profile), ("프로필 저장", save_profile), ("저장 프로필", choose_stored), ("사전검토", run_screen),
                ("변경·검토 이력", show_history), ("마감 알림 확인", poll_reminders),
                ("수동 검토 기록", manual_review), ("보고서 저장", save_report),
+               ("온비드 가져오기", onbid_import), ("온비드 현황", onbid_show), ("법원 문서", court_import), ("법원 체크리스트", court_show),
                ("DB 백업", save_backup), ("새 DB로 복원", restore)]
     for label, action in actions:
         ttk.Button(tools, text=label, command=lambda fn=action: handle(fn)).pack(side="left", padx=3, pady=4)
