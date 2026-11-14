@@ -1,3 +1,17 @@
+# BID AX 로컬 다중페이지 검증 255/255·Windows/Linux CI 4/4 — 2026-11-14 KST (인수인계 10항)
+1. **목표/설계/기술:** 최종 R01~R29 전체 100% 고정, 85% 목표. G2B/Onbid·고객 허용 법원 로컬자료, Python3.11+ SQLite/Tk. 가중치 재승인 요구 금지.
+2. **완료 기능·결정:** `onbid_batch.py` SQLite 증빙/UUID·쿼리 해시·페이지·경로 SHA·중단복구/멱등·실원본 변조 감지, `onbid-stage-page --consent`·읽기전용 `onbid-stage-status`; 자동 HTTP/자격판정/영구 원장 승격 없음. 실원문 필드 불확정으로 직접 raw→판정 설계 미채택.
+3. **테스트:** 로컬 Linux3.13.5 255 PASS, GitHub [43536185324](https://github.com/hibi89/Freelancer/actions/runs/43536185324) **4/4 SUCCESS**: Ubuntu3.11/3.13 255 PASS, Windows3.11 255 tests·0 FAIL·1 SKIP, Windows CLI EXE 스모크 SUCCESS; zip 72파일 해시 PASS. 원격 코드 4/4 Git blob 동일.
+4. **상태/중단:** 코드 단계 온비드 checkpoint 보강. 공식 85% 미입증/UNASSESSED, [작업중]/RELEASE HOLD/미등록. 첫 실제 온비드15157252 페이지1 10/10 외 실 후속18페이지·타3 API·실100공고/10사람·고객 권리/Windows 실물 GUI 미검증.
+5. **오류·근거·대안:** DB 조회만 할 때 생성하면 원본 변경 위험→SQLite URI read-only 분리; 신규 sqlite 검사 테스트에서 close 없이 context manager 사용해 ResourceWarning 발생→closing으로 변경, 255 PASS. 원문 필드 추정/임의 자동적재 금지.
+6. **저장소/브랜치/SHA:** private `hibi89/Freelancer@product/bid-ax-public-procurement`, 기능 `5a7c9452cc47c6dbdcacdd0ace4c88e60224aeac`, `bidax/onbid_batch.py`, `bidax/cli.py`, `tests/test_onbid_batch.py`, `docs/ONBID_OFFLINE_PAGE_EVIDENCE_20261114.md`, 최종 수용 `docs/FINAL_R01_R29_EVIDENCE_GATE_20261114.md`, STATUS/HANDOFF. 문서 HEAD 커밋 후 갱신.
+7. **Production·실행:** CLI `py -3.11 -m bidax.cli --db .\\local\\stage.db onbid-stage-page BATCH_UUID EXISTING_PACKET --consent`, `onbid-stage-status UUID`. Windows CLI CI EXE는 **비출시**; GUI EXE·인스톨러·Vercel Production 미적용.
+8. **원본·백업/권한:** 실사용자 `result_001.json`, 고객 DB/키/기타 상품·BID OWL 무변경. SQLite에는 경로/해시/건수만; 로컬 경로도 민감정보이므로 고객 PC 보호. Git normal revert, force push 금지. 비밀·실원문 외부 미전송.
+9. **다음 우선순위/수용·승인:** 실제 item 식별자/상세 API 구조, 본인 승인한 실 후속 페이지/타3 API, 100실공고/10사람, Windows GUI 설치·원문/상용·고객파일럿. 권한/비용/키 저장/릴리스 변경은 별도 승인.
+10. **갱신 KST·검증/문서 기준:** 2026-11-14 KST, 사용자 Windows 로그 첫 10건 + GitHub 255/255 코드 CI + 빌드 스모크, 전체 공식 UNASSESSED. 근거 문서·HEAD 별도 확인.
+
+---
+
 # BID AX 온비드 멀티페이지 로컬 증빙 체크포인트 — 2026-11-14 KST (필수 10항)
 1. **목표/용도·기술:** R01–R29 고정 100% 전체 설계, 목표85%; G2B/Onbid·고객이 적법하게 보유한 법원자료의 로컬 Python3.11+/Tk/SQLite.
 2. **완료 변경·결정:** 직접 API 수집→정규화는 공식 실필드 미확인으로 안전하지 않아 보류. 온비드 15157252 *기존 격리 JSON*에만 적용되는 동의 기반 UUID 멀티페이지 증빙 체크포인트 추가. 조회조건/페이지/원문 변경·중복/부분 중단·복귀 검증, DB에 raw 행·키 불기록. 기존 GUI/EXE·타 상품 보존.

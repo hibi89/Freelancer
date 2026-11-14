@@ -1,3 +1,10 @@
+## [2026-11-14 KST] 온비드 로컬 배치 255 테스트·Windows/Linux CI 4/4 검증 완료
+- 코드 SHA `5a7c9452cc47c6dbdcacdd0ace4c88e60224aeac`에서 [Actions 43536185324](https://github.com/hibi89/Freelancer/actions/runs/43536185324) **4/4 SUCCESS**. Ubuntu3.11 255 PASS, Ubuntu3.13 255 PASS, Windows3.11 255 tests/0 FAIL/1 SKIP(POSIX 파일모드 전용), Windows CLI folder EXE smoke SUCCESS. GitHub blueprint gate 별도 SUCCESS.
+- `onbid-stage-page`와 `onbid-stage-status` UUID·고객 동의·다중 페이지 검증 구현. 186건 전수 수집 아님; 첫 실응답 10/10 증거만 유지. 고객 Windows 새 기능·실정부 후속18페이지/나머지 API/상용·고객수용 미검증.
+- 원격 기능 Git blob **4/4 로컬 일치**, 72개 파일 소스 ZIP 내용 해시 일치. 최종 설계 R01~R29 고정, [최신 전수 증거](docs/FINAL_R01_R29_EVIDENCE_GATE_20261114.md). **공식 UNASSESSED, 85% 미입증, [작업중], RELEASE HOLD, 크몽 미등록**.
+
+---
+
 ## [2026-11-14 KST] 온비드 다중 페이지 로컬 증빙 체크포인트·중단복구 (R23/R25 부분 보강)
 - 사용자 실응답: 온비드 15157252 첫 페이지 `item=list` 10/10, 보고 총186(추정19페이지). **실 수집1페이지뿐**이며 나머지18·식별자/영구원장 매핑/다른3 API는 미검증.
 - 선택: 실원문 자동정규화/원장 승격(위험)을 보류하고, **고객 PC 기존 격리파일 증거만** UUID 불변배치로 등록·검증하는 방식 채택. 신규 `bidax/onbid_batch.py`: 파일 해시·페이지/필터·건수 일관성·원본 변경/분실·역순·반복/재시작 처리, 비공개 SQLite 경로·다이제스트·건수만 저장. 승인 `--consent` 필요; `onbid-stage-status`는 SQLite 읽기전용. 고객 데이터 값/키를 DB에 저장하거나 ChatGPT/GitHub 전송하지 않음.
