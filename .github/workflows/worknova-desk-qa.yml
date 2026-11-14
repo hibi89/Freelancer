@@ -30,6 +30,8 @@ jobs:
     env:
       PYTHONDONTWRITEBYTECODE: "1"
       PYTHONPATH: .
+      PYTHONUTF8: "1"
+      PYTHONIOENCODING: "utf-8"
       WORKNOVA_TEST_OFFLINE_ONLY: "1"
     steps:
       - name: Check out exact product branch commit

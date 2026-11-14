@@ -1,6 +1,7 @@
 """Foreign/corrupt SQLite must never be transformed into a legitimate WORKNOVA ledger."""
 from __future__ import annotations
 import hashlib
+from contextlib import closing
 import json
 import os
 import sqlite3
@@ -21,7 +22,7 @@ class SchemaPreflightTests(unittest.TestCase):
         self.db = self.folder / 'owner.sqlite'
 
     def test_foreign_sqlite_v0_is_not_initialized_even_when_allow_create(self):
-        with sqlite3.connect(self.db) as db:
+        with closing(sqlite3.connect(self.db)) as db, db:
             db.execute('CREATE TABLE unrelated (secret TEXT)')
             db.execute("INSERT INTO unrelated VALUES ('PRESERVE')")
         original = self.db.read_bytes()
@@ -29,7 +30,7 @@ class SchemaPreflightTests(unittest.TestCase):
             with self.subTest(allow_create=allow), self.assertRaisesRegex(DeskError, 'no WORKNOVA schema'):
                 Desk(self.db, allow_create=allow)
             self.assertEqual(self.db.read_bytes(), original)
-        with sqlite3.connect(self.db) as db:
+        with closing(sqlite3.connect(self.db)) as db, db:
             self.assertEqual(db.execute('SELECT secret FROM unrelated').fetchone()[0], 'PRESERVE')
             self.assertEqual([r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE name='customers'")], [])
 
@@ -46,7 +47,7 @@ class SchemaPreflightTests(unittest.TestCase):
         self.assertEqual(self.db.read_bytes(), b'CLIENT-KEEP-OLD-ORIGINAL')
 
     def test_incomplete_v2_schema_is_not_silently_repaired(self):
-        with sqlite3.connect(self.db) as db:
+        with closing(sqlite3.connect(self.db)) as db, db:
             db.executescript('PRAGMA user_version=2; CREATE TABLE customers(id TEXT PRIMARY KEY);')
         original = self.db.read_bytes()
         with self.assertRaisesRegex(DeskError, 'incomplete WORKNOVA v2'):
@@ -55,7 +56,7 @@ class SchemaPreflightTests(unittest.TestCase):
 
     def test_invalid_v2_quote_columns_refused(self):
         desk = Desk(self.db); desk.close()
-        with sqlite3.connect(self.db) as db:
+        with closing(sqlite3.connect(self.db)) as db, db:
             db.execute('ALTER TABLE quotes DROP COLUMN parent_quote_id')
         with self.assertRaisesRegex(DeskError, 'invalid WORKNOVA v2 quote columns'):
             Desk(self.db, allow_create=False)
@@ -64,7 +65,7 @@ class SchemaPreflightTests(unittest.TestCase):
         desk = Desk(self.db)
         desk.add_customer('synthetic')
         desk.close()
-        with sqlite3.connect(self.db) as db:
+        with closing(sqlite3.connect(self.db)) as db, db:
             db.execute("UPDATE audit_events SET actor='altered' WHERE seq=1")
         original = self.db.read_bytes()
         with self.assertRaisesRegex(DeskError, 'audit chain mismatch'):
@@ -82,7 +83,7 @@ class SchemaPreflightTests(unittest.TestCase):
             recovered.close()
 
     def test_restoring_foreign_sqlite_rejected_without_new_destination(self):
-        with sqlite3.connect(self.db) as db:
+        with closing(sqlite3.connect(self.db)) as db, db:
             db.execute('CREATE TABLE private_notes(note TEXT)')
         before = self.db.read_bytes()
         target = self.folder / 'recovered.sqlite'
@@ -92,7 +93,7 @@ class SchemaPreflightTests(unittest.TestCase):
         self.assertEqual(self.db.read_bytes(), before)
 
     def test_cli_rejects_foreign_sqlite_without_traceback(self):
-        with sqlite3.connect(self.db) as db:
+        with closing(sqlite3.connect(self.db)) as db, db:
             db.execute('CREATE TABLE unrelated (value TEXT)')
         proc = subprocess.run([sys.executable, '-m','worknova_desk','--db',str(self.db),'verify'],
             cwd=ROOT, env={**os.environ,'PYTHONPATH':str(ROOT)}, capture_output=True,text=True,timeout=15)

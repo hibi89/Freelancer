@@ -135,6 +135,7 @@ class P70Tests(unittest.TestCase):
 
     def test_db_user_version_reopened(self):
         path=self.app.path;self.app.close();self.app=Desk(path)
+        self.addCleanup(self.app.close)  # Close reopened DB before TEMP removal on Windows.
         self.assertEqual(self.app.schema_version,2)
 
     def test_cli_revision_and_preview(self):

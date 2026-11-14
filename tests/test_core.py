@@ -1,4 +1,5 @@
 import sqlite3
+from contextlib import closing
 import tempfile
 import unittest
 from pathlib import Path
@@ -114,7 +115,7 @@ class DeskTests(unittest.TestCase):
         backup = Path(self.temp.name) / "backup.sqlite"
         sha = self.app.backup(backup)
         self.assertEqual(len(sha), 64)
-        with sqlite3.connect(backup) as db:
+        with closing(sqlite3.connect(backup)) as db, db:
             self.assertEqual(db.execute("PRAGMA integrity_check").fetchone()[0], "ok")
             self.assertEqual(db.execute("SELECT count(*) FROM contracts").fetchone()[0], 1)
         with self.assertRaises(DeskError): self.app.backup(backup)
