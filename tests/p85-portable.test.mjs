@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {spawnSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 import {buildPortable} from '../scripts/p85-portable-build.mjs';
 
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
@@ -38,14 +39,12 @@ test('Windows synthetic-only portable package creates with exact digests, no sec
   assert.throws(()=>buildPortable({destination:bundle}),{code:'DESTINATION_EXISTS'});
   const archive=path.join(root,'citevault-p85-qa.zip');
   const unpack=path.join(root,'restored');
-  const quote=s=>"'"+s.replace(/'/g,"''")+"'";
-  run('powershell.exe',['-NoProfile','-NonInteractive','-Command',
-    'Compress-Archive -Path '+quote(bundle)+' -DestinationPath '+
-      quote(archive)+' -CompressionLevel Optimal -Force']);
+  // Python zipfile explicitly stores relative files; avoids PowerShell archive layout ambiguity.
+  const zipScript=fileURLToPath(new URL('../scripts/p85-portable-zip.py',import.meta.url));
+  const zipped=run('python',['-B',zipScript,bundle,archive,unpack]);
+  assert.match(zipped.stdout,/PORTABLE_ZIP_ROUNDTRIP_PASS/);
   assert.ok(fs.statSync(archive).size>1_000_000);
-  run('powershell.exe',['-NoProfile','-NonInteractive','-Command',
-    'Expand-Archive -LiteralPath '+quote(archive)+' -DestinationPath '+quote(unpack)]);
-  const extracted=path.join(unpack,'bundle');
+  const extracted=unpack;
   assert.ok(fs.existsSync(path.join(extracted,'runtime','node.exe')),
     'ZIP_LAYOUT_UNEXPECTED: '+JSON.stringify(fs.readdirSync(unpack)));
   for(const record of manifest.files){
