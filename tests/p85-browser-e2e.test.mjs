@@ -71,11 +71,18 @@ test('real rendered desktop/mobile login, scoped library, search and logout in C
   let chrome,ws;
   t.after(async()=>{
     try{ws?.close();}catch{}
-    if(chrome&&!chrome.killed){
+    if(chrome&&chrome.exitCode===null){
       const exited=new Promise(r=>chrome.once('exit',r));chrome.kill('SIGTERM');
       await Promise.race([exited,sleep(3000)]);
+      if(chrome.exitCode===null){
+        const forced=new Promise(r=>chrome.once('exit',r));
+        chrome.kill('SIGKILL');await Promise.race([forced,sleep(2000)]);
+      }
     }
-    await server.close();fs.rmSync(root,{recursive:true,force:true});
+    await server.close();
+    // Chrome subprocesses can still be flushing profile entries after parent exit.
+    // Retry only transient filesystem cleanup failures; never mask test assertions.
+    fs.rmSync(root,{recursive:true,force:true,maxRetries:10,retryDelay:150});
   });
   chrome=spawn(executable,['--headless=new','--no-sandbox','--disable-dev-shm-usage',
     '--disable-background-networking','--no-first-run','--no-default-browser-check',
