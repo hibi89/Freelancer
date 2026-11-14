@@ -42,19 +42,20 @@ class OnbidDesktopCheckpointTests(unittest.TestCase):
         self.controller = LocalController(self.db)
         self.batch = str(uuid4())
 
-    def _synthetic_packet(self):
+    def _synthetic_packet(self, page=1, total=1):
         plan = create_plan('onbid_result_list', {
             'parameters': {'cltrTypeCd': '0001', 'prptDivCd': '0002',
                            'opbdDtStart': '20261110', 'opbdDtEnd': '20261113'},
-            'page': 1, 'rows': 10})
+            'page': page, 'rows': 10})
+        expected_rows = min(10, max(0, total - (page - 1) * 10))
         payload = {
             'header': {'resultCode': '00'},
-            'body': {'items': {'item': [{'synthetic': 'OFFLINE_ONLY'}]},
-                     'pageNo': 1, 'numOfRows': 10, 'totalCount': 1}}
+            'body': {'items': {'item': [{'synthetic': 'OFFLINE_ONLY'} for _ in range(expected_rows)]},
+                     'pageNo': page, 'numOfRows': 10, 'totalCount': total}}
         class Opener:
             def open(self, request, timeout=15):
                 return _Reply(payload)
-        filename = self.root / 'synthetic-quarantine.json'
+        filename = self.root / f'synthetic-quarantine-page-{page}.json'
         fetch_quarantined(plan, service_key='NOT_A_REAL_KEY', permission=True,
                           db_path=self.root / 'mock-quota.db',
                           output_path=filename, opener=Opener(),
@@ -93,6 +94,33 @@ class OnbidDesktopCheckpointTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.controller.onbid_stage_page('not-a-uuid', packet, consent=True)
         self.assertFalse(self.db.exists())
+
+    def test_multi_page_gui_select_and_recovery(self):
+        second = self._synthetic_packet(page=2, total=11)
+        first = self._synthetic_packet(page=1, total=11)
+        result = self.controller.onbid_stage_pages(self.batch, [second, first], consent=True)
+        self.assertEqual(result['files_processed_this_action'], 2)
+        self.assertEqual(result['state'], 'OFFLINE_COMPLETE_NOT_IMPORTED')
+        self.assertEqual(result['verified_local_item_count'], 11)
+        self.assertEqual(result['verified_local_pages'], [1, 2])
+        self.assertFalse(result['auto_import_allowed'])
+        self.assertTrue(self.controller.onbid_stage_status(self.batch)['sealed'])
+
+    def test_multi_page_gui_empty_selection_or_no_consent_never_creates_db(self):
+        with self.assertRaises(ValueError):
+            self.controller.onbid_stage_pages(self.batch, [], consent=True)
+        with self.assertRaises(PermissionError):
+            self.controller.onbid_stage_pages(self.batch, [], consent=False)
+        self.assertFalse(self.db.exists())
+
+    def test_multi_page_gui_partial_error_can_resume(self):
+        first = self._synthetic_packet(page=1, total=11)
+        with self.assertRaises(ValueError):
+            self.controller.onbid_stage_pages(self.batch, [first, self.root / 'absent.json'], consent=True)
+        state = self.controller.onbid_stage_status(self.batch)
+        self.assertEqual(state['verified_local_pages'], [1])
+        self.assertEqual(state['missing_pages'], [2])
+        self.assertFalse(state['sealed'])
 
     def test_gui_reinspect_detects_original_packet_change(self):
         packet = self._synthetic_packet()

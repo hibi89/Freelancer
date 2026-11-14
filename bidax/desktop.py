@@ -81,6 +81,24 @@ class LocalController:
         from .onbid_batch import batch_status
         return batch_status(self.database, batch_id)
 
+    def onbid_stage_pages(self, batch_id: str, packet_files: list[str | Path],
+                          *, consent: bool) -> dict:
+        """Stage a bounded selection; valid earlier pages survive later failure.
+
+        Recovery uses the same batch UUID. No provider request or automatic
+        mapping is performed, even if every page is present.
+        """
+        if consent is not True:
+            raise PermissionError("explicit local evidence path storage consent required")
+        if not packet_files or len(packet_files) > 1000:
+            raise ValueError("select between 1 and 1000 existing Onbid quarantine files")
+        if len({str(item) for item in packet_files}) != len(packet_files):
+            raise ValueError("the same local packet path was selected more than once")
+        outcome = None
+        for packet in packet_files:
+            outcome = self.onbid_stage_page(batch_id, packet, consent=True)
+        return {**outcome, "files_processed_this_action": len(packet_files)}
+
     def onbid_watch(self, property_id: str, condition_id: str, state: str, note: str) -> dict:
         from .portfolio import watch_onbid
         return watch_onbid(self.database, property_id=property_id, condition_id=condition_id,
@@ -343,17 +361,19 @@ def launch(database: str | Path) -> None:
             initialvalue=str(uuid4()), parent=root)
         if not identity:
             return
-        path = filedialog.askopenfilename(
-            title="이미 보유한 온비드 결과목록 격리 JSON", filetypes=[("JSON", "*.json")])
-        if not path:
+        paths = filedialog.askopenfilenames(
+            title="이미 보유한 온비드 결과목록 격리 JSON 여러 개 선택",
+            filetypes=[("JSON", "*.json")])
+        if not paths:
             return
         if not messagebox.askyesno(
             "오프라인 원본 경로 보관 동의",
-            "고객 PC의 SQLite에 이 JSON의 로컬 절대경로, SHA-256, 건수만 기록합니다.\n"
+            f"선택한 {len(paths)}개 파일의 로컬 절대경로, SHA-256, 건수만 고객 PC SQLite에 기록합니다.\n"
             "원본 값이나 API 키는 DB에 넣지 않습니다. 네트워크 요청/공고 판정도 없습니다.\n"
+            "일부 파일이 실패하면 앞서 검증된 페이지는 남아 재개할 수 있습니다.\n"
             "해당 경로 저장에 동의합니까?"):
             return
-        result = controller.onbid_stage_page(identity.strip(), path, consent=True)
+        result = controller.onbid_stage_pages(identity.strip(), list(paths), consent=True)
         state.set(
             f"온비드 오프라인 증빙: {len(result['verified_local_pages'])}/{result['reported_total_pages']}페이지 확인 · "
             "원문 자동반영 금지")
@@ -377,7 +397,7 @@ def launch(database: str | Path) -> None:
     auction_menu.add_command(label="온비드 관심 상태 기록", command=lambda: handle(save_interest))
     auction_menu.add_command(label="온비드 가격 필터", command=lambda: handle(search_onbid))
     auction_menu.add_separator()
-    auction_menu.add_command(label="온비드 격리 페이지 등록(로컬)", command=lambda: handle(stage_onbid_page))
+    auction_menu.add_command(label="온비드 격리 페이지 여러 개 등록", command=lambda: handle(stage_onbid_page))
     auction_menu.add_command(label="온비드 증빙 배치 재검사", command=lambda: handle(show_onbid_stage_status))
     menu.add_cascade(label="공매·경매 로컬 관리", menu=auction_menu)
     root.config(menu=menu)
