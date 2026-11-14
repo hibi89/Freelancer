@@ -118,6 +118,14 @@ def main(argv=None):
     ob_stage.add_argument("--consent", action="store_true", help="consent to store local file path/hash in DB")
     ob_status = sub.add_parser("onbid-stage-status", help="OFFLINE verify all original files in an Onbid page batch")
     ob_status.add_argument("batch_id", help="previously staged UUID")
+    capture = sub.add_parser("onbid-continue", help="OFFLINE dry-run by default; optional bounded local owner-key continuation")
+    capture.add_argument("batch_id", help="UUID; reuse it to resume this one immutable snapshot")
+    capture.add_argument("first_packet", help="existing verified official Onbid result-list quarantine JSON")
+    capture.add_argument("--out-dir", required=True, help="EXISTING local folder for create-only page JSON")
+    capture.add_argument("--consent", action="store_true", help="allow local storage of packet paths and hashes")
+    capture.add_argument("--live", action="store_true", help="explicitly contact official API, never unattended")
+    capture.add_argument("--max-new-pages", type=int, default=4, help="max new HTTP calls in this run (1..25)")
+    capture.add_argument("--daily-limit", type=int, default=24, help="local per-service attempt cap (1..1000)")
     gui = sub.add_parser("gui", help="launch offline desktop GUI (Tkinter)")
     args = p.parse_args(argv)
 
@@ -144,6 +152,18 @@ def main(argv=None):
     elif args.command == "onbid-stage-status":
         from .onbid_batch import batch_status
         result = batch_status(args.db, args.batch_id)
+    elif args.command == "onbid-continue":
+        from .onbid_capture import continue_onbid_pages
+        key = None
+        if args.live:
+            if not args.consent:
+                raise PermissionError("explicit --consent required before any key prompt")
+            from getpass import getpass
+            key = getpass("Data.go.kr key (memory only, not saved): ")
+        result = continue_onbid_pages(
+            args.db, args.batch_id, args.first_packet, args.out_dir,
+            consent=args.consent, live=args.live, service_key=key,
+            max_new_pages=args.max_new_pages, daily_limit=args.daily_limit)
     elif args.command == "api-probe":
         from .api_gateway import create_plan, fetch_quarantined
         plan = create_plan(args.service, read_local_json(args.params_file))
