@@ -39,8 +39,8 @@ export async function preflightKoreanEmbedding({modelDir}={}){
   if(typeof modelDir!=='string'||!path.isAbsolute(modelDir))deny('ABSOLUTE_DIRECTORY_REQUIRED');
   let dir;
   try{dir=components(modelDir);}catch(e){if(e?.code==='ENOENT')deny('MODEL_NOT_FOUND');throw e;}
-  const root=await fsp.realpath(dir);
-  if(root!==dir)deny('SYMLINK_DIRECTORY');
+  // components(modelDir) already rejects symlinks at every ancestor by lstat.
+  // Windows realpath may expand 8.3 names or alter case; string inequality is not a symlink test.
   const aux=['config.json','tokenizer.json','tokenizer_config.json','special_tokens_map.json'];
   for(const name of aux){
     const p=path.join(dir,name);
