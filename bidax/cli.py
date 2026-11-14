@@ -106,6 +106,12 @@ def main(argv=None):
     inspect.add_argument("file", help="local output JSON created by api-probe --live; no network/key")
     page_plan = sub.add_parser("api-page-plan", help="OFFLINE safe pagination estimate from one verified packet; no calls")
     page_plan.add_argument("file", help="existing local quarantine packet; never uploaded")
+    onbid_audit = sub.add_parser("onbid-field-audit", help="OFFLINE public field-presence only; no private values")
+    onbid_audit.add_argument("file", help="existing Onbid result-list quarantine packet")
+    onbid_queue = sub.add_parser("onbid-detail-queue", help="OFFLINE local-only unexecuted result-detail candidate queue")
+    onbid_queue.add_argument("file", help="existing Onbid result-list quarantine packet")
+    onbid_queue.add_argument("--out", required=True, help="NEW private local JSON file")
+    onbid_queue.add_argument("--consent", action="store_true", help="explicit consent to store property identifiers locally")
     gui = sub.add_parser("gui", help="launch offline desktop GUI (Tkinter)")
     args = p.parse_args(argv)
 
@@ -120,6 +126,12 @@ def main(argv=None):
     elif args.command == "api-page-plan":
         from .response_audit import plan_remaining_pages
         result = plan_remaining_pages(args.file)
+    elif args.command == "onbid-field-audit":
+        from .onbid_official_bridge import field_audit
+        result = field_audit(args.file)
+    elif args.command == "onbid-detail-queue":
+        from .onbid_official_bridge import write_detail_candidate_queue
+        result = write_detail_candidate_queue(args.file, args.out, consent=args.consent)
     elif args.command == "api-probe":
         from .api_gateway import create_plan, fetch_quarantined
         plan = create_plan(args.service, read_local_json(args.params_file))
