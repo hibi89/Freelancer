@@ -1,3 +1,17 @@
+# BID AX GUI 온비드 증빙 다중선택·Windows 5/5 CI — 2026-11-14 KST (인수인계 10항)
+1. **목표/용도/요구/기술:** R01–R29 전체 고정 29개 대비 사용자 최종85% 목표; 나라장터·온비드·동의 보유 법원문서의 로컬 Python3.11+/Tkinter/SQLite, 직접 자동입찰/법률판정 없음.
+2. **완료 기능·선택 근거:** 부정확한 실 응답 즉시 정규화(A)는 보류. 현행 로컬 증빙 체크포인트(B)를 Tk GUI의 다중 JSON 선택/UUID 재개/해시 재확인·명시적 경로보관 동의로 연결; 15 툴바 명령 5열 정렬. 자동 HTTP·서버·키 저장·원문 업로드/승격 없음.
+3. **테스트·성공/실패/미검증:** 코드 SHA **`1ae85fcb4cc58d3bdd3f52d37c243b99f1f4e4f4`**에서 [Actions #43538216227](https://github.com/hibi89/Freelancer/actions/runs/43538216227) **5/5 SUCCESS**: Ubuntu3.11 263 PASS, Ubuntu3.13 263 PASS, Windows3.11 **263 tests/0FAIL/1 POSIX chmod SKIP**, Windows CLI onedir EXE smoke PASS, Windows Tk window smoke 및 unsigned GUI onedir **PE 빌드 PASS**. 고객 Windows GUI EXE 실제 조작·설치·SmartScreen/서명 미검증.
+4. **상태/중단 지점:** 85% 공식 수용 **미입증/UNASSESSED**, `[작업중]`, RELEASE HOLD, 크몽 미등록. 첫 온비드15157252 실 페이지1 10/10/보고186; 후속18페이지·타3 API·실100/독립인간10·상용·고객 수용 대기.
+5. **오류 증거/원인·수정·재시도 금지:** 첫 GUI 추가 run #43537874647 Windows 260 중 ERROR1은 **테스트용** `with sqlite3.connect` 미종료→WinError32 파일 잠금. `contextlib.closing(sqlite3.connect(...))`으로 수정하고 run #43538216227에서 전 OS PASS. 기존 GUI 런타임 오류로 오인 금지. 이전 GUI를 CLI `--help`로 검증하는 잘못된 방법 반복 금지.
+6. **저장소/브랜치/SHA·경로:** `hibi89/Freelancer@product/bid-ax-public-procurement`, 기능 `1ae85fcb4cc58d3bdd3f52d37c243b99f1f4e4f4`, `bidax/desktop.py`, `tests/test_onbid_desktop_checkpoint.py`, `.github/workflows/bid-ax-offline-regression.yml`, `bidax/onbid_batch.py`(기존), `docs/BID_AX_GUI_ONBID_CHECKPOINT_CI_20261114.md`. repo metadata **public** (과거 private 표기 수정 필요); 문서 커밋 SHA 별도 확인.
+7. **Production URL/Vercel/실행 환경:** Vercel/웹 Production **미적용**; GUI `py -3.11 run_bidax.py`; CLI `py -3.11 -m bidax.cli --db .\\local\\stage.db onbid-stage-status UUID`; 원격 CI Windows GUI EXE는 **비출시 시험빌드·다운로드 아티팩트 공개 없음**, 실제 사용자 설치 미검증.
+8. **원본/백업/권한/보존:** 기존 사용자 `result_001.json`, API 키, 고객 SQLite, 사용자 로컬 파일, 타 Freelancer 상품 및 제외 BID OWL **수정·전송 없음**. 배치 SQLite엔 경로·해시·건수만(경로는 개인정보 가능). GitHub 정상 revert로 소스 복구; force push 금지.
+9. **다음 우선순위/완료 조건·승인:** 사용자 로컬에 이미 수집된 격리 JSON은 GUI로 여러 개 선별 검증 가능. **실 후속18페이지/나라장터+타 온비드 2종 라이브 API·공식 필드 매핑**은 사용자 소유 키/명시 권한·실 데이터 필요. 이어 실100건/인간10건, Win10/11 GUI EXE 실기기/설치·권리/법률/고객승인을 종단 검증. 유료·실 HTTP·고객자료 외부 전송·출시·권한/보안 변경은 별도 승인.
+10. **KST·검증 범위·문서 기준:** 2026-11-14 KST, GitHub 원격 코드 SHA `1ae85fcb4cc58d3bdd3f52d37c243b99f1f4e4f4`/최신 Actions 5/5 성공을 직접 조회; 실 고객 PC·186건 전체·상업 권리 미검증. 이후 새 문서 HEAD와 중앙 해총 동기화 SHA를 readback하여 인계.
+
+---
+
 # BID AX 로컬 다중페이지 검증 255/255·Windows/Linux CI 4/4 — 2026-11-14 KST (인수인계 10항)
 1. **목표/설계/기술:** 최종 R01~R29 전체 100% 고정, 85% 목표. G2B/Onbid·고객 허용 법원 로컬자료, Python3.11+ SQLite/Tk. 가중치 재승인 요구 금지.
 2. **완료 기능·결정:** `onbid_batch.py` SQLite 증빙/UUID·쿼리 해시·페이지·경로 SHA·중단복구/멱등·실원본 변조 감지, `onbid-stage-page --consent`·읽기전용 `onbid-stage-status`; 자동 HTTP/자격판정/영구 원장 승격 없음. 실원문 필드 불확정으로 직접 raw→판정 설계 미채택.

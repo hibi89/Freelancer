@@ -1,3 +1,14 @@
+## [2026-11-14 KST] BID AX GUI 다중 온비드 증빙·Windows GUI 빌드 5/5 CI
+
+- 최종설계 **R01–R29 29개 전체 고정**, 사용자 목표 85%; **공식 최종완성률 UNASSESSED / 85% 미입증 / [작업중] / RELEASE HOLD / 크몽 미등록**. 과거 기술 P85 표기는 공식 점수가 아님.
+- 제품 기능 SHA **`1ae85fcb4cc58d3bdd3f52d37c243b99f1f4e4f4`**: Tk GUI에서 온비드 기보유 격리 JSON **여러 파일을 한 번에 선택**, 명시적 고객 동의 후 동일 UUID 배치 증빙으로 등록, 원본 SHA/누락 페이지/중단복구 재검사. 15개 주요 툴바 버튼을 5열 배치로 변경; 서비스 키 저장·정부 API 자동요청·원문 정규화/입찰/투자판정 없음.
+- 신규 GUI controller/통합회귀 **8종**(기존 255→263). [GitHub Actions #43538216227](https://github.com/hibi89/Freelancer/actions/runs/43538216227) **5/5 SUCCESS**, Ubuntu3.11/3.13 각 **263 PASS**, Windows3.11 **263 tests/0 FAIL/1 POSIX-only SKIP**. Windows CLI EXE 스모크, Tk window init, Windows unsigned GUI onedir PE 빌드 PASS. **GUI frozen EXE 실제 조작·Win10/11 고객 설치·SmartScreen·권리/상용 수용은 미검증**.
+- 중간 [기능 run #43537874647](https://github.com/hibi89/Freelancer/actions/runs/43537874647)의 Windows 260테스트 **1 ERROR**는 신규 테스트의 sqlite3 연결 미종료로 Windows 임시 DB 파일 잠금(WinError32); `contextlib.closing`으로 수정해 최신 run에 재발 없음. 이전 기능 오염·운영 장애라고 단정하지 않음.
+- 아직 실제 온비드 **19페이지 중 첫 페이지 10/10만 증명**, 186은 서버가 보고한 전체 건수이며 18페이지는 수집 실적 아님. 나라장터 및 타 API 실제 응답/상세 필드, 실 100공고·독립 검토10, GUI 고객 설치·상업적 원문 권리 보류. 보유 원본·API 키·DB·타 상품·BID OWL 무변경. GitHub API 조회 결과 repo visibility **public** (이전 문서의 private 표기보다 최신 메타데이터 우선).
+- 세부 기술/복구/다음수용: [GUI 온비드·Windows CI 근거](docs/BID_AX_GUI_ONBID_CHECKPOINT_CI_20261114.md). 이 문서 커밋 SHA는 반영 후 HEAD 조회로 확정.
+
+---
+
 ## [2026-11-14 KST] 온비드 로컬 배치 255 테스트·Windows/Linux CI 4/4 검증 완료
 - 코드 SHA `5a7c9452cc47c6dbdcacdd0ace4c88e60224aeac`에서 [Actions 43536185324](https://github.com/hibi89/Freelancer/actions/runs/43536185324) **4/4 SUCCESS**. Ubuntu3.11 255 PASS, Ubuntu3.13 255 PASS, Windows3.11 255 tests/0 FAIL/1 SKIP(POSIX 파일모드 전용), Windows CLI folder EXE smoke SUCCESS. GitHub blueprint gate 별도 SUCCESS.
 - `onbid-stage-page`와 `onbid-stage-status` UUID·고객 동의·다중 페이지 검증 구현. 186건 전수 수집 아님; 첫 실응답 10/10 증거만 유지. 고객 Windows 새 기능·실정부 후속18페이지/나머지 API/상용·고객수용 미검증.
