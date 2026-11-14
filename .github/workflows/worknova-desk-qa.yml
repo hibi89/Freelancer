@@ -1,0 +1,56 @@
+name: WORKNOVA Desk isolated QA
+
+on:
+  push:
+    branches:
+      - product/worknova-desk-local
+    paths:
+      - .github/workflows/worknova-desk-qa.yml
+      - worknova_desk/**
+      - tests/**
+      - tools/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: worknova-desk-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit-and-business-lifecycle:
+    name: ${{ matrix.os }} / Python 3.11
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONPATH: .
+      WORKNOVA_TEST_OFFLINE_ONLY: "1"
+    steps:
+      - name: Check out exact product branch commit
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify synthetic quote through collection lifecycle
+        run: python -m unittest discover -s tests -p test_unattended_business_lifecycle.py -v
+      - name: Run entire Python regression suite (Windows)
+        if: runner.os == 'Windows'
+        run: python -m unittest discover -s tests -v
+      - name: Run entire Python regression suite under Xvfb (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          if command -v xvfb-run >/dev/null 2>&1; then
+            xvfb-run -a python -m unittest discover -s tests -v
+          else
+            python -m unittest discover -s tests -v
+          fi
