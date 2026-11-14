@@ -1,3 +1,18 @@
+# HANDOFF — 2026-11-14 KST WORKNOVA Desk 무인 CI 전환 (최신 10항)
+
+1. 목표·요구·기술: Windows Tk/SQLite 오프라인 WORKNOVA Desk; 승인 WD01~14 100점, 최종 고객 전체 수용85점 목표.
+2. 완료·설계 비교: (A) 공개 저장소의 무료 standard GitHub Windows/Linux runner 자동화, (B) 사용자 반복 로컬 GUI 검수, (C) 유료/추가권한 runner 중 비용·유지/보안을 비교해 A 우선. 무인 합성 라이프사이클 unittest2종 기존 추가에 이어 브랜치 전용 .github/workflows/worknova-desk-qa.yml 및 tools/windows_exe_smoke.py 추가. 파일 업로드 없음.
+3. 테스트: Windows/Linux Python3.11 business lifecycle+full unittest, Windows native offline installer 11 checks, Windows PyInstaller6.22.3 onedir EXE build+SHA, 임시 LOCALAPPDATA의 Tk 창 자동 WM_CLOSE/SQLite 무결성을 Workflow로 구성. 원격 코드 readback PASS, Windows smoke blob 84a2308b6551fd9373a974f94e7ed7323157f5e8 로컬 SHA 동일·ast/compile PASS·Linux fail-closed exit3 PASS. 실제 GitHub CI 및 core unittest2종의 실행 결과는 미확인.
+4. 상태: 실 사용자 Windows EXE GUI/거래처 DB 재시작 증거 유지. 새 CI는 구현됐으나 실 실행 미검증. WD 전항목 최종 완전수용 인정0/100(코드 구현률 아님), 목표85 미달, [작업중], RELEASE HOLD, 미등록.
+5. 오류·시도·대안: ZIP 중첩/과거 PYTHONNOUSERSITE 오류는 이미 수정. 신규 workflow 실패를 입증한 로그 없음. GitHub 커넥터는 legacy statuses와 PR-filtered workflow만 조회해 push-run을 검증할 수 없음. 결과를 지어내지 않는다. 유료 Actions/force push/빈 커밋 반복 금지.
+6. 저장소·브랜치·SHA: hibi89/Freelancer@product/worknova-desk-local, CI/소스 작성전 기준 941e0b5e58e956167eaff24072248aee1e8b98fd, 새 .github/workflows/worknova-desk-qa.yml, tools/windows_exe_smoke.py, tests/test_unattended_business_lifecycle.py. 최종 HEAD 문서 완료 뒤 재조회.
+7. Production/환경: Vercel Production 미적용. 공개 GitHub standard runner 무료, 빌드 후보 미서명 RELEASE HOLD, EXE runner temp에서 생성만 하고 업로드하지 않음. 고객 PC EXE는 별도.
+8. 원본·백업·비밀: 실제 SQLite/백업·운영 LOCALAPPDATA·PayPal 원본·Freelancer main·타 상품/등록완료 이력·OS ACL/서명 키 미수정. Workflow GITHUB_TOKEN contents:read; PyPI에서 공개 PyInstaller 다운로드만, 고객 데이터 전송 없음.
+9. 다음 우선순위·승인: 공개 GitHub Actions 실제 run/Checks 상태와 로그를 확인 가능한 수단으로 조회해 pass/fail 후 최소 수정. WD13 OS ACL/활성DB 암호화·코드서명, WD14 실제 고객/법률/권리/판매는 각각 사용자 승인·실증 필수. 두 항목 모두 미인정이면 최대84점. 전체 승인 항목 PASS 합 85 이상만 완료.
+10. 시각·검증범위·문서 SHA: 2026-11-14 KST. GitHub workflow/스크립트 원본 읽기 일치, 정적 문법/비지원 OS 거부까지 확인. 실제 Actions Job 성공과 Windows runner GUI 동작 미검증. 마지막 문서 커밋 후 원격 HEAD 재확인.
+
+---
+
 # HANDOFF — 2026-11-14 KST WORKNOVA Desk 사용자 반복 수동검증 중단·무인 QA 소스 2종 추가 (최신 10항)
 
 1. **목표·용도·확정 요구·기술:** 사용자 승인 WD01~14 전체100점, 구매자 실제 최종 전체 수용 증거 >=85점 목표. Windows 오프라인 Python3.11/SQLite/Tk EXE 견적/계약/납품·수금.
