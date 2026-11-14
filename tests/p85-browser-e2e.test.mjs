@@ -82,7 +82,12 @@ test('real rendered desktop/mobile login, scoped library, search and logout in C
     await server.close();
     // Chrome subprocesses can still be flushing profile entries after parent exit.
     // Retry only transient filesystem cleanup failures; never mask test assertions.
-    fs.rmSync(root,{recursive:true,force:true,maxRetries:10,retryDelay:150});
+    // Chrome grandchildren may still flush synthetic profile files after the parent exits.
+    // On ephemeral hosted runners only, an ENOTEMPTY/EBUSY cleanup race is not a failed UI.
+    try{await fs.promises.rm(root,{recursive:true,force:true,maxRetries:20,retryDelay:200});}
+    catch(e){if(['ENOTEMPTY','EBUSY','EPERM'].includes(e?.code)){
+      t.diagnostic('CHROME_SYNTHETIC_TMP_CLEANUP_DEFERRED: '+e.code);
+    }else throw e;}
   });
   chrome=spawn(executable,['--headless=new','--no-sandbox','--disable-dev-shm-usage',
     '--disable-background-networking','--no-first-run','--no-default-browser-check',

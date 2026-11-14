@@ -2,8 +2,8 @@
 export const html=`<!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CITEVAULT AX — 오프라인 검증</title><link rel="stylesheet" href="/ui.css" defer></head>
-<body><main><header><h1>CITEVAULT <span>AX</span></h1><p class="tag">근거 기반 문서 검색 <span class="test-pill">합성 데이터 검증판</span></p></header>
-<section aria-label="로그인" class="login-panel"><h2>1. 로그인</h2><form id="login"><label>계정 <input id="userid" required autocomplete="username" maxlength="64"></label>
+<body><main><header><h1>CITEVAULT <span>AX</span></h1><p class="tag">근거 기반 문서 검색 <span class="test-pill">오프라인 검증판 · 합성 데이터</span></p></header>
+<section aria-label="로그인" class="login-panel"><h2>1. 로컬 계정 로그인</h2><form id="login"><label>계정 <input id="userid" required autocomplete="username" maxlength="64"></label>
 <label>비밀번호 <input id="pw" type="password" required autocomplete="current-password" maxlength="128"></label>
 <button type="submit">로그인</button><button type="button" id="logout">로그아웃</button></form></section>
 <section aria-label="근거 검색" class="search-panel"><h2>2. 문서에 질문하기</h2>
