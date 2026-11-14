@@ -1,3 +1,17 @@
+# BID AX 237 테스트·Windows CLI EXE GitHub CI 성공 인수인계 — 2026-11-14 KST (필수 10항)
+1. **목표·용도·확정 요구·기술:** 나라장터/온비드/소유권 확인 법원자료를 로컬 처리하는 BID AX, 고정 R01–R29 전체 최종설계 100% 대비 목표 85%. Python3.11+/SQLite/Tk. 사용자 지시대로 별도 가중치 승인 요구 없음.
+2. **완료 기능·변경·근거:** 15157252 실 첫페이지 10/10, reported total 186 확인 후 검증된 온비드 격리 패킷에 대해서만 `onbid-field-audit`(공개 필드별 존재 수, 값/ID 미출력)와 `onbid-detail-queue --consent`(고객 로컬 미실행 상세후보) 추가. Windows GUI 기존 `run_bidax.py` 보존, 실제 CLI 테스트용 `run_bidax_cli.py` 분리. 자동 실API·원장 승격 금지.
+3. **테스트·성공/실패·검증:** 기능 SHA `f662ecf23f9dc51bc6aad15cb64a28491950a899`, GitHub [run 43533369896](https://github.com/hibi89/Freelancer/actions/runs/43533369896) **SUCCESS 4/4 jobs**. Linux Python3.11 237 PASS, Linux3.13 237 PASS, Windows3.11 **237 tests / OK skipped=1**(POSIX chmod 모드 검사), unsigned Windows CLI onedir EXE build, --help, offline 15157252 request plan smoke SUCCESS. 로컬 Linux 동일 237 PASS/0 FAIL. GUI EXE·고객 Win10/11 설치·원본/상용권은 미검증.
+4. **완료/진행/대기/차단:** 첫 실제 Onbid 결과 목록 10항목의 데이터 구조/개수 정합성만 검증. 186건 전체 실수집, 개별 필드 매핑, 다른 3개 공식 API 실호출, 실 공고 100/독립 인간 10, 법률/상용·Windows GUI 설치 수용 미완료. 공식률 UNASSESSED/85% 미입증, `[작업중]`, RELEASE HOLD, 미등록.
+5. **오류 근거·원인·시도·재시도 금지·대안:** 초기 Windows CI CP 인코딩·ZIP 경로·POSIX-only 권한 테스트 오류 → PYTHONUTF8=1, posix ZIP path, Windows POSIX permission check skip 후 Python CI 성공. 단일파일/onedir GUI EXE를 CLI --help로 호출해 타임아웃된 검증은 **잘못된 엔트리포인트** 원인. GUI 방식을 더 이상 CLI 테스트에 쓰지 않고 분리된 CLI EXE로 CI SUCCESS. 실패를 GUI 오류로 단정 금지.
+6. **저장소·브랜치·SHA·주요 경로:** `hibi89/Freelancer@product/bid-ax-public-procurement`, 기능 HEAD SHA `f662ecf23f9dc51bc6aad15cb64a28491950a899`, `bidax/onbid_official_bridge.py`, `bidax/cli.py`, `tests/test_onbid_official_bridge.py`, `run_bidax_cli.py`, `tests/test_cli_entrypoint.py`, `packaging/build_source_zip.py`, `.github/workflows/bid-ax-offline-regression.yml`, docs/STATUS/HANDOFF. 최신 문서 SHA 별도 확인.
+7. **Production URL·Vercel·실행·환경:** Vercel/Production **미적용**; Windows CLI onedir test **비출시·미서명·미업로드**. 개발 실행 `python -Werror::ResourceWarning -m unittest discover -s tests -q`; 사용자 실자료는 로컬 명시 동의/키 입력 시만 외부 HTTP 요청. 콘솔에서 `onbid-field-audit EXISTING_LOCAL_PACKET` 오프라인.
+8. **원본·백업·인증·수정 금지:** 사용자 실 `result_001.json`, 기존 로컬 DB/키/개인 원본, 타 Freelancer 상품·BID OWL, 기존 등록 이력 불변. Git 정상 revert 복원 가능. 키/실자료 GitHub·ChatGPT에 업로드 금지, 후보 큐는 고객 PC에만 저장; 자동 폴링/EXE 릴리스 금지.
+9. **다음 작업 우선순위·절차·완료 기준·승인:** 오프라인 사용자 실제 10행에서 안전한 공개 필드 존재 수 확인(사용자 필요 최소). 해당 필드가 존재하면 실제 공식 계약 검증→기존 18페이지 증분 수집·복구 개발/나머지 API 3종→100실공고·10사람·고객 Windows GUI/설치/법적 상용권. 비용/외부 키/자료 전송·릴리스 전 승인. 추가 가중치 승인 요구 없음.
+10. **갱신 일시(KST)·확인 시점·범위·문서 기준 SHA:** 2026-11-14 KST, GitHub Actions run 43533369896 최신 소스 기능 `f662ecf23f9dc51bc6aad15cb64a28491950a899`에서 4/4 확인. Windows 237 tests with 1 POSIX SKIP, Python CLI EXE smoke; 실제 사용자 API 원문 값·GUI EXE·고객 배포·최종 85%는 미검증. 이번 문서 커밋 HEAD 별도 조회.
+
+---
+
 # BID AX 오프라인 필드 계약·무료 공개 Windows CI 인수인계 — 2026-11-14 KST
 1. 목표/용도/스택: R01–R29 29개 전 요구 고정, 목표85%, G2B·온비드·동의 기반 법원 자료 로컬 Python3.11+ SQLite Tk. 가중치 재승인 없음.
 2. 완료/선택: 15157252 실 첫10/10 기반 해시 검증을 거친 공개 필드 존재 건수 출력, 상세15157254 후보 로컬 새 파일 생성/명시 동의/미호출. 자동 입찰·판정·DB 적재 금지.

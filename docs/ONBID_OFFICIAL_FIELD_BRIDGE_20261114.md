@@ -27,3 +27,11 @@
 ## 사용자 Windows 오프라인 명령 (업데이트된 소스에 한함)
 py -3.11 -m bidax.cli --db .\local\test.db onbid-field-audit C:\PATH\TO\result_001.json
 py -3.11 -m bidax.cli --db .\local\test.db onbid-detail-queue C:\PATH\TO\result_001.json --out .\local\detail_candidates.json --consent
+
+## 2026-11-14 KST 독립 Windows CI 실제 결과 — 최종 기능 SHA `f662ecf23f9dc51bc6aad15cb64a28491950a899`
+
+[GitHub Actions 43533369896](https://github.com/hibi89/Freelancer/actions/runs/43533369896): **completed / success**, 4개 job 모두 SUCCESS. Ubuntu Python3.11 237 tests OK, Ubuntu Python3.13 237 tests OK, Windows Python3.11 237 tests OK (skipped=1: NTFS에서는 POSIX mode assertion을 하지 않는 것이 맞고 ACL은 별도 수용 필요), Windows PyInstaller CLI **onedir** EXE `--help` 및 온비드 result-list OFFLINE request-plan CLI smoke 성공. 실행 파일 서명/배포/고객 PC/GUI EXE 검증은 미실시.
+
+이전 Win CI failure: UTF-8 기본값/ZIP separator/POSIX mode assertion 차이와 GUI 진입점을 CLI `--help`로 실행한 테스트 설계 오류. `run_bidax_cli.py`를 신규 독립 진입점으로 만들어 테스트했으며 원래 `run_bidax.py` GUI는 불변. 235→237 로컬/Windows/Linux 테스트; 각 원본 수용 요구 R01–R29 유지.
+
+**공식 85% 최종달성 미입증/UNASSESSED**. 실 15157252 첫 10건 구조만 확인, 고객 원본 키·ID 미수신, 나머지 API 실연동/상세 필드 매핑·상업권/설치 수용 필요. `[작업중]`, RELEASE HOLD/크몽 미등록 유지.

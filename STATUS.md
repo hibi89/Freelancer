@@ -1,3 +1,12 @@
+## [2026-11-14 KST] 237/237 오프라인 코드 검증 및 Windows CLI EXE 4/4 CI 성공
+- 기능 SHA **`f662ecf23f9dc51bc6aad15cb64a28491950a899`**. [실제 GitHub Actions run 43533369896](https://github.com/hibi89/Freelancer/actions/runs/43533369896) **SUCCESS**, Python 오프라인 회귀: Ubuntu 3.11 **237 PASS/0 FAIL**, Ubuntu 3.13 **237 PASS/0 FAIL**, Windows 3.11 **237 tests run / 0 FAIL / 1 SKIP**(POSIX 전용 0600 mode assertion은 Windows ACL을 증명하지 않으므로 의도적으로 skip).
+- Windows PyInstaller **folder/onedir CLI EXE** 생성·`--help` 실행·온비드 15157252 **무네트워크 쿼리 계획** 실행 4번째 job **SUCCESS**. 제품의 기존 `run_bidax.py`는 GUI mainloop이므로 `--help`를 통한 CLI 검증 부적합. 신규 `run_bidax_cli.py`로 CLI를 분리하고 원본 GUI 경로는 보존. 이전 단일파일 GUI 오인 테스트 실패/시간초과는 **잘못된 검증 방식**의 기록이며 실제 GUI의 장애를 입증하지 않는다. GUI EXE·실 설치·SmartScreen·Windows ACL·실고객 acceptance **미검증**, 서명/릴리스/자동업로드 없음.
+- 신규 `onbid-field-audit`은 실제 검증 완료된 사용자 소유 15157252 한 페이지 격리 패킷을 대상으로 **공식 필드 존재 건수만 로컬 출력**; `onbid-detail-queue --consent`는 15157254 상세 API를 위한 식별자 **미실행 후보**를 고객 로컬에만 저장. 모의/합성 테스트 **237 PASS**, 고객 실제 item ID 존재·상세 API 성공·후속18페이지 실수집은 여전히 **미확인**. 사용자 키/raw JSON/민감값 GitHub·ChatGPT 미전송. 이번 개발 중 추가 정부 HTTP 호출 0건.
+- 정상 사용자 실제 온비드 결과목록 수신 첫 페이지 **10/10 항목**, API 보고 전체186건, SHA 일치만 확인. 나라장터1+온비드 나머지2 API 실조회/온비드 15157220 오퍼레이션·법원원문 권리/실100공고·인간검토10·고객 출시 **미검증**.
+- **최종 R01–R29 전체 설계 100% 고정**, 별도 가중치 요구 금지. 공식 최종완성률 **UNASSESSED · 85% 미입증**, **`[작업중]` / RELEASE HOLD / 크몽 미등록** 유지. 부가 근거 `docs/ONBID_OFFICIAL_FIELD_BRIDGE_20261114.md`.
+
+---
+
 ## [2026-11-14 KST] 온비드 공식 필드 안전감사/상세 후보 + Windows/Linux 오프라인 CI
 - 실제 15157252 1페이지 10/10 확인 기반 공개 필드의 존재 건수만 출력하는 onbid-field-audit 및 본인 동의 로컬 상세 후보 큐 구현. 고객 키/원문 불수신, 추가 정부 호출·자동 적재 0.
 - Linux Python3.13.5 **235 PASS/0 FAIL**, compileall/Python3.11 AST 35개 PASS, 핵심 Git blob 3/3 로컬과 일치.
