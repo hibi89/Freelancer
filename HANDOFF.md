@@ -1,3 +1,18 @@
+# HANDOFF — 2026-11-14 KST WORKNOVA Desk 3차 EXE 재기동 거래처 GUI 보존 확인 (최신 10항)
+
+1. **목표/용도·확정 요구/기술:** WORKNOVA Desk Windows 오프라인 Tk/SQLite 견적·계약·납품·수금, 승인 WD01~14 총100점 중 최종 고객 전체 수용85점 목표.
+2. **완료/변경·결정 근거:** 실제 Windows PyInstaller6.22.3 onedir EXE 빌드·해시/MZ, GUI 최초 실행·격리 SQLite v2 및 무결성, 두 번째 EXE 가짜 거래처 생성/종료/SQL 1건에 이어 **세 번째 EXE 재기동에 기존 거래처 GUI 재표시**. 원본 제품 코드/DB/OS 설정 변경 없음.
+3. **테스트 명령·PASS/FAIL/미검증:** `$p3=[Diagnostics.Process]::Start($psi2)`·`WaitForExit()`·**ExitCode:0**, 현장 사용자 “그대로있더라”로 `WORKNOVA_QA_TEST_01` GUI 재표시 확인. 전회차 2차 실행 `SyntheticCustomerCount:1` / `integrity_check:ok`. 3차 별도 스크린샷·DB 재조회는 없어 사용자 육안 근거로 한정. 거래처 생성→DB 저장→재실행 표시 **PASS**. 견적·계약·납품·수금 업무 E2E/타기기·ACL·DB 상시암호화/서명/실고객/법률 NOT_RUN.
+4. **완료/진행/대기:** WD01/08/09/11/13 부분 고객흐름 증거 진전. 승인 전체100점 항목 완전 고객 수용은 미확정으로 **정식0/100(구현률0 아님), 목표85 미달, [작업중], RELEASE HOLD, 미등록**.
+5. **오류/원인·시도/재시도 금지·대안:** 과거 이중 ZIP 경로·PyInstaller 자식 `PYTHONNOUSERSITE=1` 결함 수정/우회 후 3회 실구동 성공. 재설치·재빌드 반복 금지. 다음은 안전한 합성 견적/계약 E2E.
+6. **저장소·브랜치·SHA/주요 경로:** `hibi89/Freelancer@product/worknova-desk-local`, 이번 증거 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md` 변경 커밋 `6487f5741c1039c565a690565118acd54ed11d93`, 최종 HEAD 원격 확인. 실제 Windows 임시 DB/EXE 파일은 사용자 PC에만.
+7. **Production URL/실행·환경:** 웹/Vercel Production 미적용. onedir unsigned EXE, Python3.11.9/PyInstaller6.22.3 Win10.0.26200 사용자 실기기; 자식 프로세스 전용 `LOCALAPPDATA=$qaRoot`.
+8. **원본/백업/인증·수정 금지:** 실제 고객 SQLite/백업, 운영 LOCALAPPDATA, PayPal 원본·main/다른 크몽 상품·등록완료, OS 보안정책/서명키/개인정보 변경·GitHub 업로드 없음.
+9. **다음 우선순위·완료·승인:** 동일 임시 합성 장부/기존 고객을 선택해 견적(가짜 서비스 1개) 작성→승인→계약→납품/수금 GUI 실제 E2E를 단계별 검증하고 해당 DB SQL/감사 체크. 실제 고객자료·유료 서비스·OS 보안/서명 변경은 승인 후. WD 전체 항목 완전 고객 인수 배점 합≥85일 때만 완료.
+10. **갱신 KST/확인·문서기준:** 2026-11-14 KST. 새 증거는 세 번째 EXE 시작/GUI 기존 행 표시(사용자 직접 진술), ExitCode0. 3차 GUI 스크린샷/DB 재검사는 없음. 중앙 크몽 원장 동기화 후 HEAD 확인.
+
+---
+
 # HANDOFF — 2026-11-14 KST WORKNOVA Desk EXE GUI 거래처 1건·SQLite 저장 지속성 실증 (최신 10항)
 
 1. **목표/용도·정본 요구/기술:** WORKNOVA Desk 오프라인 Windows Python3.11/Tk/SQLite 견적→계약→납품·수금. 사용자 승인 WD01~14 총100점, 각 항목 최종 구매자 완전 인수 가중치합85점 목표.
