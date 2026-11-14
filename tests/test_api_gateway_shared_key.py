@@ -4,6 +4,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from io import BytesIO
 import json
+import os
 from pathlib import Path
 import sqlite3
 import tempfile
@@ -148,6 +149,7 @@ class APIGatewayTest(unittest.TestCase):
             self.fetch(self.onbid,'bad.json',opener=fake,daily_limit=1001)
         self.assertEqual(fake.requests,[])
 
+    @unittest.skipIf(os.name == "nt", "Windows mode bits are not POSIX ACL evidence")
     def test_output_permissions_owner_only_on_posix(self):
         self.fetch(self.onbid,'ok.json')
         self.assertEqual((self.d/'ok.json').stat().st_mode & 0o777,0o600)
