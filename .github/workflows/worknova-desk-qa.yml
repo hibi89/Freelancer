@@ -90,3 +90,10 @@ jobs:
           $hash = (Get-FileHash -LiteralPath $exe -Algorithm SHA256).Hash
           Write-Host ("Unsigned candidate only / bytes=" + $item.Length + " / SHA256=" + $hash + " / RELEASE HOLD")
           # Deliberately do not upload any binary, cache, build.log, or artifacts.
+      - name: Smoke-test actual EXE GUI and synthetic SQLite using only temporary profile
+        shell: pwsh
+        run: |
+          $destination = Join-Path $env:RUNNER_TEMP ("worknova-qa-" + $env:GITHUB_RUN_ID + "-" + $env:GITHUB_RUN_ATTEMPT)
+          $exe = Join-Path $destination "dist/WORKNOVA-Desk/WORKNOVA-Desk.exe"
+          python -B tools/windows_exe_smoke.py --exe $exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
