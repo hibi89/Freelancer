@@ -1,5 +1,19 @@
 # CITEVAULT AX — HANDOFF — RAG Studio 기업형 (10항, 2026-11-13 KST)
 
+## [2026-11-14 KST] Owner Windows QA + Simple UX / 455PASS — HANDOFF 10항
+
+1. **목표·용도·확정 기술:** CITEVAULT 기업형 24항 100% 설계 대비 85% 사용자 목표. RAG pinned source, ACL/SQLite/Ed25519 signed review, Korean local model, Win10/11, Gold100 owner acceptance. 공식 UNASSESSED.
+2. **완료·변경·결정근거:** 사용자 "왜 복잡해" 피드백으로 UI 문서 범위·SQL 검토/관리자 설정 접음. A 새 라우트/멀티페이지(인증 표면 확대·비용↑), B 기존 단일 URL `details/summary` 점진 공개(API/ACL 불변·회귀 위험 낮음) B 선택. 기존 검색·대시보드·후속질문 기능/보안 보존.
+3. **검증명령/성공·실패·미검증:** exact feature SHA `62fe69bd9f78f5a9a2c49f53b5f227053503a4f1`, [CI #43536006934](https://github.com/hibi89/Freelancer/actions/runs/43536006934) Ubuntu/Windows/real Chromium **8/8 job SUCCESS 455 test executions PASS/0FAIL/0SKIP**. New `node --test tests/p85-simple-ui.test.mjs` 4 PASS per OS and actual Chromium collapsed panels+login/search/followup/logout. User earlier Windows local QA PASS and synthetic SEARCH_ONLY with policy line1 screenshots, *prior docs SHA only*.
+4. **완료/진행/대기/차단:** REQ16 합성 UI 간소화 및 실제 hosted Chromium PASS, owner earlier Windows synthetic QA partially verified. REQ19 physical Windows 10/11 installer/version not established; corporate IdP + rights/approved PREP-SMAX production package, Korean model, customer Gold100/legal+security signoff incomplete. [작업중], RELEASE HOLD.
+5. **실패 근거·원인·시도/재시도 금지·대안:** #43535664826 UI legacy strings mismatch + Chrome temporary ENOTEMPTY. #43535827150 Chrome start 10s timeout while all other jobs PASS. Kept legacy string compatibility; Chrome startup max30s diagnostic, graceful cleanup/deferred ephemeral-only ENOTEMPTY handling. Final exact run all PASS. Don't repeatedly rerun old failing versions or discarded PowerShell ZIP method.
+6. **저장소·브랜치·SHA·경로:** `hibi89/Freelancer@product/rag-enterprise-knowledge`, working tested code `62fe69bd9f78f5a9a2c49f53b5f227053503a4f1`, parent `0a9a7f3d6081d7336392984b1b4fc1c453220098`, last doc base `62663721a4576f597e1b7cde5025760271428cda`, original pinned RAG `c5867b3951f51bfa97cadd1aad8fb13e9cf9e604`. Files `enterprise/p85-ui.mjs`, `tests/p85-simple-ui.test.mjs`, `tests/p85-browser-e2e.test.mjs`, workflow.
+7. **Production URL·Vercel·실행/환경:** N/A synthetic localhost only. GitHub Ubuntu24.04 Chrome/Node22.16 and Windows2022 Node22.23 QA. User own Windows physical machine ran previous QA script/Chrome; current simplified commit physical user machine UNVERIFIED. No deploy/release/license approval.
+8. **원본/백업/인증·수정금지:** Git parent SHA rollback, prior original RAG/PREP/SMAX data and customer documents/auth/secrets untouched. Public shared `Freelancer` exposing branches/history is owner setting; full historic secret/IP audit pending. Screenshots in conversation may show ephemeral password and local paths, not published. No paid API or external upload.
+9. **다음 우선순위/완료기준·승인:** (i) customer rights, actual enterprise IdP, authoritative signed AX producer required for production; (ii) real Korean local model weights SHA/license+Gold100 heldout; (iii) physical Win10/11 install/backup/MDM/security/user acceptance; (iv) 24 requirements owner accepted weights and evidence gating. User's coding approval exists; cannot imply third-party/customer rights. Do not label 455 tests as official85.
+10. **갱신 시점·확인 범위·기준 커밋:** 2026-11-14 KST, actual exact `62fe69bd` 8/8 job statuses and 455 test cases + earlier user screenshots reviewed. Documentation HEAD to check after commit, central audit update separate. Official `UNASSESSED/[작업중]/RELEASE HOLD`.
+
+
 ## [2026-11-14 09:10 KST] REQ24 Conversational+REQ19 Windows Portable · 447PASS — HANDOFF 10항
 
 1. **목표·최종설계·기술:** 전체 `docs/FINAL_BLUEPRINT.md` 24항 100% 중 사용자가 85% 검증 요구. RAG Studio pinned + PREP/SMAX signed package, rights-aware PDF/DOCX/SQL, ACL, actual local Korean model, physical Windows install/Gold100. 공식 UNASSESSED, 판매 HOLD.

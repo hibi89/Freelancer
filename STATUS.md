@@ -1,5 +1,14 @@
 # CITEVAULT AX — STATUS — RAG Studio Enterprise, 2026-11-13 KST
 
+## [2026-11-14 KST] 사용자 Windows 실기기 부분증거 + 사용성 간소화 실제 브라우저 455PASS
+
+- **정확 기능 SHA** `62fe69bd9f78f5a9a2c49f53b5f227053503a4f1`; [hosted CI #43536006934](https://github.com/hibi89/Freelancer/actions/runs/43536006934) **8/8 SUCCESS, 455PASS/0FAIL/0SKIP**(Windows/Linux 중복). 사용자 지적 "복잡한 화면" 대응: 로그인→질문→근거검색 중심, SQL/문서 범위/관리자 기능은 native `details` 접기(기존 API·권한 불변). 사용자 화면 Chromium 실제 접힘 상태/로그인·검색·근거·후속질문·390px 모바일·로그아웃 PASS, 신규4테스트×2OS.
+- **이전 제품 문서 HEAD `62663721...` 실기기 관찰:** 사용자 화면에서 Windows 로컬 테스트 `PASS`, synthetic operator 로그인, 한 문서/한 컬렉션 KPI와 `SEARCH_ONLY` 근거 `policy line1` 스크린샷 확인. 실제 PC 모델/OS 버전·최신 기능 SHA·고객 계정·실자료·영구 백업/복구·후속 질문 실기기 검증은 미확인. 사용자 스크린샷 내 임시 비밀번호·로컬경로 노출 때문에 public repo에 이미지/비밀 전송하지 않음.
+- **CI 장애·회복:** 간소화 초기 화면 텍스트가 기존 운영자 selftest와 계약 문구 불일치(#43535664826) → 이전 문자열을 유지한 채 간소 UX 보호. Chromium 프로필 정리 race `ENOTEMPTY` 및 다음 run Chrome 10초 시작 timeout(#43535827150) → 테스트 런너 임시프로필만 graceful cleanup/호스티드 defer 및 30초 startup+stderr 진단. 최종 8/8 SUCCESS.
+- 상세 `docs/P85_SIMPLE_UI_OWNER_WINDOWS_20261114.md`. **전체24항 공식 완성률 UNASSESSED / 85% 미인증**, `CITEVAULT AX [작업중]` 유지, `RELEASE HOLD/SALE NO-GO`; 실제 enterprise IdP/권리/서명 approved PREP-SMAX AX producer/real Korean model+Gold/실 Win10/11 설치·고객 수용 대기. Production/외부 data/API/비용 0.
+
+
+
 ## [2026-11-14 09:10 KST] REQ24 합성 후속대화 + REQ19 Windows ZIP 실제 실행 검증
 
 - 기능 SHA `f2979aa50156b4f5c3d80f4d23a1b2ec336f0040`, [정확 Actions #43531986943](https://github.com/hibi89/Freelancer/actions/runs/43531986943) **8/8 SUCCESS, 447 test executions PASS/0 FAIL/0 SKIP**, 원본 RAG pinned35+CITEVAULT bridge36, Ubuntu/Windows 로컬127씩·백업12씩·native31씩·Korean100 harness1씩, Chrome1, Windows ZIP QA2.

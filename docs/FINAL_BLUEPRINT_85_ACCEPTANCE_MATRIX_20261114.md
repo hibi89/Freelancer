@@ -1,5 +1,12 @@
 # CITEVAULT AX — 최종설계 100% 기준 85% 수용 증거표 (2026-11-14 KST)
 
+## [2026-11-14 KST] REQ16 사용자 실제 Windows 부분 증거 + 쉬운 검색 화면 CI PASS
+
+- 사용자 직접 Windows PC에서 이전 정본 SHA `62663721...` synthetic localhost QA `PASS` 및 synthetic operator 로그인/문서1건/컬렉션1개/SEARCH_ONLY 출처 policy line1 화면을 대화 스크린샷으로 확인. OS 버전, 정식 설치기, 고객 인증/실자료, 현재 신규 UI 실기기 실행은 미검증; 스크린샷 파일은 GitHub에 올리지 않음(임시 비밀번호 포함).
+- 이번 실 UI 기능 SHA `62fe69bd9f78f5a9a2c49f53b5f227053503a4f1`, [#43536006934](https://github.com/hibi89/Freelancer/actions/runs/43536006934) **8/8 SUCCESS, 455 PASS/0FAIL/0SKIP**(OS 중복), 신규4×2OS simple UI + 실제 Chromium collapsed/advanced/한국어 검색/후속 질문/권한/390px 검사.
+- 전체24항 **UNASSESSED / 85% 미인증 / [작업중] / RELEASE HOLD**. 고객형 IAM, 권리, 원본 signed producer AX, 실제 Korean model, customer Gold/물리 OS-version-specific installer/legal signoff 미해결.
+
+
 ## [2026-11-14 KST] P85 REQ24 bounded 후속대화 + REQ19 Windows portable 기능 증거
 
 - 기능 `f2979aa50156b4f5c3d80f4d23a1b2ec336f0040`, [실제 Actions #43531986943](https://github.com/hibi89/Freelancer/actions/runs/43531986943) **8/8 SUCCESS, 447 executed PASS/0FAIL/0SKIP**(OS별 중복 포함).
@@ -83,11 +90,11 @@
 | 13 | 실제 사용자·그룹·프로젝트·컬렉션 인증 | **신규:** 운영자 로컬 계정 발급, scrypt derived 저장, SQLite 재기동·다른 프로세스 로그인, scoped permission, admin만 발급·상속 권한 한도 | **부분**: 실제 고객 IdP/현장 관리자 승인·MFA/계정 초대 미검증 |
 | 14 | 권한 변경·세션 철회·감사 | **신규:** `provisionUser/changeUserAccess` + SQLite transaction/audit, 기존 세션 권한 즉시 반영, 교차 프로세스 revoke | **검증-합성**: 생산 운영 복구·장기간 계정 정책 필요 |
 | 15 | 문서 버전 교체·폐기·재색인 | `p85-state-store.mjs` durable revision/retire/reindex, SHA·gen·audit 테스트 | **검증-합성**: shadow index 원자 swap·백업/검색 동시성 추가 |
-| 16 | 오프라인 사용자 UI/KPI/차트/출처 탐색 | **신규 실기능:** metadata-only ACL `GET /v1/library`, 현재 로그인 계정의 문서 KPI·컬렉션 차트·문서 선택·검색·로그아웃. Chrome 실제 desktop/mobile 390px E2E PASS, 신규 scope/ACL8PASS×2OS, JS 예외0·원격 네트워크0; 기존 운영자 UI/strict CSP 유지 | **검증-합성**: Github hosted Ubuntu Chrome 실제 렌더 성공, 물리 Win10/11 Chrome/Edge·고객 인수/실기업 IdP는 미검증 |
+| 16 | 오프라인 사용자 UI/KPI/차트/출처 탐색 | **실기능 추가:** 기본 화면 로그인→질문→근거 우선, 범위·SQL·관리자 관리 `details`로 접고 모든 기존 API·ACL 유지. Real Chrome (desktop/mobile 390px) 기본/고급 패널 접힘·로그인/검색/후속/로그아웃 성공; `tests/p85-simple-ui` 4PASS×2OS. 사용자 이전 PC에서 로그인/근거 검색/1문서 KPI 시각 확인 | **검증-합성/부분-현장:** 새 간소 UI의 고객 PC 실재현·전문 UX 인수, 고객 실기업 IdP/실데이터/금융·법무 인수 미검증 |
 | 17 | 한국어 실제 로컬 모델·선택 dense | 모델 미설치 fallback `SEARCH_ONLY`, 출처 없는 생성 차단 | **대기**: 실제 model weights·라이선스·Korean mini benchmark 없음 |
 | 18 | 프롬프트 인젝션·ZIP·악성 파일·권한/데이터 유출 | bytes budgets, source SHA/inode/symlink, fail-closed, no network, XSS-safe UI textContent | **부분**: 문서 파서 OS 샌드박스/TOCTOU/침투 테스트·공식 보안점검 미완 |
-| 19 | Windows10/11 오프라인 설치·백업/복구·라이선스 | **신규:** Windows Server2022 hosted Node22 포함 12파일 합성 portable 디렉터리+ZIP sha/CRC 검증·해제 후 localhost operator/demo 실행 2PASS, 기존 수동 SQLite backup 양 OS12PASS | **부분**: 고객용 정식 설치기/Node 재배포 라이선스·물리 Windows10/11·실고객 데이터/복구·업데이트 인수 미검증, ZIP은 CI 임시파일만 |
-| 20 | Win/Linux GitHub-hosted CI 0FAIL | 정확 기능 SHA `f2979aa` [#43531986943](https://github.com/hibi89/Freelancer/actions/runs/43531986943) **8/8 SUCCESS, 447 test executions PASS/0 FAIL/0 SKIP**; Ubuntu 실제 Chrome + Windows Python ZIP roundtrip/실 Node 자체 실행 포함 | **검증-합성**: hosted CI 완료; 물리 Win10/11·고객 IAM/영업용 릴리스·운영 보안은 별도 미검증 |
+| 19 | Windows10/11 오프라인 설치·백업/복구·라이선스 | Windows2022 hosted portable ZIP CRC/SHA·unpacked Node 실행 2PASS + offline backup 12PASS/OS. **사용자 실제 Windows PC에서 별도 QA 스크립트 PASS 및 synthetic 브라우저 로그인/검색 화면 관찰(이전 정본 SHA)** | **부분:** 고객용 정식 설치기/Node 라이선스·구체 Win10/11 버전 확인·새 간소UI 현장 재검증·실고객 데이터/백업복구·운영 인수 미완; 사용자 스크린샷은 영업 릴리스 승인 증거 아님 |
+| 20 | Win/Linux GitHub-hosted CI 0FAIL | 정확 기능 SHA `62fe69bd` [#43536006934](https://github.com/hibi89/Freelancer/actions/runs/43536006934) **8/8 SUCCESS, 455 test executions PASS/0 FAIL/0 SKIP**; Ubuntu actual Chrome 간소화 UI, Windows ZIP·native PDF/DOCX 포함 | **검증-합성:** hosted CI 완료, 초기 패치 CI 실패 및 복구 기록 별도 보존; 실고객 Win10/11 상용 설치·모델/IdP/보안 인수 미검증 |
 | 21 | 고객 Gold100 + negative/heldout, retrieval/latency/메모리 수용 | 신규 한국어 합성100건(20×5 유형) Windows/Linux 모두 PASS, p95 Ubuntu0.328ms/Win1.001ms | **부분**: 합성 반복 계약 테스트이며 고객의 Gold100·진짜 heldout·모델 성능/고객 합격 기준 미검증 |
 | 22 | 백업/복구·삭제/보존기간·운영 정책 | Node22 SQLite backup API, 합성 문서 SHA manifest, create-only offline restore; **신규 SQLite 4개 테이블·실 active doc source SHA 바인딩**, 양 OS 각12PASS(기존9+신규3), 원본 불변·변조·링크·중복·덮어쓰기 거부 | **부분**: 실 고객 운용 중 무중단 백업/보존·삭제·물리 Windows10/11 복구/권한·개인정보 미검증 |
 | 23 | 고객/법적·가격·지원·운영 인수 | 합성 SOURCE_RIGHTS=false/RELEASE HOLD 강제 | **대기**: 고객/소유자 승인·라이선스·실기기·지원 수용 불가 |
