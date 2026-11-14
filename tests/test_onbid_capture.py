@@ -134,7 +134,7 @@ class ContinueOnbidTests(unittest.TestCase):
         self.assertEqual(replay["state"], "OFFLINE_COMPLETE_NOT_IMPORTED")
 
     def test_saved_after_crash_reused_without_network(self):
-        ref = self.ref()
+        ref = self.ref(total=11)
         page2 = create_plan("onbid_result_list", {
             "parameters": self.filters, "page": 2, "rows": 10})
         local = self.root / f"bidax-onbid-{self.batch}-p0002.json"
