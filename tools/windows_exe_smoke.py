@@ -138,11 +138,28 @@ def main(argv=None) -> int:
                     raise RuntimeError('Synthetic SQLite integrity failure')
                 if db.execute('SELECT COUNT(*) FROM customers WHERE name=?', (test_name,)).fetchone()[0] != 1:
                     raise RuntimeError('Synthetic customer missing after EXE GUI close')
+            stage = 'frozen-synthetic-business-lifecycle'
+            report_path = Path(qa_root) / 'frozen-lifecycle-report.json'
+            qa_env = env.copy()
+            qa_env['WORKNOVA_TEST_OFFLINE_ONLY'] = '1'
+            completed = subprocess.run([str(exe), '--synthetic-qa-report', str(report_path)],
+                                       cwd=str(exe.parent), env=qa_env, timeout=60,
+                                       check=False)
+            if completed.returncode != 0 or not report_path.is_file():
+                raise RuntimeError('Native frozen EXE synthetic lifecycle failed')
+            lifecycle = json.loads(report_path.read_text(encoding='utf-8'))
+            if (not lifecycle.get('ok') or lifecycle.get('synthetic_only') is not True
+                    or lifecycle.get('verified_receipts') != 2
+                    or lifecycle.get('verified_restored_events', 0) < 8
+                    or lifecycle.get('sqlite_integrity') != 'ok'):
+                raise RuntimeError('Native frozen lifecycle report did not meet assertions')
         stage = 'cleanup-disposable-profile'
-        print(json.dumps({'ok': True, 'scope': 'native Windows synthetic GUI smoke only',
+        print(json.dumps({'ok': True, 'scope': 'native Windows synthetic GUI plus frozen business lifecycle',
                           'sha256': digest, 'window': 'seen and closed',
                           'exit_code': 0, 'sqlite_integrity': 'ok',
-                          'synthetic_customers': 1, 'release': 'HOLD'}))
+                          'synthetic_customers': 1,
+                          'frozen_business_lifecycle': 'PASS', 'verified_receipts': 2,
+                          'backup_restore_rehearsal': 'PASS', 'release': 'HOLD'}))
         return 0
     except Exception as exc:
         print(json.dumps({'ok': False, 'stage': stage,

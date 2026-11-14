@@ -40,9 +40,20 @@ def data_directory(appdata: str) -> Path:
     return folder
 
 
-def main() -> int:
+def main(argv=None) -> int:
     if sys.platform != 'win32':
         raise RuntimeError('This entrypoint is for native Windows only')
+    args = list(sys.argv[1:] if argv is None else argv)
+    if args:
+        # Hidden, explicit CI-only mode. Never open, copy or modify the user's
+        # normal LOCALAPPDATA ledger. The synthetic fixture is disposable.
+        if len(args) != 2 or args[0] != '--synthetic-qa-report':
+            raise RuntimeError('Unsupported Windows application arguments')
+        if os.environ.get('WORKNOVA_TEST_OFFLINE_ONLY') != '1':
+            raise RuntimeError('Synthetic test mode is disabled outside isolated QA')
+        from worknova_desk.synthetic_acceptance import run
+        run(args[1])
+        return 0
     folder = data_directory(os.environ.get('LOCALAPPDATA', ''))
     folder.mkdir(parents=True, exist_ok=True)
     _assert_plain_ancestors(folder)
