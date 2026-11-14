@@ -149,7 +149,9 @@ class LocalController:
             ledger.backup(target)
 
 
-def launch(database: str | Path) -> None:
+def launch(database: str | Path, *, auto_close_ms: int | None = None) -> None:
+    if auto_close_ms is not None and (type(auto_close_ms) is not int or not 100 <= auto_close_ms <= 5000):
+        raise ValueError("GUI self-test timeout outside safe range")
     import tkinter as tk
     from tkinter import filedialog, messagebox, simpledialog, ttk
     from .core import restore_backup
@@ -401,4 +403,6 @@ def launch(database: str | Path) -> None:
     auction_menu.add_command(label="온비드 증빙 배치 재검사", command=lambda: handle(show_onbid_stage_status))
     menu.add_cascade(label="공매·경매 로컬 관리", menu=auction_menu)
     root.config(menu=menu)
+    if auto_close_ms is not None:
+        root.after(auto_close_ms, root.destroy)
     root.mainloop()

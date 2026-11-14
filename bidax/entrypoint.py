@@ -2,6 +2,8 @@
 from __future__ import annotations
 import os
 from pathlib import Path
+import sys
+from tempfile import TemporaryDirectory
 from .desktop import launch
 
 
@@ -15,6 +17,14 @@ def default_db_path() -> Path:
 
 
 def main() -> None:
+    # Support staff can exercise the ACTUAL frozen GUI with synthetic/empty data
+    # without opening or creating a customer's active database.
+    if sys.argv[1:] == ["--selftest-gui"]:
+        with TemporaryDirectory(prefix="bidax-gui-smoke-") as temp:
+            launch(Path(temp) / "test-gui.db", auto_close_ms=700)
+        return
+    if sys.argv[1:]:
+        raise SystemExit("unsupported GUI argument; only --selftest-gui is allowed")
     launch(default_db_path())
 
 

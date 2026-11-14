@@ -106,4 +106,15 @@ jobs:
         run: python -m PyInstaller --noconfirm --clean --onedir --windowed --collect-submodules bidax --name BIDAX_GUI_CI_UNRELEASED --paths . run_bidax.py
       - name: Inspect Windows GUI PE without launching customer data or publishing
         run: python -c "from pathlib import Path; p=Path('dist/BIDAX_GUI_CI_UNRELEASED/BIDAX_GUI_CI_UNRELEASED.exe'); assert p.is_file() and p.stat().st_size>100000; assert p.read_bytes()[:2]==b'MZ'; print('unsigned GUI PE exists; execution/customer acceptance NOT TESTED')"
+      - name: Start actual frozen GUI and exit cleanly (bounded, synthetic/no customer DB)
+        shell: pwsh
+        run: |
+          $exe = (Resolve-Path ".\\dist\\BIDAX_GUI_CI_UNRELEASED\\BIDAX_GUI_CI_UNRELEASED.exe").Path
+          $process = Start-Process -FilePath $exe -ArgumentList '--selftest-gui' -PassThru
+          if (-not $process.WaitForExit(30000)) {
+            Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+            throw 'Frozen GUI self-test exceeded 30 seconds'
+          }
+          if ($process.ExitCode -ne 0) { throw "Frozen GUI self-test failed: $($process.ExitCode)" }
+          Write-Host 'Frozen GUI launched and exited; customer installation NOT tested'
       # Test build is discarded with the runner. No API requests or artifact release.
