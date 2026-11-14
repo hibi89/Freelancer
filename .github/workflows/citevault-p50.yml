@@ -16,6 +16,8 @@ on:
       - enterprise/p85-vault.mjs
       - enterprise/p85-conversation.mjs
       - tests/p85-conversation.test.mjs
+      - scripts/p85-portable-build.mjs
+      - tests/p85-portable.test.mjs
       - tests/p85-bm25.test.mjs
       - enterprise/p85-bm25.mjs
       - scripts/p85-operator-demo.mjs
@@ -144,6 +146,21 @@ jobs:
         run: node --test tests/p85-native-integration.test.mjs tests/p85-journey.test.mjs
       - name: Run isolated synthetic end-to-end HTTP demo (never approves export)
         run: node scripts/p85-synthetic-demo.mjs --self-test
+  p85-windows-portable-qa:
+    name: Windows2022 Node22 offline portable ZIP unpack and self-test
+    runs-on: windows-2022
+    timeout-minutes: 12
+    steps:
+      - name: Checkout exact CITEVAULT product source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Setup pinned Node22 local runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.0'
+      - name: Validate no-external-call synthetic portable ZIP build/restore/execution
+        run: node --test tests/p85-portable.test.mjs
   p85-browser-render:
     name: Actual Chromium rendered desktop/mobile CITEVAULT UI / ubuntu-24.04
     runs-on: ubuntu-24.04
