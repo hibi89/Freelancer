@@ -1,3 +1,17 @@
+# BID AX 온비드 멀티페이지 로컬 증빙 체크포인트 — 2026-11-14 KST (필수 10항)
+1. **목표/용도·기술:** R01–R29 고정 100% 전체 설계, 목표85%; G2B/Onbid·고객이 적법하게 보유한 법원자료의 로컬 Python3.11+/Tk/SQLite.
+2. **완료 변경·결정:** 직접 API 수집→정규화는 공식 실필드 미확인으로 안전하지 않아 보류. 온비드 15157252 *기존 격리 JSON*에만 적용되는 동의 기반 UUID 멀티페이지 증빙 체크포인트 추가. 조회조건/페이지/원문 변경·중복/부분 중단·복귀 검증, DB에 raw 행·키 불기록. 기존 GUI/EXE·타 상품 보존.
+3. **테스트·성공/실패:** Linux Python3.13.5 `python -Werror::ResourceWarning -m unittest discover -s tests -q`: **255 PASS/0 FAIL** (237+18); compileall, 소스 72파일 해시 일치. Python3.11/Windows 4-job CI 상태 새 SHA에서 별도 확인. 실 온비드 사용자 데이터 체크포인트 시험 NOT_RUN.
+4. **상태:** 첫 실 API 10건/보고 총186만 확인; 실제 후속18페이지/원문 필드/다른 3 API/100실공고·인간10·Windows 설치·상용권 미검증. 공식 **UNASSESSED/85% 미입증, [작업중]/RELEASE HOLD/미등록**.
+5. **실패·근거/피벗:** unknown batch 조회 때 원치 않는 DB 생성 위험→읽기전용 `mode=ro`로 분리. 신규 테스트 SQLite `with conn:` 사용만으로 연결이 닫히지 않아 ResourceWarning 발생 → `contextlib.closing` 적용 후 warnings-as-error 전체 PASS. 진전 없는 동일 재시도 없음.
+6. **저장소·브랜치·SHA·경로:** `hibi89/Freelancer@product/bid-ax-public-procurement`, 기준 HEAD `8203cce5a478903a3133dcb8732c482e193cdfaa`, `bidax/onbid_batch.py`, `bidax/cli.py`, `tests/test_onbid_batch.py`, `docs/ONBID_OFFLINE_PAGE_EVIDENCE_20261114.md`, STATUS/HANDOFF. 정확 새 SHA/CI는 반영 후 조회.
+7. **Production·환경·실행:** Windows 사용자 기존 BID_AX 원본 격리파일을 보존한 채 최신 소스에서 `py -3.11 -m bidax.cli --db .\\local\\stage.db onbid-stage-page UUID LOCAL_PACKET --consent`, `onbid-stage-status UUID`. 모두 OFFLINE, 새 DB 필요. Vercel/서버/Windows GUI EXE 릴리스 미적용.
+8. **원본·백업·인증:** 기존 DB/API키/첫 실응답 파일 및 다른 제품/제외 BID OWL 불변. SQLite 배치 DB 자체만 개인정보 가능 경로를 포함하므로 고객 로컬 보호. Git 이전 SHA 정상 revert 가능(강제푸시 금지).
+9. **다음 우선순위/완료기준·승인:** 실제 item ID·계약 확인 후 15157254/15157220·나라장터 공식 필드 안전 매핑, 사용자 선택 실 API 후속 페이지 수신, 100실공고/10사람, Win GUI·Installer/보안/권리·고객수용. 인증키/실고객 파일 외부전송·유료·릴리스 시 사전승인.
+10. **갱신일 KST·기준:** 2026-11-14, 로컬 합성/mock 오프라인만 255 PASS; 사용자 원문을 받거나 새로운 실호출하지 않음. 제품/중앙 정확 HEAD는 커밋 후 확인.
+
+---
+
 # BID AX 237 테스트·Windows CLI EXE GitHub CI 성공 인수인계 — 2026-11-14 KST (필수 10항)
 1. **목표·용도·확정 요구·기술:** 나라장터/온비드/소유권 확인 법원자료를 로컬 처리하는 BID AX, 고정 R01–R29 전체 최종설계 100% 대비 목표 85%. Python3.11+/SQLite/Tk. 사용자 지시대로 별도 가중치 승인 요구 없음.
 2. **완료 기능·변경·근거:** 15157252 실 첫페이지 10/10, reported total 186 확인 후 검증된 온비드 격리 패킷에 대해서만 `onbid-field-audit`(공개 필드별 존재 수, 값/ID 미출력)와 `onbid-detail-queue --consent`(고객 로컬 미실행 상세후보) 추가. Windows GUI 기존 `run_bidax.py` 보존, 실제 CLI 테스트용 `run_bidax_cli.py` 분리. 자동 실API·원장 승격 금지.

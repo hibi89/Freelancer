@@ -1,3 +1,12 @@
+## [2026-11-14 KST] 온비드 다중 페이지 로컬 증빙 체크포인트·중단복구 (R23/R25 부분 보강)
+- 사용자 실응답: 온비드 15157252 첫 페이지 `item=list` 10/10, 보고 총186(추정19페이지). **실 수집1페이지뿐**이며 나머지18·식별자/영구원장 매핑/다른3 API는 미검증.
+- 선택: 실원문 자동정규화/원장 승격(위험)을 보류하고, **고객 PC 기존 격리파일 증거만** UUID 불변배치로 등록·검증하는 방식 채택. 신규 `bidax/onbid_batch.py`: 파일 해시·페이지/필터·건수 일관성·원본 변경/분실·역순·반복/재시작 처리, 비공개 SQLite 경로·다이제스트·건수만 저장. 승인 `--consent` 필요; `onbid-stage-status`는 SQLite 읽기전용. 고객 데이터 값/키를 DB에 저장하거나 ChatGPT/GitHub 전송하지 않음.
+- CLI `onbid-stage-page` / `onbid-stage-status`; 자동 HTTP/외부 전송/법적자격 판정/수집자료 원장 임포트/기존 파일 덮어쓰기 **0**.
+- 전체 로컬 Linux Python3.13.5 `-Werror::ResourceWarning` **255 PASS / 0 FAIL**(기존237+신규18), compileall PASS, 소스ZIP 72파일 SHA 72/72 일치. Windows/Linux Python3.11 GitHub CI 결과는 커밋 후 별도 확인. 실 Windows 고객 원본 시험·186건 전수·상용/법적권리 미검증.
+- 최종설계 R01–R29 고정, **85% 미입증·공식 UNASSESSED**, `[작업중]`, RELEASE HOLD, 크몽 미등록 유지. 문서 `docs/ONBID_OFFLINE_PAGE_EVIDENCE_20261114.md`.
+
+---
+
 ## [2026-11-14 KST] 237/237 오프라인 코드 검증 및 Windows CLI EXE 4/4 CI 성공
 - 기능 SHA **`f662ecf23f9dc51bc6aad15cb64a28491950a899`**. [실제 GitHub Actions run 43533369896](https://github.com/hibi89/Freelancer/actions/runs/43533369896) **SUCCESS**, Python 오프라인 회귀: Ubuntu 3.11 **237 PASS/0 FAIL**, Ubuntu 3.13 **237 PASS/0 FAIL**, Windows 3.11 **237 tests run / 0 FAIL / 1 SKIP**(POSIX 전용 0600 mode assertion은 Windows ACL을 증명하지 않으므로 의도적으로 skip).
 - Windows PyInstaller **folder/onedir CLI EXE** 생성·`--help` 실행·온비드 15157252 **무네트워크 쿼리 계획** 실행 4번째 job **SUCCESS**. 제품의 기존 `run_bidax.py`는 GUI mainloop이므로 `--help`를 통한 CLI 검증 부적합. 신규 `run_bidax_cli.py`로 CLI를 분리하고 원본 GUI 경로는 보존. 이전 단일파일 GUI 오인 테스트 실패/시간초과는 **잘못된 검증 방식**의 기록이며 실제 GUI의 장애를 입증하지 않는다. GUI EXE·실 설치·SmartScreen·Windows ACL·실고객 acceptance **미검증**, 서명/릴리스/자동업로드 없음.

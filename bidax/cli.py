@@ -112,6 +112,12 @@ def main(argv=None):
     onbid_queue.add_argument("file", help="existing Onbid result-list quarantine packet")
     onbid_queue.add_argument("--out", required=True, help="NEW private local JSON file")
     onbid_queue.add_argument("--consent", action="store_true", help="explicit consent to store property identifiers locally")
+    ob_stage = sub.add_parser("onbid-stage-page", help="OFFLINE checkpoint one quarantined result-list page")
+    ob_stage.add_argument("batch_id", help="UUID identifying one immutable query snapshot")
+    ob_stage.add_argument("file", help="existing local API quarantine packet")
+    ob_stage.add_argument("--consent", action="store_true", help="consent to store local file path/hash in DB")
+    ob_status = sub.add_parser("onbid-stage-status", help="OFFLINE verify all original files in an Onbid page batch")
+    ob_status.add_argument("batch_id", help="previously staged UUID")
     gui = sub.add_parser("gui", help="launch offline desktop GUI (Tkinter)")
     args = p.parse_args(argv)
 
@@ -132,6 +138,12 @@ def main(argv=None):
     elif args.command == "onbid-detail-queue":
         from .onbid_official_bridge import write_detail_candidate_queue
         result = write_detail_candidate_queue(args.file, args.out, consent=args.consent)
+    elif args.command == "onbid-stage-page":
+        from .onbid_batch import stage_page
+        result = stage_page(args.db, args.batch_id, args.file, consent=args.consent)
+    elif args.command == "onbid-stage-status":
+        from .onbid_batch import batch_status
+        result = batch_status(args.db, args.batch_id)
     elif args.command == "api-probe":
         from .api_gateway import create_plan, fetch_quarantined
         plan = create_plan(args.service, read_local_json(args.params_file))
