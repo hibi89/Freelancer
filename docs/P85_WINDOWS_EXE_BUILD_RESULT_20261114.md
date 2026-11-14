@@ -1,3 +1,13 @@
+## 2026-11-14 KST — 동일 임시 DB의 Windows EXE 3차 냉시작 기존 거래처 GUI 복원 PASS
+
+사용자 제공 PowerShell의 `$p3 = [System.Diagnostics.Process]::Start($psi2)`, `$p3.WaitForExit()` 후 **`ExitCode: 0`**. 사용자는 **“그대로있더라”**고 보고하여 같은 `$psi2`의 자식 LOCALAPPDATA `$qaRoot` 환경에 재실행된 Tk GUI에서 앞서 저장한 합성 거래처 `WORKNOVA_QA_TEST_01`이 그대로 표시된 사실을 확인했다. 이는 사용자 **현장 육안 확인**이며 3차 창의 별도 스크린샷은 받지 않았다. 2차 GUI 생성/종료 후 동일 DB의 `SyntheticCustomerCount: 1`, `integrity_check: ok` SQL 출력과 연결되지만, 3차 실행 직후 DB SQL 재조회는 따로 수행하지 않았다.
+
+**새 검증 PASS(사용자 증거):** 실제 Windows onedir EXE **3회 실행** 중 2차에서 거래처 1건 생성·정상 종료→3차 새 프로세스에서 기존 행 GUI 재표시→정상 종료. 기존 사용자 계정 LOCALAPPDATA 대신 새 임시 `worknova-gui-qa-<GUID>` 경로 사용. 합성 데이터만 접근, 고객 실데이터나 OS 보안 정책 변경 없음.
+
+**남은 미검증:** 합성 견적→승인→계약→납품→수금의 실 Windows GUI 종단, 데이터 스키마와 감사로그 다건/동시성, Python 없는 타기기 onedir 이식, Windows ACL·활성 SQLite 데이터 암호화·서명·Defender, Word/PDF 상용 폰트 및 실제 고객/법률·지원 정책. 미서명 로컬 EXE는 고객 판매/배포 금지.
+
+**점수:** WD01/08/09/11/13 일부 재시작 지속성 증거 추가이나 사용자 승인 전체 WD01~14 100점 중 항목의 구매자 완전 인수로 확정된 항목은 없음. 엄격한 공식 인정 **0/100(구현률 0 아님)**, 목표85 미달, **[작업중]/RELEASE HOLD/미등록** 유지.
+
 ## 2026-11-14 KST — 실제 EXE 재실행/합성 거래처 GUI 저장/종료 후 DB 재조회 검증
 
 소유자가 앞선 `WORKNOVA-Desk.exe`를 **같은 임시 QA `LOCALAPPDATA` 경로**로 다시 실행하고 Tk GUI에서 새 거래처 버튼을 눌러 테스트 이름 **`WORKNOVA_QA_TEST_01`** 1건을 생성했다. 사용자 제공 스크린샷에는 거래처 탭 목록에 해당 이름과 신규 임의 ID가 한 행으로 나타나고, 하단 상태줄에 `완료(로컬 기록)`이 보인다.
