@@ -1,3 +1,11 @@
+# STATUS — 2026-11-14 KST 실제 Windows EXE 3차 재실행 기존 거래처 GUI 복원 PASS (최신)
+
+- 사용자 콘솔 `$p3 = [System.Diagnostics.Process]::Start($psi2)` 후 `$p3.WaitForExit()`, **`ExitCode: 0`**, 사용자 육안 보고 “그대로있더라”: 이전 생성한 합성 `WORKNOVA_QA_TEST_01` 거래처가 **세 번째 Windows onedir EXE 프로세스의 Tk GUI에 그대로 표시**. 동일 자식 임시 `LOCALAPPDATA=$qaRoot` 사용. 전회차 2차 EXE에서 GUI 생성·종료 후 SQLite 읽기전용 `SyntheticCustomerCount:1`, `integrity_check:ok`와 연결되어, **생성→저장→종료→재시작 후 기존 목록 복원** 실제 Windows 사용자 검증 PASS. 3차 별도 스크린샷/재SQL은 미수신, 사용자 현장 육안 보고. 증거 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`.
+- **미검증:** GUI 견적/계약/납품/수금 업무 종단·감사/권한 보안·무Python 타기기·서명/Defender·활성 DB 암호화/OS ACL·Word/PDF 상용권/실고객·법률. WD01/08/09/11/13 부분 검증 보강, 승인 WD01~14 고정 100점 완전 인수 정식 합 **0/100(구현률0 아님), 85 미달, [작업중], RELEASE HOLD, 크몽 미등록**.
+- 실고객 장부/OS 정책·원본/타 상품/등록완료/유료 CI 변경 없음. 추가 설치·빌드 반복 불필요. 다음은 **합성 견적 생성/승인→계약→납품/수금**의 독립 실기기 업무 E2E 단계.
+
+---
+
 # STATUS — 2026-11-14 KST 네이티브 EXE 2차 실행·GUI 거래처 저장·종료 후 DB 지속성 PASS (최신)
 
 - 소유자가 처음 실행 후 종료된 같은 `TEMP/worknova-gui-qa-<GUID>` 격리 `LOCALAPPDATA`로 실제 `WORKNOVA-Desk.exe`를 **두 번째 실행**. GUI '새 거래처'에서 `WORKNOVA_QA_TEST_01`을 생성했고 화면에 이름+임의 ID 및 `완료(로컬 기록)` 표시. 이후 X로 종료, PowerShell **`ExitCode: 0`**, 같은 `desk.sqlite` 읽기전용 조회 **`SyntheticCustomerCount: 1`**, **`integrity_check: ok`** 확인. 이는 **실 Windows EXE 재실행·한 건 GUI 입력·디스크 저장·종료 후 지속성·DB 무결성 PASS(사용자 콘솔/화면 증거)**. 원격 증거 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`, 원본 스크린샷/SQLite 실파일은 개인정보 방지로 업로드하지 않음.
