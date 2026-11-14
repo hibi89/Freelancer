@@ -57,3 +57,36 @@ jobs:
           else
             python -m unittest discover -s tests -v
           fi
+
+  native-exe-build:
+    name: Windows / reproducible unsigned EXE candidate
+    runs-on: windows-latest
+    timeout-minutes: 12
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONPATH: .
+    steps:
+      - name: Check out exact product branch commit
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install pinned free open-source build dependency
+        run: python -m pip install --disable-pip-version-check --no-input pyinstaller==6.22.3
+      - name: Build candidate into disposable runner folder
+        shell: pwsh
+        run: |
+          $destination = Join-Path $env:RUNNER_TEMP ("worknova-qa-" + $env:GITHUB_RUN_ID + "-" + $env:GITHUB_RUN_ATTEMPT)
+          python -B tools/windows_build_exe.py --out $destination --plan
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -B tools/windows_build_exe.py --out $destination
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $exe = Join-Path $destination "dist/WORKNOVA-Desk/WORKNOVA-Desk.exe"
+          if (-not (Test-Path -LiteralPath $exe -PathType Leaf)) { throw "EXE missing" }
+          $item = Get-Item -LiteralPath $exe
+          $hash = (Get-FileHash -LiteralPath $exe -Algorithm SHA256).Hash
+          Write-Host ("Unsigned candidate only / bytes=" + $item.Length + " / SHA256=" + $hash + " / RELEASE HOLD")
+          # Deliberately do not upload any binary, cache, build.log, or artifacts.
