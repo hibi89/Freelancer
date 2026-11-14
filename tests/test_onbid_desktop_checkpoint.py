@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 import json
+from contextlib import closing
 from pathlib import Path
 import sqlite3
 import tempfile
@@ -73,7 +74,7 @@ class OnbidDesktopCheckpointTests(unittest.TestCase):
         self.assertFalse(result['source_field_mapping_verified'])
         self.assertEqual(result['network_calls'], 0)
         self.assertEqual(self.controller.onbid_stage_status(self.batch)['verified_local_pages'], [1])
-        with sqlite3.connect(self.db) as conn:
+        with closing(sqlite3.connect(self.db)) as conn:
             rows = conn.execute("select packet_path from onbid_stage_pages").fetchall()
             self.assertEqual(len(rows), 1)
             self.assertNotIn('OFFLINE_ONLY', str(conn.iterdump()))
