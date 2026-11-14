@@ -1,3 +1,17 @@
+# BID AX 증분 온비드 무료 개발·276테스트 — 2026-11-14 KST 인수인계 10항
+1. 목표·기술: R01–R29 전체 최종설계 고정, 최종85% 목표. 나라장터·온비드·합법 보유 법원문건 고객 Windows/Tk·Python3.11+/SQLite.
+2. 구현·결정: 무제한 클라우드 수집(A)은 비용/권리/기밀 위험으로 미채택. 고객 로컬 첫 증빙 JSON 기반 승인식 누락페이지 수집(B): 기본 dry-run, `--consent --live`, 최대25 신규 호출/회, 기본 서비스별 일일24 제한, API 키 메모리 입력·비보관, 자동재시도 금지, 새 파일 only, 기존 오프라인 UUID/해시 체크포인트 재사용.
+3. 검증: 기능 SHA `3008bfd440aafe57e264ad4a0485d517f8819634`, [GitHub CI #43540224552](https://github.com/hibi89/Freelancer/actions/runs/43540224552) 5/5 SUCCESS, Ubuntu3.11/3.13 각276 PASS, Win3.11 276tests/0FAIL/1 POSIX SKIP, Windows CLI 및 GUI EXE 스모크 PASS. 실 운영키/실 Windows 사용자 API 호출 새 기능은 미검증.
+4. 완료/진행: 오프라인 기능·CI 검증 완료; 기존 온비드 15157252 첫 실10/보고186, 후속18페이지 미수집, 타3 API·실공고100/인간10·고객PC 설치/상용권 대기. 공식 UNASSESSED/85% 미입증/[작업중]/RELEASE HOLD/미등록.
+5. 실패/원인/재시도: 최초 SHA c7b16cc 신규 합성 복구 테스트에서 첫 totalCount21 대 캐시11 불일치로 ERROR1. 테스트 참조 총11로 수정하고 `3008bfd440aafe57e264ad4a0485d517f8819634` 5/5 SUCCESS. 실 응답필드 추정·무승인 무제한 자동재시도·API 15157220 미확정 경로 호출 금지.
+6. repo/branch/SHA: hibi89/Freelancer@product/bid-ax-public-procurement, 검증 소스 `3008bfd440aafe57e264ad4a0485d517f8819634`, `bidax/onbid_capture.py`, `bidax/cli.py`, `tests/test_onbid_capture.py`, `docs/BID_AX_ONBID_FREE_CONTINUATION_20261114.md`; 문서 HEAD push 후 확인, 저장소 public.
+7. Production/환경: Vercel/Production 미적용, 고객 PC에서 Python3.11 CLI `onbid-continue` 기본 오프라인, `--live` 있을 때만 온비드 15157252 인증키 사용. EXE 시험빌드만, 실제 설치/판매 없음.
+8. 원본/백업/인증: 실제 사용자 `result_001.json`, DB·키/법원문건/타 Freelancer 상품 및 BID OWL 불변. 로컬 외부 비밀/자료 전송 없음. Git 정상 revert 가능, force push 금지.
+9. 후속·완료기준·승인: 사용자 소유 Windows 실제 첫 패킷에서 계획 확인→같은 UUID로 missing18 실호출/격리/중단복구→타3 API 응답 계약·실 100공고·독립 인간10·고객 Windows GUI/설치/상업권 수용. 유료/권한변경/고객 키 외부전송·출시 별도 승인.
+10. 갱신 시점·증거: 2026-11-14 KST, GitHub 최신 검증 기능 `3008bfd440aafe57e264ad4a0485d517f8819634`/Actions 5/5 직접 조회. 실 18페이지/고객 설치 미검증. 중앙 SHA 별도 보고.
+
+---
+
 # BID AX frozen GUI 실기동 266테스트·CI 5/5 — 2026-11-14 KST (인수인계 10항)
 1. **목표·용도·설계·기술:** 사용자 고정 최종설계 R01–R29 29개 전체 기준 85% 목표. 나라장터/온비드·고객 동의 보유 법원문서 오프라인 Python3.11+/SQLite/Tk 로컬 PC 제품.
 2. **완료 기능·설계:** 기존 GUI 오프라인 다중페이지/UUID 증빙 이후 실제 frozen GUI EXE 품질 공백 축소: `--selftest-gui`는 반드시 새 임시 폴더의 빈 DB 경로를 사용, Tk 창 700ms 뒤 종료, 원래 고객 DB 경로 함수 미호출·키/HTTP 없음. 기존 정상 GUI 인수 경로 불변.

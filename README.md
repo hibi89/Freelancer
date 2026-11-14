@@ -1,5 +1,9 @@
 > **[2026-11-14]** Onbid offline audit: `onbid-field-audit LOCAL_PACKET` prints documented field-presence **counts only**, never identities/values/key. `onbid-detail-queue LOCAL_PACKET --out NEW_LOCAL_FILE --consent` creates **unexecuted private local** result-detail candidate plans (never share queue). Mock regression 235 PASS Linux, actual item field values and customer Windows unverified. [Guide](docs/ONBID_OFFICIAL_FIELD_BRIDGE_20261114.md). Official final 85% NOT verified; release HOLD.
 
+## 온비드 첫 페이지 이후 누락 페이지 수집 안내
+
+실제 첫 페이지를 보유한 고객 PC에서만 `onbid-continue`로 **오프라인 미리보기→명시 승인 후 제한된 실제 호출→로컬 중단복구**를 사용할 수 있습니다. `--live` 없이는 요청이 없고 인증키는 파일/GitHub에 저장하지 않습니다. [로컬 실행 및 안전 수용](docs/BID_AX_ONBID_FREE_CONTINUATION_20261114.md).
+
 ## Windows 로컬 GUI 안전 셀프테스트 (비출시 기능)
 
 실행파일 내부 Tk GUI가 시작/종료되는지 **실제 고객 DB에 접근하지 않고** 확인할 수 있습니다:

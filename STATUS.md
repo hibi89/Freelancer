@@ -1,3 +1,13 @@
+## [2026-11-14 KST] BID AX 로컬 온비드 안전 증분 수집 — CI 276/5/5
+
+- 사용자 지시: 추가 유료 비용이 없는 개발/검증/GitHub 갱신은 승인. 최종설계 R01–R29 전체 고정, 공식 최종완성률 **UNASSESSED / 85% 미입증 / [작업중] / RELEASE HOLD / 크몽 미등록**.
+- 제품 검증 기능 SHA `3008bfd440aafe57e264ad4a0485d517f8819634`. 신규 `bidax/onbid_capture.py`, CLI `onbid-continue`, 모의 회귀 `tests/test_onbid_capture.py` **10개**. 이미 보유한 유효한 첫 온비드 격리파일을 근거로 같은 쿼리의 누락 페이지만 요청. 기본 dry-run, `--consent --live`로만 고객 로컬 서비스키를 한 번 메모리에 입력해 공식 HTTP 시작, 단회 최대25페이지/기본4 및 영구 일일 서비스별 예산 기본24, 자동재시도 없음. 원문은 신규 로컬 JSON 격리, SHA/UUID/페이지/건수 DB 증빙, 파일이 먼저 저장된 중단 시 재호출 없이 재활용. 자동 법률·낙찰 판정 및 원장 승격 금지.
+- [GitHub Actions 43540224552](https://github.com/hibi89/Freelancer/actions/runs/43540224552) **5/5 SUCCESS**: Ubuntu Python3.11/3.13 **276 PASS**, Windows Python3.11 **276 tests/0FAIL/1 POSIX-only SKIP**, CLI/GUI EXE 비출시 스모크 성공. 최초 테스트 총21 vs 캐시 총11 모순 ERROR1 수정 후 재검증 성공. 실제 고객 Windows에서 새 명령의 공식 API 사용은 **미실행**.
+- 기존 실제 온비드 15157252 첫 페이지 **10건만 직접 확인**, 서버 보고 `totalCount=186`; 후속18페이지/다른3 API 실응답/실 공고100·인간10/실고객 Win10/11 설치/상업 원문권리 **미검증**. 15157220 operation 불확정은 여전히 API 호출 차단. 소유자 고객 원문/키/DB·BID OWL·다른 상품 불변.
+- 사용 안내 및 통제: [docs/BID_AX_ONBID_FREE_CONTINUATION_20261114.md](docs/BID_AX_ONBID_FREE_CONTINUATION_20261114.md). 새 문서 커밋 HEAD는 별도 확인.
+
+---
+
 ## [2026-11-14 KST] BID AX 실제 frozen Windows GUI 실행 스모크·266테스트 완료
 
 - 최신 기능 SHA **`1ec540634671ff85b080e034cd37564e54fc8e1e`**, [Actions #43538851029](https://github.com/hibi89/Freelancer/actions/runs/43538851029) **5/5 SUCCESS**: Ubuntu3.11/3.13 각각 266 PASS, Windows3.11 **266 tests·0 FAIL·1 POSIX-only SKIP**, Windows CLI EXE PASS, Tk init/unsigned GUI EXE build·**실제 frozen GUI `--selftest-gui` 시작·정상 종료 PASS**.
