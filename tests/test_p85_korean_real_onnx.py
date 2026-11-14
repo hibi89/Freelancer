@@ -39,7 +39,7 @@ class KoreanOnnxContracts(unittest.TestCase):
         with self.assertRaises(ValueError):
             verify_local_assets(Path("relative/model"))
         with self.assertRaises(RuntimeError):
-            verify_local_assets(Path("/a/nonexistent/citevault-model-dir"))
+            verify_local_assets((Path.home() / "not-existing-citevault-model-dir-test-20261114").resolve())
 
 
 if __name__ == "__main__":
