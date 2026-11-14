@@ -12,20 +12,20 @@ B) 이미 저장한 첫 페이지 격리 JSON을 고객 PC에서 검증 → 동�
 반드시 최신 소스 `product/bid-ax-public-procurement`에서 실행하세요. 아래 `$first`는 고객 PC에 이미 저장한 원본 격리 JSON의 실제 경로로 바꿉니다. 키를 채팅/커맨드 인자/파일에 쓰지 마세요.
 
 ```powershell
-$first = 'C:\\PATH\\TO\\result_001.json'
+$first = 'C:\PATH\TO\result_001.json'
 $batch = [guid]::NewGuid().ToString()
-New-Item -ItemType Directory -Path '.\\local-onbid-pages' -Force | Out-Null
+New-Item -ItemType Directory -Path '.\local-onbid-pages' -Force | Out-Null
 
 # 1. 호출 0회, DB 생성 0회, 키 입력 없음
-py -3.11 -m bidax.cli --db '.\\local-onbid-pages\\stage.db' onbid-continue $batch $first --out-dir '.\\local-onbid-pages' --consent
+py -3.11 -m bidax.cli --db '.\local-onbid-pages\stage.db' onbid-continue $batch $first --out-dir '.\local-onbid-pages' --consent
 
 # 2. 소유자가 직접 승인한 경우만 실행. 매 실행 키를 메모리에 1회 입력
-py -3.11 -m bidax.cli --db '.\\local-onbid-pages\\stage.db' onbid-continue $batch $first --out-dir '.\\local-onbid-pages' --consent --live --max-new-pages 4 --daily-limit 24
+py -3.11 -m bidax.cli --db '.\local-onbid-pages\stage.db' onbid-continue $batch $first --out-dir '.\local-onbid-pages' --consent --live --max-new-pages 4 --daily-limit 24
 
 # 3. 한 번에 18페이지가 필요하고 실제 제공자 잔여할당이 확인되면
 # 위 명령의 --max-new-pages 4를 18로 변경; 같은 UUID를 반드시 보존
 # 4. 중단 후 같은 배치 상태 조회
-py -3.11 -m bidax.cli --db '.\\local-onbid-pages\\stage.db' onbid-stage-status $batch
+py -3.11 -m bidax.cli --db '.\local-onbid-pages\stage.db' onbid-stage-status $batch
 ```
 
 - `--live` 없이는 외부 HTTP 없음. `--consent` 없으면 저장/HTTP 차단. `--max-new-pages` 1~25 범위, 기본4. `--daily-limit`은 사용자 PC에서 서비스별·KST 날짜별 요청 **시도** 수를 SQLite에 영구 기록해 제한(기본24).
