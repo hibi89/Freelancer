@@ -1,3 +1,11 @@
+## 2026-11-14 KST — 4차 EXE 종료0 및 무인 합성 비즈니스 회귀 2종 추가 (실행 미검증)
+
+실 Windows `$p4=[Diagnostics.Process]::Start($psi2)`→`WaitForExit()`→**`ExitCode:0`** 사용자 로그 수신. 사용자는 이전 요청한 가짜 1,000원 견적 GUI를 진행했다고 진술했으나 **생성된 견적 행/DB 자료는 미확인**이므로 견적 PASS 처리 보류.
+
+개발 측 `tests/test_unattended_business_lifecycle.py` 2종 신규: 합성 SQLite 신규 고객→VAT없는 견적→승인→계약→납품·검수→수금/재개방·감사, 중복/초과 수금 거부. **Git blob SHA `4df97d19a5bcacc203babff5136dc2fc48b40fac` 정확 일치 및 Python 문법 `ast.parse PASS`**. **실제 제품 unittest 2개/전체 CI RUN NOT_DONE**, 창 출력 GUI 자동화 아닌 Python 코어 테스트임. 상세 `docs/P85_UNATTENDED_QA_STRATEGY_20261114.md`.
+
+사용자 승인 WD01~14 전체100, 완전 구매자 인수 항목만 점수 인정. 정식0/100, 목표85 미달, **[작업중]/RELEASE HOLD/판매 미등록** 유지. 수동 Owner PC 테스트는 필수 현장 증거가 아니면 중단.
+
 ## 2026-11-14 KST — Windows EXE 3차 냉시작 기존 GUI 거래처 복원 확인
 
 소유자 PowerShell `$p3=[Diagnostics.Process]::Start($psi2)`, `$p3.WaitForExit()`, **`ExitCode:0`** 제공, 기존 가짜 거래처 `WORKNOVA_QA_TEST_01`이 **세 번째 메인 GUI에서 “그대로있더라”**고 사용자 직접 확인. 앞선 같은 임시 `$qaRoot` 두 번째 GUI 생성→ExitCode0→SQLite `SyntheticCustomerCount:1`, integrity ok에 연결됨. **EXE 재실행·기존 거래처 GUI 복원 PASS(사용자 현장 육안 증거)**. 3차 화면 스크린샷이나 별도 SQL은 아직 없음. 견적/계약/수금 실제 E2E·OS 접근통제·라이선스/실고객·무Python PC는 미검증. 상세 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`.
