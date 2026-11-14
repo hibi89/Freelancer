@@ -1,3 +1,9 @@
+## 2026-11-14 KST — 네이티브 EXE GUI 합성 거래처 생성·SQLite 저장 보존 PASS
+
+사용자 제공 스크린샷+PowerShell에서 동일 임시 `$qaRoot` `LOCALAPPDATA`를 재사용하여 **두 번째 Windows EXE 기동**, 새 거래처 `WORKNOVA_QA_TEST_01` 1건 생성·GUI 표/ID 및 `완료(로컬 기록)` 표시 확인. X 종료 후 **`ExitCode: 0`**, 동일 `desk.sqlite` 읽기전용 SQL **`SyntheticCustomerCount: 1`**, `PRAGMA integrity_check: ok`. **GUI 실제 입력·디스크 보존·정상 종료** 추가 PASS. 단, 세 번째 GUI 기동/화면 복원·견적/계약/수금 등 전체 업무 E2E·타 PC·OS ACL/활성 장부 암호화/서명·Defender/상용권/실고객 미검증. 상세 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md` (고객 스크린샷 원본/DB GitHub 업로드 없음).
+
+사용자 승인 WD01~14 전체100·항목별 완전 고객수용만 점수 인정. WD01/08/09/11/13 부분 PASS 경과, 공식 **0/100**, 85 미달, **[작업중]/RELEASE HOLD/미등록** 유지.
+
 ## 2026-11-14 KST — Windows EXE 생성 격리 DB의 SQLite integrity_check / schema version 2 PASS
 
 사용자가 기존 격리된 임시 `desk.sqlite`를 Windows3.11에서 `sqlite3.connect(...'?mode=ro',uri=True)`로 열어 `PRAGMA integrity_check` → **`ok`**, `PRAGMA user_version` → **`2`** 출력 제공. 유효한 SQLite 파일 구조 및 제품 스키마 버전 확인. 실테이블 내용/거래처 CRUD·실 EXE 재실행 지속성/Word·실고객/보안·법무는 아직 미검증. 실제 파일은 수신하지 않았으며 명령 결과만 기록, [세부 증거](docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md).
