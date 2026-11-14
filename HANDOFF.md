@@ -1,3 +1,17 @@
+# BID AX frozen GUI 실기동 266테스트·CI 5/5 — 2026-11-14 KST (인수인계 10항)
+1. **목표·용도·설계·기술:** 사용자 고정 최종설계 R01–R29 29개 전체 기준 85% 목표. 나라장터/온비드·고객 동의 보유 법원문서 오프라인 Python3.11+/SQLite/Tk 로컬 PC 제품.
+2. **완료 기능·설계:** 기존 GUI 오프라인 다중페이지/UUID 증빙 이후 실제 frozen GUI EXE 품질 공백 축소: `--selftest-gui`는 반드시 새 임시 폴더의 빈 DB 경로를 사용, Tk 창 700ms 뒤 종료, 원래 고객 DB 경로 함수 미호출·키/HTTP 없음. 기존 정상 GUI 인수 경로 불변.
+3. **테스트·PASS/FAIL/미검증:** 기능 SHA `1ec540634671ff85b080e034cd37564e54fc8e1e`에서 [Actions #43538851029](https://github.com/hibi89/Freelancer/actions/runs/43538851029) **5/5 SUCCESS**. Ubuntu3.11 266 PASS, Ubuntu3.13 266 PASS, Windows3.11 **266 tests, 0 FAIL, 1 POSIX-only SKIP**; Win console CLI EXE smoke, Tk 초기화, unsigned onedir GUI PE 빌드, **실제 frozen GUI `--selftest-gui` 시작/정상 종료 성공**. 고객 Win10/11 실설치·실업무 GUI·서명/SmartScreen 미검증.
+4. **상태/차단:** 공식 전체률 **UNASSESSED/85% 미입증**, `[작업중]`/RELEASE HOLD/크몽 미등록. 첫 실제 온비드15157252 페이지1 10/10, 기관 총186 보고, 후속18페이지·타3 API·실100/인간10·상용/고객 수용 필요.
+5. **실패 근거·복구/금지:** 앞선 코드 기능 SHA `a2e93a2c89da` Windows 테스트 임시 SQLite close 누락 WinError32는 `1ae85fcb4cc5`에서 `closing` 후 해결. 이번 frozen GUI smoke 30초 종료 제한·실제 프로세스 ExitCode0 확인. GUI 빌드만으로 실기동을 주장하거나 실제 설치 성공으로 확대 금지.
+6. **저장소/브랜치/SHA·경로:** `hibi89/Freelancer@product/bid-ax-public-procurement`, 코드 `1ec540634671ff85b080e034cd37564e54fc8e1e`; `bidax/entrypoint.py`, `bidax/desktop.py`, `tests/test_gui_entrypoint.py`, `.github/workflows/bid-ax-offline-regression.yml`, `docs/BID_AX_FROZEN_GUI_SMOKE_20261114.md`, STATUS/HANDOFF. 문서 HEAD 이후 조회. 현재 저장소 메타데이터 public.
+7. **배포/실행/환경:** Production Vercel **미적용**; 실제 고객 GUI `py -3.11 run_bidax.py`, 무고객 DB 셀프테스트 `py -3.11 run_bidax.py --selftest-gui`; CI에서만 미서명 Windows GUI EXE 빌드/실행, 배포 아티팩트 없음.
+8. **원본/백업/인증 보존:** 실제 `result_001.json`, 고객 DB, API key, 사용자 로컬 자료, 타 Freelancer 제품·BID OWL 불변, Git force push 없음. 임시 스모크 폴더 사용·자동 제거; Git 일반 revert 가능.
+9. **우선순위/절차/완료기준·승인:** 다음은 실제 온비드 후속18페이지 및 다른 API 3종 원문·필드/상업적 사용권 검증, 실제 공고100/독립 사람10, Windows10/11 고객 본 기기 GUI·설치/권한/SmartScreen과 상업/지원/출시 승인. 고객 키·실자료 외부 전송/유료/권한·보안 변경/출시는 별도 승인. R01–R29 범위·최종 점수 임의 축소/합산 금지.
+10. **갱신 KST·확인 범위·문서 SHA:** 2026-11-14 KST. CI 및 원격 SHA 확인. Windows hosted runner GUI 임시 창 실구동까지만; 실 고객/상용수용 미검증. 새 docs HEAD와 중앙 해총 SHA 갱신 후 readback.
+
+---
+
 # BID AX GUI 온비드 증빙 다중선택·Windows 5/5 CI — 2026-11-14 KST (인수인계 10항)
 1. **목표/용도/요구/기술:** R01–R29 전체 고정 29개 대비 사용자 최종85% 목표; 나라장터·온비드·동의 보유 법원문서의 로컬 Python3.11+/Tkinter/SQLite, 직접 자동입찰/법률판정 없음.
 2. **완료 기능·선택 근거:** 부정확한 실 응답 즉시 정규화(A)는 보류. 현행 로컬 증빙 체크포인트(B)를 Tk GUI의 다중 JSON 선택/UUID 재개/해시 재확인·명시적 경로보관 동의로 연결; 15 툴바 명령 5열 정렬. 자동 HTTP·서버·키 저장·원문 업로드/승격 없음.

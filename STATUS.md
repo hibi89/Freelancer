@@ -1,3 +1,12 @@
+## [2026-11-14 KST] BID AX 실제 frozen Windows GUI 실행 스모크·266테스트 완료
+
+- 최신 기능 SHA **`1ec540634671ff85b080e034cd37564e54fc8e1e`**, [Actions #43538851029](https://github.com/hibi89/Freelancer/actions/runs/43538851029) **5/5 SUCCESS**: Ubuntu3.11/3.13 각각 266 PASS, Windows3.11 **266 tests·0 FAIL·1 POSIX-only SKIP**, Windows CLI EXE PASS, Tk init/unsigned GUI EXE build·**실제 frozen GUI `--selftest-gui` 시작·정상 종료 PASS**.
+- 구현: `bidax/entrypoint.py`에 별도 `--selftest-gui` 경로(임시 테스트 DB, 기본 고객 DB 경로 함수 미호출), `bidax/desktop.py`의 700ms 자동 종료 지원, 진입점 단위 테스트 3종. Windows GUI 시험버전 onedir EXE를 GitHub hosted runner에서 실제 구동·30초 제한. 설치/서명/SmartScreen/실 고객 Win10·11 정상은 **별도 미검증**, Production/Vercel 미적용.
+- 최종 R01–R29 전체 고정, 공식 완성률 **UNASSESSED / 목표85% 미입증 / [작업중] / RELEASE HOLD / 크몽 미등록**. 온비드 보고186개 가운데 첫10개만 실 원문 구조 검증, 나머지18페이지·기타 API·실100공고/인간10·상용권/고객 수용 없음. 사용자 키·원본 DB·파일 미공유/미수정.
+- 상세 [실제 GUI EXE 스모크 증빙](docs/BID_AX_FROZEN_GUI_SMOKE_20261114.md). 본 문서 HEAD는 커밋 후 조회.
+
+---
+
 ## [2026-11-14 KST] BID AX GUI 다중 온비드 증빙·Windows GUI 빌드 5/5 CI
 
 - 최종설계 **R01–R29 29개 전체 고정**, 사용자 목표 85%; **공식 최종완성률 UNASSESSED / 85% 미입증 / [작업중] / RELEASE HOLD / 크몽 미등록**. 과거 기술 P85 표기는 공식 점수가 아님.

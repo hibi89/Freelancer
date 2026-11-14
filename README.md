@@ -1,5 +1,17 @@
 > **[2026-11-14]** Onbid offline audit: `onbid-field-audit LOCAL_PACKET` prints documented field-presence **counts only**, never identities/values/key. `onbid-detail-queue LOCAL_PACKET --out NEW_LOCAL_FILE --consent` creates **unexecuted private local** result-detail candidate plans (never share queue). Mock regression 235 PASS Linux, actual item field values and customer Windows unverified. [Guide](docs/ONBID_OFFICIAL_FIELD_BRIDGE_20261114.md). Official final 85% NOT verified; release HOLD.
 
+## Windows 로컬 GUI 안전 셀프테스트 (비출시 기능)
+
+실행파일 내부 Tk GUI가 시작/종료되는지 **실제 고객 DB에 접근하지 않고** 확인할 수 있습니다:
+
+```powershell
+py -3.11 run_bidax.py --selftest-gui
+```
+
+이 모드는 새 임시 폴더의 빈 DB 경로로 GUI 창을 열고 약 0.7초 후 자동 종료합니다. 기본 LOCALAPPDATA 고객 DB를 만들거나 열지 않으며, 인증키·정부 API HTTP 요청을 사용하지 않습니다. [Windows CI 실제 frozen GUI 스모크 근거](docs/BID_AX_FROZEN_GUI_SMOKE_20261114.md). CI 검증은 Windows hosted runner이며 실제 구매자 Win10/11 설치·서명/SmartScreen·전체 업무 수용과 다릅니다.
+
+
+
 > **[2026-11-14 무료 API 공통 인증키 연결기]** 사용자 공공데이터포털 활용신청 완료 4개(나라장터1+온비드3), 인증키 동일. 로컬 CLI `api-probe`는 기본 무HTTP 계획/키입력 없음, `--live --out 신규파일`만 동의 후 임시 키 입력하여 별도 원문 격리 저장. 각 API 이용권/호출량은 독립. **온비드 공고물건 15157220은 실제 operation 미확인으로 호출 차단**. 실제 키·실 응답·Win/고객 검증 없음; [실행·보안 안내](docs/API_GATEWAY_SHARED_KEY_20261114.md). 공식 최종률 UNASSESSED, 목표85% [작업중]/HOLD.
 
 ## 2026-11-14 Optional Korean PDF and court document preview (P85 follow-up, unreleased)
