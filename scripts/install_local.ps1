@@ -14,6 +14,21 @@ function Assert-PlainPath([string]$p) {
         if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) { throw 'Reparse point blocked' }
     }
 }
+# Built-in .NET SHA256 works offline even on restricted Windows PowerShell
+# hosts where Get-FileHash is unavailable. No change to manifest algorithm.
+function Get-LocalFileHashHex([string]$Path) {
+    $hasher = [System.Security.Cryptography.SHA256]::Create()
+    try {
+        $stream = [System.IO.File]::OpenRead($Path)
+        try {
+            return ([System.BitConverter]::ToString($hasher.ComputeHash($stream))).Replace('-', '').ToLowerInvariant()
+        } finally {
+            $stream.Dispose()
+        }
+    } finally {
+        $hasher.Dispose()
+    }
+}
 Assert-PlainPath $package
 Assert-PlainPath $env:LOCALAPPDATA
 Assert-PlainPath $installRoot
@@ -47,7 +62,7 @@ foreach ($entry in $manifest.files) {
     Assert-PlainPath $origin
     if (-not (Test-Path -LiteralPath $origin -PathType Leaf)) { throw ('Missing package file: ' + $name) }
     if ((Get-Item -LiteralPath $origin).Length -ne [long]$entry.bytes) { throw ('Size mismatch: ' + $name) }
-    $actual = (Get-FileHash -LiteralPath $origin -Algorithm SHA256).Hash.ToLowerInvariant()
+    $actual = (Get-LocalFileHashHex $origin)
     if ($actual -ne ([string]$entry.sha256).ToLowerInvariant()) { throw ('Checksum mismatch: ' + $name) }
 }
 if ($manifest.files.Count -ne $required.Count -or $seen.Count -ne $required.Count) {
@@ -70,15 +85,15 @@ try {
         $destination = Join-Path $stage $rel
         New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destination) | Out-Null
         Copy-Item -LiteralPath (Join-Path $package $rel) -Destination $destination
-        $digest = (Get-FileHash -LiteralPath $destination -Algorithm SHA256).Hash.ToLowerInvariant()
+        $digest = (Get-LocalFileHashHex $destination)
         if ($digest -ne ([string]$entry.sha256).ToLowerInvariant()) { throw ('Staging checksum mismatch: ' + $rel) }
     }
     # Python launcher verifies the manifest *inside* the installed folder. Earlier
     # candidate omitted this file: install appeared successful but launch always failed.
     $stagedManifest = Join-Path $stage 'FILE_MANIFEST.json'
     Copy-Item -LiteralPath $manifestPath -Destination $stagedManifest
-    $sourceManifestHash = (Get-FileHash -LiteralPath $manifestPath -Algorithm SHA256).Hash
-    if ((Get-FileHash -LiteralPath $stagedManifest -Algorithm SHA256).Hash -ne $sourceManifestHash) {
+    $sourceManifestHash = (Get-LocalFileHashHex $manifestPath)
+    if ((Get-LocalFileHashHex $stagedManifest) -ne $sourceManifestHash) {
         throw 'Staging manifest digest mismatch'
     }
     # Recheck every staged path against the staged manifest before replacing any
@@ -93,7 +108,7 @@ try {
         Assert-PlainPath $file
         if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { throw ('Staging file missing: ' + $rel) }
         if ((Get-Item -LiteralPath $file).Length -ne [long]$entry.bytes) { throw ('Staging size mismatch: ' + $rel) }
-        if ((Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() -ne
+        if ((Get-LocalFileHashHex $file) -ne
             ([string]$entry.sha256).ToLowerInvariant()) { throw ('Staging file mismatch: ' + $rel) }
     }
     if (Test-Path -LiteralPath $app) { Move-Item -LiteralPath $app -Destination $previous; $oldMoved = $true }

@@ -7,6 +7,7 @@ Requires a visible Windows desktop session. Not buyer, Defender, or ACL proof.
 from __future__ import annotations
 
 import argparse
+from contextlib import closing
 import ctypes
 from ctypes import wintypes
 import hashlib
@@ -128,13 +129,16 @@ def main(argv=None) -> int:
                         proc.kill()
                         proc.wait(timeout=5)
             stage = 'verify-synthetic-ledger'
-            with sqlite3.connect(db_path.resolve().as_uri() + '?mode=ro', uri=True) as db:
+            # sqlite3.Connection.__exit__ commits but does not close. On Windows
+            # an open handle prevents TemporaryDirectory removal (WinError 32).
+            with closing(sqlite3.connect(db_path.resolve().as_uri() + '?mode=ro', uri=True)) as db:
                 if db.execute('PRAGMA user_version').fetchone()[0] != 2:
                     raise RuntimeError('SQLite schema version mismatch')
                 if db.execute('PRAGMA integrity_check').fetchone()[0] != 'ok':
                     raise RuntimeError('Synthetic SQLite integrity failure')
                 if db.execute('SELECT COUNT(*) FROM customers WHERE name=?', (test_name,)).fetchone()[0] != 1:
                     raise RuntimeError('Synthetic customer missing after EXE GUI close')
+        stage = 'cleanup-disposable-profile'
         print(json.dumps({'ok': True, 'scope': 'native Windows synthetic GUI smoke only',
                           'sha256': digest, 'window': 'seen and closed',
                           'exit_code': 0, 'sqlite_integrity': 'ok',
