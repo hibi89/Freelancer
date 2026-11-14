@@ -1,3 +1,18 @@
+# HANDOFF — 2026-11-14 KST WORKNOVA Desk 사용자 반복 수동검증 중단·무인 QA 소스 2종 추가 (최신 10항)
+
+1. **목표·용도·확정 요구·기술:** 사용자 승인 WD01~14 전체100점, 구매자 실제 최종 전체 수용 증거 >=85점 목표. Windows 오프라인 Python3.11/SQLite/Tk EXE 견적/계약/납품·수금.
+2. **완료 기능·변경·판단:** 사용자가 실제 Win11 빌드26200에서 PyInstaller onedir EXE 빌드·SHA/MZ/GUI 3회·가짜 거래처 저장·재표시 확인. 추가 4차 GUI 종료 `ExitCode0`. 사용자는 반복 수동 검증에 불만, A) 비용0 임시 SQLite Python unittest 자동 E2E, B) private Actions Windows 무료한도/runner 권한 미확인, C) 사용자 수동 UI 매번 반복의 비효율을 비교해 **A 우선**. 제품 로직 수정 없이 신규 `tests/test_unattended_business_lifecycle.py` 2종/정책 `docs/P85_UNATTENDED_QA_STRATEGY_20261114.md` 추가.
+3. **테스트 명령·검증/미검증:** 신규 2종은 견적→승인→계약→납품·검수→수금/중복 거부·초과 수금/SQLite 재열기와 감사 체인 합성 시나리오. 원격 파일 readback·동일 Git blob SHA `4df97d19a5bcacc203babff5136dc2fc48b40fac` 대조 일치, Python `ast.parse PASS`; **2 테스트 실행 NOT_RUN, 전체 `unittest discover`/GitHub Actions CI NOT_RUN**(비공개 제품 소스 현 QA 런타임에 없음, Actions 실행 기능/무료 할당 불명). 4차 EXE ExitCode0이나 견적 데이터 DB 근거/GUI 캡처 없어 견적 업무 PASS는 아직 아니다.
+4. **완료/진행/대기·차단:** Win EXE 실제 초도 GUI·거래처 단일 영속 보존은 확인, 자동 테스트 작성·문법검증 완료, 전체 실행/Windows 자동 E2E 및 실제 고객권리·OS 보안 미검증. 사용자 승인 WD전체 항목 완전수용 합 **0/100(구현률0 아님), 목표85 미달, [작업중]/RELEASE HOLD/크몽 미등록**.
+5. **오류·원인·시도·재시도 금지/대안:** 기존 ZIP 이중경로/빌더 `PYTHONNOUSERSITE=1` 문제 해결. 현 시점 신규 실제 오류 증거 없음. 사용자에게 같은 EXE 수동 검증 반복 요구를 중단. 무인 QA 로컬 격리 소스 실행은 원본 확보/실행 환경 필요; private Actions 유료 잡 재시도 승인 전 금지, 실패한 테스트를 PASS라 주장 금지.
+6. **저장소·브랜치·SHA·주요 경로:** `hibi89/Freelancer@product/worknova-desk-local`; 이전 운영 HEAD `0c817f35289b3c932778640cfc6b304159d97bfa`, 신규 테스트 commit `63ee63e4ce692e3ed0e3f2a32f37d67eef315f64`, 정책 문서 commit `5cbcde43dbdecc6f85e7d14af7b736b3cbe47024`. 최신 HEAD 문서 완료 후 재조회. 테스트 `tests/test_unattended_business_lifecycle.py`, 전략 `docs/P85_UNATTENDED_QA_STRATEGY_20261114.md`.
+7. **배포·URL·실행 환경:** Vercel/Prod 미적용, 미서명 Windows onedir EXE는 사용자 PC TEMP. 현 개발 런타임 Python3.13.5에는 제품 전체 패키지 체크아웃 없음. 실행 가능할 때 `PYTHONPATH=. python -m unittest discover -s tests -v` 또는 `python -m unittest discover -s tests -p test_unattended_business_lifecycle.py -v`. GUI는 이 테스트가 커버하지 않음.
+8. **원본·백업·인증 관리·수정 금지:** 실고객 DB/이미지/OS 정책·LOCALAPPDATA·본인 EXE·PayPal 원본/Freelancer main/타 상품/등록완료 기록 불변. 자동 테스트는 Python `tempfile` 하위 합성 원장만 사용, network/payment/관리자권한 없음, GitHub에 민감자료 안올림.
+9. **다음 작업 우선/절차/완료기준/승인:** 개발자가 원본 소스가 있는 독립 실행 환경에서 무인 테스트 실제 실행→PASS/FAIL 판정·결함 수정→CI 설정이 무료임을 확인한 경우 승인에 따라 Windows 자동 GUI 검증 검토. 인위적 Owner PC 수동 반복 중단, 실제 고객·법률/OS 보안/유료 변경은 별도 승인. WD 전체 완전 PASS 배점 합 >=85만 최종 달성.
+10. **갱신 일시(KST)·확인/검증 범위/기준 커밋:** 2026-11-14 KST. 네 번째 Windows EXE ExitCode0 사용자 콘솔, 신규 테스트 정본 SHA 동일성/문법 PASS까지만 근거. 견적 DB와 실제 무인 자동 테스트의 **PASS 미확보**, 중앙 최신화 후 실제 SHA 확인.
+
+---
+
 # HANDOFF — 2026-11-14 KST WORKNOVA Desk 3차 EXE 재기동 거래처 GUI 보존 확인 (최신 10항)
 
 1. **목표/용도·확정 요구/기술:** WORKNOVA Desk Windows 오프라인 Tk/SQLite 견적·계약·납품·수금, 승인 WD01~14 총100점 중 최종 고객 전체 수용85점 목표.
