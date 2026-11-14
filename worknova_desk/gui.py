@@ -42,6 +42,20 @@ def parse_rows(lines: str, *, kind: str) -> list[dict]:
     return result
 
 
+# Buyer-facing labels must be readable in Korean. Internal SQLite/Treeview keys
+# are deliberately unchanged to preserve all existing data and selection logic.
+COLUMN_LABELS = {
+    "name": "거래처명",
+    "id": "식별번호",
+    "revision": "견적 버전",
+    "status": "상태",
+    "total_krw": "견적 합계(원)",
+    "scope": "작업 범위",
+    "title": "단계명",
+    "amount_krw": "단계 금액(원)",
+}
+
+
 class WorknovaGUI:
     def __init__(self, desk: Desk):
         self.desk = desk
@@ -69,7 +83,7 @@ class WorknovaGUI:
             tab=ttk.Frame(tabs);tabs.add(tab,text=label)
             tree=ttk.Treeview(tab,columns=columns,show="headings",selectmode="browse",height=12)
             for col in columns:
-                tree.heading(col,text=col);tree.column(col,width=130 if col!="id" else 270)
+                tree.heading(col,text=COLUMN_LABELS[col]);tree.column(col,width=130 if col!="id" else 270)
             tree.pack(fill="both",expand=True)
             self.views[name]=tree
         self.views["customers"].bind("<<TreeviewSelect>>",lambda _:self.refresh_children("customers"))
