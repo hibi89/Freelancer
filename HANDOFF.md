@@ -1,5 +1,19 @@
 # CITEVAULT AX — HANDOFF — RAG Studio 기업형 (10항, 2026-11-13 KST)
 
+## [2026-11-14 KST] REQ17 local Korean model preflight / 469PASS — HANDOFF 10항
+
+1. **목표·확정 요구·기술:** CITEVAULT AX 전체24항 85% 목표, RAG native/PREP-SMAX signed review + corporate ACL/IdP + real Korean dense/LLM + Windows installs + heldout Gold100. REQ17 local model now selected as **candidate only**, official UNASSESSED.
+2. **완료 기능·비교 근거:** A external hosted embedding API = user data leakage/API cost/reliance, rejected. B local operator-owned ONNX SHA-pinned preflight = no outbound data/fee, selected. `p85-korean-model-preflight.mjs` + CLI checks absolute path, ancestor/file symlinks, auxiliary metadata, allowed model size, streaming SHA, changes; no real model weight/execution/license approval fabricated.
+3. **실행·테스트·성공/실패:** exact code `f4f5f088b9fb2d89937c825445c035d1a4da0ca2`, [hosted CI #43537747863](https://github.com/hibi89/Freelancer/actions/runs/43537747863) Ubuntu/Windows and Chromium/portable **8/8 SUCCESS, 469 executed PASS, 0 FAIL, 0 SKIP** (OS duplicates). New 7 model preflight PASS/OS, Linux locally exact GitHub blobs reproduced and 7/7PASS. `node --test tests/p85-korean-model-preflight.test.mjs` and `node scripts/p85-korean-model-check.mjs --model-dir ABS` (weights not included).
+4. **완료·진행·대기·차단:** model **binary integrity checker done**, actual 118MB ONNX and tokenizer download/real inference/quality/peak memory/commercial license NOT DONE. Real corporate IdP, approved source rights and signed PREP/SMAX AX producer, physical Windows10/11, customer Gold100/signoff pending. [작업중] release HOLD.
+5. **오류 근거·원인·시도·대안:** first Windows code `7f3b791c` #43537157904 had 3 FAIL solely from Windows 8.3 `realpath` string alias mismatch. Preserved `lstatSync` ancestor symlink checks, removed redundant string compare. New `f4f5f088` GitHub CI both OS 7PASS. No brute force retries of unchanged code; runtime implementation next requires licensed model and user environment.
+6. **저장소·브랜치·SHA·경로:** `hibi89/Freelancer@product/rag-enterprise-knowledge`, code `f4f5f088b9fb2d89937c825445c035d1a4da0ca2`, prior code `7f3b791ce3d79ada0978caadfbcb6d4941f2f957`, previous docs `9a822c85923902bfce68b2c027cf5d85168816bd`; `enterprise/p85-korean-model-preflight.mjs`, `tests/p85-korean-model-preflight.test.mjs`, `scripts/p85-korean-model-check.mjs` and YAML, rest unchanged.
+7. **Production·운영·실행:** Production/Vercel N/A. Ubuntu24.04/Windows2022 Node22 hosted. Candidate [Xenova/intfloat multilingual-e5-small int8 ONNX](https://huggingface.co/Xenova/multilingual-e5-small/blob/main/onnx/model_int8.onnx) 118MB SHA `4d24e2bc01a447951524466ef533e52944bf48509e6552810bcee1a2711cb02c`; no weights downloaded, model not run. CLI runs locally only, no external calls.
+8. **원본·백업·인증·수정 금지:** original RAG/PREP/SMAX, real customer source/credentials, Production and other product docs unchanged; Git parent SHA is rollback. Shared `Freelancer` PUBLIC, all history/branches exposure not security-audited, never upload customer data or large weights/secrets to public repo.
+9. **다음 우선순위·승인·완료 기준:** confirm upstream model conversion/runtime license, obtain approved model weights and tokenizer, offline inference + Korean heldout recall+latency+privacy, real employee IdP/approved PREP-SMAX AX data authorization, physical customer Windows10/11 + Gold100/legal signoff, owner-signed 24 item weights. Current development approval does not grant customer rights, purchase or model licensing approval.
+10. **갱신 일시·실제 검증·기준:** 2026-11-14 KST, exact code GitHub 8/8 469PASS and exact Git blob local7PASS, doc HEAD to recheck after commit. **UNASSESSED / 85% not certified / [작업중] / RELEASE HOLD**.
+
+
 ## [2026-11-14 KST] Owner Windows QA + Simple UX / 455PASS — HANDOFF 10항
 
 1. **목표·용도·확정 기술:** CITEVAULT 기업형 24항 100% 설계 대비 85% 사용자 목표. RAG pinned source, ACL/SQLite/Ed25519 signed review, Korean local model, Win10/11, Gold100 owner acceptance. 공식 UNASSESSED.

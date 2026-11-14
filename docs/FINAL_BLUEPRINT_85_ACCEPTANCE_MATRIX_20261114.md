@@ -1,5 +1,12 @@
 # CITEVAULT AX — 최종설계 100% 기준 85% 수용 증거표 (2026-11-14 KST)
 
+## [2026-11-14 KST] REQ17 실 Korean ONNX 모델 후보 SHA 사전검사
+
+- `f4f5f088b9fb2d89937c825445c035d1a4da0ca2` [hosted #43537747863](https://github.com/hibi89/Freelancer/actions/runs/43537747863) **8/8 SUCCESS, 469PASS/0FAIL/0SKIP**(OS반복), 신규 offline model file preflight 7PASS×2OS, real inference는 미실시.
+- SHA `4d24e2bc01a447951524466ef533e52944bf48509e6552810bcee1a2711cb02c` 고정 `multilingual-e5-small` ONNX 파일 검사, 허위 파일/경로/누락 metadata 실패 확인. 원본 모델 카드 MIT 표시/변환 모델 상용 재배포 license 미확정, ONNX 가중치 118MB **미다운로드**, 실제 Korean retrieval/LLM 평가 미완.
+- **공식 전체 완성률 UNASSESSED, 사용자 목표85% 미인증, [작업중]·RELEASE HOLD** 유지. 상세 `docs/P85_KOREAN_MODEL_PREFLIGHT_20261114.md`.
+
+
 ## [2026-11-14 KST] REQ16 사용자 실제 Windows 부분 증거 + 쉬운 검색 화면 CI PASS
 
 - 사용자 직접 Windows PC에서 이전 정본 SHA `62663721...` synthetic localhost QA `PASS` 및 synthetic operator 로그인/문서1건/컬렉션1개/SEARCH_ONLY 출처 policy line1 화면을 대화 스크린샷으로 확인. OS 버전, 정식 설치기, 고객 인증/실자료, 현재 신규 UI 실기기 실행은 미검증; 스크린샷 파일은 GitHub에 올리지 않음(임시 비밀번호 포함).
@@ -91,10 +98,10 @@
 | 14 | 권한 변경·세션 철회·감사 | **신규:** `provisionUser/changeUserAccess` + SQLite transaction/audit, 기존 세션 권한 즉시 반영, 교차 프로세스 revoke | **검증-합성**: 생산 운영 복구·장기간 계정 정책 필요 |
 | 15 | 문서 버전 교체·폐기·재색인 | `p85-state-store.mjs` durable revision/retire/reindex, SHA·gen·audit 테스트 | **검증-합성**: shadow index 원자 swap·백업/검색 동시성 추가 |
 | 16 | 오프라인 사용자 UI/KPI/차트/출처 탐색 | **실기능 추가:** 기본 화면 로그인→질문→근거 우선, 범위·SQL·관리자 관리 `details`로 접고 모든 기존 API·ACL 유지. Real Chrome (desktop/mobile 390px) 기본/고급 패널 접힘·로그인/검색/후속/로그아웃 성공; `tests/p85-simple-ui` 4PASS×2OS. 사용자 이전 PC에서 로그인/근거 검색/1문서 KPI 시각 확인 | **검증-합성/부분-현장:** 새 간소 UI의 고객 PC 실재현·전문 UX 인수, 고객 실기업 IdP/실데이터/금융·법무 인수 미검증 |
-| 17 | 한국어 실제 로컬 모델·선택 dense | 모델 미설치 fallback `SEARCH_ONLY`, 출처 없는 생성 차단 | **대기**: 실제 model weights·라이선스·Korean mini benchmark 없음 |
+| 17 | 한국어 실제 로컬 모델·선택 dense | **신규 사전단계:** MIT 기반 `multilingual-e5-small` 후보/118MB ONNX SHA 확인 및 offline model hash/local path/metadata 선검증, Win/Linux 각각 7PASS. 기존 미설치 fallback `SEARCH_ONLY` 유지 | **부분-준비:** 실제 weights·tokenizer 다운로드, local ONNX inference, dense index/품질·heldout·OS 라이선스/상업적 배포는 미검증, 모델 구동 완료 판정 금지 |
 | 18 | 프롬프트 인젝션·ZIP·악성 파일·권한/데이터 유출 | bytes budgets, source SHA/inode/symlink, fail-closed, no network, XSS-safe UI textContent | **부분**: 문서 파서 OS 샌드박스/TOCTOU/침투 테스트·공식 보안점검 미완 |
 | 19 | Windows10/11 오프라인 설치·백업/복구·라이선스 | Windows2022 hosted portable ZIP CRC/SHA·unpacked Node 실행 2PASS + offline backup 12PASS/OS. **사용자 실제 Windows PC에서 별도 QA 스크립트 PASS 및 synthetic 브라우저 로그인/검색 화면 관찰(이전 정본 SHA)** | **부분:** 고객용 정식 설치기/Node 라이선스·구체 Win10/11 버전 확인·새 간소UI 현장 재검증·실고객 데이터/백업복구·운영 인수 미완; 사용자 스크린샷은 영업 릴리스 승인 증거 아님 |
-| 20 | Win/Linux GitHub-hosted CI 0FAIL | 정확 기능 SHA `62fe69bd` [#43536006934](https://github.com/hibi89/Freelancer/actions/runs/43536006934) **8/8 SUCCESS, 455 test executions PASS/0 FAIL/0 SKIP**; Ubuntu actual Chrome 간소화 UI, Windows ZIP·native PDF/DOCX 포함 | **검증-합성:** hosted CI 완료, 초기 패치 CI 실패 및 복구 기록 별도 보존; 실고객 Win10/11 상용 설치·모델/IdP/보안 인수 미검증 |
+| 20 | Win/Linux GitHub-hosted CI 0FAIL | 정확 기능 SHA `f4f5f088` [#43537747863](https://github.com/hibi89/Freelancer/actions/runs/43537747863) **8/8 SUCCESS, 469 test executions PASS/0 FAIL/0 SKIP**; Ubuntu actual Chrome+Windows ZIP/native+온디바이스 ONNX preflight | **검증-합성:** hosted regression verified, Korean 실제 inference/enterprise customer authentication/Win10/11 commercial delivery excluded |
 | 21 | 고객 Gold100 + negative/heldout, retrieval/latency/메모리 수용 | 신규 한국어 합성100건(20×5 유형) Windows/Linux 모두 PASS, p95 Ubuntu0.328ms/Win1.001ms | **부분**: 합성 반복 계약 테스트이며 고객의 Gold100·진짜 heldout·모델 성능/고객 합격 기준 미검증 |
 | 22 | 백업/복구·삭제/보존기간·운영 정책 | Node22 SQLite backup API, 합성 문서 SHA manifest, create-only offline restore; **신규 SQLite 4개 테이블·실 active doc source SHA 바인딩**, 양 OS 각12PASS(기존9+신규3), 원본 불변·변조·링크·중복·덮어쓰기 거부 | **부분**: 실 고객 운용 중 무중단 백업/보존·삭제·물리 Windows10/11 복구/권한·개인정보 미검증 |
 | 23 | 고객/법적·가격·지원·운영 인수 | 합성 SOURCE_RIGHTS=false/RELEASE HOLD 강제 | **대기**: 고객/소유자 승인·라이선스·실기기·지원 수용 불가 |

@@ -1,5 +1,14 @@
 # CITEVAULT AX — STATUS — RAG Studio Enterprise, 2026-11-13 KST
 
+## [2026-11-14 KST] REQ17 로컬 모델 ONNX 파일 무결성 사전검사 + 정확 호스티드469PASS
+
+- `f4f5f088b9fb2d89937c825445c035d1a4da0ca2` [CI #43537747863](https://github.com/hibi89/Freelancer/actions/runs/43537747863) **8/8 SUCCESS, 469 executed PASS/0FAIL/0SKIP** (Linux/Windows 중복), 마지막 웹 Chrome 및 Windows local/portable 회귀 보존. 신규 한국어 ONNX offline asset preflight 각각7PASS(총14). Linux local Node22 원격 GitHub blob 정확 해시를 재현한 7PASS도 확인.
+- REQ17 모델 선택 기초: [intfloat/multilingual-e5-small](https://huggingface.co/intfloat/multilingual-e5-small) upstream MIT 표시, [Xenova ONNX int8 118MB](https://huggingface.co/Xenova/multilingual-e5-small/blob/main/onnx/model_int8.onnx) 게시 SHA `4d24e2bc01a447951524466ef533e52944bf48509e6552810bcee1a2711cb02c`; `enterprise/p85-korean-model-preflight.mjs`/CLI exact SHA256/local path/메타 파일 사전검사(네트워크0, 가짜 파일 거부, 모델 실행 안 함). 실제 다운로드/추론/정확도/상용 재배포 라이선스 검수 **미검증**.
+- 최초 Windows CI #43537157904에서 Windows 8.3 경로 문자열과 `realpath`의 표기 차이 때문에 3 테스트 FAIL, 기존 lstat 모든 구성요소 검사 보존+불필요한 경로 문자열 일치 요구 제거, 정확 최신 SHA Windows/Linux 각7PASS. 상세 `docs/P85_KOREAN_MODEL_PREFLIGHT_20261114.md`.
+- 공식 전체24항 **UNASSESSED / 85% 미인증 / CITEVAULT AX [작업중] / RELEASE HOLD / SALE NO-GO**. customer IdP/자료 권리/정식 PREP+SMAX signed AX, 실제 모델 가중치·inference/heldout, 고객 Gold100/물리 Windows10/11 설치/라이선스 인수 미완. 회사 원본·실토큰·Production/외부 API·비용 수정0.
+
+
+
 ## [2026-11-14 KST] 사용자 Windows 실기기 부분증거 + 사용성 간소화 실제 브라우저 455PASS
 
 - **정확 기능 SHA** `62fe69bd9f78f5a9a2c49f53b5f227053503a4f1`; [hosted CI #43536006934](https://github.com/hibi89/Freelancer/actions/runs/43536006934) **8/8 SUCCESS, 455PASS/0FAIL/0SKIP**(Windows/Linux 중복). 사용자 지적 "복잡한 화면" 대응: 로그인→질문→근거검색 중심, SQL/문서 범위/관리자 기능은 native `details` 접기(기존 API·권한 불변). 사용자 화면 Chromium 실제 접힘 상태/로그인·검색·근거·후속질문·390px 모바일·로그아웃 PASS, 신규4테스트×2OS.
