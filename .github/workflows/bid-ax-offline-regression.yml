@@ -82,3 +82,28 @@ jobs:
           if ($q.ExitCode -ne 0) { throw 'Windows EXE offline plan failed' }
           python -c "import json; x=json.load(open('ci-plan.json')); assert x['ready'] and x['dataset_id']==15157252"
       # No artifact upload or API credentials; this is NOT a signed Windows release.
+
+  windows-gui:
+    if: github.ref == 'refs/heads/product/bid-ax-public-procurement'
+    name: Windows GUI Tk and unsigned EXE packaging (no release)
+    runs-on: windows-latest
+    timeout-minutes: 15
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install disposable build/test dependencies
+        run: python -m pip install --disable-pip-version-check "pyinstaller>=6,<7" reportlab==4.4.9 pypdf==5.9.0
+      - name: Verify tkinter can create and destroy a local window
+        run: python -c "import tkinter as t; r=t.Tk(); r.withdraw(); r.update_idletasks(); r.destroy(); print('Tk basic smoke PASS')"
+      - name: Build unsigned GUI onedir test executable
+        run: python -m PyInstaller --noconfirm --clean --onedir --windowed --collect-submodules bidax --name BIDAX_GUI_CI_UNRELEASED --paths . run_bidax.py
+      - name: Inspect Windows GUI PE without launching customer data or publishing
+        run: python -c "from pathlib import Path; p=Path('dist/BIDAX_GUI_CI_UNRELEASED/BIDAX_GUI_CI_UNRELEASED.exe'); assert p.is_file() and p.stat().st_size>100000; assert p.read_bytes()[:2]==b'MZ'; print('unsigned GUI PE exists; execution/customer acceptance NOT TESTED')"
+      # Test build is discarded with the runner. No API requests or artifact release.

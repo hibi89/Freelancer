@@ -71,6 +71,16 @@ class LocalController:
         from .portfolio import watchlist
         return watchlist(self.database)
 
+    def onbid_stage_page(self, batch_id: str, packet_file: str | Path, *, consent: bool) -> dict:
+        """Record an already quarantined official page; no network or auto-import."""
+        from .onbid_batch import stage_page
+        return stage_page(self.database, batch_id, packet_file, consent=consent)
+
+    def onbid_stage_status(self, batch_id: str) -> dict:
+        """Reverify the saved local packets without changing the evidence database."""
+        from .onbid_batch import batch_status
+        return batch_status(self.database, batch_id)
+
     def onbid_watch(self, property_id: str, condition_id: str, state: str, note: str) -> dict:
         from .portfolio import watch_onbid
         return watch_onbid(self.database, property_id=property_id, condition_id=condition_id,
@@ -295,8 +305,13 @@ def launch(database: str | Path) -> None:
                ("수동 검토 기록", manual_review), ("보고서 저장", save_report),
                ("온비드 가져오기", onbid_import), ("온비드 현황", onbid_show), ("법원 문서", court_import), ("법원 체크리스트", court_show),
                ("DB 백업", save_backup), ("새 DB로 복원", restore)]
-    for label, action in actions:
-        ttk.Button(tools, text=label, command=lambda fn=action: handle(fn)).pack(side="left", padx=3, pady=4)
+    # A single horizontal row hid most commands on ordinary Windows displays.
+    # Keep every local action visible without horizontal scrolling.
+    for index, (label, action) in enumerate(actions):
+        ttk.Button(tools, text=label, command=lambda fn=action: handle(fn)).grid(
+            row=index // 5, column=index % 5, sticky="ew", padx=3, pady=3)
+    for index in range(5):
+        tools.columnconfigure(index, weight=1)
     def save_interest():
         prop = simpledialog.askstring("온비드 관심물건", "로컬 온비드 물건관리번호", parent=root)
         if not prop:
@@ -321,12 +336,49 @@ def launch(database: str | Path) -> None:
         max_krw = int(max_value) if max_value.strip() else None
         return controller.onbid_filter(max_bid_krw=max_krw)
 
+    def stage_onbid_page():
+        identity = simpledialog.askstring(
+            "온비드 오프라인 증빙",
+            "새 배치는 표시된 UUID를 사용하세요. 중단 후 재개할 때는 기존 UUID를 입력하세요.",
+            initialvalue=str(uuid4()), parent=root)
+        if not identity:
+            return
+        path = filedialog.askopenfilename(
+            title="이미 보유한 온비드 결과목록 격리 JSON", filetypes=[("JSON", "*.json")])
+        if not path:
+            return
+        if not messagebox.askyesno(
+            "오프라인 원본 경로 보관 동의",
+            "고객 PC의 SQLite에 이 JSON의 로컬 절대경로, SHA-256, 건수만 기록합니다.\n"
+            "원본 값이나 API 키는 DB에 넣지 않습니다. 네트워크 요청/공고 판정도 없습니다.\n"
+            "해당 경로 저장에 동의합니까?"):
+            return
+        result = controller.onbid_stage_page(identity.strip(), path, consent=True)
+        state.set(
+            f"온비드 오프라인 증빙: {len(result['verified_local_pages'])}/{result['reported_total_pages']}페이지 확인 · "
+            "원문 자동반영 금지")
+        return result
+
+    def show_onbid_stage_status():
+        identity = simpledialog.askstring(
+            "온비드 오프라인 증빙 조회", "기존 증빙 배치 UUID를 입력하세요.", parent=root)
+        if not identity:
+            return
+        result = controller.onbid_stage_status(identity.strip())
+        state.set(
+            f"온비드 증빙 재검사: {len(result['verified_local_pages'])}/{result['reported_total_pages']}페이지 · "
+            "공식 필드 매핑/법적 판정 미검증")
+        return result
+
     menu = tk.Menu(root)
     auction_menu = tk.Menu(menu, tearoff=0)
     auction_menu.add_command(label="3개 출처 통합 현황", command=lambda: handle(controller.portfolio_report))
     auction_menu.add_command(label="온비드 관심목록", command=lambda: handle(controller.onbid_watchlist))
     auction_menu.add_command(label="온비드 관심 상태 기록", command=lambda: handle(save_interest))
     auction_menu.add_command(label="온비드 가격 필터", command=lambda: handle(search_onbid))
+    auction_menu.add_separator()
+    auction_menu.add_command(label="온비드 격리 페이지 등록(로컬)", command=lambda: handle(stage_onbid_page))
+    auction_menu.add_command(label="온비드 증빙 배치 재검사", command=lambda: handle(show_onbid_stage_status))
     menu.add_cascade(label="공매·경매 로컬 관리", menu=auction_menu)
     root.config(menu=menu)
     root.mainloop()
