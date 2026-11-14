@@ -1,3 +1,13 @@
+# STATUS — 2026-11-14 KST / 무료 공개 GitHub Actions 자동 Linux·Windows·EXE QA 구축 (최신)
+
+- 제품 소스/CI 기준 HEAD: 941e0b5e58e956167eaff24072248aee1e8b98fd. GitHub 연결에서 hibi89/Freelancer 공개 저장소 확인. 공식 GitHub 정책상 standard ubuntu-latest/windows-latest는 공개 저장소에서 무료. 유료 larger runner, 캐시 및 아티팩트 업로드 없음.
+- 새 .github/workflows/worknova-desk-qa.yml: 해당 product 브랜치의 코드/테스트/툴 수정 push에만 실행, permissions contents:read, cancel-in-progress, timeout 12분. Ubuntu/Windows Python3.11 무인 합성 업무 2종 및 전체 unittest. Windows tools/windows_acceptance.py 11개 합성 설치/백업 검증. Windows PyInstaller6.22.3 onedir EXE 자동 빌드, SHA256, tools/windows_exe_smoke.py의 동일 PID Tk GUI 자동 종료 및 임시 SQLite v2 보존 검증. 고객자료/실 OS 보안 설정 불변.
+- 실제 검증: 신규 스모크 파일 Git blob SHA 84a2308b6551fd9373a974f94e7ed7323157f5e8을 로컬 정확 소스와 대조 PASS, Python3.13.5 py_compile/ast.parse PASS, Linux 비지원 경로 명시적 exit3 PASS, GitHub 원격 readback PASS. GitHub Actions run/check 및 전체 unittest 실제 PASS 여부는 미검증(연결 도구는 push Actions 목록/Checks API 조회 불가). 이전 소유자 Windows EXE GUI·가짜 거래처·SQLite 영속 증거는 별도로 유효.
+- 사용자 승인 WD01~14 전체100점, 최종 구매자 기준 각 항목 전체 통과 시에만 인정. 공식 0/100(구현률 0 아님), 85점 미달. WD13(10점)·WD14(6점) 둘 다 미충족이면 이론상 최고 84점. OS ACL/활성DB 암호화·실서명·실고객/법적 권리 검증을 증거 없이 통과 처리 금지. [작업중], RELEASE HOLD, 크몽 미등록 유지.
+- 다음: 실제 Actions 로그 확인 수단 확보 후 정확 SHA의 테스트 결과 검증, 실패시 최소 수정. 형의 Windows 반복 수동테스트 요구하지 않음.
+
+---
+
 # STATUS — 2026-11-14 KST 반복 소유자 테스트 중단·무인 소스 기반 QA 2종 추가 (최신)
 
 - **사용자 추가 현장 증거:** 같은 격리 Windows EXE 네 번째 실행 `$p4.WaitForExit()` 후 `ExitCode: 0`. 사용자가 가짜 견적 생성 단계는 진행했다고 진술하나 **견적 GUI 표/DB 행 출력은 미수신**하여 기능 PASS 증거로 계산하지 않음. 이전 native Windows EXE 3회/거래처 저장·재표시 및 `integrity_check=ok` 근거 유지.
