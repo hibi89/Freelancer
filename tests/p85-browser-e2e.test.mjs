@@ -25,7 +25,9 @@ const chromeBin=()=>{
   return null;
 };
 async function poll(fn,name){
-  for(let i=0;i<100;i++){if(await fn())return;await sleep(100);}
+  // Allow slower hosted Chromium startup without extending normal UI wait unnecessarily.
+  const max=name==='CHROME_START'?300:100;
+  for(let i=0;i<max;i++){if(await fn())return;await sleep(100);}
   throw Error('BROWSER_WAIT_TIMEOUT_'+name);
 }
 function cdp(socket){
@@ -89,17 +91,20 @@ test('real rendered desktop/mobile login, scoped library, search and logout in C
       t.diagnostic('CHROME_SYNTHETIC_TMP_CLEANUP_DEFERRED: '+e.code);
     }else throw e;}
   });
+  let chromeStderr='';
   chrome=spawn(executable,['--headless=new','--no-sandbox','--disable-dev-shm-usage',
     '--disable-background-networking','--no-first-run','--no-default-browser-check',
     '--remote-debugging-address=127.0.0.1','--remote-debugging-port=0',
-    '--user-data-dir='+profile,'about:blank'],{stdio:'ignore'});
-  chrome.on('error',()=>{});
+    '--user-data-dir='+profile,'about:blank'],{stdio:['ignore','ignore','pipe']});
+  chrome.stderr.on('data',chunk=>{chromeStderr=(chromeStderr+chunk.toString()).slice(-2200);});
+  chrome.on('error',e=>{chromeStderr+=' SPAWN_ERROR_'+String(e?.code);});
   let port=0;
-  await poll(()=>{
+  try{await poll(()=>{
     const active=path.join(profile,'DevToolsActivePort');
     if(fs.existsSync(active))port=Number(fs.readFileSync(active,'utf8').split('\n')[0]);
     return port>0;
-  },'CHROME_START');
+  },'CHROME_START');}catch(e){throw Error(e.message+'; CHROME_EXIT='+chrome.exitCode+
+    '; CHROME_STDERR='+chromeStderr.slice(-1000));}
   const list=await (await fetch('http://127.0.0.1:'+port+'/json/list')).json();
   const tab=list.find(x=>x.type==='page'&&x.webSocketDebuggerUrl);
   assert.ok(tab,'NO_CHROME_PAGE');
