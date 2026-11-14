@@ -110,6 +110,10 @@ test('real rendered desktop/mobile login, scoped library, search and logout in C
   assert.ok(!nav.errorText,'BROWSER_NAVIGATION_'+nav.errorText);
   await poll(()=>browser.evaluate('document.readyState==="complete" && Boolean(document.getElementById("login"))'),'UI_READY');
   assert.equal(await browser.evaluate('document.querySelectorAll("#library-documents article").length'),0);
+  // Owner asked for a simple first-run UI; advanced controls remain available but collapsed.
+  const firstView=await browser.evaluate('({simple:document.querySelector(".primary-cta").getBoundingClientRect().width>0,search:document.getElementById("search-options").open,docs:document.getElementById("library-details").open,admin:document.getElementById("admin-panel").open})');
+  assert.deepEqual(firstView,{simple:true,search:false,docs:false,admin:false});
+
   await browser.evaluate('(()=>{document.getElementById("userid").value="tester";document.getElementById("pw").value="'+password+'";document.getElementById("login").requestSubmit();return true})()');
   await poll(()=>browser.evaluate('document.querySelectorAll("#library-documents article").length===1 && document.getElementById("library-status").textContent.includes("현재 계정")'),'SIGNED_IN_LIBRARY');
   const status=await browser.evaluate('({documents:document.getElementById("library-documents").textContent,kpi:document.getElementById("library-kpis").textContent,chart:document.getElementById("library-chart").textContent})');
