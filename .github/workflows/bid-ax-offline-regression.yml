@@ -8,6 +8,7 @@ on:
       - "tests/**"
       - "packaging/**"
       - "run_bidax.py"
+      - "run_bidax_cli.py"
       - ".github/workflows/bid-ax-offline-regression.yml"
   workflow_dispatch:
 permissions:
@@ -49,12 +50,12 @@ jobs:
       - name: All offline tests
         run: python -W error::ResourceWarning -m unittest discover -s tests -q
       - name: Build unreleased Python zipapp
-        run: python packaging/build_portable.py BIDAX_CI_UNRELEASED.pyz
+        run: python packaging/build_portable.py BIDAX_CLI_CI_UNRELEASED.pyz
       - name: Zipapp smoke
-        run: python BIDAX_CI_UNRELEASED.pyz --help
+        run: python BIDAX_CLI_CI_UNRELEASED.pyz --help
   windows-exe:
     if: github.ref == 'refs/heads/product/bid-ax-public-procurement'
-    name: Windows unsigned folder EXE smoke (onefile quarantined)
+    name: Windows CLI folder EXE smoke (GUI separate)
     runs-on: windows-latest
     timeout-minutes: 10
     steps:
@@ -67,11 +68,11 @@ jobs:
       - name: Install temporary builder
         run: python -m pip install --disable-pip-version-check "pyinstaller>=6,<7"
       - name: Build test console EXE with lazy imports
-        run: python -m PyInstaller --noconfirm --clean --onedir --console --collect-submodules bidax --name BIDAX_CI_UNRELEASED --paths . run_bidax.py
+        run: python -m PyInstaller --noconfirm --clean --onedir --console --collect-submodules bidax --name BIDAX_CLI_CI_UNRELEASED --paths . run_bidax_cli.py
       - name: Check executable startup and no-network plan (bounded)
         shell: pwsh
         run: |
-          $exe = (Resolve-Path ".\dist\BIDAX_CI_UNRELEASED\BIDAX_CI_UNRELEASED.exe").Path
+          $exe = (Resolve-Path ".\dist\BIDAX_CLI_CI_UNRELEASED\BIDAX_CLI_CI_UNRELEASED.exe").Path
           $p = Start-Process -FilePath $exe -ArgumentList '--help' -RedirectStandardOutput ".\ci-help.txt" -WorkingDirectory $PWD.Path -PassThru
           if (-not $p.WaitForExit(90000)) { Stop-Process -Id $p.Id -Force; throw 'Onedir Windows EXE startup exceeded 90 sec' }
           if ($p.ExitCode -ne 0) { throw 'Windows EXE help failed' }

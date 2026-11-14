@@ -11,7 +11,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 ALLOW = [".gitignore", "README.md", "REQUIREMENTS.md", "AGENTS.md", "STATUS.md",
-         "HANDOFF.md", "run_bidax.py", "BID_AX_API_SHAPE_DIAG.py", "packaging/README.md",
+         "HANDOFF.md", "run_bidax.py", "run_bidax_cli.py", "BID_AX_API_SHAPE_DIAG.py", "packaging/README.md",
          "packaging/build_windows.ps1", "packaging/build_source_zip.py", "packaging/build_portable.py"]
 ALLOW += sorted(p.relative_to(ROOT).as_posix() for sub in ("bidax", "tests", "docs", "examples")
                 for p in (ROOT / sub).glob("**/*") if p.is_file() and p.suffix in (".py", ".md", ".json"))
