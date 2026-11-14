@@ -1,5 +1,19 @@
 # CITEVAULT AX — HANDOFF — RAG Studio 기업형 (10항, 2026-11-13 KST)
 
+## [2026-11-14 10:25 KST] Real Korean ONNX execution HANDOFF — required 10 items
+
+1. Goal/stack/requirements: Full 24-REQ CITEVAULT enterprise 85% target; optional verified multilingual-e5-small CPU int8 inference on local synthetic Korean data, never a customer release.
+2. Implemented/decision: A remote SaaS embeddings rejected (customer egress/fees); B exact-SHA local ONNX Python CPU chosen (cost-free; no production regression); C full RAG rewrite rejected. New Python offline encoder, fixed public model fetch helper, 4 tests, dedicated free standard-runner workflow, model plan.
+3. Test command/evidence: exact code SHA a3ffc4ba5a05e0b140ba08d8f248b6b0bc44e64e; [CI #43540387093](https://github.com/hibi89/Freelancer/actions/runs/43540387093) 1/1 SUCCESS. 4/4 Python contracts PASS, 118054593-byte SHA model preflight PASS, real CPU ONNX 384 dimensions and 3/3 fixed synthetic Korean retrieval PASS; margins 0.09215/0.12037/0.05195, measured 1145ms per 9-embedding batch. Core 8/8 469PASS on distinct earlier feature SHA f4f5f088.
+4. Completed/in progress/blocked: Real model runtime smoke verified. Unbuilt safe service adapter, enterprise source authorization, approved signed PREP/SMAX AX, real employee IdP, customer Gold100, physical Windows10/11, redistribution licensing, security signoff remain. Official UNASSESSED/[작업중]/RELEASE HOLD.
+5. Failure/diagnosis/retry restrictions: First code 44e3e8a0 run #43540283742 0-job fail from YAML unquoted colon+space pip --only-binary=:all:; fixed single scalar using folded syntax in a3ffc4ba, new run all steps successful. Do not rerun invalid old workflow.
+6. Repo/branch/SHA/paths: hibi89/Freelancer product/rag-enterprise-knowledge, code a3ffc4ba5a05e0b140ba08d8f248b6b0bc44e64e, previous doc base fe36801be4a44fbf56b47c78310bd9b4bf59f664. Paths scripts/p85_korean_real_onnx.py, scripts/p85_korean_model_fetch.py, tests/test_p85_korean_real_onnx.py, .github/workflows/citevault-korean-onnx-smoke.yml, docs/P85_REAL_KOREAN_ONNX_PLAN_20261114.md.
+7. Production/Vercel/environment: N/A; Ubuntu24.04 Node22.16 Python3.11, pinned numpy1.26.4/onnxruntime1.20.1/tokenizers0.21.1 on hosted public standard runner. No production URL, no artifact cache, no paid API. Commands: python -m unittest discover -s tests -p test_p85_korean_real_onnx.py -v; python scripts/p85_korean_real_onnx.py --self-test --model-dir ABS_MODEL_DIR.
+8. Original/backups/secrets: Prior git parent safe rollback, original RAG/PREP/SMAX/customer assets/account and CI permissions unchanged; no model weights or secrets committed. Shared Freelancer PUBLIC, historical security assessment outstanding.
+9. Next priority/acceptance/approvals: Strictly ACL-before-inference LOCAL adapter only with code/test evidence; signed authorized customer PREP/SMAX source + IdP; real Gold100 and Win10/11 installer/security/license; owner approved full 24 weighted acceptance. User approves free development, not missing customer permissions or legal rights.
+10. Updated/verified scope/docs commit: 2026-11-14 10:25 KST; exact source run #43540387093 verified via GitHub jobs/logs, doc HEAD to check after this update. 85% not claimed. SALE NO-GO.
+
+
 ## [2026-11-14 KST] REQ17 local Korean model preflight / 469PASS — HANDOFF 10항
 
 1. **목표·확정 요구·기술:** CITEVAULT AX 전체24항 85% 목표, RAG native/PREP-SMAX signed review + corporate ACL/IdP + real Korean dense/LLM + Windows installs + heldout Gold100. REQ17 local model now selected as **candidate only**, official UNASSESSED.

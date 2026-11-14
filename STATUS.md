@@ -1,5 +1,14 @@
 # CITEVAULT AX — STATUS — RAG Studio Enterprise, 2026-11-13 KST
 
+## [2026-11-14 10:25 KST] Real Korean E5 ONNX hosted inference verified
+
+- Exact tested code SHA a3ffc4ba5a05e0b140ba08d8f248b6b0bc44e64e; [actual Actions run #43540387093](https://github.com/hibi89/Freelancer/actions/runs/43540387093) Ubuntu24.04 1/1 SUCCESS. Python 3.11 4/4 unit contracts PASS; SHA-matched ephemeral downloaded ONNX 118,054,593 bytes; real CPU inference 384 dimensions; fixed synthetic Korean query/positive/negative retrieval 3/3 correct, cosine margins [0.09215, 0.12037, 0.05195], 1,145ms measured for 9 synthetic embedding inputs on runner.
+- Initial run #43540283742 at SHA 44e3e8a0 had 0-job YAML parse FAIL because pip --only-binary=:all: bare scalar colon+space; corrected workflow with run folded scalar at SHA a3ffc4ba. No repeated failed workflow needed.
+- Only public model downloaded into GitHub hosted ephemeral environment; no weights/customer files/secrets checked into repository, no paid service. Original ACL/BM25 SEARCH_ONLY path, RAG, PREP/SMAX and production untouched.
+- Existing CITEVAULT core CI #43537747863 still 8/8 SUCCESS 469 executed tests PASS on exact earlier source f4f5f088; THIS latest documentation change did not rerun core tests. No real customer Gold100, authorized PREP/SMAX production AX import, employee IdP, real Windows10/11 installer, security/legal/model redistribution licensing acceptance.
+- OFFICIAL FULL-24-REQ FINAL COMPLETION UNASSESSED / 85% NOT CERTIFIED / [작업중] / RELEASE HOLD / SALE NO-GO. Public shared Freelancer historical branches still need secrets/IP audit.
+
+
 ## [2026-11-14 KST] REQ17 로컬 모델 ONNX 파일 무결성 사전검사 + 정확 호스티드469PASS
 
 - `f4f5f088b9fb2d89937c825445c035d1a4da0ca2` [CI #43537747863](https://github.com/hibi89/Freelancer/actions/runs/43537747863) **8/8 SUCCESS, 469 executed PASS/0FAIL/0SKIP** (Linux/Windows 중복), 마지막 웹 Chrome 및 Windows local/portable 회귀 보존. 신규 한국어 ONNX offline asset preflight 각각7PASS(총14). Linux local Node22 원격 GitHub blob 정확 해시를 재현한 7PASS도 확인.
