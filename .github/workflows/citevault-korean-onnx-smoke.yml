@@ -1,0 +1,47 @@
+name: CITEVAULT real Korean ONNX synthetic-only smoke
+on:
+  push:
+    branches: [product/rag-enterprise-knowledge]
+    paths:
+      - scripts/p85_korean_real_onnx.py
+      - scripts/p85_korean_model_fetch.py
+      - tests/test_p85_korean_real_onnx.py
+      - enterprise/p85-korean-model-preflight.mjs
+      - scripts/p85-korean-model-check.mjs
+      - .github/workflows/citevault-korean-onnx-smoke.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-korean-onnx-synthetic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout source without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Setup Node 22 for exact SHA security preflight
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Install public pinned CPU-only runtime dependencies
+        run: python -m pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: numpy==1.26.4 onnxruntime==1.20.1 tokenizers==0.21.1
+      - name: Validate embedding contracts without model artifacts
+        run: python -m unittest discover -s tests -p test_p85_korean_real_onnx.py -v
+      - name: Fetch public model to ephemeral runner only and SHA-verify
+        shell: bash
+        run: python scripts/p85_korean_model_fetch.py --dest "$RUNNER_TEMP/citevault-korean-e5"
+      - name: Run exact pinned Node model preflight on downloaded artifacts
+        shell: bash
+        run: node scripts/p85-korean-model-check.mjs --model-dir "$RUNNER_TEMP/citevault-korean-e5"
+      - name: Run real Korean E5 ONNX CPU embeddings with synthetic phrases
+        shell: bash
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: python scripts/p85_korean_real_onnx.py --self-test --model-dir "$RUNNER_TEMP/citevault-korean-e5"
