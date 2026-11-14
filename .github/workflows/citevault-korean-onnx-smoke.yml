@@ -30,7 +30,9 @@ jobs:
         with:
           node-version: '22.16.0'
       - name: Install public pinned CPU-only runtime dependencies
-        run: python -m pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: numpy==1.26.4 onnxruntime==1.20.1 tokenizers==0.21.1
+        run: >-
+          python -m pip install --disable-pip-version-check --no-cache-dir
+          --only-binary=:all: numpy==1.26.4 onnxruntime==1.20.1 tokenizers==0.21.1
       - name: Validate embedding contracts without model artifacts
         run: python -m unittest discover -s tests -p test_p85_korean_real_onnx.py -v
       - name: Fetch public model to ephemeral runner only and SHA-verify
