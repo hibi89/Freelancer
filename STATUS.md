@@ -1,3 +1,10 @@
+## [2026-11-14 KST] WORKNOVA Desk 실제 Windows frozen EXE 전체 합성 업무 수용 범위 확장 + 한국어 GUI
+
+- **신규 구현:** Windows onedir EXE가 CI 전용 `WORKNOVA_TEST_OFFLINE_ONLY=1` 환경에서만 자체 합성 견적(원화+부가세)→승인→계약 활성화→납품→검수→부분수금/중복·초과 거부→SHA 원장/백업·새 경로 복원을 검증하도록 분리된 `worknova_desk/synthetic_acceptance.py`와 메인 EXE 스모크 연동. 실 고객 `LOCALAPPDATA`/장부 사용 없음. 실제 Tk 업무표 내부 컬럼/DB 키는 바꾸지 않고 보이는 영문 제목 8개를 한글화.
+- **실제 실행:** 제품 코드 SHA `50ecb87b13a343c4b8428ea6c204afec57f6cd1a` [Actions #43540390516](https://github.com/hibi89/Freelancer/actions/runs/43540390516) **3/3 SUCCESS**: Ubuntu Python3.11 **174건 중 173 PASS/1 SKIP**, Windows Python3.11 **174건 중 165 PASS/9 SKIP**, Windows 포터블 설치·백업/복구/업그레이드/삭제 **11/11 PASS**, native Windows PyInstaller onedir EXE 실제 Tk 창/정상종료 + **EXE 내부 전체 합성 업무·수금2건·장부 복원 PASS**. EXE unsigned SHA256 `9bc55621d0c1f67cf363cc1e056412978cc79080d9e8770e268fe20bade69e6f`, 크기 2,300,758 bytes, 임시 러너 내부 생성만(아티팩트 미게시). [Evidence gate #43540391034](https://github.com/hibi89/Freelancer/actions/runs/43540391034) SUCCESS(계량 점검이며 구매자 수용 아님).
+- **승인 최종설계:** WD01–14 100점/전 항목 완전 고객 수용 방식 그대로 유지. 인수완료 PASS로 승인된 항목은 여전히 **0/100점**, **85점 목표 미달**(구현률 아님). WD13 실 고객 Windows ACL/상시 DB 암호화·서명, WD14 실 고객·상업권·법무·지원, Word 인쇄/고객 개인정보 최종 수용 등의 외부 조건은 자동 QA가 대체하지 않음. 두 항목 미승인만으로도 수학적 최대84점. **[작업중] / RELEASE HOLD / 크몽 미등록**.
+- 원본 DB/백업·고객 Windows OS 정책, 결제/PayPal, 중앙 등록완료 이력/타 상품 불변. Vercel Production 미적용(오프라인 제품). 상세 `docs/P85_FROZEN_EXE_LIFECYCLE_AND_KO_HEADERS_20261114.md`.
+
 # WORKNOVA Desk CI verification and final acceptance gate — 2026-11-14 KST
 
 - Product: `hibi89/Freelancer@product/worknova-desk-local`; **verified executable code SHA `c8bb18ea3decaa6f3357d1849dd5272ca6721af8`** (documentation commits follow; source/CI baseline fixed).

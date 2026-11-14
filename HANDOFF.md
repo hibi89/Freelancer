@@ -1,3 +1,18 @@
+# HANDOFF — 2026-11-14 KST WORKNOVA Desk native frozen EXE 전체 비즈니스 자동QA 3/3 SUCCESS (10항)
+
+1. **목표·범위·기술:** `hibi89/Freelancer@product/worknova-desk-local`, 오프라인 Windows Python3.11/Tk/SQLite 견적·계약·납품·수금. 승인 WD01~14 합100점 중 최종 고객 완전 인수≥85점, 점수방식/분모 불변.
+2. **완료 기능·변경·판단:** EXE 단순 창 열기+합성 거래처 DB를 넘어 `worknova_desk/synthetic_acceptance.py`로 frozen EXE 내부에서 가상 견적 VAT→승인→계약→납품→검수→부분수금·중복/초과 거부→새 경로 백업 복원/감사 검증. EXE 진입은 `--synthetic-qa-report`와 명시적 CI 환경변수로만 활성화, 원래 고객 `LOCALAPPDATA`/데이터 접근 없음. Tk Treeview 구매자 표 8개 컬럼 표시를 한국어로 변경; DB 컬럼·키 불변.
+3. **테스트/성공·실패·미검증:** 코드 SHA `50ecb87b13a343c4b8428ea6c204afec57f6cd1a`, [실제 Actions #43540390516](https://github.com/hibi89/Freelancer/actions/runs/43540390516) **3/3 SUCCESS**. Linux 174(173PASS/1SKIP), Windows 174(165PASS/9SKIP), Windows 설치·백업·복구·갱신·삭제 합성11/11 PASS, EXE 실제 GUI 열기/정상 종료+EXE 내부 synthetic receipt 2건·restore·audit·SQLite integrity PASS. 신규 테스트6개(동결 EXE 비즈니스4, 한국어 컬럼2). Evidence gate #43540391034 SUCCESS. 실고객/Win10 오너 보안/Word 인쇄·Defender/코드서명/법무 인증 NOT_RUN.
+4. **완료·진행·대기:** 추가 무인 자동화와 GUI 로컬라이즈 완료·3/3 CI 확인. WD 항목별 완전 구매자 수용 **0/100(구현률 아님)**, 85 목표 **미달**. [작업중], RELEASE HOLD, 크몽 미등록. 이미 성공한 CI 원인 패치는 재실행 반복하지 말 것.
+5. **오류 근거·재시도 금지·대안:** 앞선 실제 CI 결함은 이전 HEAD에서 모두 수정·3/3 검증. 이번 신규 frozen 테스트 및 한글 제목은 모두 PASS, 새 실패 없음. 무인 합성 QA를 실제 고객 승인이나 권리·서명으로 대체 금지. 유료 인증서 구매/OS 접근제어 변경/실고객 처리/범위 축소는 사전 승인.
+6. **저장소·브랜치·SHA/경로:** 제품 코드 `50ecb87b13a343c4b8428ea6c204afec57f6cd1a`; `tools/windows_gui_entry.py`, `tools/windows_exe_smoke.py`, `worknova_desk/synthetic_acceptance.py`, `tests/test_frozen_synthetic_acceptance.py`, `worknova_desk/gui.py`, `tests/test_gui_korean_headers.py`. 이전 코드 SHA `c8bb18ea3decaa6f3357d1849dd5272ca6721af8`와 이전 문서 HEAD `569daafd9a4e61394f3750f8876e6d3eba02a632` 보존. 문서 커밋/원격 HEAD는 갱신 후 확인.
+7. **Production/배포/환경:** 웹/Vercel 미적용. GitHub public standard Windows hosted runner, PyInstaller6.22.3, unsigned onedir EXE SHA256 `9bc55621d0c1f67cf363cc1e056412978cc79080d9e8770e268fe20bade69e6f`, 2,300,758 bytes; 임시 runner에만 생성, 다운로드·판매 아티팩트 미게시.
+8. **원본·복구·인증·수정금지:** 새 synthetic DB/temp 백업·독립 JSON은 runner에서 삭제. 기존 운영/실고객 DB·백업·Windows ACL·서명키·PayPal·Freelancer main·다른 상품·크몽 등록 이력 수정 없음; Git 정상 revert로 복구 가능, force push 없음.
+9. **다음 우선순위·완료·승인:** 개발자 단독 가능한 고품질 QA/GUI/보안 설계 지속. 실제 WD13 실 고객 OS 권한·상시 저장장부 암호화·신뢰 가능한 코드서명 및 WD14 실 구매자/법무/라이선스/지원 승인 없이 85/100 선언 금지. WD12 Word/PDF/폰트 상업권도 별도 검증. 구매자 측 승인/보안·권리 작업은 필요시 마지막에 한 번만 요청.
+10. **갱신 KST·확인범위·문서 기준:** 2026-11-14 KST, 실제 Actions/Job/EXE smoke 로그 확인, 코드 기준 `50ecb87b13a343c4b8428ea6c204afec57f6cd1a`, 원격 3/3 SUCCESS. 실사용 고객/Windows10/11 전용 설치 환경·상업권은 미검증. 문서 HEAD/중앙 SHA는 쓰기 후 조회.
+
+---
+
 # HANDOFF — 2026-11-14 KST / WORKNOVA Desk actual hosted Linux+Windows+EXE CI 3/3 SUCCESS (10 required items)
 
 1. **Goal/requirements/technology**: Worknova offline Windows Python 3.11 Tk/SQLite, owner-approved WD01–WD14 weighted 100, target final customer acceptance ≥85 without changing denominator or rules.

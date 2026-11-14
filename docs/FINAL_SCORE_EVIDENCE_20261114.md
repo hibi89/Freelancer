@@ -1,3 +1,9 @@
+## 2026-11-14 KST — 실제 frozen EXE의 전체 가상 계약·수금·복원 PASS + Windows GUI 컬럼 한글화
+
+기능 SHA `50ecb87b13a343c4b8428ea6c204afec57f6cd1a`, [GitHub hosted CI #43540390516](https://github.com/hibi89/Freelancer/actions/runs/43540390516) **3/3 SUCCESS**. Linux Python3.11 총174 중173PASS/1SKIP, Windows Python3.11 총174 중165PASS/9SKIP, Windows 설치·복원·삭제 합성11/11 PASS. Windows unsigned onedir Tk GUI 실제 창·종료/합성 고객 SQLite와 **EXE 자체 바이너리의** VAT·견적승인→계약→납품·검수→부분수금2건/중복·초과 거부→백업·복원/감사 무결성 PASS. SHA256 `9bc55621d0c1f67cf363cc1e056412978cc79080d9e8770e268fe20bade69e6f`, 2,300,758 bytes. 사용자용 거래처·견적·계약·납품 업무표의 영어 헤더 8개 한국어로 수정, 내부 데이터 키 불변/회귀 PASS. [평가 게이트 #43540391034](https://github.com/hibi89/Freelancer/actions/runs/43540391034) PASS는 증거 회계 확인으로 구매자 승인이 아님.
+
+**정식 인정 0/100, 목표 85 미달**: 이 항목별 완전 고객 수용 점수는 구현/자동화가 아닌 외부 확인 게이트를 포함. WD13 Windows 고객 현장 OS ACL/활성 DB 보호·신뢰 코드서명, WD14 구매자·법무·권리·지원, WD12 Word/폰트 권리는 여전히 미충족. `[작업중]`·RELEASE HOLD·미등록. 기존 고객장부·OS·타 상품 불변. 세부 기록 `docs/P85_FROZEN_EXE_LIFECYCLE_AND_KO_HEADERS_20261114.md`.
+
 ## 2026-11-14 KST — 무료 Linux/Windows CI와 Windows EXE GUI 무인 스모크 자동화 구성
 
 현재 제품 저장소는 public이며 GitHub standard ubuntu-latest/windows-latest 무료 러너 정책 확인. .github/workflows/worknova-desk-qa.yml을 제품 브랜치 push 전용으로 구현: Python3.11 합성 업무 unittest2종+전체 회귀, Windows 안전한 11합성 설치/백업 검사, PyInstaller6.22.3 EXE 자동 빌드/기본 SHA, tools/windows_exe_smoke.py로 Tk 창/WM_CLOSE/임시 LOCALAPPDATA SQLite v2/합성 고객 보존 자동검사. 아티팩트/캐시 업로드·유료 러너/OS 보안 정책 변경 없음.
