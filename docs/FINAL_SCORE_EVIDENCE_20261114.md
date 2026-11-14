@@ -1,3 +1,9 @@
+## 2026-11-14 KST — Windows EXE 3차 냉시작 기존 GUI 거래처 복원 확인
+
+소유자 PowerShell `$p3=[Diagnostics.Process]::Start($psi2)`, `$p3.WaitForExit()`, **`ExitCode:0`** 제공, 기존 가짜 거래처 `WORKNOVA_QA_TEST_01`이 **세 번째 메인 GUI에서 “그대로있더라”**고 사용자 직접 확인. 앞선 같은 임시 `$qaRoot` 두 번째 GUI 생성→ExitCode0→SQLite `SyntheticCustomerCount:1`, integrity ok에 연결됨. **EXE 재실행·기존 거래처 GUI 복원 PASS(사용자 현장 육안 증거)**. 3차 화면 스크린샷이나 별도 SQL은 아직 없음. 견적/계약/수금 실제 E2E·OS 접근통제·라이선스/실고객·무Python PC는 미검증. 상세 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`.
+
+WD01/08/09/11/13 부분 검증 강화, 승인 전체100점의 항목 완전 수용 정식 **0/100**, 목표85 미달, **[작업중]/RELEASE HOLD/미등록** 불변.
+
 ## 2026-11-14 KST — 네이티브 EXE GUI 합성 거래처 생성·SQLite 저장 보존 PASS
 
 사용자 제공 스크린샷+PowerShell에서 동일 임시 `$qaRoot` `LOCALAPPDATA`를 재사용하여 **두 번째 Windows EXE 기동**, 새 거래처 `WORKNOVA_QA_TEST_01` 1건 생성·GUI 표/ID 및 `완료(로컬 기록)` 표시 확인. X 종료 후 **`ExitCode: 0`**, 동일 `desk.sqlite` 읽기전용 SQL **`SyntheticCustomerCount: 1`**, `PRAGMA integrity_check: ok`. **GUI 실제 입력·디스크 보존·정상 종료** 추가 PASS. 단, 세 번째 GUI 기동/화면 복원·견적/계약/수금 등 전체 업무 E2E·타 PC·OS ACL/활성 장부 암호화/서명·Defender/상용권/실고객 미검증. 상세 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md` (고객 스크린샷 원본/DB GitHub 업로드 없음).
