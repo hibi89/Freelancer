@@ -1,3 +1,12 @@
+# STATUS — 2026-11-14 KST 반복 소유자 테스트 중단·무인 소스 기반 QA 2종 추가 (최신)
+
+- **사용자 추가 현장 증거:** 같은 격리 Windows EXE 네 번째 실행 `$p4.WaitForExit()` 후 `ExitCode: 0`. 사용자가 가짜 견적 생성 단계는 진행했다고 진술하나 **견적 GUI 표/DB 행 출력은 미수신**하여 기능 PASS 증거로 계산하지 않음. 이전 native Windows EXE 3회/거래처 저장·재표시 및 `integrity_check=ok` 근거 유지.
+- **작업 방식 개선:** 형의 Windows GUI 수동클릭 반복 요청을 중단, 개발 담당자가 수행할 무인 테스트 `tests/test_unattended_business_lifecycle.py` **2개** 신규 추가(임시 SQLite에서 견적→승인→계약→납품→검수→수금, 부정/중복 수금, 거래처·장부 재개방/감사 체인 검증). 사용자 실거래처/원본/서명·OS 정책은 건드리지 않음.
+- **검증 구분:** 새 테스트 파일 Git blob SHA `4df97d19a5bcacc203babff5136dc2fc48b40fac`를 로컬 동일 파일 SHA1과 대조 **일치**, 139줄/6182 UTF-8 bytes, Python `ast.parse` **PASS**. **실제 `unittest` 2종 런/제품 전체 CI NOT_RUN**: 전체 비공개 저장소의 실행 가능한 소스가 현재 로컬 QA 런타임에 없고 GitHub Actions dispatch 도구 없음, 사용자 승인 없는 과금 가능 Windows Actions 실행하지 않음. 자세한 비교/증거 `docs/P85_UNATTENDED_QA_STRATEGY_20261114.md`.
+- 사용자 승인 WD01~14 총100점 항목별 전체 구매자 수용 PASS만 점수로 인정, 정식 **0/100(코드 구현률0 의미 아님), 목표85 미달, [작업중]/RELEASE HOLD/크몽 미등록**. 다음: **내가 소스 자동 테스트를 실행 가능한 환경에서 검증**, 사전 필요 없는 형의 수동 GUI 테스트 지시 금지.
+
+---
+
 # STATUS — 2026-11-14 KST 실제 Windows EXE 3차 재실행 기존 거래처 GUI 복원 PASS (최신)
 
 - 사용자 콘솔 `$p3 = [System.Diagnostics.Process]::Start($psi2)` 후 `$p3.WaitForExit()`, **`ExitCode: 0`**, 사용자 육안 보고 “그대로있더라”: 이전 생성한 합성 `WORKNOVA_QA_TEST_01` 거래처가 **세 번째 Windows onedir EXE 프로세스의 Tk GUI에 그대로 표시**. 동일 자식 임시 `LOCALAPPDATA=$qaRoot` 사용. 전회차 2차 EXE에서 GUI 생성·종료 후 SQLite 읽기전용 `SyntheticCustomerCount:1`, `integrity_check:ok`와 연결되어, **생성→저장→종료→재시작 후 기존 목록 복원** 실제 Windows 사용자 검증 PASS. 3차 별도 스크린샷/재SQL은 미수신, 사용자 현장 육안 보고. 증거 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`.
