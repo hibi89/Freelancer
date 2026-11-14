@@ -14,6 +14,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -35,8 +36,14 @@ def _run(command: list[str], *, cwd: Path, env: dict[str, str], label: str) -> N
     result = subprocess.run(command, cwd=str(cwd), env=env, text=True,
                             capture_output=True, timeout=100, check=False)
     if result.returncode != 0:
-        # Tool output could contain file paths or private user data: avoid echoing.
-        raise RuntimeError(f'{label}: process exited {result.returncode}; inspect local console in a private environment')
+        # Commands in this module operate only on ephemeral synthetic profiles.
+        # Strip runner paths before emitting a bounded, actionable CI error.
+        diagnostic = (result.stderr or result.stdout or '').strip()
+        diagnostic = diagnostic.replace(str(cwd), '[QA_SOURCE]')
+        diagnostic = diagnostic.replace(env['LOCALAPPDATA'], '[QA_PROFILE]')
+        diagnostic = re.sub(r'[A-Za-z]:\\[^\s]+', '[PATH]', diagnostic)
+        diagnostic = diagnostic[-700:].replace('\r', ' ').replace('\n', ' | ')
+        raise RuntimeError(f'{label}: process exited {result.returncode}; synthetic diagnostic: {diagnostic or "none"}')
 
 
 def _sha(path: Path) -> str:

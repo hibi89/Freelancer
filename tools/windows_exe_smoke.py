@@ -64,25 +64,31 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description='Offline Windows EXE GUI smoke; synthetic data only')
     parser.add_argument('--exe', required=True)
     args = parser.parse_args(argv)
+    stage = 'platform'
     try:
         if sys.platform != 'win32':
             raise RuntimeError('Native Windows desktop required')
+        stage = 'validate-onedir-path'
         exe = Path(args.exe).absolute()
         if (exe.name != 'WORKNOVA-Desk.exe' or not exe.is_file() or exe.is_symlink()
                 or not (exe.parent / '_internal').is_dir()):
             raise RuntimeError('Expected safe onedir EXE and _internal files required')
+        stage = 'read-exe'
         with exe.open('rb') as stream:
             if stream.read(2) != b'MZ':
                 raise RuntimeError('Invalid Windows EXE header')
             stream.seek(0)
             digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+        stage = 'import-ledger'
         from worknova_desk.core import Desk
+        stage = 'create-disposable-profile'
         with tempfile.TemporaryDirectory(prefix='worknova-ci-exe-') as qa_root:
             appdata = Path(qa_root) / 'appdata'
             data_dir = appdata / 'WORKNOVA Desk' / 'Data'
             data_dir.mkdir(parents=True)
             db_path = data_dir / 'desk.sqlite'
             test_name = 'WORKNOVA_CI_SYNTHETIC_CUSTOMER'
+            stage = 'create-synthetic-ledger'
             desk = Desk(db_path, allow_create=True)
             try:
                 desk.add_customer(test_name, actor='qa-only')
@@ -90,8 +96,10 @@ def main(argv=None) -> int:
                 desk.close()
             env = os.environ.copy()
             env['LOCALAPPDATA'] = str(appdata)
+            stage = 'launch-exe'
             proc = subprocess.Popen([str(exe)], cwd=str(exe.parent), env=env)
             try:
+                stage = 'wait-for-owned-gui'
                 hwnd = None
                 deadline = time.monotonic() + 15
                 while time.monotonic() < deadline:
@@ -106,6 +114,7 @@ def main(argv=None) -> int:
                 user32 = ctypes.windll.user32
                 user32.PostMessageW.argtypes = [wintypes.HWND, wintypes.UINT, wintypes.WPARAM, wintypes.LPARAM]
                 user32.PostMessageW.restype = wintypes.BOOL
+                stage = 'close-owned-gui'
                 if not user32.PostMessageW(hwnd, 0x0010, 0, 0):  # WM_CLOSE, only owned window
                     raise RuntimeError('Failed to request GUI close')
                 if proc.wait(timeout=12) != 0:
@@ -118,6 +127,7 @@ def main(argv=None) -> int:
                     except subprocess.TimeoutExpired:
                         proc.kill()
                         proc.wait(timeout=5)
+            stage = 'verify-synthetic-ledger'
             with sqlite3.connect(db_path.resolve().as_uri() + '?mode=ro', uri=True) as db:
                 if db.execute('PRAGMA user_version').fetchone()[0] != 2:
                     raise RuntimeError('SQLite schema version mismatch')
@@ -131,7 +141,9 @@ def main(argv=None) -> int:
                           'synthetic_customers': 1, 'release': 'HOLD'}))
         return 0
     except Exception as exc:
-        print(json.dumps({'ok': False, 'error_type': type(exc).__name__,
+        print(json.dumps({'ok': False, 'stage': stage,
+                          'error_type': type(exc).__name__,
+                          'winerror': getattr(exc, 'winerror', None),
                           'scope': 'native Windows GUI NOT verified', 'release': 'HOLD'}))
         return 3
 

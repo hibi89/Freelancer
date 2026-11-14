@@ -40,6 +40,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - name: Install pinned optional AES-GCM regression dependency
+        run: python -m pip install --disable-pip-version-check --no-input cryptography==46.0.3
       - name: Verify synthetic quote through collection lifecycle
         run: python -m unittest discover -s tests -p test_unattended_business_lifecycle.py -v
       - name: Native Windows offline install rollback backup and Tk acceptance (11 checks)
