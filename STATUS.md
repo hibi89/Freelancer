@@ -1,3 +1,11 @@
+## [2026-11-14 KST] 온비드 공식 필드 안전감사/상세 후보 + Windows/Linux 오프라인 CI
+- 실제 15157252 1페이지 10/10 확인 기반 공개 필드의 존재 건수만 출력하는 onbid-field-audit 및 본인 동의 로컬 상세 후보 큐 구현. 고객 키/원문 불수신, 추가 정부 호출·자동 적재 0.
+- Linux Python3.13.5 **235 PASS/0 FAIL**, compileall/Python3.11 AST 35개 PASS, 핵심 Git blob 3/3 로컬과 일치.
+- 공개 GitHub 저장소 표준 러너 무료 조건에서 기능 브랜치 전용 코드 회귀 CI(Python3.11 Windows/Linux, Linux3.13)와 unsigned Windows EXE 빌드 스모크 추가. CI 결과 확정 전 **PENDING/미검증**, 고객 배포/판매 미시행.
+- 실 item 식별자·나머지 공식 API/후속18페이지·실100공고/인간10건/고객권리/Windows 실제 사용자 수용 미검증. 고정 R01–R29 공식 UNASSESSED, 목표85% 미입증, [작업중]/RELEASE HOLD/크몽 미등록.
+- 상세 docs/ONBID_OFFICIAL_FIELD_BRIDGE_20261114.md.
+
+---
 ## [2026-11-14 KST] 온비드 15157252 실응답 첫 페이지 10/10 확인·19페이지 오프라인 계획 구현
 - 사용자 Windows 안전 출력으로 실제 `body.items.item` 리스트 **10개**, 요청 10개 **일치**. `SUCCESS_CODE_CANDIDATE`, `pageNo=1`, `numOfRows=10`, `totalCount=186`, SHA-256 저장본 일치. 186은 전체 **보고값**이지 실제 186건 다운로드 실적 아님.
 - 신규 `api-page-plan`은 기존 격리 파일만 검사하고 `reported_total_pages=19`, `next_page_if_sequential=2`, `pages_after_inspected_page=18`을 **추정 계획**으로 표시. 다른 18페이지 조회/검증 및 자동수집은 수행하지 않음.

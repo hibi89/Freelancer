@@ -1,3 +1,5 @@
+> **Owner decision (2026-11-14):** The proposed 100-point weights below are a *historical unapproved draft*, not the operating completion rule. The user fixed R01–R29 as the full 100% design and rejected new weight approvals. Evaluate actual acceptance per requirement and evidence; do not convert test counts or this proposal to official completion. 85% remains unproven.
+
 # BID AX 최종설계 R01–R29 전수 수용 및 100점 가중치 제안 — 2026-11-14 KST
 
 **중요: 사용자 승인 전 배점 초안**. 29개 최종 요구를 유지하며 원래 R01~R21 및 추가 R22~R29를 줄이거나 삭제하지 않는다.

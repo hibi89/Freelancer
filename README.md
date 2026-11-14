@@ -1,3 +1,5 @@
+> **[2026-11-14]** Onbid offline audit: `onbid-field-audit LOCAL_PACKET` prints documented field-presence **counts only**, never identities/values/key. `onbid-detail-queue LOCAL_PACKET --out NEW_LOCAL_FILE --consent` creates **unexecuted private local** result-detail candidate plans (never share queue). Mock regression 235 PASS Linux, actual item field values and customer Windows unverified. [Guide](docs/ONBID_OFFICIAL_FIELD_BRIDGE_20261114.md). Official final 85% NOT verified; release HOLD.
+
 > **[2026-11-14 무료 API 공통 인증키 연결기]** 사용자 공공데이터포털 활용신청 완료 4개(나라장터1+온비드3), 인증키 동일. 로컬 CLI `api-probe`는 기본 무HTTP 계획/키입력 없음, `--live --out 신규파일`만 동의 후 임시 키 입력하여 별도 원문 격리 저장. 각 API 이용권/호출량은 독립. **온비드 공고물건 15157220은 실제 operation 미확인으로 호출 차단**. 실제 키·실 응답·Win/고객 검증 없음; [실행·보안 안내](docs/API_GATEWAY_SHARED_KEY_20261114.md). 공식 최종률 UNASSESSED, 목표85% [작업중]/HOLD.
 
 ## 2026-11-14 Optional Korean PDF and court document preview (P85 follow-up, unreleased)

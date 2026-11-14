@@ -1,3 +1,16 @@
+# BID AX 오프라인 필드 계약·무료 공개 Windows CI 인수인계 — 2026-11-14 KST
+1. 목표/용도/스택: R01–R29 29개 전 요구 고정, 목표85%, G2B·온비드·동의 기반 법원 자료 로컬 Python3.11+ SQLite Tk. 가중치 재승인 없음.
+2. 완료/선택: 15157252 실 첫10/10 기반 해시 검증을 거친 공개 필드 존재 건수 출력, 상세15157254 후보 로컬 새 파일 생성/명시 동의/미호출. 자동 입찰·판정·DB 적재 금지.
+3. 테스트: Linux Python3.13.5 235 PASS/0FAIL, compileall PASS, Python3.11 AST 35 PASS; 소스+CLI+신규테스트 Git blob 3/3 동일. Windows CI는 새 GitHub Actions 실행 뒤 상태 확인 전 PENDING.
+4. 상태: 나머지 3 API 실제 호출·186건(후속18페이지) 전수/실 item 식별자/100실공고·인간10/고객 Windows·상용권 미검증. 공식 UNASSESSED/85% 미입증/[작업중]/HOLD/미등록.
+5. 오류·근거·대안: 구형 parser의 direct header/body 거부는 기존 수정됨. 실제 아이템 필드명을 안다고 추정하지 않고 사용자 PC에서 안전 필드명 건수만 확인하도록 전환.
+6. 저장소/브랜치/SHA/경로: hibi89/Freelancer@product/bid-ax-public-procurement, 기능 커밋 631beaf9bfc2f849c107fb94b4b495577e330b01; bidax/onbid_official_bridge.py, cli.py, tests/test_onbid_official_bridge.py, docs/ONBID_OFFICIAL_FIELD_BRIDGE_20261114.md, new .github/workflows/bid-ax-offline-regression.yml. 문서 HEAD 재확인.
+7. Production/환경: Vercel 미적용, 로컬 CLI/비출시 pyz, CI에서 unsigned console EXE smoke만. public standard runners 비용 무료, 원본 고객 Win10/11 EXE/SmartScreen 수용은 아님.
+8. 원본/비밀/백업: 실 local/result_001.json, 고객 키·DB/원본, BID OWL 및 다른 상품 불변, Git 정상 revert 가능. 후보 큐 고객 PC 밖 유출 금지.
+9. 우선순위/승인: Actions 실제 결과 검사/오류 정정→고객 PC 현장 필드 건수·다른 API·18페이지/로컬 증분·권리·설치/고객 수용. 유료/키 외부저장/실원본 전송/출시는 사전 승인.
+10. 갱신 KST/검증: 2026-11-14 KST, 사용자 로그 15157252 첫10건/로컬 mock 235/원격코드 SHA; 새 CI 실 성공은 미확인. 다른 문서·과거 이력 유지.
+
+---
 # BID AX 온비드 첫 10건·19페이지 오프라인 계획 인수인계 — 2026-11-14 KST (10항)
 1. **목표·용도·기술:** R01–R29 고정 전체 설계 100% 대비 85% 목표, G2B/온비드/소유권 확인 법원자료 로컬 Python3.11+ SQLite/Tk. 배점 추가 승인 없음.
 2. **완료 기능·변경:** 사용자 Windows 실제 첫 페이지 `item` 10/10과 전체 보고 186 확인. 오프라인 `api-page-plan`으로 19페이지 예상/후속18 미검증 표시, 자동 호출 금지. 온비드 direct header 오류 응답 저장 전 차단.
