@@ -1,3 +1,18 @@
+# HANDOFF — 2026-11-14 KST WORKNOVA Desk EXE GUI 거래처 1건·SQLite 저장 지속성 실증 (최신 10항)
+
+1. **목표/용도·정본 요구/기술:** WORKNOVA Desk 오프라인 Windows Python3.11/Tk/SQLite 견적→계약→납품·수금. 사용자 승인 WD01~14 총100점, 각 항목 최종 구매자 완전 인수 가중치합85점 목표.
+2. **완료·결정:** native Windows PyInstaller onedir EXE 빌드·SHA/MZ, 최초 빈 장부 생성·GUI/ExitCode0·SQLite `integrity_check ok`/v2에 이어, **같은 임시 LOCALAPPDATA 재사용하여 EXE 두 번째 기동**→합성 거래처1건 GUI 생성→종료 후 SQL 조회 1건 확인. 실고객/원본 사용 안함.
+3. **테스트·결과/미검증:** 스크린샷에서 `WORKNOVA_QA_TEST_01` 행/ID·`완료(로컬 기록)` 확인; 사용자 PowerShell `$p2.WaitForExit()`, `ExitCode: 0`, Python `sqlite3 mode=ro` `SyntheticCustomerCount: 1`, `integrity_check: ok`. **Windows EXE 두번째 프로세스 실행 + 거래처 신규 생성/디스크 저장 PASS**. 제3차 재실행 화면, 계약/납품/수금·감사로그/보안/타기기/상업 권리 실증 미검증. 사용자 DB/EXE 직접 수신 없음.
+4. **완료/진행/대기:** WD01/08/09/11/13 실제 Windows 합성 거래처 데이터 경로 일부 PASS. 승인된 각 WD 항목의 전체 고객 수용엔 못 미쳐 **공식 0/100(구현률0 아님), 목표85 미달, [작업중]/RELEASE HOLD/크몽 미등록**.
+5. **오류 원인·시도/재시도 금지·대안:** 과거 ZIP 2겹 경로/빌더 `PYTHONNOUSERSITE=1` 버그 해결 뒤 정상 EXE 빌드/GUI. 무의미한 동일 빌드·pip 재설치 반복 금지. 다음은 동일 임시 DB의 **cold reopen**으로 거래처 확인, 그 후 테스트 격리 견적/계약 E2E.
+6. **저장소·브랜치·SHA·파일:** `hibi89/Freelancer@product/worknova-desk-local`. 원격 인수 증거 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`, 새 증거 문서 수정 commit `f70ad6bbb079104942779a1c1451103bb79f0c12`, 최종 HEAD 본 기록 이후 GitHub 확인. 구 EXE 산출물 로컬 실제 SHA256 `A7CD6B052108E5630E4AD50151841F0B812654F22E87CFE8338E22CB12A5C23E`; GitHub 소스와 고객 ZIP 정확 해시 일치 미확인.
+7. **Production·URL/명령·환경:** Vercel/Production 해당 없음. Win10.0.26200 PyInstaller6.22.3 onedir unsigned EXE. 사용자는 `ProcessStartInfo` 자식 `LOCALAPPDATA=$qaRoot`와 `$db=$qaRoot/WORKNOVA Desk/Data/desk.sqlite`에서만 합성 테스트.
+8. **원본·백업·인증·수정금지:** 기존 고객 데이터·기본 LOCALAPPDATA/OS ACL·PayPal 원본·Freelancer main·타 크몽 상품 등록/등록완료 이력 수정 없음; 사용자 스크린샷/합성 DB 원본 GitHub 업로드 금지.
+9. **다음 우선순위·절차/완료 기준·승인:** 동일 `$qaRoot` GUI **3차 재시작**에서 기존 거래처 행 보존 시각 확인(수정 불필요), 그 후 실제 합성 견적·계약·납품·수금 정상/오류/백업 동작. WD별 전체 수용 PASS 점수합≥85 시에만 달성, 실제 고객/보안/유료/판매 변경 시 사전 승인.
+10. **갱신 시점·검증 범위/문서 기준:** 2026-11-14 KST, 사용자 Win EXE 2차 구동·GUI 거래처1건·ExitCode0·SQLite SQL read-only 1건/무결성 PASS만 새 근거. 원격 빌드 자체·3차 cold reopen/기능 E2E 미확인, 중앙 원장 최신화 후 SHA 확인.
+
+---
+
 # HANDOFF — 2026-11-14 KST Windows EXE SQLite 무결성·스키마 v2 검증 (최신 10항)
 
 1. **목표·용도·요구/기술:** 사용자가 승인한 WD01~14 정식 최종설계100점/85점 목표, Windows 오프라인 Python3.11/SQLite/Tk 견적·계약·납품·수금 수기 장부.
