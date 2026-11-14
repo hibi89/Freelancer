@@ -40,23 +40,26 @@ test('Windows synthetic-only portable package creates with exact digests, no sec
   const unpack=path.join(root,'restored');
   const quote=s=>"'"+s.replace(/'/g,"''")+"'";
   run('powershell.exe',['-NoProfile','-NonInteractive','-Command',
-    'Compress-Archive -Path '+quote(path.join(bundle,'*'))+' -DestinationPath '+
+    'Compress-Archive -Path '+quote(bundle)+' -DestinationPath '+
       quote(archive)+' -CompressionLevel Optimal -Force']);
   assert.ok(fs.statSync(archive).size>1_000_000);
   run('powershell.exe',['-NoProfile','-NonInteractive','-Command',
     'Expand-Archive -LiteralPath '+quote(archive)+' -DestinationPath '+quote(unpack)]);
+  const extracted=path.join(unpack,'bundle');
+  assert.ok(fs.existsSync(path.join(extracted,'runtime','node.exe')),
+    'ZIP_LAYOUT_UNEXPECTED: '+JSON.stringify(fs.readdirSync(unpack)));
   for(const record of manifest.files){
-    const bytes=fs.readFileSync(path.join(unpack,...record.path.split('/')));
+    const bytes=fs.readFileSync(path.join(extracted,...record.path.split('/')));
     assert.equal(sha(bytes),record.sha256,'restored ZIP '+record.path);
   }
   // Execute the exact unpacked Node binary and UI+state+ACL startup self-test.
-  const exec=run(path.join(unpack,'runtime','node.exe'),
-    [path.join(unpack,'scripts','p85-operator-demo.mjs'),'--self-test'],{cwd:unpack});
+  const exec=run(path.join(extracted,'runtime','node.exe'),
+    [path.join(extracted,'scripts','p85-operator-demo.mjs'),'--self-test'],{cwd:extracted});
   const output=JSON.parse(exec.stdout.trim());
   assert.equal(output.status,'PASS');assert.equal(output.offline,true);
   assert.equal(output.operator,true);assert.equal(output.user_provision,true);
   assert.equal(output.revoke,true);assert.equal(output.remote_calls,0);
-  const launcher=fs.readFileSync(path.join(unpack,'Start-CITEVAULT-Synthetic.cmd'),'utf8');
+  const launcher=fs.readFileSync(path.join(extracted,'Start-CITEVAULT-Synthetic.cmd'),'utf8');
   assert.match(launcher,/node\.exe/);assert.match(launcher,/p85-operator-demo\.mjs/);
   t.diagnostic(JSON.stringify({status:'WINDOWS_HOSTED_PORTABLE_QA_PASS',
     runtime_node:manifest.node_version,files:manifest.files.length,
