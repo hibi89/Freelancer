@@ -27,3 +27,11 @@ C) Rewrite CITEVAULT production server around the model: rejected for regression
 - Existing CITEVAULT core CI #43537747863 still 8/8 SUCCESS 469 executed tests PASS on exact earlier source f4f5f088; THIS latest documentation change did not rerun core tests. No real customer Gold100, authorized PREP/SMAX production AX import, employee IdP, real Windows10/11 installer, security/legal/model redistribution licensing acceptance.
 - OFFICIAL FULL-24-REQ FINAL COMPLETION UNASSESSED / 85% NOT CERTIFIED / [작업중] / RELEASE HOLD / SALE NO-GO. Public shared Freelancer historical branches still need secrets/IP audit.
 
+
+## [2026-11-14 10:31 KST] Real Korean ONNX CPU both Ubuntu + Windows hosted PASS
+
+- Exact code SHA bc3ee4e6d41bd0427e1f332793808bf109ba742b, [GitHub Actions #43540831305](https://github.com/hibi89/Freelancer/actions/runs/43540831305): **2/2 jobs SUCCESS**, 0 FAIL, 0 SKIP. Ubuntu24.04 + Windows2022 each Python 4/4 unit tests PASS, exact public ONNX SHA 4d24e2bc01a447951524466ef533e52944bf48509e6552810bcee1a2711cb02c (118054593 bytes) preflight PASS, actual CPU e5-small 384d inference with fixed synthetic Korean contrastive pairs **3/3 per OS**. Both reported margins [0.08814,0.11856,0.05041]; elapsed 1309.7ms Ubuntu and 1644.9ms Windows per 9 synthetic texts batch (not customer SLA). No paid APIs or customer data.
+- Windows-specific synthetic missing-model path test fixed to use Path.home().resolve, not Unix-only /a. Workflow uses standard free hosted 2-OS matrix, no weights uploaded, model retained only in temporary hosted runner. First exact 1/1 Ubuntu source a3ffc4ba CI #43540387093 also succeeded.
+- Existing production search/API/ACL and RAG/PREP/SMAX originals unchanged; **not yet full authenticated offline dense integration**. Real customer data rights/IdP, signed authoritative AX producer, heldout Gold100, physical Windows10/11 customer installation, commercial license and security sign-off remain.
+- FULL FINAL BLUEPRINT 24 REQs OFFICIAL UNASSESSED, goal 85% NOT CERTIFIED, CITEVAULT AX [작업중], RELEASE HOLD/SALE NO-GO. Prior core 8/8 CI #43537747863 corresponds to older exact code SHA f4f5f088; do not misrepresent this 2-job model CI as a fresh run of all original 469 tests.
+

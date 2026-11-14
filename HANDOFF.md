@@ -1,5 +1,19 @@
 # CITEVAULT AX — HANDOFF — RAG Studio 기업형 (10항, 2026-11-13 KST)
 
+## [2026-11-14 10:31 KST] Cross-platform real Korean ONNX inference — HANDOFF 10 items
+
+1. Goal/requirements/stack: CITEVAULT enterprise full 24-REQ 85% user goal; local SHA-verified E5-small ONNX int8 384d/CPU on GitHub Ubuntu24.04 and Windows2022 with synthetic Korean phrases.
+2. Implemented/choice: remote API rejected (egress/cost), verified local ONNX selected (free + lower data risk), full product RAG rewrite rejected. Dedicated Python inference, downloader, tests and independent CI matrix; no customer assets or production change.
+3. Exact tests: code bc3ee4e6d41bd0427e1f332793808bf109ba742b, [CI #43540831305](https://github.com/hibi89/Freelancer/actions/runs/43540831305) 2/2 successful jobs; Python 4 unit tests per OS, exact ONNX 118054593 bytes SHA verified, actual 384-dim vectors 3/3 fixed Korean query-passage pairs per OS. Margins [0.08814,0.11856,0.05041], batch 9 text duration Ubuntu1309.7ms, Windows1644.9ms. Original core CI #43537747863 8/8 469PASS on separate earlier source f4f5f088; not rerun here.
+4. State: actual model compatibility evidenced; real enterprise ACL-before-inference embedding integration, signed authoritative PREP/SMAX AX, IdP/rights, customer Gold100, Win10/11 install/security/licensing and 24-REQ acceptance PENDING; [작업중]/UNASSESSED/RELEASE HOLD.
+5. Failures/root cause: original first YAML commit 44e3e8a0 #43540283742 0-job failed due invalid pip scalar; fixed a3ffc4ba #43540387093 Ubuntu PASS, then bc3ee4e6 OS-matrix real model all PASS. Avoid retrying malformed YAML.
+6. Repo/branch/code/paths: hibi89/Freelancer @ product/rag-enterprise-knowledge, code bc3ee4e6d41bd0427e1f332793808bf109ba742b, before matrix docs 05d9817b851e79422637c414f98bff1e3509485b. Python scripts/p85_korean_real_onnx.py, scripts/p85_korean_model_fetch.py, tests/test_p85_korean_real_onnx.py; .github/workflows/citevault-korean-onnx-smoke.yml; docs/P85_REAL_KOREAN_ONNX_PLAN_20261114.md.
+7. Production/Vercel/environment: N/A; hosted Node22.16 Python3.11 numpy1.26.4/onnxruntime1.20.1/tokenizers0.21.1; no public model assets stored in repo/cache; rerun workflow per specific SHA.
+8. Original/backups/secrets: Previous Git commits allow rollback; RAG, PREP, SMAX, customer files, roles, authorization, PROD, secrets untouched. Shared Freelancer PUBLIC, historical leak audit outstanding.
+9. Next priority/approvals/completion: implement source-authorized local model adapter then test (without customer data), signed original producer and employee IAM rights when available, physical Win10/11 Gold100/customer/legal/infosec acceptance; owner accepted weighted 24-REQ evidence. Free development approved; actual third-party rights/production not assumed.
+10. Updated/verification range: 2026-11-14 10:31 KST, exact two-OS job logs verified; docs SHA recheck after this commit. NO official 85% or sales release claim.
+
+
 ## [2026-11-14 10:25 KST] Real Korean ONNX execution HANDOFF — required 10 items
 
 1. Goal/stack/requirements: Full 24-REQ CITEVAULT enterprise 85% target; optional verified multilingual-e5-small CPU int8 inference on local synthetic Korean data, never a customer release.
