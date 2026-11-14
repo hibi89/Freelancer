@@ -1,3 +1,15 @@
+## 2026-11-14 KST — 실제 EXE 재실행/합성 거래처 GUI 저장/종료 후 DB 재조회 검증
+
+소유자가 앞선 `WORKNOVA-Desk.exe`를 **같은 임시 QA `LOCALAPPDATA` 경로**로 다시 실행하고 Tk GUI에서 새 거래처 버튼을 눌러 테스트 이름 **`WORKNOVA_QA_TEST_01`** 1건을 생성했다. 사용자 제공 스크린샷에는 거래처 탭 목록에 해당 이름과 신규 임의 ID가 한 행으로 나타나고, 하단 상태줄에 `완료(로컬 기록)`이 보인다.
+
+사용자 제공 PowerShell 로그에서 새 `ProcessStartInfo`의 `UseShellExecute=false`와 `EnvironmentVariables['LOCALAPPDATA']=$qaRoot` 경로 분리, 종료 대기 후 **`ExitCode: 0`** 확인. 이후 같은 `$db` SQLite 경로를 **`mode=ro`**로 열어 `SELECT COUNT(*) FROM customers WHERE name=?`, `('WORKNOVA_QA_TEST_01',)`을 전달하여 **`SyntheticCustomerCount: 1`**, **`integrity_check: ok`** 확인했다.
+
+**이번에 추가 실증된 게이트:** 최초 빈 장부 생성/종료 뒤, 같은 임시 DB를 사용한 EXE **두 번째 프로세스 재실행 PASS**, GUI에서 합성 거래처 신규 생성·화면 즉시 표시 PASS, 종료코드 0 및 SQLite 디스크에 합성 거래처 1건 **지속 저장 PASS**, SQLite 무결성 PASS. 이 결과는 사용자 로컬 실제 Win10.0.26200/Python3.11.9 (EXE 번들) PowerShell 및 스크린샷 증거에만 근거한다. EXE 고객 GUI 기록과 DB SQL 조회의 동일 임시 경로는 사용자 제출 커맨드의 `$qaRoot`로 확인되며, 실제 고객 실명/데이터는 사용하지 않았다.
+
+**구분할 미검증:** 이 종료 이후 **세 번째 EXE 구동 시 저장된 거래처가 GUI에 다시 표시되는지**는 아직 따로 보지 않았다. 견적·계약·납품·수금 전체 GUI E2E, SQLite 감사로그 검산, 무Python 타기기/onedir 폴더 이동, Win ACL·활성 DB 암호화·코드서명/Defender/SmartScreen, Word 출력·글꼴 상용권·실고객/법률 수용은 미검증. 바이너리·장부 원본 파일을 원격으로 받아 재검증한 것도 아니다. 사용자 스크린샷은 개인 UI를 포함하므로 GitHub 업로드하지 않고 이 요약만 보존.
+
+**점수/운영:** 승인 WD-01~14 총100점과 항목별 **전체** 고객수용 PASS 시에만 해당 가중치를 부여하는 정본 규칙 유지. WD01/08/09/11/13 일부 GUI/DB 영속성 증거가 강화되었으나 필수 전체 검수는 미충족으로 **정식 인정0/100**, 목표85 미달, **[작업중] / RELEASE HOLD / 크몽 판매 미등록** 유지. 실제 운영 장부/원본 데이터·OS 설정/권한/유료 Actions/다른 상품 변경 없음.
+
 ## 2026-11-14 KST — 임시 SQLite 무결성 및 사용자 버전 읽기 전용 PASS
 
 사용자가 최초 독립 EXE 실행에서 생성한 같은 격리 임시 테스트 `desk.sqlite`에 대해 Windows Python3.11의 표준 `sqlite3`로 다음 명령을 **읽기 전용** 수행했다.
