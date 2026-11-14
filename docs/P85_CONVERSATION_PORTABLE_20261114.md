@@ -1,0 +1,25 @@
+# CITEVAULT AX — REQ24 bounded conversational RAG / REQ19 Windows portable QA (2026-11-14 KST)
+
+## Exact verification
+- Repository `hibi89/Freelancer`, branch `product/rag-enterprise-knowledge`, exact function SHA `f2979aa50156b4f5c3d80f4d23a1b2ec336f0040`.
+- [GitHub Actions #43531986943](https://github.com/hibi89/Freelancer/actions/runs/43531986943) **8/8 jobs SUCCESS, 447 executed Node tests PASS / 0 FAIL / 0 SKIP**. Counts include repeated test cases across Ubuntu24.04 and Windows2022, not 447 separate blueprint requirements.
+- Jobs: P70 local31; pinned upstream RAG11+24 and CITEVAULT bridge36; Ubuntu/Windows local vault/UI/conversation **127 each**, synthetic Korean100 harness **1 each** (100 iterations per suite), offline backup **12 each**; native PDF/DOCX+SQL **31 each**; actual Ubuntu Chrome browser **1**, Windows portable ZIP+unpacked Node self-test **2**. Total 31+71+(127+1+12)*2+31*2+1+2=447.
+- [Final blueprint policy gate #43531987256](https://github.com/hibi89/Freelancer/actions/runs/43531987256) SUCCESS on same exact functional SHA; this checks blueprint/document policy rather than signed customer acceptance.
+
+## REQ24 — actual evidence-grounded conversational follow-ups (synthetic)
+- New `enterprise/p85-conversation.mjs`, `POST /v1/conversation/ask` in `enterprise/p85-loopback.mjs` and UI buttons `conversation-start`/`conversation-next`. New `tests/p85-conversation.test.mjs` adds **12 PASS** per OS and extends actual Chrome login→question→follow-up→mobile/logout test.
+- First successful `SEARCH_ONLY` binds a random 128-bit thread ID to **SHA256 of active bearer** and at most eight cited documents' exact `version+source_sha256`. Only prior question hint and metadata retained **in memory for five minutes**, up to 64 threads. Does **not** cache source quotes, generate AI answers, persist question logs, or call remote services.
+- Follow-up verifies every bound source via `vault.source()` and current ACL+SHA (tenant/group/project/clearance, active status). Revoked account or session: unauthorized; retired/replaced/tampered source or expired/foreign thread: **CONTEXT_INVALID** with empty evidence; logout forgets token threads. Scope expansion and invalid thread IDs rejected. Fallback `answer:null`, `model_state:'UNAVAILABLE'` and `network_calls:0`.
+- This supports a bounded part of Conversational RAG and the fifth blueprint usage type in a **synthetic/local-only** way. No actual Korean model, generative answer, source authority approval, customer acceptance.
+
+## REQ19 — Windows offline executable ZIP internal verification
+- New `scripts/p85-portable-build.mjs` copies explicitly allowlisted 9 local code modules, Windows Node22 executable, synthetic-only launcher/NOTICE, and SHA256 file manifest into a create-only folder. Node binary source is installed/pinned on Windows2022 GitHub-hosted runner. No customer files, secrets, cloud API or production settings.
+- `scripts/p85-portable-zip.py` packages only that allowlist using Python standard-library `zipfile`, verifies ZIP CRC and exact file list, re-extracts under fresh directory, and compares every SHA256. Then actual unpacked Node22 runs the existing operator+SQLite+ACL localhost self-test. Windows2022 CI **2/2 PASS**, generated **33,208,926 byte / 12-file** synthetic ZIP with SHA256 `6dc2c15b1525780c2b1889635a9f94a18cfb987df10530ffe23f916392ea71a2`. The ZIP is **ephemeral inside CI**, not uploaded, released or offered for commercial distribution.
+- First two Windows QA runs #43531311927 and #43531472046 failed after ZIP extraction because Windows PowerShell `Compress-Archive/Expand-Archive` generated an unexpected/empty extracted layout. Stopped that method; pivoted to locally-tested Python zipfile. Run #43531831668 confirmed portable 2PASS but Chrome teardown transient `ENOTEMPTY` failed. Minimal Chrome graceful exit/force-kill and `fs.rmSync` retry patch `f2979aa` led to exact latest CI 8/8 SUCCESS. Avoid retrying the discarded PowerShell method.
+- **Limits:** hosted Windows Server 2022 rather than physical Windows10/11, operator demo TXT/synthetic only; runtime redistribution license NOTICE not reviewed for customer sale, actual install/signature/update/antivirus compatibility unverified. No release asset or production executable published.
+
+## Final blueprint and ownership
+- Overall source of truth: `docs/FINAL_BLUEPRINT.md` 24 final acceptance requirements. **Official 100%-denominator completion remains UNASSESSED; user target 85% NOT ACHIEVED/NOT VERIFIED.**
+- Enterprise real employee IdP, customer-owned rights approved data, authoritative signed PREP/SMAX AX producer, licensed Korean local model + heldout Gold100, real physical Windows10/11 customer install/security/customer acceptance & pricing/legal are still missing.
+- Do not convert synthetic tests or 8/8 CI into 85% engineering/retail completion. `CITEVAULT AX [작업중]`, `RELEASE HOLD / SALE NO-GO`.
+- `hibi89/Freelancer` is PUBLIC (owner changed), exposing other product branches/history; entire historical secret/IP audit unverified. Assistant changed no visibility/credentials/secrets/billing/customer data/Production/RAG upstream/SMAX/PREP.

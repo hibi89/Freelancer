@@ -1,5 +1,13 @@
 # CITEVAULT AX — 최종설계 100% 기준 85% 수용 증거표 (2026-11-14 KST)
 
+## [2026-11-14 KST] P85 REQ24 bounded 후속대화 + REQ19 Windows portable 기능 증거
+
+- 기능 `f2979aa50156b4f5c3d80f4d23a1b2ec336f0040`, [실제 Actions #43531986943](https://github.com/hibi89/Freelancer/actions/runs/43531986943) **8/8 SUCCESS, 447 executed PASS/0FAIL/0SKIP**(OS별 중복 포함).
+- REQ24: 근거 문서+세션에 결속한 후속 질문(5분 TTL, ACL·해시/version 검사, revoke/retire/change/expire 맥락 무효화), Windows/Linux 각12PASS, Chrome UI 클릭 E2E; 실제 기업 신원/한국어 생성형 모델·고객 RAG 통합 미완.
+- REQ19: Windows2022 Node22 실행 파일 포함 **합성** offline 폴더+SHA manifest→Python zipfile CRC/sha roundtrip→실제 압축 해제 Node 실행 2PASS. Node 라이선스/물리 Windows10/11 설치기·고객 품질 미검증; ZIP은 CI 임시 파일, 배포하지 않음.
+- 기존 문제 PowerShell ZIP 두 번 오류 후 방법 중단·Python pivot, Chrome profile teardown ENOTEMPTY 보강 후 이번 정확 SHA CI 전체 성공. 공식 `UNASSESSED`/목표85 미인증·`[작업중]`·RELEASE HOLD. 상세 `docs/P85_CONVERSATION_PORTABLE_20261114.md`.
+
+
 ## [2026-11-14 KST] REQ16 실제 Chromium UI·ACL 제한 KPI/차트 검증
 
 - 기능 `49918ad4d0de23b8bc462830fa0789e93ebd7936`, [CI #43529432977](https://github.com/hibi89/Freelancer/actions/runs/43529432977) **7/7 SUCCESS, 421 PASS/0FAIL/0SKIP**(중복 OS 포함), 신규 scope library8PASS/OS·actual Chrome desktop/mobile 1PASS.
@@ -78,12 +86,12 @@
 | 16 | 오프라인 사용자 UI/KPI/차트/출처 탐색 | **신규 실기능:** metadata-only ACL `GET /v1/library`, 현재 로그인 계정의 문서 KPI·컬렉션 차트·문서 선택·검색·로그아웃. Chrome 실제 desktop/mobile 390px E2E PASS, 신규 scope/ACL8PASS×2OS, JS 예외0·원격 네트워크0; 기존 운영자 UI/strict CSP 유지 | **검증-합성**: Github hosted Ubuntu Chrome 실제 렌더 성공, 물리 Win10/11 Chrome/Edge·고객 인수/실기업 IdP는 미검증 |
 | 17 | 한국어 실제 로컬 모델·선택 dense | 모델 미설치 fallback `SEARCH_ONLY`, 출처 없는 생성 차단 | **대기**: 실제 model weights·라이선스·Korean mini benchmark 없음 |
 | 18 | 프롬프트 인젝션·ZIP·악성 파일·권한/데이터 유출 | bytes budgets, source SHA/inode/symlink, fail-closed, no network, XSS-safe UI textContent | **부분**: 문서 파서 OS 샌드박스/TOCTOU/침투 테스트·공식 보안점검 미완 |
-| 19 | Windows10/11 오프라인 설치·백업/복구·라이선스 | Node/Python Linux localhost 셀프테스트, SQLite 재기동/문서 version 지속 | **대기**: 실제 Windows 패키지/물리 설치·백업/복구 인수 증거 없음 |
-| 20 | Win/Linux GitHub-hosted CI 0FAIL | `.github/workflows/citevault-p50.yml` Linux/Windows native/identity/signed test job 설정 | **검증-합성**: 정확 기능 SHA cea0ec09에서 Ubuntu/Windows 6/6 hosted SUCCESS, 378 중복포함 PASS; 실고객 Windows10/11 설치·운영 보안은 제외 |
+| 19 | Windows10/11 오프라인 설치·백업/복구·라이선스 | **신규:** Windows Server2022 hosted Node22 포함 12파일 합성 portable 디렉터리+ZIP sha/CRC 검증·해제 후 localhost operator/demo 실행 2PASS, 기존 수동 SQLite backup 양 OS12PASS | **부분**: 고객용 정식 설치기/Node 재배포 라이선스·물리 Windows10/11·실고객 데이터/복구·업데이트 인수 미검증, ZIP은 CI 임시파일만 |
+| 20 | Win/Linux GitHub-hosted CI 0FAIL | 정확 기능 SHA `f2979aa` [#43531986943](https://github.com/hibi89/Freelancer/actions/runs/43531986943) **8/8 SUCCESS, 447 test executions PASS/0 FAIL/0 SKIP**; Ubuntu 실제 Chrome + Windows Python ZIP roundtrip/실 Node 자체 실행 포함 | **검증-합성**: hosted CI 완료; 물리 Win10/11·고객 IAM/영업용 릴리스·운영 보안은 별도 미검증 |
 | 21 | 고객 Gold100 + negative/heldout, retrieval/latency/메모리 수용 | 신규 한국어 합성100건(20×5 유형) Windows/Linux 모두 PASS, p95 Ubuntu0.328ms/Win1.001ms | **부분**: 합성 반복 계약 테스트이며 고객의 Gold100·진짜 heldout·모델 성능/고객 합격 기준 미검증 |
 | 22 | 백업/복구·삭제/보존기간·운영 정책 | Node22 SQLite backup API, 합성 문서 SHA manifest, create-only offline restore; **신규 SQLite 4개 테이블·실 active doc source SHA 바인딩**, 양 OS 각12PASS(기존9+신규3), 원본 불변·변조·링크·중복·덮어쓰기 거부 | **부분**: 실 고객 운용 중 무중단 백업/보존·삭제·물리 Windows10/11 복구/권한·개인정보 미검증 |
 | 23 | 고객/법적·가격·지원·운영 인수 | 합성 SOURCE_RIGHTS=false/RELEASE HOLD 강제 | **대기**: 고객/소유자 승인·라이선스·실기기·지원 수용 불가 |
-| 24 | 5개 RAG 유형/대시보드/후속 질문 | 단일 문서·다중 문서·narrow SQL+문서 합성, 간단 UI | **부분**: conversational context, 실제 RAG 원본 end-to-end 미검증 |
+| 24 | 5개 RAG 유형/대시보드/후속 질문 | **신규:** `ScopedConversation` (5분·64스레드·세션해시/출처 SHA 결속·후속 질문 근거 재검사/로그아웃 삭제), `POST /v1/conversation/ask`, UI 후속 클릭 actual Chrome, 합성12PASS/OS. 기존 단일/다중/SQL+문서/컬렉션 합성 기능 유지 | **부분**: 5종 합성 기능 일부 실제 수행, real Korean model·authorized 고객 RAG 원본/IdP/권리/장기 대화 테스트 미검증 |
 
 ## 85% 목표 필수 차단 항목
 

@@ -1,5 +1,15 @@
 # CITEVAULT AX — STATUS — RAG Studio Enterprise, 2026-11-13 KST
 
+## [2026-11-14 09:10 KST] REQ24 합성 후속대화 + REQ19 Windows ZIP 실제 실행 검증
+
+- 기능 SHA `f2979aa50156b4f5c3d80f4d23a1b2ec336f0040`, [정확 Actions #43531986943](https://github.com/hibi89/Freelancer/actions/runs/43531986943) **8/8 SUCCESS, 447 test executions PASS/0 FAIL/0 SKIP**, 원본 RAG pinned35+CITEVAULT bridge36, Ubuntu/Windows 로컬127씩·백업12씩·native31씩·Korean100 harness1씩, Chrome1, Windows ZIP QA2.
+- **REQ24 실제 구현:** `p85-conversation.mjs` 5분 TTL/최대64 대화, SHA256 bearer 소유자 결속·문서 version/source SHA 기억, 매번 현재 ACL+source 재검증, 권한 철회·문서 폐기·교체·변조·만료·재로그인 시 fail-closed; UI 후속 질문 두 버튼 및 POST API, 양 OS 신규12PASS, Chrome 후속 질문 실제 클릭 확인. 답변 생성 없음·외부 통신0.
+- **REQ19 실제 진전:** Windows2022에서 12파일 합성 오프라인 패키지(설치된 Node22 exe+JS+NOTICE·SHA manifest) 구성→Python 표준 ZIP 파일목록/CRC/해시 검증→압축해제된 Node.exe로 localhost 운영자 self-test **2PASS**, ZIP 크기33,208,926bytes, 압축 SHA `6dc2c15b...`. ZIP은 CI 내부만, **고객 다운로드/정식 설치기·Node 재배포 라이선스/물리 Win10/11 미검증**.
+- **차단·피벗:** PowerShell ZIP 경로 문제로 CI 2번 실패(#43531311927/#43531472046) 후 원인 확인·같은 방식 중단→Python zipfile 로컬 검증 후 CI QA2PASS. 이전 CI #43531831668 Chrome cleanup `ENOTEMPTY`; 최소 종료 대기·rm retry 패치, 최신 8/8 PASS. 상세 `docs/P85_CONVERSATION_PORTABLE_20261114.md`.
+- 전체24항 최종완성률 공식 **UNASSESSED / 사용자 목표85% 미인증**, `CITEVAULT AX [작업중]`, SALE NO-GO/RELEASE HOLD. 실제 기업 IdP·자료 권리·승인 AX producer·실 Korean local model·고객 Gold100·물리 Windows/고객 인수 미완. 공유 Freelancer PUBLIC에 다른 제품 노출/전수 비밀감사 미검증, 고객 원본·권한·Production·결제 미변경.
+
+
+
 ## [2026-11-14 KST] REQ16 실제 Chromium 대시보드·허용 문서 KPI/차트·원문 탐색 7/7 CI PASS
 
 - 기능 SHA `49918ad4d0de23b8bc462830fa0789e93ebd7936`, [정확 Github Actions #43529432977](https://github.com/hibi89/Freelancer/actions/runs/43529432977) **7/7 jobs SUCCESS, 421 test executions PASS/0FAIL/0SKIP**(OS 중복 포함). 신규 ACL library API 테스트8PASS/OS, Chromium 실제 브라우저 렌더 테스트1PASS. Linux/Windows vault+HTTP 각각115PASS.
