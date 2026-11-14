@@ -1,3 +1,11 @@
+## 2026-11-14 KST — 무료 Linux/Windows CI와 Windows EXE GUI 무인 스모크 자동화 구성
+
+현재 제품 저장소는 public이며 GitHub standard ubuntu-latest/windows-latest 무료 러너 정책 확인. .github/workflows/worknova-desk-qa.yml을 제품 브랜치 push 전용으로 구현: Python3.11 합성 업무 unittest2종+전체 회귀, Windows 안전한 11합성 설치/백업 검사, PyInstaller6.22.3 EXE 자동 빌드/기본 SHA, tools/windows_exe_smoke.py로 Tk 창/WM_CLOSE/임시 LOCALAPPDATA SQLite v2/합성 고객 보존 자동검사. 아티팩트/캐시 업로드·유료 러너/OS 보안 정책 변경 없음.
+
+실제 근거: 두 GitHub 파일 readback, EXE 스모크 blob SHA 84a2308b6551fd9373a974f94e7ed7323157f5e8=로컬 파일 SHA, Python ast/compile PASS, Linux 비지원 경로 exit3 PASS. GitHub Actions push runner 실제 run/Checks와 코어 unittest2종 실행 결과는 이번 세션에서 조회 불가 → CI PASS 미확정. 기존 사용자 실제 Windows EXE/GUI/거래처 영속 검증과 별도 구분.
+
+WD01~14 총100 승인 배점 불변, 최종 구매자 완전수용 인정0/100(구현률 아님), 목표85 미달, [작업중]/RELEASE HOLD/미등록. WD13 10점과 WD14 6점 모두 미통과면 이론상 최대84점, 사용자 승인 없는 서명·ACL·활성DB 암호화·실구매자/법무 검증을 PASS로 계산할 수 없음.
+
 ## 2026-11-14 KST — 4차 EXE 종료0 및 무인 합성 비즈니스 회귀 2종 추가 (실행 미검증)
 
 실 Windows `$p4=[Diagnostics.Process]::Start($psi2)`→`WaitForExit()`→**`ExitCode:0`** 사용자 로그 수신. 사용자는 이전 요청한 가짜 1,000원 견적 GUI를 진행했다고 진술했으나 **생성된 견적 행/DB 자료는 미확인**이므로 견적 PASS 처리 보류.
