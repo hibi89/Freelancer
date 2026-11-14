@@ -1,3 +1,11 @@
+# STATUS — 2026-11-14 KST 네이티브 EXE 2차 실행·GUI 거래처 저장·종료 후 DB 지속성 PASS (최신)
+
+- 소유자가 처음 실행 후 종료된 같은 `TEMP/worknova-gui-qa-<GUID>` 격리 `LOCALAPPDATA`로 실제 `WORKNOVA-Desk.exe`를 **두 번째 실행**. GUI '새 거래처'에서 `WORKNOVA_QA_TEST_01`을 생성했고 화면에 이름+임의 ID 및 `완료(로컬 기록)` 표시. 이후 X로 종료, PowerShell **`ExitCode: 0`**, 같은 `desk.sqlite` 읽기전용 조회 **`SyntheticCustomerCount: 1`**, **`integrity_check: ok`** 확인. 이는 **실 Windows EXE 재실행·한 건 GUI 입력·디스크 저장·종료 후 지속성·DB 무결성 PASS(사용자 콘솔/화면 증거)**. 원격 증거 `docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md`, 원본 스크린샷/SQLite 실파일은 개인정보 방지로 업로드하지 않음.
+- **여전히 미검증:** 세 번째 EXE 구동의 거래처 목록 복원 화면, 견적/계약/납품/수금 업무 E2E·감사로그 정확성, Python 없는 타PC에서 onedir 이동·Windows ACL/활성 DB 암호화·서명/Defender·Word/상업 폰트/실고객·법률 수용. 사용자 승인 WD01~14 총100점은 **항목 전체 고객 수용** 기준만 점수 인정, WD01/08/09/11/13 부분 PASS이나 정식 합 **0/100(구현률0 아님)**·85 미달, **[작업중]/RELEASE HOLD/미등록**.
+- 실제 고객 장부·OS 보안 설정·원본 repo/타 제품·등록완료·유료 CI 변경 없음. 이전 빌드·해시·MZ·기본 Tk·SQLite v2 PASS 증거 유지.
+
+---
+
 # STATUS — 2026-11-14 KST 실제 Windows 격리 SQLite integrity_check ok / user_version 2 PASS (최신)
 
 - 소유자 콘솔 실제 Windows Python3.11에서 앞선 EXE 실행으로 생성된 새 TEMP `desk.sqlite`를 `mode=ro`로 열어 `PRAGMA integrity_check` → **`ok`**, `PRAGMA user_version` → **`2`** 확인. 이번 검사는 데이터 파일 기존 내용 수정하지 않음. 기존 EXE onedir 빌드/7,107,722 bytes·SHA256 `A7CD6B052108E5630E4AD50151841F0B812654F22E87CFE8338E22CB12A5C23E`/MZ PASS → GUI 표시→ExitCode0 → 새 격리 DB 존재까지의 실 Windows 사용자 보고 증거 연장. [자세한 기록](docs/P85_WINDOWS_EXE_BUILD_RESULT_20261114.md).
