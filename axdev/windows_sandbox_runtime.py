@@ -349,13 +349,17 @@ def _hold(factory: Factory, tid: str, reason: str) -> dict:
 def _launch(factory: Factory, task: dict, bundle: Path, bundle_sha: str,
             executable: Path, prior: Path | None = None) -> tuple[dict, Path, object] | dict:
     tid = task["id"]
-    if _sandbox_running():
-        return {"id": tid, "status": "WAITING_SANDBOX_EXIT"}
+    cli = _modern_sandbox_cli()
+    deadline = time.monotonic() + (10 if cli is not None else 0)
+    while _sandbox_running():
+        if time.monotonic() >= deadline:
+            return {"id": tid, "status": "WAITING_SANDBOX_EXIT"}
+        time.sleep(1)
     if not factory._reserve_model_call(tid, "SANDBOX_FIX_ONCE" if prior else "SANDBOX_CODING"):
         return {"id": tid, "status": "BUDGET_WAIT"}
     record = _prepare(factory, task, bundle, bundle_sha, prior)
     root = factory.state / "sandbox-runs" / record["run_id"]
-    if _modern_sandbox_cli() is not None:
+    if cli is not None:
         record["sandbox_id"] = str(UUID(hex=record["run_id"]))
     if prior is not None:
         factory.db.execute("UPDATE runs SET attempts=attempts+1 WHERE id=?", (tid,))

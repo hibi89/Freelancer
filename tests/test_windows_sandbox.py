@@ -20,7 +20,7 @@ from axdev.sandbox_payload import BINARIES, encode_files, extract_snapshot, read
 from axdev.sandbox_review import verify_candidate
 from axdev.windows_review_process import run_restricted, single_sandbox_slot
 from axdev.windows_sandbox_runtime import (
-    BACKEND, _read_bundle, _read_receipt, _sandbox_running, _start_guest, _wait_candidate, _wsb, run_sandbox_one,
+    BACKEND, _launch, _read_bundle, _read_receipt, _sandbox_running, _start_guest, _wait_candidate, _wsb, run_sandbox_one,
     run_sandbox_queue, validate_history,
 )
 from scripts.prepare_offline_bundle import build_manifest
@@ -43,6 +43,24 @@ def copy_python(runtime: Path):
 
 
 class SandboxGuestStartupTests(unittest.TestCase):
+    def test_waits_for_native_shutdown_before_reserving_the_next_task(self):
+        run_id = "0" * 31 + "1"
+        factory = Mock(state=Path("state"))
+        task = {"id": "LIVE-003"}
+        with (
+            patch(MOD + "._modern_sandbox_cli", return_value=Path("trusted/wsb.exe")),
+            patch(MOD + "._sandbox_running", side_effect=[True, False]),
+            patch(MOD + "._prepare", return_value={"run_id": run_id}),
+            patch(MOD + "._start_guest") as start,
+            patch(MOD + ".time.sleep") as pause,
+        ):
+            record, _, process = _launch(factory, task, Path("bundle"), "a" * 64,
+                                         Path("WindowsSandbox.exe"))
+        pause.assert_called_once_with(1)
+        self.assertEqual(record["sandbox_id"], "00000000-0000-0000-0000-000000000001")
+        factory._reserve_model_call.assert_called_once_with("LIVE-003", "SANDBOX_CODING")
+        self.assertIs(process, start.return_value)
+
     def test_waits_through_the_gap_between_launcher_and_sandbox_registration(self):
         receipt = {"status": "CANDIDATE"}
         record = {"run_id": "fixture", "base_sha": "a" * 40}
