@@ -67,6 +67,22 @@ def _no_reparse(path: Path):
     return absolute
 
 
+def _reject_mapped_reparse_tree(root: Path) -> None:
+    """Never share a junction/symlink that could escape the offline bundle.
+
+    Read-only mapping does not guarantee that host-side reparse points are
+    confined to the approved source tree. Refuse them before Sandbox launch.
+    """
+    visited = 0
+    for directory, folders, files in os.walk(root, followlinks=False):
+        _no_reparse(Path(directory))
+        visited += len(folders) + len(files)
+        if visited > 200000:
+            raise ContractError("offline bundle contains too many host paths")
+        for name in (*folders, *files):
+            _no_reparse(Path(directory) / name)
+
+
 def _read_bundle(bundle: Path, expected_sha: str) -> None:
     if not isinstance(expected_sha, str) or not SHA256.fullmatch(expected_sha):
         raise ContractError("offline bundle manifest SHA256 must be owner-pinned")
@@ -93,6 +109,7 @@ def _read_bundle(bundle: Path, expected_sha: str) -> None:
             raise ContractError("offline runtime binary missing/changed")
     if not _no_reparse(bundle / "models").is_dir():
         raise ContractError("offline model cache missing")
+    _reject_mapped_reparse_tree(bundle)
 
 
 def _sandbox_binary() -> Path:

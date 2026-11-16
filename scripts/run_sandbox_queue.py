@@ -53,6 +53,8 @@ def main(argv=None):
         return 2
     if any(item.get("status") != "VERIFIED" for item in results):
         return 3
+    if not results and any(state != "VERIFIED" for state in states.values()):
+        return 3  # Blocked dependencies or held work are not completion.
     return 0
 
 
