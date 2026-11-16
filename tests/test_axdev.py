@@ -156,6 +156,78 @@ class FactoryTests(unittest.TestCase):
         self.assertEqual(git(self.repo, "rev-parse", f.integration_ref), base)
         f.close()
 
+    def test_model_ignored_file_is_forbidden_and_not_promoted(self):
+        (self.repo / ".gitignore").write_text("cache/\n", encoding="utf-8")
+        self._git("add", ".gitignore")
+        self._git("commit", "-m", "synthetic ignored-file fixture")
+        self.write_plan([self.task()])
+        def coder(cwd, prompt):
+            self.fake_coder(cwd, prompt)
+            (cwd / "cache").mkdir(exist_ok=True)
+            (cwd / "cache" / "private.log").write_text("unapproved", encoding="utf-8")
+            return 0, "ok"
+        f = Factory(self.repo, self.plan, self.state, coder=coder)
+        self.addCleanup(f.close)
+        original = git(self.repo, "rev-parse", f.integration_ref)
+        result = f.run_one(True)
+        self.assertEqual(result["status"], "HOLD", result)
+        self.assertIn("cache/private.log", result["reason"])
+        self.assertEqual(git(self.repo, "rev-parse", f.integration_ref), original)
+
+    def test_acceptance_ignored_side_effect_is_detected(self):
+        (self.repo / ".gitignore").write_text("cache/\n", encoding="utf-8")
+        (self.repo / "tests" / "test_base.py").write_text(
+            "import unittest\nfrom pathlib import Path\n"
+            "class T(unittest.TestCase):\n"
+            " def test_side_effect(self):\n"
+            "  Path('cache').mkdir(exist_ok=True)\n"
+            "  Path('cache/stealth.log').write_text('unapproved')\n",
+            encoding="utf-8")
+        self._git("add", ".gitignore", "tests/test_base.py")
+        self._git("commit", "-m", "synthetic ignored acceptance side-effect")
+        self.write_plan([self.task()])
+        f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
+        self.addCleanup(f.close)
+        workspace = f._workspace("AAA-001")
+        self.fake_coder(workspace, "synthetic")
+        accepted, feedback = f._review(self.task(), workspace)
+        self.assertFalse(accepted)
+        self.assertIn("POST_CHECK_CHANGED_PATHS", feedback)
+        self.assertIn("cache/stealth.log", feedback)
+
+    def test_ignored_inventory_does_not_drop_early_paths(self):
+        (self.repo / ".gitignore").write_text("cache/\n", encoding="utf-8")
+        self._git("add", ".gitignore")
+        self._git("commit", "-m", "synthetic large path inventory")
+        self.write_plan([self.task()])
+        f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
+        self.addCleanup(f.close)
+        work = f._workspace("AAA-001")
+        (work / "cache").mkdir()
+        for index in range(180):
+            (work / "cache" / ("file_" + str(index).zfill(3) + "_" + "a" * 45 + ".log")).write_text("x")
+        names = f._changed(work)
+        self.assertEqual(len(names), 180)
+        self.assertIn("cache/file_000_" + "a" * 45 + ".log", names)
+        self.assertIn("cache/file_179_" + "a" * 45 + ".log", names)
+
+    def test_review_rejects_symlinked_approved_parent_after_coding(self):
+        self.write_plan([self.task()])
+        f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
+        self.addCleanup(f.close)
+        work = f._workspace("AAA-001")
+        external = self.root / "external"
+        external.mkdir()
+        (external / "feature.py").write_text("outside = True\n")
+        try:
+            (work / "src").symlink_to(external, target_is_directory=True)
+        except (OSError, NotImplementedError):
+            self.skipTest("symlink unavailable")
+        accepted, feedback = f._review(self.task(), work)
+        self.assertFalse(accepted)
+        self.assertEqual(feedback, "UNSAFE_TASK_PATH")
+        self.assertEqual((external / "feature.py").read_text(), "outside = True\n")
+
     def test_acceptance_script_mutating_allowed_source_causes_hold(self):
         (self.repo / "tests" / "test_base.py").write_text(
             "import unittest\nfrom pathlib import Path\n"
