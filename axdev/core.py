@@ -289,12 +289,31 @@ class Factory:
             return False, "SYMLINK_CHANGES_FORBIDDEN"
         if extras:
             return False, "FORBIDDEN_PATHS: " + ", ".join(sorted(extras))
+        # Capture the reviewed bytes before running untrusted project tests.
+        # Tests may themselves write files even if their exit code is zero.
+        def hashes(paths):
+            return {p: (hashlib.sha256((workspace / p).read_bytes()).hexdigest()
+                        if (workspace / p).is_file() else None)
+                    for p in paths}
+        reviewed = hashes(changed)
+        # Redirect Python import and compileall bytecode OUTSIDE the worktree.
+        # PYTHONDONTWRITEBYTECODE alone does not stop explicit compileall.
+        env = os.environ.copy()
+        env["PYTHONPYCACHEPREFIX"] = str(self.state / "review-bytecode")
+        env["PYTHONDONTWRITEBYTECODE"] = "1"
         for command in task["checks"]:
             cmd = ([sys.executable, *command[1:]]
                    if command[0] == "python" else command)
-            rc, out = call(cmd, workspace, timeout=240)
+            rc, out = call(cmd, workspace, timeout=240, env=env)
             if rc:
                 return False, f"CHECK_FAIL {command}: {out[-1800:]}"
+        after = self._changed(workspace)
+        if after != changed:
+            return False, "POST_CHECK_CHANGED_PATHS: " + ", ".join(sorted(after ^ changed))
+        if any((workspace / p).is_symlink() for p in after):
+            return False, "POST_CHECK_SYMLINK_FORBIDDEN"
+        if hashes(after) != reviewed:
+            return False, "POST_CHECK_SOURCE_MUTATION"
         return True, "ALL_CHECKS_PASS"
 
     def _promote_prepared(self, tid: str) -> dict:

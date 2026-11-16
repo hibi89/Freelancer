@@ -95,6 +95,50 @@ class FactoryTests(unittest.TestCase):
         self.assertTrue(all(x["commit"] for x in events))
         f.close()
 
+    def test_python_test_bytecode_never_enters_reviewed_git_commit(self):
+        self.write_plan([self.task()])
+        f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
+        result = f.run_one(True)
+        self.assertEqual(result["status"], "VERIFIED", result)
+        names = git(self.repo, "diff-tree", "--no-commit-id", "--name-only",
+                    "-r", result["commit"])
+        self.assertEqual(names.splitlines(), ["src/feature.py"])
+        work = self.state / "worktrees" / "AAA-001"
+        self.assertFalse((work / "tests" / "__pycache__").exists())
+        f.close()
+
+    def test_acceptance_script_new_unapproved_file_causes_hold(self):
+        (self.repo / "tests" / "test_base.py").write_text(
+            "import unittest\nfrom pathlib import Path\n"
+            "class T(unittest.TestCase):\n"
+            " def test_side_effect(self):\n"
+            "  Path('tests/generated.txt').write_text('unapproved')\n")
+        self._git("add", "tests/test_base.py")
+        self._git("commit", "-m", "synthetic side-effect fixture")
+        self.write_plan([self.task()])
+        f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
+        base = git(self.repo, "rev-parse", "HEAD")
+        result = f.run_one(True)
+        self.assertEqual(result["status"], "HOLD", result)
+        self.assertIn("POST_CHECK_CHANGED_PATHS", result["reason"])
+        self.assertEqual(git(self.repo, "rev-parse", f.integration_ref), base)
+        f.close()
+
+    def test_acceptance_script_mutating_allowed_source_causes_hold(self):
+        (self.repo / "tests" / "test_base.py").write_text(
+            "import unittest\nfrom pathlib import Path\n"
+            "class T(unittest.TestCase):\n"
+            " def test_side_effect(self):\n"
+            "  Path('src/feature.py').write_text('modified by test')\n")
+        self._git("add", "tests/test_base.py")
+        self._git("commit", "-m", "synthetic mutation fixture")
+        self.write_plan([self.task()])
+        f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
+        result = f.run_one(True)
+        self.assertEqual(result["status"], "HOLD", result)
+        self.assertIn("POST_CHECK_SOURCE_MUTATION", result["reason"])
+        f.close()
+
     def test_invalid_path_and_cycle(self):
         bad = self.task()
         bad["files"] = ["../oops"]
