@@ -325,7 +325,8 @@ class FactoryTests(unittest.TestCase):
             invoked.append(argv)
             if argv == ["opencode", "debug", "config"]:
                 config = json.loads(env["OPENCODE_CONFIG_CONTENT"])
-                config["enabled_providers"] = ["openai", "ollama"]
+                config["policies"].append(
+                    {"action": "provider.use", "resource": "openai", "effect": "allow"})
                 return 0, json.dumps(config)
             raise AssertionError("model run must be blocked")
         with (patch("axdev.core.shutil.which", return_value="/fake/opencode"),
