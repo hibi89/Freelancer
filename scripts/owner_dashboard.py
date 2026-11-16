@@ -44,8 +44,14 @@ def handler_factory(settings: Path, port: int, secret: str):
             self._headers(code, length=len(data))
             self.wfile.write(data)
 
+        def _local_request(self):
+            # DNS rebinding can make a remote domain resolve to loopback.
+            # Binding to 127.0.0.1 alone is NOT an HTTP authority check.
+            return (self.client_address[0] == "127.0.0.1" and
+                    self.headers.get("Host") == "127.0.0.1:" + str(port))
+
         def do_GET(self):
-            if self.client_address[0] != "127.0.0.1":
+            if not self._local_request():
                 return self._send(403, "Forbidden")
             if self.path != "/":
                 return self._send(404, "Not found")
@@ -84,7 +90,7 @@ def handler_factory(settings: Path, port: int, secret: str):
             self._send(200, page)
 
         def do_POST(self):
-            if self.client_address[0] != "127.0.0.1" or self.path not in ("/stop", "/resume"):
+            if not self._local_request() or self.path not in ("/stop", "/resume"):
                 return self._send(403, "Forbidden")
             # HTML form from exact same-origin loopback page only.
             origin = self.headers.get("Origin")
