@@ -23,11 +23,15 @@ GIT_ENV_EXEC = {
 }
 
 
-def _git_read(repo: Path, *argv: str) -> bytes:
+def _git_read(repo: Path, *argv: str, input_bytes: bytes | None = None) -> bytes:
     try:
-        p = subprocess.run(["git", *argv], cwd=repo, shell=False, check=False,
-                           stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE, timeout=15)
+        options = dict(cwd=repo, shell=False, check=False,
+                       stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=15)
+        if input_bytes is None:
+            options["stdin"] = subprocess.DEVNULL
+        else:
+            options["input"] = input_bytes
+        p = subprocess.run(["git", *argv], **options)
     except (OSError, subprocess.TimeoutExpired) as exc:
         raise ContractError("Git trust inspection unavailable") from exc
     if p.returncode or len(p.stdout) > 8 * 1024 * 1024:
@@ -40,7 +44,7 @@ def _under_repo(repo: Path, path: Path) -> bool:
     return absolute == repo or repo in absolute.parents
 
 
-def assert_safe_git_checkout(repo: Path) -> None:
+def assert_safe_git_checkout(repo: Path, planned_paths: tuple[str, ...] = ()) -> None:
     repo = repo.expanduser().resolve()
     for name in os.environ:
         upper = name.upper()
@@ -51,8 +55,13 @@ def assert_safe_git_checkout(repo: Path) -> None:
     config = _git_read(repo, "config", "--list", "--name-only").decode(
         "utf-8", errors="replace").splitlines()
     for name in config:
-        if EXECUTABLE_GIT_CONFIG.fullmatch(name.strip()):
-            raise ContractError("Git executable hooks/filters require trusted isolation")
+        key = name.strip().lower()
+        if EXECUTABLE_GIT_CONFIG.fullmatch(key):
+            # Git LFS registers executable filters globally on hosted runners.
+            # Dormant registrations are harmless; effective attributes are
+            # separately inspected for tracked and owner-approved future paths.
+            if key not in {"filter.lfs.clean", "filter.lfs.smudge", "filter.lfs.process"}:
+                raise ContractError("Git executable hooks/filters require trusted isolation")
 
     # Git default hooks are *.sample; a real hook can run at commit/rebase.
     git_root = _git_read(repo, "rev-parse", "--git-path", "hooks").decode(
@@ -114,3 +123,24 @@ def assert_safe_git_checkout(repo: Path) -> None:
             if clean and not clean.startswith("#") and re.search(
                     r"(?:^|\s)filter=\S+", clean, re.IGNORECASE):
                 raise ContractError("Git local filter attribute forbidden")
+
+    # Global/system attributes can activate Git filters even if the repository
+    # has no tracked .gitattributes. Check the effective filter for every
+    # tracked source path and each approved future output path, without
+    # executing any registered filter program.
+    paths = [raw for raw in all_tracked if raw]
+    paths.extend(path.encode("utf-8", errors="strict") for path in planned_paths)
+    if paths:
+        payload = b"\0".join(paths) + b"\0"
+        if len(payload) > 8 * 1024 * 1024:
+            raise ContractError("Git attribute input inventory oversized")
+        output = _git_read(repo, "check-attr", "-z", "--stdin", "filter",
+                           input_bytes=payload)
+        fields = output.split(b"\0")
+        if fields[-1] != b"" or len(fields) != 3 * len(paths) + 1:
+            raise ContractError("Git effective attribute inventory invalid")
+        for offset in range(0, len(fields) - 1, 3):
+            if fields[offset + 1] != b"filter":
+                raise ContractError("Git effective attribute inventory invalid")
+            if fields[offset + 2] not in (b"unspecified", b"unset"):
+                raise ContractError("active Git content filter attribute forbidden")

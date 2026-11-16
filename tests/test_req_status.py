@@ -14,7 +14,11 @@ class RequirementStatusTests(unittest.TestCase):
         self.assertEqual(result["official_final_blueprint_completion"], "UNASSESSED")
         self.assertEqual(sum(result["implementation_counts"].values()), 20)
         self.assertEqual(sum(result["verification_counts"].values()), 20)
-        self.assertEqual(result["verification_counts"]["NOT_RUN"], 4)
+        # F18 requires proof from the owner's machine, not hosted CI.
+        # Avoid a stale global NOT_RUN count when more code paths are implemented.
+        self.assertEqual(
+            next(item["verification"] for item in result["requirements"]
+                 if item["id"] == "F18"), "NOT_RUN")
 
     def test_missing_requirement_source_refuses_completion_claim(self):
         from scripts import req_status

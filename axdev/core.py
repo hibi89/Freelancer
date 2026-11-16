@@ -165,8 +165,9 @@ class Factory:
         # Reject dangerous Git hooks/filters BEFORE preparing any model worktree.
         # This is repository-trust hygiene, NOT an OS sandbox.
         from .repo_trust import assert_safe_git_checkout
-        assert_safe_git_checkout(self.repo)
         self.tasks = load_plan(plan)
+        assert_safe_git_checkout(
+            self.repo, tuple(path for task in self.tasks for path in task["files"]))
         self.eai_tasks = {}
         self.eai_policy_digest = ""
         if eai_policy is not None:
