@@ -64,3 +64,13 @@ a push workflow without the manual canary re-ran live network. When local
 queue detects an explicit rate-limit header on 403/429, it may use only
 the unchanged SHA256-pinned owner-approved cached plan; other HTTP errors
 still block. This is offline continuation, **not remote freshness proof**.
+
+## Post-pivot current source verification
+
+- **Source SHA:** `473a05e2998d57f529534d3bfa6a056e9c037152`
+- **CI:** https://github.com/hibi89/Freelancer/actions/runs/43791043821 — 36 PASS / 0 FAIL / 0 SKIP, Python3.11, SUCCESS.
+- **Blueprint gate:** https://github.com/hibi89/Freelancer/actions/runs/43791044055 — SUCCESS.
+- **Live unauthenticated GitHub import:** previously proven by https://github.com/hibi89/Freelancer/actions/runs/43790449613, **not rerun** with latest SHA.
+- **Cause of prior failure:** GitHub public unauthenticated quota exhaustion (HTTP403), not code/test regression.
+- **Change:** manual `workflow_dispatch` canary; every push still runs mandatory deterministic test suite. Runtime handles only exact rate-limit 403/429 with header remaining=0 as transport-unavailable case for approved local SHA256 cache; all other 403 block.
+- **Not tested:** Windows10, 1050Ti GPU, model coding, OpenCode effective OS access/permission and PR remote publication.
