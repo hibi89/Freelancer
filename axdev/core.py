@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
+from contextlib import contextmanager
 import re
 import shutil
 import sqlite3
@@ -20,6 +22,35 @@ VALID_STATES = {"QUEUED", "CODING", "REVIEW", "VERIFIED", "HOLD"}
 
 class ContractError(ValueError):
     pass
+
+@contextmanager
+def single_worker_lock(state: Path):
+    """Kernel-released file lock; no duplicate model worker after a crash."""
+    state.mkdir(parents=True, exist_ok=True)
+    file = open(state / "worker.lock", "a+b")
+    try:
+        file.seek(0)
+        file.write(b"0")
+        file.flush()
+        if os.name == "nt":
+            import msvcrt
+            file.seek(0)
+            msvcrt.locking(file.fileno(), msvcrt.LK_NBLCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        try:
+            yield
+        finally:
+            if os.name == "nt":
+                file.seek(0)
+                msvcrt.locking(file.fileno(), msvcrt.LK_UNLCK, 1)
+            else:
+                fcntl.flock(file.fileno(), fcntl.LOCK_UN)
+    except OSError as e:
+        raise ContractError("another AXDEV worker is already active") from e
+    finally:
+        file.close()
 
 def safe_path(value: str) -> str:
     p = Path(value)
@@ -231,11 +262,12 @@ class Factory:
         if not 1 <= maximum <= 100:
             raise ContractError("max tasks 1..100")
         results = []
-        for _ in range(maximum):
-            result = self.run_one(execute)
-            results.append(result)
-            if result["status"] in ("NO_READY_TASK", "DRY_RUN"):
-                break
+        with single_worker_lock(self.state):
+            for _ in range(maximum):
+                result = self.run_one(execute)
+                results.append(result)
+                if result["status"] in ("NO_READY_TASK", "DRY_RUN"):
+                    break
         return results
 
     def close(self) -> None:
