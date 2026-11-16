@@ -4,6 +4,8 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
+from axdev.core import git
 
 from axdev.core import ContractError, Factory, load_plan, single_worker_lock
 
@@ -145,6 +147,69 @@ class FactoryTests(unittest.TestCase):
             raise AssertionError("second fix is forbidden")
         f.coder = forbidden_call
         self.assertEqual(f.run_one(True)["status"], "HOLD")
+        f.close()
+
+    def test_verified_changes_flow_to_next_worktree(self):
+        a = self.task("AAA-001")
+        b = self.task("BBB-002", ["AAA-001"])
+        b["files"] = ["src/addon.py"]
+        self.write_plan([a, b])
+        def coder(cwd, prompt):
+            if "AAA-001" in prompt:
+                return self.fake_coder(cwd, prompt)
+            self.assertTrue((cwd / "src" / "feature.py").exists(),
+                            "next task must receive preceding verified code")
+            (cwd / "src" / "addon.py").write_text(
+                "from src.feature import value\nother = value + 1\n", encoding="utf-8")
+            return 0, "ok"
+        f = Factory(self.repo, self.plan, self.state, coder=coder)
+        results = f.run_many(2, True)
+        self.assertEqual([x["status"] for x in results],
+                         ["VERIFIED", "VERIFIED"], results)
+        integration = git(self.repo, "rev-parse", f.integration_ref)
+        self.assertEqual(integration, results[-1]["commit"])
+        self.assertTrue((self.state / "worktrees" / "BBB-002" / "src" / "feature.py").exists())
+        self.assertFalse((self.repo / "src").exists(),
+                         "original checkout must not be written")
+        f.close()
+
+    def test_prepared_commit_recovers_without_model_call(self):
+        self.write_plan([self.task()])
+        f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
+        workspace = f._workspace("AAA-001")
+        self.fake_coder(workspace, "prepare")
+        self.assertTrue(f._review(self.task(), workspace)[0])
+        git(workspace, "add", "--", "src/feature.py")
+        git(workspace, "commit", "-m", "prepared")
+        commit = git(workspace, "rev-parse", "HEAD")
+        f._set("AAA-001", "PREPARED", "pending", commit)
+        def forbidden_call(cwd, prompt):
+            raise AssertionError("must not recode prepared commit")
+        f.coder = forbidden_call
+        self.assertEqual(f.run_one(True)["status"], "VERIFIED")
+        self.assertEqual(git(self.repo, "rev-parse", f.integration_ref), commit)
+        self.assertEqual(f.run_one(True)["status"], "NO_READY_TASK")
+        f.close()
+
+    def test_opencode_policy_pins_provider_and_only_task_edit(self):
+        self.write_plan([self.task()])
+        f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
+        f._active_allowed_files = ("src/feature.py",)
+        intercepted = {}
+        def capture(argv, cwd, timeout=60, env=None):
+            intercepted.update({"argv": argv, "cwd": cwd, "env": env})
+            return 0, "synthetic"
+        with patch("axdev.core.shutil.which", return_value="/fake/opencode"), \
+             patch("axdev.core.call", side_effect=capture):
+            rc, out = f._opencode(self.repo, "synthetic only")
+        self.assertEqual(rc, 0)
+        settings = json.loads(intercepted["env"]["OPENCODE_CONFIG_CONTENT"])
+        self.assertEqual(settings["enabled_providers"], ["ollama"])
+        edits = [rule for rule in settings["permissions"] if rule["action"] == "edit"]
+        self.assertEqual(edits[-1],
+                         {"action": "edit", "resource": "src/feature.py", "effect": "allow"})
+        self.assertEqual(intercepted["env"]["OPENCODE_AUTO_SHARE"], "false")
+        self.assertIn("--model", intercepted["argv"])
         f.close()
 
     def test_resume_contract_changes_rejected(self):
