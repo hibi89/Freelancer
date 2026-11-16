@@ -14,6 +14,7 @@ def main(argv=None):
     p = argparse.ArgumentParser()
     p.add_argument("--settings", type=Path, default=default_file())
     p.add_argument("--execute", action="store_true")
+    p.add_argument("--max-tasks", type=int, help="cap this invocation without raising approved settings limit")
     a = p.parse_args(argv)
     obj = json.loads(a.settings.read_text(encoding="utf-8"))
     if obj.get("version") != 1:
@@ -21,6 +22,10 @@ def main(argv=None):
     maximum = int(obj.get("max_tasks", 1))
     if not 1 <= maximum <= 100:
         raise ContractError("invalid max tasks")
+    if a.max_tasks is not None:
+        if not 1 <= a.max_tasks <= 100:
+            raise ContractError("requested max tasks outside 1..100")
+        maximum = min(maximum, a.max_tasks)
     plan_path = Path(obj["plan"])
     approved = obj.get("plan_sha256")
     if approved is not None:

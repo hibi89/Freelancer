@@ -30,6 +30,7 @@ class PreflightTests(unittest.TestCase):
         self.assertFalse(report["gpu_detected"])
         self.assertEqual(report["blockers"], [])
         self.assertEqual(calls.call_count, 4)
+        calls.assert_any_call("opencode", "run", "--help")
 
     def test_gpu_detected_but_not_claimed_benchmarked(self):
         report, _ = self._run(gpu=True)

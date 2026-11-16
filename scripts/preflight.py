@@ -27,7 +27,7 @@ def _version(executable: str, *args: str) -> tuple[bool, str]:
                                 check=False, shell=False)
     except (OSError, subprocess.TimeoutExpired) as exc:
         return False, type(exc).__name__
-    return result.returncode == 0, (result.stdout or result.stderr).strip()[:200]
+    return result.returncode == 0, ((result.stdout or "") + (result.stderr or "")).strip()[-12000:]
 
 
 def _ollama_models() -> list[str]:
@@ -65,7 +65,7 @@ def inspect(model: str) -> dict:
         checks[executable] = {"found_and_runs": okay, "version": message}
         if not okay:
             blockers.append(executable + " missing or failed --version")
-    oc_help, help_text = _version("opencode", "--help")
+    oc_help, help_text = _version("opencode", "run", "--help")
     standalone = oc_help and "--standalone" in help_text
     checks["opencode"]["standalone_advertised"] = standalone
     major = re.search(r"(?<!\d)(\d+)\.\d+", checks["opencode"]["version"])
