@@ -1,3 +1,16 @@
+# AX Dev Factory current engineering checkpoint — 2026-11-16 12:10 KST
+
+- **Repository/branch:** `hibi89/Freelancer@tools/ax-dev-factory-local`; most recent tested **source SHA** `50dc2acb506f74f8330a25bb89c4e00fba3e1b56`. `main` `204f70169d4c7bff2d1ad58d024a184c32360a50` unchanged; no Production/Vercel.
+- **Evidence:** [GitHub Actions run #43796250970](https://github.com/hibi89/Freelancer/actions/runs/43796250970), Python3.11 Linux **79 PASS/0 FAIL/0 SKIP**. [Blueprint gate #43796251037](https://github.com/hibi89/Freelancer/actions/runs/43796251037) SUCCESS. Previously confirmed live public GitHub read-only import in #43790449613. No real Windows10 GTX1050Ti Ollama/OpenCode coding, peak VRAM, policy runtime enforcement or actual owner PR.
+- **New this session:** `scripts/fleet.py` owner-approved pinned 1–10 local project queue, `RUN_FLEET*.cmd` preview/serial run/stop/resume, per-project capped 1–100 tasks, independent project continuation, configuration SHA256 checks and global fleet lock. Preflight checks `opencode run --help` and rejects missing installed model before allocating Factory/holding tasks. `RUN_FIRST_USE.cmd` one-entry disposable trial, metadata-only private trial report and no auto install/download/upload. Every OpenCode coding call now first runs `opencode debug config` in the same environment; mismatch of Ollama model/localhost URL/V2 edit permissions and hard policies blocks model invocation. `tests/test_fleet.py`, `tests/test_first_use_evidence.py`, `tests/test_opencode_guard.py` plus regressions verified on hosted Linux.
+- **Score:** **72/100 provisional engineering readiness**, fixed five-category [scorecard](docs/PROGRESS_SCORECARD.md) 20/17/20/15/0. **Formal design F01–F20 completion UNASSESSED.** The 72 is not autonomous-model working percentage; no on-device GPU/OS security proof has been supplied.
+- **Critical remaining real-use gate:** owner's disposable Windows host run, locally installed Ollama + OpenCode V2, `RUN_FIRST_USE.cmd` and real effective policy, successful code edit/tests, GPU/RAM/latency evidence. F12 actual PR publication requires a separate explicit owner approval and identity check. Boot-time schedule, EAI/AXNODE and AI semantic reviewer still unimplemented. No actual remote publication/deployment.
+- **Safety/rollback:** No secrets or customer code exported; source repository PUBLIC. Last source before this work `9c0a2d4764c858444e25e6a06a6838be670a6957`; rollback via normal Git history, never force push. Most recent tested source is `50dc2acb506f74f8330a25bb89c4e00fba3e1b56` (the documentation update commit follows and is not a new feature build).
+
+Historical status records follow.
+
+---
+
 # AX Dev Factory CURRENT VERIFIED CHECKPOINT — 2026-11-16 KST
 
 - **Working repo/ref:** `hibi89/Freelancer@tools/ax-dev-factory-local`. Source SHA **`2a24cf7e3230066ce6c5f296c4ee80b291c9e5c3`**. Main remains `204f70169d4c7bff2d1ad58d024a184c32360a50` (unchanged). Vercel/Production **NOT APPLICABLE**.

@@ -2,6 +2,8 @@
 
 **Date:** 2026-11-16 KST. **Type:** owner-only internal productivity tool; NOT a Kmong product. **Canonical repo:** hibi89/Freelancer, branch tools/ax-dev-factory-local. **Formal total completion:** UNASSESSED until owner-approved weights and real acceptance evidence. **Deployment:** local Windows10/11, no Vercel.
 
+> **Current evidence refresh 2026-11-16 KST:** Evidence column updated against tested source `50dc2acb506f74f8330a25bb89c4e00fba3e1b56`; requirements/weights unchanged. Formal completion UNASSESSED; provisional 72/100 readiness, owner Windows model NOT_RUN. See [scorecard](../docs/PROGRESS_SCORECARD.md).
+
 ## 1. User-approved mission
 
 Stop repeating web ChatGPT "ㄱ" and switching chats. GPT-6 High defines explicit tiny implementation contracts in GitHub; GTX1050Ti/16GB Windows PC consumes them without requiring further chat input, uses one local Ollama coder at a time, independently reviews each completed job against the SAME fixed contract, issues one bounded fix, holds failures, and continues unrelated tasks. Checkpoints survive interrupted sessions. Source code, requirement/goal history and proof live in GitHub; runtime state/logs remain local.
@@ -22,26 +24,26 @@ Do not start dependent tasks until their prerequisites are VERIFIED. Repeated ba
 
 | ID | Requirement | Current evidence |
 |---|---|---|
-| F01 | GitHub source-first High task contract with stable IDs/allowed file paths | JSON v1 parser/tests in branch; remote task sync pending |
-| F02 | Dependency graph validation, no cycles/unknown IDs | Implemented; exact-source Linux synthetic tests PASS (host Windows/CI pending) |
-| F03 | One coding worker, one test reviewer, no second model residency | Controller serial implementation; performance untested |
-| F04 | Local Ollama provider only, no paid external LLM API | Model name guard; runtime network sandbox pending |
-| F05 | Isolated Git worktree, original checkout unchanged | Code; exact-source Linux synthetic tests PASS (Windows pending) |
-| F06 | Exact allowed changed paths and fail-closed unsafe modifications | Code; exact-source Linux synthetic tests PASS (Windows pending) |
-| F07 | Independent deterministic acceptance commands | Linux synthetic deterministic checks PASS; broader externally pinned suites pending |
-| F08 | At most one fix attempt, then HOLD | Code; exact-source Linux synthetic tests PASS (Windows pending) |
-| F09 | Persistent SQLite state and task-spec SHA | Linux synthetic state/spec pin PASS; power-loss and Windows pending |
-| F10 | Resume incomplete worktree safely | Linux REVIEW resume unit test PASS; Windows crash E2E pending |
-| F11 | Verified local commit and SHA-backed evidence | Synthetic local Git commit PASS; real owner identity/PR pending |
-| F12 | GitHub push/PR with auth and branch protection | NOT IMPLEMENTED; separate approval gate |
-| F13 | GitHub source/task synchronization without duplicate execution | NOT IMPLEMENTED |
+| F01 | GitHub source-first High task contract with stable IDs/allowed file paths | Strict approved JSON task parser plus read-only SHA-pinned public import; automatic new task decomposition not implemented |
+| F02 | Dependency graph validation, no cycles/unknown IDs | Verified by Linux hosted synthetic tests; Windows not run |
+| F03 | One coding worker, one test reviewer, no second model residency | Serial queue and worker-lock synthetic tests PASS, GPU residency untested |
+| F04 | Local Ollama provider only, no paid external LLM API | Static provider allowlist + resolved V2 config guard tested synthetically; real host/network isolation unverified |
+| F05 | Isolated Git worktree, original checkout unchanged | Separate worktree & original checkout preservation hosted synthetic PASS; Windows pending |
+| F06 | Exact allowed changed paths and fail-closed unsafe modifications | Post-test path/content hash guard blocks generated artifacts & mutations; Linux PASS, Windows pending |
+| F07 | Independent deterministic acceptance commands | Linux hosted acceptance test PASS, task checks allowlisted; real-world acceptance unverified |
+| F08 | At most one fix attempt, then HOLD | One bounded repair, HOLD and independent task continuation in hosted synthetic tests |
+| F09 | Persistent SQLite state and task-spec SHA | SQLite spec SHA and checkpoints validated synthetic; Windows power-loss unverified |
+| F10 | Resume incomplete worktree safely | PREPARED, REVIEW, interrupted CODING recovery and cooperative stop tested; Windows crash E2E pending |
+| F11 | Verified local commit and SHA-backed evidence | Git worktree local SHA-backed commits verified synthetic, no real owner PR |
+| F12 | GitHub push/PR with auth and branch protection | Preview and two-flag draft PR publisher implemented/tested offline; actual remote authorization/push NOT_RUN |
+| F13 | GitHub source/task synchronization without duplicate execution | Public read-only GitHub SHA-pinned import actually live-tested once; local cache and idempotency tested; continuous new plans still gated |
 | F14 | EAI independent cognition/evidence adapter | NOT IMPLEMENTED |
 | F15 | AXNODE checkpoint/typed graph adapter | NOT IMPLEMENTED |
-| F16 | Windows10 GTX1050Ti + Ollama 3B/4B speed/RAM benchmarks | NOT RUN |
-| F17 | Startup scheduler, process lock, rate/budget control, daily status | NOT IMPLEMENTED |
-| F18 | Security isolation, secret handling and repository trust review | PARTIAL path/contract guard; OS sandbox NOT IMPLEMENTED |
+| F16 | Windows10 GTX1050Ti + Ollama 3B/4B speed/RAM benchmarks | Localhost synthetic benchmark code + test ready; actual Windows10 GTX1050Ti benchmark NOT_RUN |
+| F17 | Startup scheduler, process lock, rate/budget control, daily status | Single-worker lock, bounded queue, stop/resume and runtime events implemented; Windows startup scheduling NOT_IMPLEMENTED |
+| F18 | Security isolation, secret handling and repository trust review | Reviewed path/contract guards + merged V2 policy fail-closed check; actual OS/network sandbox NOT_IMPLEMENTED |
 | F19 | AI semantic review beyond scripted tests | NOT IMPLEMENTED |
-| F20 | Multi-project queue, PR/status/handoff sync, owner approval UI | NOT IMPLEMENTED |
+| F20 | Multi-project queue, PR/status/handoff sync, owner approval UI | Locally approved serial 1..10 project fleet synthetic PASS; remote status/owner UI NOT_IMPLEMENTED |
 
 No 100% completion claim from CI unit PASS alone. Productization, commercialization, public cloud deployment and third-party customer files explicitly out of scope.
 
