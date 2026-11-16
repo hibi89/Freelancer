@@ -44,6 +44,22 @@ def _toolchain(bundle: Path, expected: str) -> None:
             raise ContractError("sandbox offline binary differs")
 
 
+def _start_local_ollama(bundle: Path, workroot: Path) -> subprocess.Popen:
+    env = dict(
+        os.environ,
+        OLLAMA_HOST="127.0.0.1:11434",
+        OLLAMA_MODELS=str(bundle / "models"),
+        OLLAMA_NO_CLOUD="1",
+        OLLAMA_MAX_LOADED_MODELS="1",
+        OLLAMA_NUM_PARALLEL="1",
+    )
+    return subprocess.Popen(
+        [str(bundle / "ollama" / "ollama.exe"), "serve"], cwd=workroot,
+        stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        shell=False, env=env,
+    )
+
+
 def _wait_local_ollama(process: subprocess.Popen, timeout: int = 90) -> None:
     client = build_opener(ProxyHandler({}))
     deadline = time.monotonic() + timeout
@@ -95,12 +111,7 @@ def _work(request: dict, input_root: Path, bundle: Path) -> dict:
                 else:
                     target.parent.mkdir(parents=True, exist_ok=True)
                     target.write_bytes(body)
-        os.environ["OLLAMA_HOST"] = "127.0.0.1:11434"
-        os.environ["OLLAMA_MODELS"] = str(bundle / "models")
-        os.environ["OLLAMA_NO_CLOUD"] = "1"
-        server = subprocess.Popen([str(bundle / "ollama" / "ollama.exe"), "serve"], cwd=workroot,
-                                  stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                                  stderr=subprocess.DEVNULL, shell=False)
+        server = _start_local_ollama(bundle, workroot)
         _wait_local_ollama(server)
         factory._active_allowed_files = tuple(task["files"])
         phase = "FIX_ONCE" if initial_sha else "CODING"

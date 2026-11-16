@@ -23,7 +23,7 @@ from axdev.windows_sandbox_runtime import (
     BACKEND, _read_bundle, _read_receipt, _wsb, run_sandbox_one, run_sandbox_queue, validate_history,
 )
 from scripts.prepare_offline_bundle import build_manifest
-from scripts.sandbox_guest import _safe_payload
+from scripts.sandbox_guest import _safe_payload, _start_local_ollama
 
 MOD = "axdev.windows_sandbox_runtime"
 SOURCE = "src/example.py"
@@ -39,6 +39,28 @@ def copy_python(runtime: Path):
     for name in ("Lib", "DLLs"):
         shutil.copytree(origin / name, runtime / name,
                         ignore=shutil.ignore_patterns("site-packages", "__pycache__", "test"))
+
+
+class SandboxGuestStartupTests(unittest.TestCase):
+    def test_local_ollama_pins_one_model_and_one_request(self):
+        bundle, workroot = Path("offline-bundle"), Path("sandbox-guest")
+        inherited = {"OLLAMA_MAX_LOADED_MODELS": "3", "OLLAMA_NUM_PARALLEL": "4"}
+        with (
+            patch.dict(os.environ, inherited),
+            patch("scripts.sandbox_guest.subprocess.Popen") as start,
+        ):
+            self.assertIs(_start_local_ollama(bundle, workroot), start.return_value)
+            self.assertEqual({name: os.environ[name] for name in inherited}, inherited)
+        args, options = start.call_args
+        self.assertEqual(args[0], [str(bundle / "ollama" / "ollama.exe"), "serve"])
+        expected = {
+            "OLLAMA_HOST": "127.0.0.1:11434",
+            "OLLAMA_MODELS": str(bundle / "models"),
+            "OLLAMA_NO_CLOUD": "1",
+            "OLLAMA_MAX_LOADED_MODELS": "1",
+            "OLLAMA_NUM_PARALLEL": "1",
+        }
+        self.assertEqual({name: options["env"][name] for name in expected}, expected)
 
 
 class SandboxContractTests(unittest.TestCase):
