@@ -1,0 +1,192 @@
+{
+  "version": 1,
+  "scope": "AX Dev Factory owner-only local personal tool",
+  "official_final_blueprint_completion": "UNASSESSED",
+  "provisional_readiness": "72/100 (previous fixed five-domain proxy; not recalculated)",
+  "evidence_basis": "Current GitHub source + previous synthetic CI; this manifest is NOT independent owner-device acceptance.",
+  "requirements": [
+    {
+      "id": "F01",
+      "implementation": "PARTIAL",
+      "verification": "PARTIAL",
+      "paths": [
+        "axdev/core.py",
+        "axdev/github_sync.py"
+      ],
+      "remaining_work": "Automatic approval-ready High decomposition remains unavailable."
+    },
+    {
+      "id": "F02",
+      "implementation": "IMPLEMENTED",
+      "verification": "SYNTHETIC_PASS",
+      "paths": [
+        "axdev/core.py"
+      ],
+      "remaining_work": "Validate real user project graph at first use."
+    },
+    {
+      "id": "F03",
+      "implementation": "PARTIAL",
+      "verification": "PARTIAL",
+      "paths": [
+        "axdev/core.py",
+        "axdev/batch.py"
+      ],
+      "remaining_work": "Prove one physical model residency and GPU memory bounds."
+    },
+    {
+      "id": "F04",
+      "implementation": "PARTIAL",
+      "verification": "PARTIAL",
+      "paths": [
+        "axdev/opencode_guard.py",
+        "config/opencode-local-only.json"
+      ],
+      "remaining_work": "Prove effective installed OpenCode policy and network blocking on owner PC."
+    },
+    {
+      "id": "F05",
+      "implementation": "IMPLEMENTED",
+      "verification": "SYNTHETIC_PASS",
+      "paths": [
+        "axdev/core.py"
+      ],
+      "remaining_work": "Run an actual owner Windows10 isolated worktree trial."
+    },
+    {
+      "id": "F06",
+      "implementation": "IMPLEMENTED",
+      "verification": "PARTIAL",
+      "paths": [
+        "axdev/core.py"
+      ],
+      "remaining_work": "Validate user-host Windows filesystem and OS-level confinement."
+    },
+    {
+      "id": "F07",
+      "implementation": "IMPLEMENTED",
+      "verification": "SYNTHETIC_PASS",
+      "paths": [
+        "axdev/core.py"
+      ],
+      "remaining_work": "Execute an approved real-project acceptance suite."
+    },
+    {
+      "id": "F08",
+      "implementation": "IMPLEMENTED",
+      "verification": "SYNTHETIC_PASS",
+      "paths": [
+        "axdev/core.py",
+        "axdev/batch.py"
+      ],
+      "remaining_work": "Validate bounded real model repair and HOLD behavior."
+    },
+    {
+      "id": "F09",
+      "implementation": "IMPLEMENTED",
+      "verification": "SYNTHETIC_PASS",
+      "paths": [
+        "axdev/core.py",
+        "axdev/batch.py"
+      ],
+      "remaining_work": "Power-interruption recovery requires actual Windows testing."
+    },
+    {
+      "id": "F10",
+      "implementation": "IMPLEMENTED",
+      "verification": "SYNTHETIC_PASS",
+      "paths": [
+        "axdev/core.py",
+        "axdev/batch.py"
+      ],
+      "remaining_work": "Reboot/crash recovery requires owner host test."
+    },
+    {
+      "id": "F11",
+      "implementation": "IMPLEMENTED",
+      "verification": "SYNTHETIC_PASS",
+      "paths": [
+        "axdev/core.py",
+        "scripts/verify_trial.py"
+      ],
+      "remaining_work": "Owner Git identity and real model-derived commit remain unverified."
+    },
+    {
+      "id": "F12",
+      "implementation": "PARTIAL",
+      "verification": "PARTIAL",
+      "paths": [
+        "scripts/publish_pr.py"
+      ],
+      "remaining_work": "Explicit owner-approved real Draft PR push and branch protection review."
+    },
+    {
+      "id": "F13",
+      "implementation": "PARTIAL",
+      "verification": "PARTIAL",
+      "paths": [
+        "axdev/github_sync.py"
+      ],
+      "remaining_work": "Remote status synchronization and broader idempotency need live validation."
+    },
+    {
+      "id": "F14",
+      "implementation": "NOT_IMPLEMENTED",
+      "verification": "NOT_RUN",
+      "paths": [],
+      "remaining_work": "Design and implement optional EAI adapter without changing external repo."
+    },
+    {
+      "id": "F15",
+      "implementation": "NOT_IMPLEMENTED",
+      "verification": "NOT_RUN",
+      "paths": [],
+      "remaining_work": "Design and implement optional AXNODE typed checkpoint adapter."
+    },
+    {
+      "id": "F16",
+      "implementation": "PARTIAL",
+      "verification": "NOT_RUN",
+      "paths": [
+        "scripts/benchmark_local.py"
+      ],
+      "remaining_work": "Benchmark 3B/4B models on GTX1050Ti with RAM/VRAM readings."
+    },
+    {
+      "id": "F17",
+      "implementation": "PARTIAL",
+      "verification": "PARTIAL",
+      "paths": [
+        "scripts/queue_control.py"
+      ],
+      "remaining_work": "Startup scheduler, daily report, and real budget controls remain."
+    },
+    {
+      "id": "F18",
+      "implementation": "PARTIAL",
+      "verification": "PARTIAL",
+      "paths": [
+        "axdev/opencode_guard.py",
+        "axdev/core.py"
+      ],
+      "remaining_work": "Actual OS isolation, network egress denial and secret exfiltration test remain."
+    },
+    {
+      "id": "F19",
+      "implementation": "NOT_IMPLEMENTED",
+      "verification": "NOT_RUN",
+      "paths": [],
+      "remaining_work": "Independent semantic review and proof of bounded behavior remain."
+    },
+    {
+      "id": "F20",
+      "implementation": "PARTIAL",
+      "verification": "PARTIAL",
+      "paths": [
+        "scripts/fleet.py",
+        "scripts/run_configured_queue.py"
+      ],
+      "remaining_work": "Approval UI and remote PR/status/handoff sync remain."
+    }
+  ]
+}
