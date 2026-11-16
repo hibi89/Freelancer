@@ -8,7 +8,7 @@ Or:
 
     python -m scripts.preflight --model ollama/qwen3:4b-instruct
 
-This prints Python/Git/Ollama/OpenCode versions, the OpenCode 2+
+This prints Python/Git/Ollama/OpenCode versions, the OpenCode 2.2.6+ hard-policy minimum and
 --standalone command option, local 127.0.0.1:11434/api/tags installed-model
 list, and optional NVIDIA GPU detection. It makes **no internet request**,
 does not run a model, and does not modify any user project or credentials.
@@ -35,3 +35,11 @@ target checkout. A matching GitHub account is **not** proven by local
 Git configuration and must be reviewed separately before any PR push.
 Synthetic Windows `RUN_PREFLIGHT.cmd` supplies the fixture checkout
 once it exists.
+
+
+**V2 policy version floor:** OpenCode prior to **2.2.3** may ignore
+`plugin.use`; versions prior to **2.2.6** ignore `websearch.use`.
+Because this project relies on both to avoid silently permitting
+unapproved tools/providers, the preflight refuses V2 releases older
+than 2.2.6. [Official V2 policies](https://opencode.ai/docs/policies/).
+No automatic package installation or upgrades are attempted.

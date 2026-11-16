@@ -10,7 +10,7 @@ class PreflightTests(unittest.TestCase):
         self.version = [
             (True, "git version 2.47.0"),
             (True, "ollama version 0.11.0"),
-            (True, "2.2.3"),
+            (True, "2.2.6"),
             (True, "OpenCode 2 --standalone --help"),
         ]
 
@@ -52,7 +52,21 @@ class PreflightTests(unittest.TestCase):
              patch("scripts.preflight.shutil.which", return_value=None):
             report = inspect("ollama/qwen3:4b-instruct")
         self.assertFalse(report["ready_for_disposable_model_trial"])
-        self.assertTrue(any("2+" in x for x in report["blockers"]))
+        self.assertTrue(any("2.2.6+" in x for x in report["blockers"]))
+
+    def test_old_v2_ignoring_websearch_policy_is_blocked(self):
+        version = self.version.copy()
+        version[2] = (True, "2.2.5")
+        with patch("scripts.preflight._version", side_effect=version), \
+             patch("scripts.preflight._ollama_models",
+                   return_value=["qwen3:4b-instruct"]), \
+             patch("scripts.preflight._ollama_capabilities",
+                   return_value=["completion", "tools"]), \
+             patch("scripts.preflight.shutil.which", return_value=None):
+            value = inspect("ollama/qwen3:4b-instruct")
+        self.assertFalse(value["ready_for_disposable_model_trial"])
+        self.assertIn("OpenCode 2.2.6+ required for effective V2 hard policies",
+                      value["blockers"])
 
     def test_missing_ollama_api_fails_closed(self):
         with patch("scripts.preflight._version", side_effect=self.version), \

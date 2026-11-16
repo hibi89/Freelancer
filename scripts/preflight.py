@@ -112,9 +112,13 @@ def inspect(model: str, repo: Path | None = None) -> dict:
     oc_help, help_text = _version("opencode", "run", "--help")
     standalone = oc_help and "--standalone" in help_text
     checks["opencode"]["standalone_advertised"] = standalone
-    major = re.search(r"(?<!\d)(\d+)\.\d+", checks["opencode"]["version"])
-    if checks["opencode"]["found_and_runs"] and (not major or int(major.group(1)) < 2):
-        blockers.append("OpenCode 2+ is required; verify --version")
+    release = re.search(r"(?<!\d)(\d+)\.(\d+)\.(\d+)(?!\d)",
+                        checks["opencode"]["version"])
+    parts = tuple(map(int, release.groups())) if release else ()
+    # plugin.use needs >=2.2.3; websearch.use is ignored before 2.2.6.
+    # A permissive older CLI must never silently bypass deny policies.
+    if checks["opencode"]["found_and_runs"] and parts < (2, 2, 6):
+        blockers.append("OpenCode 2.2.6+ required for effective V2 hard policies")
     if not standalone:
         blockers.append("OpenCode --standalone option not confirmed")
     try:
