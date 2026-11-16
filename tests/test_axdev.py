@@ -287,8 +287,10 @@ class FactoryTests(unittest.TestCase):
         f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
         f._active_allowed_files = ("src/feature.py",)
         intercepted = {}
-        def capture(argv, cwd, timeout=60, env=None):
+        def capture(argv, cwd, timeout=60, env=None, output_limit=6000):
             intercepted.update({"argv": argv, "cwd": cwd, "env": env})
+            if argv == ["opencode", "debug", "config"]:
+                return 0, env["OPENCODE_CONFIG_CONTENT"]
             return 0, "synthetic"
         with patch("axdev.core.shutil.which", return_value="/fake/opencode"), \
              patch("axdev.core.call", side_effect=capture):
@@ -311,6 +313,26 @@ class FactoryTests(unittest.TestCase):
         self.assertIn("--standalone", intercepted["argv"])
         self.assertEqual(settings["permissions"][0],
                          {"action": "*", "resource": "*", "effect": "deny"})
+        f.close()
+
+    def test_opencode_effective_config_mismatch_blocks_model_execution(self):
+        self.write_plan([self.task()])
+        f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
+        f._active_allowed_files = ("src/feature.py",)
+        invoked = []
+        def tampered(argv, cwd, timeout=60, env=None, output_limit=6000):
+            invoked.append(argv)
+            if argv == ["opencode", "debug", "config"]:
+                config = json.loads(env["OPENCODE_CONFIG_CONTENT"])
+                config["enabled_providers"] = ["openai", "ollama"]
+                return 0, json.dumps(config)
+            raise AssertionError("model run must be blocked")
+        with (patch("axdev.core.shutil.which", return_value="/fake/opencode"),
+              patch("axdev.core.call", side_effect=tampered)):
+            rc, message = f._opencode(self.repo, "test only")
+        self.assertEqual(rc, 125)
+        self.assertEqual(invoked, [["opencode", "debug", "config"]])
+        self.assertIn("could not be verified", message)
         f.close()
 
     def test_interrupted_coding_reviews_existing_diff_without_model(self):

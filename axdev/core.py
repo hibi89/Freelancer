@@ -114,13 +114,14 @@ def load_plan(path: Path) -> list[dict]:
         visit(tid, set(), done)
     return data["tasks"]
 
-def call(argv: list[str], cwd: Path, timeout: int = 60, env=None) -> tuple[int, str]:
+def call(argv: list[str], cwd: Path, timeout: int = 60, env=None,
+         output_limit: int = 6000) -> tuple[int, str]:
     try:
         p = subprocess.run(argv, cwd=cwd, text=True, encoding="utf-8",
                            errors="replace", stdout=subprocess.PIPE,
                            stderr=subprocess.STDOUT, timeout=timeout,
                            shell=False, check=False, env=env)
-        return p.returncode, p.stdout[-6000:]
+        return p.returncode, p.stdout[-output_limit:]
     except (OSError, subprocess.TimeoutExpired) as e:
         return 124, str(e)
 
@@ -246,6 +247,13 @@ class Factory:
         env["HTTP_PROXY"] = "http://127.0.0.1:9"
         env["HTTPS_PROXY"] = "http://127.0.0.1:9"
         env["ALL_PROXY"] = "http://127.0.0.1:9"
+        # OpenCode V2 merges user, project, inline and managed config.
+        # The file alone is not evidence that the effective tool policy is safe.
+        from .opencode_guard import validate_effective
+        rc, merged = call(["opencode", "debug", "config"], cwd,
+                          timeout=40, env=env, output_limit=65536)
+        if rc != 0 or not validate_effective(merged, config_obj):
+            return 125, "effective OpenCode V2 provider/edit/tool policy could not be verified"
         return call(["opencode", "run", "--standalone", "--model", self.model, prompt], cwd,
                     timeout=1200, env=env)
 
