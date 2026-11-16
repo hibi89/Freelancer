@@ -122,6 +122,31 @@ class FactoryTests(unittest.TestCase):
         self.assertEqual(f.run_one(True)["status"], "VERIFIED")
         f.close()
 
+    def test_resume_review_does_not_reinvoke_model(self):
+        self.write_plan([self.task()])
+        f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
+        workspace = f._workspace("AAA-001")
+        self.fake_coder(workspace, "fixture")
+        f._set("AAA-001", "REVIEW")
+        def forbidden_call(cwd, prompt):
+            raise AssertionError("model must not be rerun at REVIEW checkpoint")
+        f.coder = forbidden_call
+        self.assertEqual(f.run_one(True)["status"], "VERIFIED")
+        f.close()
+
+    def test_fix_budget_survives_restart(self):
+        self.write_plan([self.task()])
+        f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
+        f._workspace("AAA-001")
+        f._set("AAA-001", "REVIEW")
+        f.db.execute("UPDATE runs SET attempts=1 WHERE id='AAA-001'")
+        f.db.commit()
+        def forbidden_call(cwd, prompt):
+            raise AssertionError("second fix is forbidden")
+        f.coder = forbidden_call
+        self.assertEqual(f.run_one(True)["status"], "HOLD")
+        f.close()
+
     def test_resume_contract_changes_rejected(self):
         self.write_plan([self.task()])
         Factory(self.repo, self.plan, self.state, coder=self.fake_coder).close()
