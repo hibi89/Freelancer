@@ -1,0 +1,209 @@
+{
+  "schema": 1,
+  "physical_host": {
+    "os": "Windows 11 Pro",
+    "build": 26200,
+    "installed_ram_gib": 15.8,
+    "gpu": "NVIDIA GeForce GTX 1050 Ti",
+    "gpu_vram_mib": 4096,
+    "nvidia_driver": "552.22",
+    "windows_sandbox_guest": "NOT_RUN",
+    "windows_sandbox_feature": "disabled"
+  },
+  "native_observations": {
+    "gpu": {
+      "schema": 1,
+      "source_sha": "a0cd336404f8048323c83f3cabe4b07c364ee22c",
+      "os_build": 26200,
+      "gpu_model": "NVIDIA GeForce GTX 1050 Ti",
+      "cpu_forcing_omitted": true,
+      "backend_requested": "Vulkan",
+      "ollama_no_cloud": true,
+      "qwen3_manifest_sha256": "6214d088d3846e16c9fe00adcbabdbfddc61ce4a70daacc46cb2310c38603054",
+      "prompt_sha256": "6ced3ca2a2b9504ed2e864d941194d336c872aa3b985d63f0f3d1adf9397c197",
+      "options": {
+        "num_ctx": 2048,
+        "num_predict": 128,
+        "temperature": 0
+      },
+      "runs": [
+        {
+          "model": "qwen3:4b-instruct",
+          "status": "PASS",
+          "model_digest": "6214d088d3846e16c9fe00adcbabdbfddc61ce4a70daacc46cb2310c38603054",
+          "single_resident_model": true,
+          "eval_tokens": 128,
+          "eval_tokens_per_second": 19.16,
+          "wall_seconds": 20.018,
+          "reported_vram_bytes": 2680422399,
+          "nvidia_vram_delta_mib": 2564,
+          "gpu_confirmed": true,
+          "ram_before": {
+            "total_mib": 16227,
+            "available_mib": 2840
+          },
+          "ram_after": {
+            "total_mib": 16227,
+            "available_mib": 965
+          },
+          "unloaded_before_next_model": true
+        },
+        {
+          "model": "qwen2.5-coder:3b",
+          "status": "PASS",
+          "model_digest": "f72c60cabf6237b07f6e632b2c48d533cef25eda2efbd34bed21c5e9c01e6225",
+          "single_resident_model": true,
+          "eval_tokens": 128,
+          "eval_tokens_per_second": 31.45,
+          "wall_seconds": 12.01,
+          "reported_vram_bytes": 2085963693,
+          "nvidia_vram_delta_mib": 1998,
+          "gpu_confirmed": true,
+          "ram_before": {
+            "total_mib": 16227,
+            "available_mib": 3366
+          },
+          "ram_after": {
+            "total_mib": 16227,
+            "available_mib": 1115
+          },
+          "unloaded_before_next_model": true
+        }
+      ],
+      "version": "0.40.16",
+      "dedicated_server_stopped": true
+    },
+    "recovery": {
+      "source_sha": "a0cd336404f8048323c83f3cabe4b07c364ee22c",
+      "os_build": 26200,
+      "abrupt_process_exit": 73,
+      "persisted": "PREPARED",
+      "recovery": "same reviewed commit VERIFIED",
+      "replay": "NO_TASK",
+      "coding_reservations": 1,
+      "original_checkout_unchanged": true,
+      "review": "native AppContainer; synthetic coding receipt"
+    },
+    "scheduler": {
+      "source_sha": "a0cd336404f8048323c83f3cabe4b07c364ee22c",
+      "os_build": 26200,
+      "template_validated": true,
+      "manual_run_only": true,
+      "task_removed": true,
+      "probe": {
+        "launched_expected_args": true,
+        "execute_exit": 1,
+        "unavailable_sandbox_refused": true,
+        "no_runtime_state_before_refusal": true,
+        "dry_run_exit": 0,
+        "dry_run_statuses": [
+          "DRY_RUN"
+        ]
+      }
+    },
+    "security": {
+      "source_sha": "a0cd336404f8048323c83f3cabe4b07c364ee22c",
+      "os_build": 26200,
+      "scope": "native Win11 AppContainer",
+      "listeners_reachable_outside_container": true,
+      "protected_bytes_unchanged": true,
+      "observed": {
+        "private_marker_inherited": false,
+        "read": {
+          "denied": true,
+          "winerror": null
+        },
+        "write": {
+          "denied": true,
+          "winerror": null
+        },
+        "loopback": {
+          "denied": true,
+          "winerror": null,
+          "error_type": "TimeoutError"
+        },
+        "virtual_adapter": {
+          "denied": true,
+          "winerror": null,
+          "error_type": "TimeoutError"
+        }
+      }
+    }
+  },
+  "wsl2_policy_probes": {
+    "2.2.6": {
+      "source_sha": "2d7b0c7efb5e07b1bc299ccbeeb1608b352fe626",
+      "release": "2.2.6",
+      "allowed_file_updated": true,
+      "unapproved_file_unchanged": true,
+      "malicious_markdown_agent_denial": "Blocked by configuration policy",
+      "private_canary_read_denial": "Permission denied: read",
+      "shell_and_web_tools_omitted": true,
+      "extra_config_exit": 125,
+      "extra_config_made_no_model_request": true,
+      "model_endpoint": "synthetic Ollama protocol on private WSL2 loopback",
+      "binary_sha256": "50503d24577fa4117a7c95ee85b2cd679606a87eacf20ca54ed5db5c9e1cf895"
+    },
+    "2.3.0": {
+      "source_sha": "2d7b0c7efb5e07b1bc299ccbeeb1608b352fe626",
+      "release": "2.3.0",
+      "allowed_file_updated": true,
+      "unapproved_file_unchanged": true,
+      "malicious_markdown_agent_denial": "Blocked by configuration policy",
+      "private_canary_read_denial": "Permission denied: read",
+      "shell_and_web_tools_omitted": true,
+      "extra_config_exit": 125,
+      "extra_config_made_no_model_request": true,
+      "model_endpoint": "synthetic Ollama protocol on private WSL2 loopback",
+      "binary_sha256": "2e0e4656521ca56e5ba16a00d48429958b8105b3fa6466710a4350e68759381f"
+    }
+  },
+  "wsl2_native_model_integration": {
+    "run_started": true,
+    "dedicated_server_stopped": true,
+    "source_sha": "2d7b0c7efb5e07b1bc299ccbeeb1608b352fe626",
+    "scope": "Linux OpenCode in no-egress WSL2; allowlisted stdio to native Windows Ollama",
+    "opencode_exit": 0,
+    "allowed_edit_correct": true,
+    "changed_paths": [
+      "probe.py"
+    ],
+    "protected_file_unchanged": true,
+    "original_head_unchanged": true,
+    "original_file_unchanged": true,
+    "write_observed": true,
+    "policy_guard_refused": false,
+    "model_unavailable": false,
+    "prompt_sha256": "c560de2c6ffb49dce072c0c6be0b561d80988f8af681810f7ccef067178efccb",
+    "wsl_exit": 0,
+    "ollama_version": "0.40.16",
+    "nvidia_vram_delta_mib": 2565,
+    "ollama_models": [
+      {
+        "name": "qwen3:4b-instruct",
+        "digest": "6214d088d3846e16c9fe00adcbabdbfddc61ce4a70daacc46cb2310c38603054",
+        "vram_bytes": 2675011747
+      }
+    ],
+    "requests": {
+      "GET /api/tags": 2,
+      "POST /api/show": 1,
+      "POST /v1/chat/completions": 3
+    },
+    "statuses": {
+      "200": 6
+    },
+    "opencode_release": "2.3.0"
+  },
+  "target_windows10": {
+    "status": "NOT_RUN",
+    "requirements": [
+      "F03",
+      "F04",
+      "F10",
+      "F16",
+      "F17",
+      "F18"
+    ]
+  }
+}

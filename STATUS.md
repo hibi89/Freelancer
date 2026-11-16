@@ -1,10 +1,11 @@
 # AX Dev Factory P2 verification checkpoint · 2026-11-16 KST
 
-Functional SHA `945c5d61c90f96b7396a330b281b1d18b00fd924` on `codex/axdev-full-verification`. **14/20 acceptance rows PASS; six remain NOT_RUN.** Wsixed completion UNASSESSED. **Owner real-use HOLD.** The [P2 ledger](docs/P2_VERIFICATION_LEDGER.md) lists all F01–F20 and each first-use device gate. [Branch CI and exact checkout](https://github.com/hibi89/Freelancer/actions?query=branch%3Acodex%2Faxdev-full-verification).
+Functional SHA `2d7b0c7efb5e07b1bc299ccbeeb1608b352fe626` on `codex/axdev-full-verification`. **14/20 acceptance rows PASS. Six remain NOT_RUN on the target Windows 10 machine.** Weighted completion is UNASSESSED. Owner real-use remains HOLD. [P2 acceptance ledger](docs/P2_VERIFICATION_LEDGER.md) · [PR #3](https://github.com/hibi89/Freelancer/pull/3)
 
 - The Windows Sandbox guest produces advisory candidate bytes. A host-owned AppContainer check and independent callable oracle gate the exact Git tree, proof and integration ref. The queue pins approvals, bundle bytes and recovery evidence. A draft PR export also requires an isolated history with matching host evidence.
-- Native Windows 11 reviewer adversarial tests ran. A real local Ollama semantic check and a real isolated EAI synthetic receipt ran. GitHub plan import and replay were checked live.
-- Target Windows 10 unavailable here. Windows Sandbox is disabled and OpenCode unavailable on the current Windows 11 host. The actual Windows 10 isolated coding, hardware, restart and authorized runtime publication checks remain pending.
+- Native Windows 11 device checks passed for AppContainer file and network denial, controller crash recovery, manual Task Scheduler invocation and GTX 1050 Ti Vulkan inference with both local model sizes. [Physical-device evidence and remaining target steps](docs/WINDOWS11_VERIFICATION.md)
+- The OpenCode guard verifies configuration sources and enforces file scope even when a repository agent grants broader edit access. Isolated WSL2 OpenCode used native Windows Ollama on the GTX 1050 Ti to complete the approved edit. Attack probes denied the prohibited edit and private-file read. Native Windows Sandbox was disabled on this host and stayed NOT_RUN.
+- The PR records the final hosted checkout SHA and check results. At `5246d10d0492d430db5d91ea4ea1a393d37b216d`, Linux passed 149 tests with 2 skips and Windows passed 150 with 1 skip. [Prior CI](https://github.com/hibi89/Freelancer/actions/runs/43841403055) · [Current CI](https://github.com/hibi89/Freelancer/pull/3/checks)
 
 Follow-up verified the owner dashboard stop/resume loop in a real browser and fixed the two-project CLI configuration exit. OpenCode 2.3.0 standalone was checked on a portable copy; full Windows Sandbox behavior remains a device gate.
 
