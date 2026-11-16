@@ -109,7 +109,7 @@ def preview(settings_path: Path, approved_repo: str, base: str,
             raise ContractError("PR export includes deletion, renaming or unexpected changes")
         filename = safe_path(parts[1])
         if filename not in allowed:
-            raise ContractError("PR export includes a path outside approved tasks")
+            raise ContractError("PR path outside approved tasks: " + repr(filename) + " not in " + repr(sorted(allowed)))
         files.append(filename)
     if not files:
         raise ContractError("no approved file changes to publish")

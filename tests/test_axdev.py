@@ -443,13 +443,13 @@ class FactoryTests(unittest.TestCase):
         record = factory.run_one(True)
         self.assertEqual(record["status"], "VERIFIED")
         factory.close()
-        with patch("scripts.publish_pr.subprocess.run", wraps=subprocess.run) as command:
+        with patch("scripts.publish_pr.publish_draft", side_effect=AssertionError("unexpected remote write")):
             preview_result = preview(settings, "hibi89/Freelancer", "main",
                                      record["commit"], "axdev/review-aaa-001")
         self.assertEqual(preview_result["verified_task_ids"], ["AAA-001"])
         self.assertEqual(preview_result["changed_files"], ["src/feature.py"])
         self.assertFalse(preview_result["remote_write_executed"])
-        self.assertTrue(all("push" not in str(c.args) for c in command.call_args_list))
+        self.assertFalse(preview_result["pr_created"])
         with self.assertRaisesRegex(ContractError, "moved or does not match"):
             preview(settings, "hibi89/Freelancer", "main", "a" * 40,
                     "axdev/review-aaa-001")
