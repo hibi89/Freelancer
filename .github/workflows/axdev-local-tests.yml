@@ -48,9 +48,9 @@ jobs:
       - name: CLI version
         run: python -m axdev --version
       # Public anonymous GitHub API is shared-rate-limited on CI runner IPs.
-      # Manual canary remains available; keep synthetic correctness gating on push.
+      # Only the source branch's SHA can approve its live plan import.
       - name: Public GitHub SHA-pinned live read-only import (manual canary)
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/tools/ax-dev-factory-local'
         env:
           APPROVED_SHA: ${{ github.sha }}
         run: |
