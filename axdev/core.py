@@ -344,7 +344,8 @@ class Factory:
         env = {key: value for key, value in os.environ.items()
                if not any(secret in key.upper() for secret in
                           ("TOKEN", "API_KEY", "PASSWORD", "SECRET", "CREDENTIAL"))}
-        env["OPENCODE_CONFIG"] = str(config)
+        env["PWD"] = str(cwd.resolve())
+        env.pop("OPENCODE_CONFIG", None)
         env["OPENCODE_CONFIG_CONTENT"] = json.dumps(config_obj)
         env["OPENCODE_AUTO_SHARE"] = "false"
         env["OPENCODE_DISABLE_AUTOUPDATE"] = "true"
@@ -355,14 +356,14 @@ class Factory:
         env["ALL_PROXY"] = "http://127.0.0.1:9"
         # Inspect with the same binary and private-server mode as the run.
         # The default background server can have different cached settings.
-        from .opencode_guard import supported_release, validate_effective
+        from .opencode_guard import supported_release, validate_config_sources
         rc, release = call([command[0], "--version"], cwd, timeout=15, env=env)
         if rc != 0 or not supported_release(release):
             return 125, "OpenCode 2.2.6+ stable release required for enforced policies"
-        rc, merged = call([*command, "debug", "config"], cwd,
-                          timeout=40, env=env, output_limit=65536)
-        if rc != 0 or not validate_effective(merged, config_obj):
-            return 125, "effective OpenCode V2 provider/edit/tool policy could not be verified"
+        rc, sources = call([*command, "debug", "config"], cwd,
+                           timeout=40, env=env, output_limit=65536)
+        if rc != 0 or not validate_config_sources(sources, config_obj):
+            return 125, "OpenCode V2 provider/edit/tool configuration sources could not be verified"
         return call([*command, "run", "--model", self.model, prompt], cwd,
                     timeout=1200, env=env)
 

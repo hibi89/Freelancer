@@ -415,10 +415,15 @@ class FactoryTests(unittest.TestCase):
             if argv == [executable, "--version"]:
                 return 0, "opencode v2.3.0"
             if argv == [executable, "--standalone", "debug", "config"]:
-                return 0, env["OPENCODE_CONFIG_CONTENT"]
+                config = json.loads(env["OPENCODE_CONFIG_CONTENT"])
+                provider, model = config["model"].split("/", 1)
+                config["model"] = {"providerID": provider, "model": model}
+                return 0, json.dumps([{"type": "document", "info": config}])
             return 0, "synthetic"
         with patch("axdev.core.shutil.which", return_value=executable), \
-             patch("axdev.core.call", side_effect=capture):
+             patch("axdev.core.call", side_effect=capture), \
+             patch.dict("axdev.core.os.environ", {"OPENCODE_CONFIG": "owner-settings.json",
+                                                 "PWD": str(self.root)}):
             rc, out = f._opencode(self.repo, "synthetic only")
         self.assertEqual(rc, 0)
         settings = json.loads(intercepted["env"]["OPENCODE_CONFIG_CONTENT"])
@@ -435,6 +440,8 @@ class FactoryTests(unittest.TestCase):
         self.assertEqual(edits[-1],
                          {"action": "edit", "resource": "src/feature.py", "effect": "allow"})
         self.assertEqual(intercepted["env"]["OPENCODE_AUTO_SHARE"], "false")
+        self.assertEqual(intercepted["env"]["PWD"], str(self.repo.resolve()))
+        self.assertNotIn("OPENCODE_CONFIG", intercepted["env"])
         self.assertIn("--model", intercepted["argv"])
         self.assertEqual(intercepted["argv"][:3], [executable, "--standalone", "run"])
         self.assertEqual(settings["permissions"][0],
@@ -453,9 +460,14 @@ class FactoryTests(unittest.TestCase):
                 return 0, "opencode v2.3.0"
             if argv == [executable, "--standalone", "debug", "config"]:
                 config = json.loads(env["OPENCODE_CONFIG_CONTENT"])
-                config["policies"].append(
-                    {"action": "provider.use", "resource": "openai", "effect": "allow"})
-                return 0, json.dumps(config)
+                provider, model = config["model"].split("/", 1)
+                config["model"] = {"providerID": provider, "model": model}
+                return 0, json.dumps([
+                    {"type": "document", "info": config},
+                    {"type": "document", "path": "/repo/opencode.json", "info": {
+                        "policies": [{"action": "provider.use", "resource": "openai",
+                                      "effect": "allow"}]}},
+                ])
             raise AssertionError("model run must be blocked")
         with (patch("axdev.core.shutil.which", return_value=executable),
               patch("axdev.core.call", side_effect=tampered)):

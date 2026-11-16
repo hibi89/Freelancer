@@ -1,8 +1,4 @@
-"""Pure, conservative validator of OpenCode V2's resolved debug config.
-
-Never prints merged configuration; it can contain user configuration secrets.
-A matching config is a STATIC check, not a proof that tools obey policy.
-"""
+"""Validate the configuration sources reported by OpenCode V2."""
 from __future__ import annotations
 import json
 import re
@@ -15,38 +11,46 @@ def supported_release(output: str) -> bool:
     return release is not None and tuple(map(int, release.groups())) >= MINIMUM_RELEASE
 
 
-def validate_effective(output: str, expected: dict) -> bool:
+def validate_config_sources(output: str, expected: dict) -> bool:
     if not isinstance(output, str) or not output or len(output) > 65536:
         return False
     try:
-        effective = json.loads(output)
+        sources = json.loads(output)
     except (ValueError, TypeError):
         return False
-    if not isinstance(effective, dict):
+    if not isinstance(sources, list):
         return False
-    if effective.get("model") != expected.get("model"):
+    # debug config lists each source. Only the inline document is trusted.
+    # Directory entries contain paths, while a file or remote source could
+    # introduce agent permissions, providers or other configuration.
+    documents = []
+    for source in sources:
+        if not isinstance(source, dict):
+            return False
+        if (source.keys() == {"type", "path"} and source["type"] == "directory"
+                and isinstance(source["path"], str) and source["path"]):
+            continue
+        if source.keys() != {"type", "info"} or source["type"] != "document":
+            return False
+        documents.append(source["info"])
+    model = expected.get("model")
+    if not isinstance(model, str):
         return False
-    providers = effective.get("providers")
-    if not isinstance(providers, dict):
+    provider, _, model_id = model.partition("/")
+    if provider != "ollama" or not model_id:
         return False
-    ollama = providers.get("ollama")
-    if not isinstance(ollama, dict):
+    decoded = dict(expected, model={"providerID": provider, "model": model_id})
+    if documents != [decoded]:
         return False
-    if ollama.get("settings", {}).get("baseURL") != "http://127.0.0.1:11434/v1":
+    if expected.get("providers") != {
+        "ollama": {"settings": {"baseURL": "http://127.0.0.1:11434/v1"}},
+    }:
         return False
-    # Hard policies (unlike prompt text) must survive configuration merging.
-    effective_policies = effective.get("policies")
     required_policies = expected.get("policies")
-    if (not isinstance(effective_policies, list)
-            or not isinstance(required_policies, list)):
-        return False
-    if effective_policies != required_policies:
+    if not isinstance(required_policies, list):
         return False
     expected_rules = expected.get("permissions")
-    actual_rules = effective.get("permissions")
-    if not isinstance(expected_rules, list) or actual_rules != expected_rules:
-        return False
-    if not expected_rules or expected_rules[0] != {
+    if not isinstance(expected_rules, list) or not expected_rules or expected_rules[0] != {
             "action": "*", "resource": "*", "effect": "deny"}:
         return False
     allowed_edits = [p for p in expected_rules

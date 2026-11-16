@@ -1,8 +1,8 @@
 import json
 import unittest
-from axdev.opencode_guard import validate_effective
+from axdev.opencode_guard import validate_config_sources
 
-class EffectiveConfigTests(unittest.TestCase):
+class ConfigSourceTests(unittest.TestCase):
     def setUp(self):
         self.expected = {
             "model": "ollama/qwen3:4b-instruct",
@@ -24,29 +24,54 @@ class EffectiveConfigTests(unittest.TestCase):
             ],
         }
 
-    def test_exact_safe_resolved_config(self):
-        self.assertTrue(validate_effective(json.dumps(self.expected), self.expected))
+    def inline_document(self, expected=None):
+        config = dict(self.expected if expected is None else expected)
+        provider, model = config["model"].split("/", 1)
+        config["model"] = {"providerID": provider, "model": model}
+        return {"type": "document", "info": config}
 
-    def test_strictly_fail_on_provider_or_policy_merge(self):
+    def test_accepts_the_exact_inline_document_from_opencode(self):
+        sources = [{"type": "directory", "path": "/tmp/home/.config/opencode"},
+                   self.inline_document()]
+        self.assertTrue(validate_config_sources(json.dumps(sources), self.expected))
+
+    def test_rejects_altered_document(self):
         for key, value in (
-            ("model", "openai/gpt"),
+            ("model", {"providerID": "openai", "model": "gpt"}),
             ("permissions", [{"action": "*", "resource": "*", "effect": "allow"}]),
             ("policies", []),
+            ("providers", {"ollama": {"settings": {"baseURL": "https://example.com/v1"}}}),
+            ("agents", {"build": {"permissions": [{"action": "*", "resource": "*",
+                                                     "effect": "allow"}]}}),
         ):
             with self.subTest(key=key):
-                tampered = dict(self.expected, **{key: value})
-                self.assertFalse(validate_effective(json.dumps(tampered), self.expected))
+                document = self.inline_document()
+                document["info"][key] = value
+                self.assertFalse(validate_config_sources(json.dumps([document]), self.expected))
+
+    def test_rejects_additional_or_unexpected_sources(self):
+        approved = self.inline_document()
+        for sources in (
+            [],
+            [approved, approved],
+            [dict(approved, path="/repo/opencode.json")],
+            [approved, {"type": "document", "path": "/repo/opencode.json",
+                        "info": {"permissions": []}}],
+            [approved, {"type": "other"}],
+        ):
+            with self.subTest(sources=sources):
+                self.assertFalse(validate_config_sources(json.dumps(sources), self.expected))
 
     def test_reject_malformed_or_truncated_debug_stdout(self):
-        self.assertFalse(validate_effective("Not JSON", self.expected))
-        self.assertFalse(validate_effective('{"model":', self.expected))
-        self.assertFalse(validate_effective("x" * 65537, self.expected))
+        for output in ("Not JSON", '[{"model":', json.dumps(self.expected), "x" * 65537):
+            self.assertFalse(validate_config_sources(output, self.expected))
 
     def test_missing_tool_hard_denies_are_not_accepted(self):
         expected = dict(self.expected)
         expected["policies"] = [p for p in self.expected["policies"]
                                 if p.get("resource") != "shell:*"]
-        self.assertFalse(validate_effective(json.dumps(expected), expected))
+        output = json.dumps([self.inline_document(expected)])
+        self.assertFalse(validate_config_sources(output, expected))
 
 
 if __name__ == "__main__":
