@@ -13,10 +13,12 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import io
 import os
 import re
 import secrets
 import stat
+import zipfile
 import subprocess
 import time
 import xml.etree.ElementTree as ET
@@ -150,6 +152,25 @@ def _archive_verified_base(factory: Factory, baseline: str, path: Path) -> str:
         raise ContractError("sandbox source snapshot unavailable") from exc
     if p.returncode or not p.stdout or len(p.stdout) > MAX_ARCHIVE:
         raise ContractError("sandbox archive failed or exceeds configured source limit")
+    # export-ignore could silently remove protected acceptance tests. Require
+    # exact correspondence between Git's pinned commit tree and the archive.
+    try:
+        inventory = subprocess.run(
+            ["git", "ls-tree", "-r", "--name-only", "-z", baseline],
+            cwd=factory.repo, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            stdin=subprocess.DEVNULL, check=False, timeout=30, shell=False)
+        if inventory.returncode or len(inventory.stdout) > 8 * 1024 * 1024:
+            raise ContractError("sandbox baseline path inventory unavailable")
+        tracked = {name.decode("utf-8") for name in
+                   inventory.stdout.split(b"\0") if name}
+        with zipfile.ZipFile(io.BytesIO(p.stdout)) as archive:
+            in_archive = {entry.filename for entry in archive.infolist()
+                          if not entry.is_dir()}
+        if not tracked or in_archive != tracked:
+            raise ContractError("source snapshot omits a pinned tracked file")
+    except (UnicodeError, ValueError, zipfile.BadZipFile,
+            OSError, subprocess.TimeoutExpired) as exc:
+        raise ContractError("source snapshot cannot be inventoried") from exc
     with path.open("xb") as out:
         out.write(p.stdout)
     return _hex_sha(path)
