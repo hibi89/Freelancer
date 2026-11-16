@@ -4,7 +4,7 @@
 
 **Early-use MVP:** F01–F11 from [FINAL_BLUEPRINT](docs/FINAL_BLUEPRINT.md), with isolated Git worktree and independent deterministic check runner. No sellable package, Vercel, GUI, extra cloud model or full native EAI/AXNODE refactor. Real Windows execution and actual Qwen model not yet validated.
 
-**System contract:** \`examples/sample-plan.json\`, spec in [TASK_CONTRACT](docs/TASK_CONTRACT.md). One AI coding invocation at a time; review controller runs programmatic checks from approved allowlist; model cannot mark its own work verified. Start next task only if independent of any failed prerequisite.
+**System contract:** `examples/sample-plan.json`, spec in [TASK_CONTRACT](docs/TASK_CONTRACT.md). One AI coding invocation at a time; review controller runs programmatic checks from approved allowlist; model cannot mark its own work verified. Start next task only if independent of any failed prerequisite.
 
 **State contract:** QUEUED → CODING → REVIEW → VERIFIED / HOLD. One fix attempt after first failed review, then HOLD. Each task binds to SHA256 of its immutable approved spec; changed specs require manual reconciliation. Do not corrupt/overwrite originals on crash.
 
