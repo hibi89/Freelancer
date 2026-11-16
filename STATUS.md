@@ -1,3 +1,18 @@
+# AX Dev Factory — 2026-11-16 KST verified Windows+Linux checkpoint
+
+- **Single source/branch:** `hibi89/Freelancer@tools/ax-dev-factory-local`; latest validated **source SHA** `54da88b6935611c482d98fd9eeb538cc269f6294`. `main` last known `204f70169d4c7bff2d1ad58d024a184c32360a50` (verify separately). No Vercel or Production.
+- **Actual hosted validation:** [GitHub Actions #43800825023](https://github.com/hibi89/Freelancer/actions/runs/43800825023) **SUCCESS**. Python 3.11 **Linux 95 PASS/0 FAIL/0 SKIP**, **Windows 95 RUN, 94 PASS/0 FAIL/1 SKIP** (symlink capability unavailable in one Windows synthetic case). **Windows CMD synthetic smoke PASS**: `RUN_TRIAL.cmd` creates a disposable Git fixture and dry-runs it, `verify_trial --phase ready` confirms safe task, private JSON evidence is generated. [Blueprint gate #43800825263](https://github.com/hibi89/Freelancer/actions/runs/43800825263) SUCCESS.
+- **Fixed this session:** Earlier `axdev run` exit 0 on `NO_READY_TASK` could falsely be taken as new success. New `scripts/verify_trial.py` independently confirms the fixed synthetic plan, protected acceptance tests, clean original Git checkout, SQLite VERIFIED/spec SHA, Git integration SHA/parent, only allowed source changed and matching private event. `RUN_FIRST_USE.cmd` and `RUN_MODEL_TRIAL.cmd` refuse stale/reused fixtures and require completed verification before claiming success. No second model execution on already completed/HOLD state.
+- **Real Windows bug found & corrected:** First hosted Windows job [#43800554109](https://github.com/hibi89/Freelancer/actions/runs/43800554109) **FAILED**: unclosed SQLite handles blocked Windows temporary folder deletion (WinError 32); `RUNNER~1` short-path vs canonical path assertion mismatches. Corrected real SQLite readers in PR preview/status/trial report using `contextlib.closing` and normalized affected test comparisons. Retest at `54da88b6935611c482d98fd9eeb538cc269f6294` PASS on Windows and Linux.
+- **Limits:** This hosted Windows VM is NOT the owner's Windows10/GTX1050Ti host. No Ollama model inference/tool calling, effective installed OpenCode permission enforcement, GPU/VRAM/latency measurement, actual source/customer export, real GitHub PR, or OS sandbox assessment. Fake coder passing synthetic Git checks **does not attest a real model**.
+- **Readiness score:** provisional **72/100 unchanged** (20 plan,17 isolated coding/review,20 local checkpoint,15 GitHub/fleet,0 Windows10 GTX1050Ti real-AI/security evidence). Official F01–F20 acceptance **UNASSESSED**. [Scorecard](docs/PROGRESS_SCORECARD.md). No inflated score for hosted dry-run.
+- **Next critical action:** owner-only disposable non-admin Windows10 trial via `RUN_FIRST_USE.cmd` after separately installed Git/Python3.11/Ollama/OpenCode V2 + Ollama tool-calling capable weights. No software/model downloads or customer source edits from this chat. Then inspect verified SHA and on-device settings, performance and confinement.
+- **Rollback:** pre-change branch SHA `fd4f9bbadf18d2c274bd391b60d5bd87a683424d`; preserve Git history. Documentation SHA follows tested source SHA.
+
+Prior STATUS and failed-attempt history retained below.
+
+---
+
 # AX Dev Factory — 2026-11-16 KST current checkpoint (89-test source)
 
 **Exact tested source SHA:** `2b5bd2bf26e50a37dc2c40c577e253330cd952d7`; public repo `hibi89/Freelancer`, branch `tools/ax-dev-factory-local`. Main `204f70169d4c7bff2d1ad58d024a184c32360a50` unchanged. No Vercel/production.
