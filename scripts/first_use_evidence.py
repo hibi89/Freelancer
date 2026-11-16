@@ -11,6 +11,7 @@ import os
 import platform
 import re
 import sqlite3
+from contextlib import closing
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -42,7 +43,7 @@ def report(trial: Path) -> dict:
         raise ContractError("state database symlink forbidden")
     db = state / "factory.sqlite3"
     if db.is_file():
-        with sqlite3.connect(db.resolve().as_uri() + "?mode=ro", uri=True) as conn:
+        with closing(sqlite3.connect(db.resolve().as_uri() + "?mode=ro", uri=True)) as conn:
             rows = conn.execute("SELECT status, commit_sha FROM runs").fetchall()
         for status, commit in rows:
             if status not in VALID:

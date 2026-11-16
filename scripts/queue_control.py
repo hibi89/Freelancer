@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import sqlite3
+from contextlib import closing
 from pathlib import Path
 from scripts.configure_queue import default_file
 from axdev.core import ContractError
@@ -53,7 +54,7 @@ def control(command: str, settings: Path, confirm: bool = False) -> dict:
             raise ContractError("SQLite state cannot be symlink")
         if db.is_file():
             # SQLite URI read-only mode; never create or modify a state database.
-            with sqlite3.connect(db.resolve().as_uri() + "?mode=ro", uri=True) as conn:
+            with closing(sqlite3.connect(db.resolve().as_uri() + "?mode=ro", uri=True)) as conn:
                 statuses = dict(conn.execute("SELECT id, status FROM runs").fetchall())
         counts = {state: list(statuses.values()).count(state)
                   for state in ("QUEUED", "CODING", "REVIEW", "PREPARED", "VERIFIED", "HOLD")}

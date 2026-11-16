@@ -44,7 +44,7 @@ class FleetTests(unittest.TestCase):
         with self.assertRaisesRegex(ContractError, "no overwrite"):
             self.configure()
         manifest, jobs = load_manifest(self.manifest)
-        self.assertEqual(manifest, self.manifest)
+        self.assertEqual(manifest, self.manifest.resolve())
         self.assertEqual(len(jobs), 2)
         stub = Mock(side_effect=AssertionError("no subprocess allowed"))
         self.assertEqual(fleet_run(self.manifest, runner=stub)["status"], "DRY_RUN")

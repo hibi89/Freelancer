@@ -1,4 +1,5 @@
 import sqlite3
+from contextlib import closing
 import tempfile
 import unittest
 from pathlib import Path
@@ -25,9 +26,10 @@ class TrialReportTests(unittest.TestCase):
 
     def test_verified_metadata_never_claims_actual_model_proof(self):
         self.state.mkdir()
-        with sqlite3.connect(self.state / "factory.sqlite3") as db:
+        with closing(sqlite3.connect(self.state / "factory.sqlite3")) as db:
             db.execute("CREATE TABLE runs (status TEXT, commit_sha TEXT)")
             db.execute("INSERT INTO runs VALUES (?,?)", ("VERIFIED", "b" * 40))
+            db.commit()
         (self.state / "run-events.jsonl").write_text('{"status":"VERIFIED"}\n')
         data = report(self.trial)
         self.assertEqual(data["verified_commit_count"], 1)

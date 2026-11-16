@@ -99,6 +99,7 @@ class FactoryTests(unittest.TestCase):
         from axdev import core as core_module
         self.write_plan([self.task()])
         f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
+        self.addCleanup(f.close)
         workspace = f._workspace("AAA-001")
         self.fake_coder(workspace, "synthetic")
         actual_call = core_module.call
@@ -120,7 +121,7 @@ class FactoryTests(unittest.TestCase):
             self.assertNotIn("GITHUB_TOKEN", env)
             self.assertNotIn("OPENAI_API_KEY", env)
             self.assertNotIn("AXDEV_SYNTHETIC_API_KEY", env)
-            self.assertEqual(env["HOME"], str(self.state / "review-home"))
+            self.assertEqual(env["HOME"], str((self.state / "review-home").resolve()))
             self.assertEqual(env["PYTHONNOUSERSITE"], "1")
         f.close()
 

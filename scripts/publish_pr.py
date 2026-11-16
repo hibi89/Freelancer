@@ -11,6 +11,7 @@ import json
 import re
 import shutil
 import sqlite3
+from contextlib import closing
 import subprocess
 from pathlib import Path
 
@@ -80,7 +81,7 @@ def preview(settings_path: Path, approved_repo: str, base: str,
     actual = _git(repo, "rev-parse", "--verify", ref)
     if actual != expected_commit:
         raise ContractError("integration ref moved or does not match reviewed commit")
-    with sqlite3.connect((state / "factory.sqlite3").as_uri() + "?mode=ro", uri=True) as conn:
+    with closing(sqlite3.connect((state / "factory.sqlite3").as_uri() + "?mode=ro", uri=True)) as conn:
         baseline = conn.execute("SELECT value FROM meta WHERE key='base_sha'").fetchone()
         saved = dict((id_, (digest_, status)) for id_, digest_, status
                      in conn.execute("SELECT id, spec, status FROM runs"))
