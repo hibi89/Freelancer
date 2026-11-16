@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -210,6 +211,44 @@ class FactoryTests(unittest.TestCase):
                          {"action": "edit", "resource": "src/feature.py", "effect": "allow"})
         self.assertEqual(intercepted["env"]["OPENCODE_AUTO_SHARE"], "false")
         self.assertIn("--model", intercepted["argv"])
+        f.close()
+
+    def test_interrupted_coding_reviews_existing_diff_without_model(self):
+        self.write_plan([self.task()])
+        f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
+        workspace = f._workspace("AAA-001")
+        self.fake_coder(workspace, "partial")
+        f._set("AAA-001", "CODING")
+        def must_not_call(cwd, prompt):
+            raise AssertionError("interrupted coder must not be repeated")
+        f.coder = must_not_call
+        self.assertEqual(f.run_one(True)["status"], "VERIFIED")
+        f.close()
+
+    def test_nested_sensitive_file_is_rejected(self):
+        for path in ["src/.env", "src/.git/config", ".github/workflows/job.yml"]:
+            task = self.task()
+            task["files"] = [path]
+            self.write_plan([task])
+            with self.assertRaises(ContractError):
+                load_plan(self.plan)
+
+    def test_ruff_is_optional_approved_check(self):
+        task = self.task()
+        task["checks"].append(["ruff", "check", "--no-cache", "src"])
+        self.write_plan([task])
+        self.assertEqual(len(load_plan(self.plan)[0]["checks"]), 2)
+
+    @unittest.skipIf(os.name == "nt", "symlink privileges vary on Windows")
+    def test_parent_symlink_blocks_before_coder(self):
+        self.write_plan([self.task()])
+        f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
+        work = f._workspace("AAA-001")
+        (work / "src").symlink_to(self.root, target_is_directory=True)
+        def forbidden(cwd, prompt):
+            raise AssertionError("symlink must be rejected before coder starts")
+        f.coder = forbidden
+        self.assertEqual(f.run_one(True)["status"], "HOLD")
         f.close()
 
     def test_resume_contract_changes_rejected(self):
