@@ -21,6 +21,8 @@ def main(argv=None):
     run.add_argument("--state", type=Path, required=True)
     run.add_argument("--model", default="ollama/qwen2.5-coder:3b")
     run.add_argument("--max-tasks", type=int, default=1)
+    run.add_argument("--implementation-batch", action="store_true",
+                     help="stage independent tasks, then review before verification")
     run.add_argument("--execute", action="store_true",
                      help="Opt in to local model tool execution and code writes")
     sync = sub.add_parser("sync-plan", help="Read-only import of SHA-pinned public GitHub task JSON")
@@ -49,7 +51,8 @@ def main(argv=None):
     f = None
     try:
         f = Factory(a.repo, a.plan, a.state, model=a.model)
-        result = f.run_many(a.max_tasks, a.execute)
+        result = (f.run_implementation_batch(a.max_tasks, a.execute)
+                  if a.implementation_batch else f.run_many(a.max_tasks, a.execute))
         print(json.dumps({"results": result, "states": f.status()},
                          ensure_ascii=False, indent=2))
         return 0 if all(x["status"] not in ("HOLD",) for x in result) else 2

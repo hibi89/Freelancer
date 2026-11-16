@@ -14,6 +14,8 @@ def main(argv=None):
     p = argparse.ArgumentParser()
     p.add_argument("--settings", type=Path, default=default_file())
     p.add_argument("--execute", action="store_true")
+    p.add_argument("--implementation-batch", action="store_true",
+                   help="stage independent jobs, then independently review each before promotion")
     p.add_argument("--max-tasks", type=int, help="cap this invocation without raising approved settings limit")
     a = p.parse_args(argv)
     obj = json.loads(a.settings.read_text(encoding="utf-8"))
@@ -62,7 +64,8 @@ def main(argv=None):
     factory = Factory(Path(obj["repo"]), plan_path, Path(obj["state"]),
                       model=obj["model"])
     try:
-        results = factory.run_many(maximum, execute=a.execute)
+        results = (factory.run_implementation_batch(maximum, execute=a.execute)
+                   if a.implementation_batch else factory.run_many(maximum, execute=a.execute))
         print(json.dumps({"results": results, "states": factory.status()},
                          ensure_ascii=False, indent=2))
         return 2 if any(x["status"] == "HOLD" for x in results) else 0

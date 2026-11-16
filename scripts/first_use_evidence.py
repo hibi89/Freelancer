@@ -18,7 +18,7 @@ from pathlib import Path
 from axdev.core import ContractError
 
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
-VALID = {"QUEUED", "CODING", "REVIEW", "PREPARED", "VERIFIED", "HOLD"}
+VALID = {"QUEUED", "CODING", "IMPLEMENTED", "REVIEW", "PREPARED", "VERIFIED", "HOLD"}
 
 
 def _safe(path: Path) -> Path:

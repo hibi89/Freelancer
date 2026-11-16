@@ -23,7 +23,7 @@ ALLOWED_CHECKS = {
     ("ruff", "check", "--no-cache", "."),
     ("ruff", "check", "--no-cache", "axdev"),
 }
-VALID_STATES = {"QUEUED", "CODING", "REVIEW", "PREPARED", "VERIFIED", "HOLD"}
+VALID_STATES = {"QUEUED", "CODING", "IMPLEMENTED", "REVIEW", "PREPARED", "VERIFIED", "HOLD"}
 
 class ContractError(ValueError):
     pass
@@ -216,10 +216,12 @@ class Factory:
 
     def next_task(self) -> dict | None:
         states = self.status()
-        for t in self.tasks:
-            if states[t["id"]] in ("QUEUED", "CODING", "REVIEW", "PREPARED"):
-                if all(states[d] == "VERIFIED" for d in t.get("depends_on", [])):
-                    return t
+        # Resume unfinished/implemented work before starting a new model call.
+        for eligible in (("CODING", "IMPLEMENTED", "REVIEW", "PREPARED"), ("QUEUED",)):
+            for task in self.tasks:
+                if (states[task["id"]] in eligible and
+                        all(states[d] == "VERIFIED" for d in task.get("depends_on", []))):
+                    return task
         return None
 
     def _workspace(self, tid: str) -> Path:
@@ -421,9 +423,19 @@ class Factory:
             return {"id": tid, "status": "DRY_RUN", "goal": task["goal"],
                     "files": task["files"], "checks": task["checks"]}
         try:
-            workspace = self._workspace(tid)
-            self._preflight_workspace(task, workspace)
             prior = self.status()[tid]
+            if prior == "IMPLEMENTED":
+                # Batch coding is NOT acceptance; replay only approved file
+                # content onto the latest verified integration base.
+                from .batch import materialize_review_workspace
+                workspace = materialize_review_workspace(self, task)
+                self._set(tid, "REVIEW", "batch implementation complete; review pending")
+                prior = "REVIEW"
+            else:
+                review = self.state / "worktrees" / ("batch-review-" + tid)
+                workspace = (review if prior in ("REVIEW", "PREPARED") and review.is_dir()
+                             else self._workspace(tid))
+            self._preflight_workspace(task, workspace)
             if prior == "CODING":
                 # A crash during coding may leave partial edits. Inspect once; never
                 # rerun an unrestricted model call against an unknown partial state.
@@ -496,6 +508,11 @@ class Factory:
                 if result["status"] in ("NO_READY_TASK", "DRY_RUN"):
                     break
         return results
+
+    def run_implementation_batch(self, maximum: int, execute: bool) -> list[dict]:
+        """Optional code-first / independent-review-later mode."""
+        from .batch import run_implementation_batch
+        return run_implementation_batch(self, maximum, execute)
 
     def close(self) -> None:
         self.db.close()

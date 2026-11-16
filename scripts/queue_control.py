@@ -57,7 +57,7 @@ def control(command: str, settings: Path, confirm: bool = False) -> dict:
             with closing(sqlite3.connect(db.resolve().as_uri() + "?mode=ro", uri=True)) as conn:
                 statuses = dict(conn.execute("SELECT id, status FROM runs").fetchall())
         counts = {state: list(statuses.values()).count(state)
-                  for state in ("QUEUED", "CODING", "REVIEW", "PREPARED", "VERIFIED", "HOLD")}
+                  for state in ("QUEUED", "CODING", "IMPLEMENTED", "REVIEW", "PREPARED", "VERIFIED", "HOLD")}
         events = state / "run-events.jsonl"
         event_count = 0
         if events.is_symlink():
