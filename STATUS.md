@@ -1,3 +1,19 @@
+# AX Dev Factory — P2 security and dashboard checkpoint (2026-11-16 KST)
+
+**Canonical:** `hibi89/Freelancer@tools/ax-dev-factory-local`. **CI-verified functional SHA:** `841f957664023ac04cb4ee9abc4870d2a11596b3`; historical code candidate F01–F20 20/20 is NOT verified final acceptance. **검증 완료율: UNASSESSED** — no owner-approved F01–F20 weights / full acceptance evidence. **Owner real-use: HOLD.** Do not reuse the former 72/100 engineering-readiness proxy as validation completion.
+
+- **Latest hosted CI evidence:** [AX Dev Factory synthetic tests #43820637531](https://github.com/hibi89/Freelancer/actions/runs/43820637531) **SUCCESS** at functional SHA: Linux Python3.11 **139 PASS/0 FAIL/0 SKIP**; GitHub-hosted Windows Python3.11 **138 PASS/0 FAIL/1 SKIP**; Windows CMD disposable no-model smoke PASS. [Blueprint gate #43820638910](https://github.com/hibi89/Freelancer/actions/runs/43820638910) SUCCESS. These are synthetic and hosted results, NOT owner's Windows10 or live Ollama.
+- **Security HOLD F18:** Host formerly promoted code when a same-privilege Windows Sandbox guest supplied a task/hash-bound `VERIFIED` receipt. Sandbox model and project code can write that very receipt; matching SHA proves transport integrity, not independent test execution. Patch `41b2d311...` and syntax correction `5ad55aa1...` now prohibit automatic promotion and historical PREPARED bypass; 2 adversarial regression tests PASS. This is **fail-closed mitigation only**; a separately enforced trusted reviewer/attestation and real Windows Sandbox proof remain **BLOCKED/NOT_RUN**. Retain guest outbox as untrusted data.
+- **F20 local dashboard:** commit `e1948939...` adds exact loopback `Host` authority check to reject DNS rebinding and four GET/POST CSRF/host tests. Windows rejected POST may reset TCP rather than return 403; test-only portability correction `841f957...` confirmed Windows CI PASS. No live user browser or third-party UI audit performed.
+- **Historical intermediate FAIL:** #43820302560 failed hosted Windows only with one TCP ConnectionAbortedError in newly authored HTTP test; source `841f957...` resolves the test portability issue and is PASS. Do not claim the earlier failure as success.
+- **Remaining stage-1 blockers:** isolated trusted reviewer identity/attestation before any F18 promotion; owner Windows10 edition/virtualization; Windows Sandbox no-egress and no host write outside outbox; trusted offline dependency chain; real Ollama/OpenCode model tool calls; CPU/GPU/memory measurements; interruption/restart and actual approved-project integration. No unsafe host fallback, remote model, paid API, or Production.
+- **Workflow order clarified:** Web GPT-6 High finishes stage-1 full CI/verification and resolves blockers **before** Codex Sol Max/Astra Max independent audits; then High compares the final design and integrates fixes. This AX Dev Factory branch is a personal local tool, not an automatic Kmong registration target. Formal stage-1 verification completion remains UNASSESSED.
+- **Evidence ledger:** `docs/P2_VERIFICATION_LEDGER.md`; specific code tests PASS vs whole F-ID final acceptance are separated. No user-approved weighting was invented. Git history and unmodified main are preserved.
+
+Historic checkpoint records follow; newer source results above supersede their status claims.
+
+---
+
 # AX Dev Factory — P2 hosted verification checkpoint (2026-11-16 KST)
 
 **Canonical repo/branch:** `hibi89/Freelancer@tools/ax-dev-factory-local`. **P2 tested functional SHA:** `9d6fe7f2300fbf135685a71d606a744a9e2d743e`. **P1 implementation:** F01–F20 20/20 = 100% **code candidate**, unchanged. **Official final acceptance:** UNASSESSED. **Real-use decision:** HOLD. No Vercel/Production.

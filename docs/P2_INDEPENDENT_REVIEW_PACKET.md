@@ -1,12 +1,14 @@
+> **STAGE ORDER UPDATE (2026-11-16 KST):** This packet is prepared for the FUTURE independent review, not an audit already executed. Owner-directed stage 1 is **Web Sol High full CI, security, integration and real-runtime verification until 100%**. F18 is currently SECURITY HOLD because a guest-writable receipt cannot attest independent review. Do NOT begin or mark Codex Sol Max/Astra Max independent audits as done until High declares stage-1 acceptance. Then compare against exact latest functional SHA (the SHA below is the current prepared reference, not immutable if fixes follow). This AX Dev Factory is a personal tool, not a Kmong listing.
+
 # AX Dev Factory — P2 independent audit packet (2026-11-16 KST)
 
-**Source to audit:** `hibi89/Freelancer@tools/ax-dev-factory-local`, exact functional commit `9d6fe7f2300fbf135685a71d606a744a9e2d743e`. Do not substitute the later docs-only HEAD, main or another product branch. Git history is the rollback reference. Personal owner-only local tool; F01–F20 code implementation 20/20 candidate, formal verified completion UNASSESSED.
+**Source to audit:** `hibi89/Freelancer@tools/ax-dev-factory-local`, exact functional commit `841f957664023ac04cb4ee9abc4870d2a11596b3`. Do not substitute the later docs-only HEAD, main or another product branch. Git history is the rollback reference. Personal owner-only local tool; F01–F20 code implementation 20/20 candidate, formal verified completion UNASSESSED.
 
 ## Available evidence
 
 - [Full GitHub Actions #43817078016](https://github.com/hibi89/Freelancer/actions/runs/43817078016): Linux 133 PASS/0 FAIL/0 SKIP, hosted Windows 132 PASS/0 FAIL/1 SKIP and CMD disposable synthetic smoke.
 - [Original P1 FAIL #43814585404](https://github.com/hibi89/Freelancer/actions/runs/43814585404): Git trust global dormant LFS caused most errors; an outdated test asserted the old P1 matrix count.
-- [P2 first repair commit](https://github.com/hibi89/Freelancer/commit/079d54bc6da1c1596d43bf116355af07b3f0e54d), [F14/F15/F19 synthetic test commit](https://github.com/hibi89/Freelancer/commit/9d6fe7f2300fbf135685a71d606a744a9e2d743e).
+- [P2 first repair commit](https://github.com/hibi89/Freelancer/commit/079d54bc6da1c1596d43bf116355af07b3f0e54d), [F14/F15/F19 synthetic test commit](https://github.com/hibi89/Freelancer/commit/841f957664023ac04cb4ee9abc4870d2a11596b3).
 - Real owner Windows10 GTX1050Ti, Ollama/OpenCode invocation, OS isolation/no-egress, GPU performance, actual EAI bridge execution and production/real-project acceptance: **NOT_RUN**. Hosted synthetic tests do not prove these.
 
 ## Codex GPT-6.1 Sol Max — independent technical/security audit
