@@ -53,6 +53,48 @@ class FactoryTests(unittest.TestCase):
         (cwd / "src" / "feature.py").write_text("value = 42\n", encoding="utf-8")
         return 0, "ok"
 
+    def test_stop_signal_prevents_first_model_call(self):
+        self.write_plan([self.task()])
+        f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
+        (self.state / "STOP.REQUESTED").write_text("stop", encoding="utf-8")
+        result = f.run_many(2, True)
+        self.assertEqual(result[0]["status"], "STOP_REQUESTED")
+        self.assertEqual(f.status()["AAA-001"], "QUEUED")
+        self.assertFalse((self.state / "worktrees" / "AAA-001").exists())
+        f.close()
+
+    def test_stop_between_jobs_resume_and_local_runtime_metrics(self):
+        a, b = self.task("AAA-001"), self.task("BBB-002")
+        b["files"] = ["src/addon.py"]
+        self.write_plan([a, b])
+        calls = []
+        def coder(workspace, prompt):
+            if "AAA-001" in prompt:
+                calls.append("AAA-001")
+                result = self.fake_coder(workspace, prompt)
+                (self.state / "STOP.REQUESTED").write_text("pause")
+                return result
+            calls.append("BBB-002")
+            (workspace / "src" / "addon.py").write_text("value = 43\n")
+            return 0, "ok"
+        f = Factory(self.repo, self.plan, self.state, coder=coder)
+        result = f.run_many(3, True)
+        self.assertEqual([x["status"] for x in result],
+                         ["VERIFIED", "STOP_REQUESTED"])
+        self.assertEqual(calls, ["AAA-001"])
+        self.assertEqual(f.status()["BBB-002"], "QUEUED")
+        (self.state / "STOP.REQUESTED").unlink()
+        second = f.run_many(3, True)
+        self.assertEqual(second[0]["status"], "VERIFIED")
+        self.assertEqual(calls, ["AAA-001", "BBB-002"])
+        events = [json.loads(x) for x in
+                  (self.state / "run-events.jsonl").read_text().splitlines()]
+        self.assertEqual(len(events), 2)
+        self.assertEqual([x["task_id"] for x in events], ["AAA-001", "BBB-002"])
+        self.assertTrue(all(x["duration_seconds"] >= 0 for x in events))
+        self.assertTrue(all(x["commit"] for x in events))
+        f.close()
+
     def test_invalid_path_and_cycle(self):
         bad = self.task()
         bad["files"] = ["../oops"]

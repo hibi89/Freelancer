@@ -9,6 +9,8 @@ import re
 import shutil
 import sqlite3
 import subprocess
+import time
+from datetime import datetime, timezone
 import sys
 from pathlib import Path
 
@@ -373,8 +375,25 @@ class Factory:
         results = []
         with single_worker_lock(self.state):
             for _ in range(maximum):
+                # A control signal only pauses BETWEEN approved tasks.
+                # It cannot terminate an in-flight OpenCode process or alter a commit.
+                if (self.state / "STOP.REQUESTED").exists():
+                    results.append({"status": "STOP_REQUESTED", "message":
+                                    "paused before next task; resume requires explicit action"})
+                    break
+                began = time.monotonic()
                 result = self.run_one(execute)
                 results.append(result)
+                if execute and result["status"] in ("VERIFIED", "HOLD"):
+                    event = {"timestamp_utc": datetime.now(timezone.utc).isoformat(),
+                             "task_id": result["id"], "status": result["status"],
+                             "duration_seconds": round(time.monotonic() - began, 3)}
+                    if result.get("commit"):
+                        event["commit"] = result["commit"]
+                    # Local-only event stream; task plan, model output and secrets
+                    # are deliberately excluded. SQLite remains canonical state.
+                    with (self.state / "run-events.jsonl").open("a", encoding="utf-8") as fp:
+                        fp.write(json.dumps(event, ensure_ascii=False) + "\n")
                 if result["status"] in ("NO_READY_TASK", "DRY_RUN"):
                     break
         return results
