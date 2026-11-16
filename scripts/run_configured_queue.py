@@ -34,8 +34,13 @@ def main(argv=None):
         try:
             sync_public_plan(remote["source"], remote["branch"], remote["path"],
                              remote["sha"], plan_path)
-        except HTTPError:
-            raise
+        except HTTPError as exc:
+            remaining = exc.headers.get("X-RateLimit-Remaining") if exc.headers else None
+            if exc.code in (403, 429) and remaining == "0":
+                # No remote freshness claim; only previously SHA256-approved local bytes.
+                print("AXDEV_REMOTE_RATE_LIMIT: using identical SHA256-pinned local plan")
+            else:
+                raise
         except (URLError, TimeoutError) as exc:
             # Offline operation is safe only with an unchanged, owner-approved cache.
             print("AXDEV_REMOTE_UNREACHABLE: using identical SHA256-pinned local plan")

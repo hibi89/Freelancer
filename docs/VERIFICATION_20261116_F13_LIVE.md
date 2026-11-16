@@ -49,3 +49,18 @@ Code rollback reference: `6b592b689e36374ce63d321c752de50cbffbbf54`.
 No force or history rewrite. Next: on-device disposable OpenCode/Ollama
 smoke and Windows permission policy checks; then explicit owner-approved
 PR publication (not implemented).
+
+## Follow-up rate-limit incident — 2026-11-16 KST
+
+At documentation-only commit `24ce157d0f4cc73aec5f95530736b951d7653052`,
+GitHub Actions [run #43790762396](https://github.com/hibi89/Freelancer/actions/runs/43790762396)
+ran **34/34 unit tests PASS**, but the required external live probe failed
+with `HTTP Error 403: rate limit exceeded`. Root cause: anonymous GitHub
+REST public quota on the runner; no code/test contract assertion failed.
+
+Pivot: keep 34+ deterministic unit tests mandatory on push, and expose
+real public API canary via manual `workflow_dispatch`. Do not claim that
+a push workflow without the manual canary re-ran live network. When local
+queue detects an explicit rate-limit header on 403/429, it may use only
+the unchanged SHA256-pinned owner-approved cached plan; other HTTP errors
+still block. This is offline continuation, **not remote freshness proof**.

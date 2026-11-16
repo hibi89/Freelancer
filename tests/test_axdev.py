@@ -332,6 +332,39 @@ class FactoryTests(unittest.TestCase):
                 run_configured_queue(["--settings", str(settings), "--execute"])
         self.assertFalse((self.state / "worktrees" / "AAA-001").exists())
 
+    def test_rate_limit_403_uses_approved_cache_only(self):
+        from urllib.error import HTTPError
+        self.write_plan([self.task()])
+        settings = self.root / "private" / "settings.json"
+        with patch("builtins.print"):
+            configure_queue(["--repo", str(self.repo), "--plan", str(self.plan),
+                             "--settings", str(settings),
+                             "--github-source", "hibi89/Freelancer",
+                             "--github-branch", "tools/ax-dev-factory-local",
+                             "--github-path", "examples/sample-plan.json",
+                             "--github-sha", "a" * 40])
+        error = HTTPError("https://api.github.com", 403, "rate limit",
+                          {"X-RateLimit-Remaining": "0"}, None)
+        with patch("scripts.run_configured_queue.sync_public_plan", side_effect=error):
+            with patch("builtins.print"):
+                self.assertEqual(run_configured_queue(["--settings", str(settings)]), 0)
+
+    def test_unrelated_403_fails_closed(self):
+        from urllib.error import HTTPError
+        self.write_plan([self.task()])
+        settings = self.root / "private" / "settings.json"
+        with patch("builtins.print"):
+            configure_queue(["--repo", str(self.repo), "--plan", str(self.plan),
+                             "--settings", str(settings),
+                             "--github-source", "hibi89/Freelancer",
+                             "--github-branch", "tools/ax-dev-factory-local",
+                             "--github-path", "examples/sample-plan.json",
+                             "--github-sha", "a" * 40])
+        forbidden = HTTPError("https://api.github.com", 403, "forbidden", {}, None)
+        with patch("scripts.run_configured_queue.sync_public_plan", side_effect=forbidden):
+            with self.assertRaises(HTTPError):
+                run_configured_queue(["--settings", str(settings)])
+
     def test_configure_queue_rejects_partial_github_coordinates(self):
         self.write_plan([self.task()])
         settings = self.root / "private" / "settings.json"
