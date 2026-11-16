@@ -3,17 +3,17 @@
   "scope": "AX Dev Factory owner-only local personal tool",
   "official_final_blueprint_completion": "UNASSESSED",
   "provisional_readiness": "72/100 (previous fixed five-domain proxy; not recalculated)",
-  "evidence_basis": "Source-only P1 implementation; F14/F15/F17/F19/F20 new code NOT_RUN until pre-CI implementation 100%.",
+  "evidence_basis": "P1 SOURCE IMPLEMENTATION ONLY. Code existence marked IMPLEMENTED for pre-CI 100% metric, NOT a functioning/verified claim. F01-F20 remain official UNASSESSED.",
   "requirements": [
     {
       "id": "F01",
-      "implementation": "PARTIAL",
-      "verification": "PARTIAL",
+      "implementation": "IMPLEMENTED",
+      "verification": "NOT_RUN",
       "paths": [
         "axdev/core.py",
         "axdev/github_sync.py"
       ],
-      "remaining_work": "Automatic approval-ready High decomposition remains unavailable."
+      "remaining_work": "Approved immutable High task contract, SHA-pinned public plan import and strict dependency/path parser implemented. Web High creates the approved task decomposition; local engine does not silently redesign."
     },
     {
       "id": "F02",
@@ -26,23 +26,23 @@
     },
     {
       "id": "F03",
-      "implementation": "PARTIAL",
-      "verification": "PARTIAL",
+      "implementation": "IMPLEMENTED",
+      "verification": "NOT_RUN",
       "paths": [
         "axdev/core.py",
         "axdev/batch.py"
       ],
-      "remaining_work": "Prove one physical model residency and GPU memory bounds."
+      "remaining_work": "Single local worker kernel lock, serial coding and independent Python review controller implemented; GPU residency is P2 device verification."
     },
     {
       "id": "F04",
-      "implementation": "PARTIAL",
-      "verification": "PARTIAL",
+      "implementation": "IMPLEMENTED",
+      "verification": "NOT_RUN",
       "paths": [
         "axdev/opencode_guard.py",
         "config/opencode-local-only.json"
       ],
-      "remaining_work": "Prove effective installed OpenCode policy and network blocking on owner PC."
+      "remaining_work": "Local-only Ollama/OpenCode effective-provider policy guards implemented; actual installed tool/network behavior must be verified in P2."
     },
     {
       "id": "F05",
@@ -113,21 +113,22 @@
     },
     {
       "id": "F12",
-      "implementation": "PARTIAL",
-      "verification": "PARTIAL",
+      "implementation": "IMPLEMENTED",
+      "verification": "NOT_RUN",
       "paths": [
         "scripts/publish_pr.py"
       ],
-      "remaining_work": "Explicit owner-approved real Draft PR push and branch protection review."
+      "remaining_work": "Read-only PR preview plus explicitly approved guarded draft-publish path implemented; owner remote authorization/push intentionally NOT_RUN."
     },
     {
       "id": "F13",
-      "implementation": "PARTIAL",
-      "verification": "PARTIAL",
+      "implementation": "IMPLEMENTED",
+      "verification": "NOT_RUN",
       "paths": [
-        "axdev/github_sync.py"
+        "axdev/github_sync.py",
+        "scripts/run_configured_queue.py"
       ],
-      "remaining_work": "Remote status synchronization and broader idempotency need live validation."
+      "remaining_work": "SHA-pinned read-only GitHub task-plan import, cached local SHA validation and duplicate task protection implemented; ongoing remote status reporting belongs to F20."
     },
     {
       "id": "F14",
@@ -151,23 +152,24 @@
     },
     {
       "id": "F16",
-      "implementation": "PARTIAL",
+      "implementation": "IMPLEMENTED",
       "verification": "NOT_RUN",
       "paths": [
-        "scripts/benchmark_local.py"
+        "scripts/benchmark_local.py",
+        "scripts/compare_models.py"
       ],
-      "remaining_work": "Benchmark 3B/4B models on GTX1050Ti with RAM/VRAM readings."
+      "remaining_work": "Sequential 3B/4B comparison, bounded Ollama GPU peak sampler, RAM snapshot and original local benchmark code implemented; owner device measurements NOT_RUN."
     },
     {
       "id": "F17",
-      "implementation": "PARTIAL",
-      "verification": "PARTIAL",
+      "implementation": "IMPLEMENTED",
+      "verification": "NOT_RUN",
       "paths": [
-        "axdev/core.py",
+        "scripts/prepare_startup.py",
         "scripts/daily_status.py",
-        "scripts/prepare_startup.py"
+        "axdev/core.py"
       ],
-      "remaining_work": "Daily model-call reservation budget, status and optional Windows Task Scheduler XML + explicit registration implemented; real restart and service mode NOT_RUN."
+      "remaining_work": "Windows startup Task Scheduler XML/explicit registration, call budget reservation, daily status and one-worker lock code implemented; startup OS action NOT_RUN."
     },
     {
       "id": "F18",
@@ -175,9 +177,10 @@
       "verification": "PARTIAL",
       "paths": [
         "axdev/opencode_guard.py",
-        "axdev/core.py"
+        "axdev/core.py",
+        "scripts/prepare_windows_sandbox.py"
       ],
-      "remaining_work": "Actual OS isolation, network egress denial and secret exfiltration test remain."
+      "remaining_work": "Windows Sandbox disabled-network disposable template code added; Windows edition compatibility, actual OS isolation and real model containment NOT_RUN. No automatic policy changes."
     },
     {
       "id": "F19",

@@ -1,6 +1,7 @@
 """Explicit private metadata checkpoint export; not an AXNODE binary."""
 import argparse
 import json
+import sqlite3
 from pathlib import Path
 from axdev.axnode_adapter import export_checkpoint
 from axdev.core import ContractError

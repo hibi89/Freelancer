@@ -5,6 +5,9 @@ reports. Actual local inference requires explicit --execute opt-in.
 """
 from __future__ import annotations
 import argparse
+import ctypes
+import os
+import threading
 import json
 import re
 import shutil
@@ -28,6 +31,70 @@ def _sample_gpu():
     except (OSError, subprocess.TimeoutExpired):
         return None
     return p.stdout.strip()[:250] if p.returncode == 0 else None
+
+
+def _windows_ram_snapshot():
+    """Physical RAM only; process peak memory needs separate host proof."""
+    if os.name != "nt":
+        return None
+    class MemoryStatus(ctypes.Structure):
+        _fields_ = [
+            ("dwLength", ctypes.c_ulong),
+            ("dwMemoryLoad", ctypes.c_ulong),
+            ("ullTotalPhys", ctypes.c_ulonglong),
+            ("ullAvailPhys", ctypes.c_ulonglong),
+            ("ullTotalPageFile", ctypes.c_ulonglong),
+            ("ullAvailPageFile", ctypes.c_ulonglong),
+            ("ullTotalVirtual", ctypes.c_ulonglong),
+            ("ullAvailVirtual", ctypes.c_ulonglong),
+            ("ullAvailExtendedVirtual", ctypes.c_ulonglong),
+        ]
+    info = MemoryStatus()
+    info.dwLength = ctypes.sizeof(MemoryStatus)
+    try:
+        if not ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(info)):
+            return None
+    except (AttributeError, OSError):
+        return None
+    return {"total_mib": info.ullTotalPhys // (1024 * 1024),
+            "available_mib": info.ullAvailPhys // (1024 * 1024)}
+
+
+def _gpu_memory_used(raw):
+    if not isinstance(raw, str):
+        return None
+    row = raw.splitlines()[0].split(",") if raw.strip() else []
+    if len(row) != 3:
+        return None
+    try:
+        used, total = int(row[1].strip()), int(row[2].strip())
+    except ValueError:
+        return None
+    if 0 <= used <= total and total > 0:
+        return used
+    return None
+
+
+class _GpuPeakSampler:
+    def __init__(self):
+        self._stop = threading.Event()
+        self.highest = None
+        self._thread = threading.Thread(target=self._poll, daemon=True)
+
+    def _poll(self):
+        while not self._stop.is_set():
+            value = _gpu_memory_used(_sample_gpu())
+            if value is not None:
+                self.highest = value if self.highest is None else max(self.highest, value)
+            self._stop.wait(0.25)
+
+    def __enter__(self):
+        self._thread.start()
+        return self
+
+    def __exit__(self, *_):
+        self._stop.set()
+        self._thread.join(timeout=6)
 
 
 def _ollama_generate(model_id):
@@ -62,12 +129,21 @@ def benchmark(model, execute=False, sender=None, clock=None, gpu_reader=None):
         return dict(result, status="DRY_RUN", note="add --execute for local inference")
     sender = sender or _ollama_generate
     clock = clock or time.perf_counter
+    real_gpu_sampler = gpu_reader is None
     gpu_reader = gpu_reader or _sample_gpu
     before = gpu_reader()
+    ram_before = _windows_ram_snapshot()
     began = clock()
-    response = sender(model_id)
+    peak = None
+    if real_gpu_sampler:
+        with _GpuPeakSampler() as monitor:
+            response = sender(model_id)
+        peak = monitor.highest
+    else:
+        response = sender(model_id)
     elapsed = max(0.0, clock() - began)
     after = gpu_reader()
+    ram_after = _windows_ram_snapshot()
     duration = response.get("eval_duration")
     count = response.get("eval_count")
     if (not isinstance(duration, int) or not isinstance(count, int)
@@ -79,7 +155,9 @@ def benchmark(model, execute=False, sender=None, clock=None, gpu_reader=None):
                 eval_tokens_per_second=tok_per_sec,
                 prompt_tokens=response.get("prompt_eval_count"),
                 response_text_saved=False, gpu_snapshot_before=before,
-                gpu_snapshot_after=after, gpu_peak_vram_measured=False,
+                gpu_snapshot_after=after, gpu_peak_vram_used_mib=peak,
+                gpu_peak_vram_measured=peak is not None,
+                windows_ram_before=ram_before, windows_ram_after=ram_after,
                 opencode_tool_permissions_verified=False)
 
 

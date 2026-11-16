@@ -40,7 +40,7 @@ def run_eai_goal(eai_repo: Path, expected_commit: str, goal: Path,
         raise ContractError("EAI source checkout unavailable or symlinked")
     if not isinstance(expected_commit, str) or not SHA40.fullmatch(expected_commit):
         raise ContractError("exact EAI commit SHA required")
-    if git(repo, "rev-parse", "--show-toplevel") != str(repo.resolve()):
+    if Path(git(repo, "rev-parse", "--show-toplevel")).resolve() != repo.resolve():
         raise ContractError("EAI checkout root differs")
     if git(repo, "rev-parse", "HEAD") != expected_commit:
         raise ContractError("EAI checkout SHA does not match owner's pin")
