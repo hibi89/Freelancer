@@ -20,7 +20,7 @@ from axdev.sandbox_payload import BINARIES, encode_files, extract_snapshot, read
 from axdev.sandbox_review import verify_candidate
 from axdev.windows_review_process import run_restricted, single_sandbox_slot
 from axdev.windows_sandbox_runtime import (
-    BACKEND, _read_bundle, _read_receipt, _sandbox_running, _wait_candidate, _wsb, run_sandbox_one,
+    BACKEND, _read_bundle, _read_receipt, _sandbox_running, _start_guest, _wait_candidate, _wsb, run_sandbox_one,
     run_sandbox_queue, validate_history,
 )
 from scripts.prepare_offline_bundle import build_manifest
@@ -49,11 +49,11 @@ class SandboxGuestStartupTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "outbox").mkdir()
-            states = iter((True, False, True, False))
+            states = iter(((True, False), (False, False), (True, False), (False, True)))
 
             def sandbox_is_running():
-                active = next(states)
-                if not active and next_check.call_count == 4:
+                active, delivered = next(states)
+                if delivered:
                     (root / "outbox" / "receipt.json").touch()
                 return active
 
@@ -67,6 +67,48 @@ class SandboxGuestStartupTests(unittest.TestCase):
                 self.assertEqual(_wait_candidate({}, record, root, process, 10), receipt)
                 self.assertEqual(next_check.call_count, 4)
                 read.assert_called_once_with(root, "fixture", {}, "a" * 40)
+
+    def test_starts_the_exact_modern_sandbox_with_the_approved_configuration(self):
+        cli = Path("trusted/wsb.exe")
+        sandbox_id = "00000000-0000-0000-0000-000000000001"
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / sandbox_id.replace("-", "")
+            root.mkdir()
+            configuration = "<Configuration><Networking>Disable</Networking></Configuration>"
+            (root / "launch.wsb").write_text(configuration, encoding="utf-8")
+            with (
+                patch(MOD + "._modern_sandbox_cli", return_value=cli),
+                patch(MOD + ".subprocess.run", return_value=Mock(
+                    stdout=json.dumps({"Id": sandbox_id}).encode())) as run,
+                patch(MOD + ".subprocess.Popen") as connect,
+            ):
+                self.assertIs(_start_guest(Path("WindowsSandbox.exe"), root), connect.return_value)
+            self.assertEqual(run.call_args.args[0], [
+                str(cli), "start", "--id", sandbox_id, "--config", configuration, "--raw"])
+            self.assertEqual(connect.call_args.args[0], [str(cli), "connect", "--id", sandbox_id])
+
+    def test_stops_only_the_bound_modern_sandbox_before_checking_the_receipt(self):
+        cli = Path("trusted/wsb.exe")
+        sandbox_id = "00000000-0000-0000-0000-000000000001"
+        unrelated_id = "00000000-0000-0000-0000-000000000002"
+        run_id = sandbox_id.replace("-", "")
+        record = {"run_id": run_id, "sandbox_id": sandbox_id, "base_sha": "a" * 40}
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "outbox").mkdir()
+            (root / "outbox" / "receipt.json").touch()
+            with (
+                patch(MOD + "._request_matches"),
+                patch(MOD + "._modern_sandbox_cli", return_value=cli),
+                patch(MOD + "._native_sandbox_ids",
+                      side_effect=[{sandbox_id, unrelated_id}, {unrelated_id}]) as active,
+                patch(MOD + ".subprocess.run") as stop,
+                patch(MOD + "._read_receipt") as read,
+            ):
+                self.assertIs(_wait_candidate({}, record, root, None, 10), read.return_value)
+                self.assertEqual(active.call_count, 2)
+                self.assertEqual(stop.call_args.args[0], [str(cli), "stop", "--id", sandbox_id, "--raw"])
+                read.assert_called_once_with(root, run_id, {}, "a" * 40)
 
     def test_local_ollama_pins_one_model_and_one_request(self):
         inherited = {"OLLAMA_MAX_LOADED_MODELS": "3", "OLLAMA_NUM_PARALLEL": "4"}
@@ -98,7 +140,7 @@ class SandboxGuestStartupTests(unittest.TestCase):
         client = Mock(stdout=b'"WindowsSandboxRemoteSession.exe","123"')
         for payload, expected in (
             (b'{"WindowsSandboxEnvironments":[]}', False),
-            (b'{"WindowsSandboxEnvironments":[{"Id":"fixture"}]}', True),
+            (b'{"WindowsSandboxEnvironments":[{"Id":"00000000-0000-0000-0000-000000000001"}]}', True),
             (b'{"unexpected":[]}', True),
         ):
             with (

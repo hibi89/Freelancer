@@ -13,6 +13,7 @@ import secrets
 import subprocess
 import tempfile
 import time
+from uuid import UUID
 import xml.etree.ElementTree as ET
 import zipfile
 
@@ -105,6 +106,19 @@ def _modern_sandbox_cli() -> Path | None:
     return cli if package.is_absolute() and cli.is_file() else None
 
 
+def _native_sandbox_ids(cli: Path) -> set[str]:
+    result = subprocess.run(
+        [str(cli), "list", "--raw"], check=True, stdin=subprocess.DEVNULL,
+        capture_output=True, timeout=15,
+    )
+    environments = json.loads(result.stdout)["WindowsSandboxEnvironments"]
+    if (not isinstance(environments, list)
+            or any(not isinstance(item, dict) or not isinstance(item.get("Id"), str)
+                   for item in environments)):
+        raise ValueError("invalid native Sandbox enumeration")
+    return {str(UUID(environment["Id"])) for environment in environments}
+
+
 def _sandbox_running() -> bool:
     # The classic client is the lifecycle indicator on Windows 10. The newer
     # disconnected window can outlive the VM and is not a lifecycle signal.
@@ -119,14 +133,9 @@ def _sandbox_running() -> bool:
     if cli is None:
         return any(line.startswith(b'"windowssandboxremotesession.exe"') for line in lines)
     try:
-        result = subprocess.run(
-            [str(cli), "list", "--raw"], check=True, stdin=subprocess.DEVNULL,
-            capture_output=True, timeout=15,
-        )
-        environments = json.loads(result.stdout)["WindowsSandboxEnvironments"]
+        return bool(_native_sandbox_ids(cli))
     except (KeyError, TypeError, ValueError, OSError, subprocess.SubprocessError):
         return True
-    return not isinstance(environments, list) or bool(environments)
 
 
 def _git_data(repo: Path, *args: str, index: Path | None = None, data: bytes | None = None,
@@ -346,6 +355,8 @@ def _launch(factory: Factory, task: dict, bundle: Path, bundle_sha: str,
         return {"id": tid, "status": "BUDGET_WAIT"}
     record = _prepare(factory, task, bundle, bundle_sha, prior)
     root = factory.state / "sandbox-runs" / record["run_id"]
+    if _modern_sandbox_cli() is not None:
+        record["sandbox_id"] = str(UUID(hex=record["run_id"]))
     if prior is not None:
         factory.db.execute("UPDATE runs SET attempts=attempts+1 WHERE id=?", (tid,))
     factory._set(tid, "CODING", json.dumps(record))
@@ -353,20 +364,56 @@ def _launch(factory: Factory, task: dict, bundle: Path, bundle_sha: str,
 
 
 def _start_guest(executable: Path, root: Path) -> subprocess.Popen:
-    return subprocess.Popen([str(executable), str(root / "launch.wsb")],
+    cli = _modern_sandbox_cli()
+    if cli is None:
+        command = [str(executable), str(root / "launch.wsb")]
+    else:
+        sandbox_id = str(UUID(hex=root.name))
+        config = no_reparse(root / "launch.wsb").read_text(encoding="utf-8")
+        result = subprocess.run(
+            [str(cli), "start", "--id", sandbox_id, "--config", config, "--raw"],
+            check=True, stdin=subprocess.DEVNULL, capture_output=True,
+            timeout=120, cwd=root,
+        )
+        response = json.loads(result.stdout)
+        if not isinstance(response, dict) or str(response.get("Id", "")).lower() != sandbox_id:
+            raise ContractError("native Sandbox returned a different identity")
+        # The configured LogonCommand starts when the guest session connects.
+        command = [str(cli), "connect", "--id", sandbox_id]
+    return subprocess.Popen(command,
                             stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
                             stderr=subprocess.DEVNULL, shell=False, cwd=root)
 
 
 def _wait_candidate(task: dict, record: dict, root: Path, process, timeout: int) -> dict | None:
     _request_matches(root, record, task)
+    sandbox_id = record.get("sandbox_id")
+    if sandbox_id is not None and sandbox_id != str(UUID(hex=record["run_id"])):
+        raise ContractError("sandbox identity differs from the pinned run")
+    cli = _modern_sandbox_cli() if sandbox_id else None
+    receipt = root / "outbox" / "receipt.json"
     end = time.monotonic() + timeout
     idle_since = None
     while time.monotonic() < end:
-        if (process is not None and process.poll() is None) or _sandbox_running():
+        if cli is not None and receipt.is_file():
+            # The receipt is an untrusted lifecycle hint. Stop only the instance
+            # bound in host state, then verify the receipt after it is gone.
+            try:
+                if sandbox_id in _native_sandbox_ids(cli):
+                    subprocess.run(
+                        [str(cli), "stop", "--id", sandbox_id, "--raw"], check=True,
+                        stdin=subprocess.DEVNULL, capture_output=True, timeout=30,
+                    )
+                closed = sandbox_id not in _native_sandbox_ids(cli)
+            except (KeyError, TypeError, OSError, ValueError, subprocess.SubprocessError):
+                pass
+            else:
+                if closed:
+                    return _read_receipt(root, record["run_id"], task, record["base_sha"])
+        elif (process is not None and process.poll() is None) or _sandbox_running():
             idle_since = None
         else:
-            if (root / "outbox" / "receipt.json").is_file():
+            if receipt.is_file():
                 return _read_receipt(root, record["run_id"], task, record["base_sha"])
             # The launcher can exit before the app has registered its guest.
             # A transient gap must not abandon a run whose VM is still starting.
