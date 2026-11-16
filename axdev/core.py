@@ -245,14 +245,20 @@ class Factory:
                     "files": task["files"], "checks": task["checks"]}
         try:
             workspace = self._workspace(tid)
-            self._set(tid, "CODING")
-            rc, output = self.coder(workspace, self._prompt(task, "CODING"))
-            if rc:
-                self._set(tid, "HOLD", f"MODEL_FAILURE {rc}: {output}")
-                return {"id": tid, "status": "HOLD", "reason": "MODEL_FAILURE"}
-            self._set(tid, "REVIEW")
+            prior = self.status()[tid]
+            if prior != "REVIEW":
+                self._set(tid, "CODING")
+                rc, output = self.coder(workspace, self._prompt(task, "CODING"))
+                if rc:
+                    self._set(tid, "HOLD", f"MODEL_FAILURE {rc}: {output}")
+                    return {"id": tid, "status": "HOLD", "reason": "MODEL_FAILURE"}
+                self._set(tid, "REVIEW")
             ok, feedback = self._review(task, workspace)
             if not ok:
+                used = self.db.execute("SELECT attempts FROM runs WHERE id=?", (tid,)).fetchone()[0]
+                if used >= 1:
+                    self._set(tid, "HOLD", feedback)
+                    return {"id": tid, "status": "HOLD", "reason": feedback[-500:]}
                 self.db.execute("UPDATE runs SET attempts=attempts+1 WHERE id=?", (tid,))
                 self.db.commit()
                 rc, output = self.coder(workspace, self._prompt(task, "FIX_ONCE", feedback))
