@@ -150,6 +150,7 @@ class Factory:
             row = self.db.execute("SELECT spec FROM runs WHERE id=?", (task["id"],)).fetchone()
             digest = plan_hash(task)
             if row and row[0] != digest:
+                self.db.close()
                 raise ContractError(f"{task['id']} contract changed: manual reconciliation required")
             if not row:
                 self.db.execute("INSERT INTO runs (id,spec,status) VALUES (?,?,?)",
@@ -193,12 +194,16 @@ class Factory:
 
     def _prompt(self, task: dict, phase: str, feedback: str = "") -> str:
         paths = ", ".join(task["files"])
+        skill = (Path(__file__).resolve().parent.parent /
+                 ".opencode" / "skills" / "ax-coding" / "SKILL.md")
+        rules = skill.read_text(encoding="utf-8") if skill.is_file() else ""
         return (f"AX Dev Factory {phase} for {task['id']}. Only modify these exact files: {paths}. "
                 "Do not change credentials, permissions, network settings, dependencies, "
                 "project requirements, git branches, or deployment. No remote AI provider. "
-                "Do not commit or push. Follow project AGENTS.md and coding SKILL.md. "
+                "Do not commit or push. Follow project AGENTS.md and this coding skill. "
                 f"Acceptance requirement: {task['goal']}\n"
                 f"Prior review feedback: {feedback[-2200:]}\n"
+                f"CODING SKILL RULES:\n{rules[:2400]}\n"
                 "Implement the smallest compatible change; retain existing behavior.")
 
     def _changed(self, workspace: Path) -> set[str]:
@@ -211,6 +216,8 @@ class Factory:
         if not changed:
             return False, "NO_CHANGES"
         extras = changed - set(task["files"])
+        if any((workspace / p).is_symlink() for p in changed):
+            return False, "SYMLINK_CHANGES_FORBIDDEN"
         if extras:
             return False, "FORBIDDEN_PATHS: " + ", ".join(sorted(extras))
         for command in task["checks"]:
