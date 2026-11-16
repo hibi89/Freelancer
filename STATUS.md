@@ -1,38 +1,22 @@
-> **[2026-11-13 WORKNOVA Desk P50 신규 기술 개발 인수]** Private `product/worknova-desk-local` 독립 오프라인 Python/SQLite 상품 신규 구현; 정확 기능 SHA `6b7f86738fb6ed6c7b965523955efcae3285d1f7` 소스·테스트·문서 11/11 blob SHA 일치, local Python3.13.5 18 PASS/0 FAIL/0 SKIP. 자동 blueprint 검사 #43377108605 SUCCESS(제품 Python CI 아님). 최종설계 공식률 UNASSESSED, 목표 P50·[작업중] 유지, Windows/실 고객/GUI·DOCX/PDF/결제 미검증, RELEASE HOLD. 원본 PayPal/기타 product/* 불변. [제품 전체 설계](https://github.com/hibi89/Freelancer/blob/product/worknova-desk-local/docs/FINAL_BLUEPRINT.md) · [해총 기록](https://github.com/hibi89/hackathon-command-center-2026/blob/kmong-productization/docs/audits/FREELANCER_BRANCH_COMPLETION_REGISTRY_20261113.md). 이후 WD-03 견적개정/WD-09 복원/Windows GUI 및 공식 가중치·수용 검증부터. 본 main은 인덱스 문서만 갱신하며 2026-11-13 KST 코드/CI/Production 신규 실행 없음. 
+# AX Dev Factory status — 2026-11-16 KST
 
-## 2026-11-13 BID AX 별도 공공입찰 준비상품 신규 구현
-- New private `product/bid-ax-public-procurement@d614c08e611ef15d388865034ada215e10c8da6e`: committed Python offline core/CLI/fixtures/tests/21-requirement full blueprint, 12/12 readback; local unit 19/19 PASS; verified CLI smoke. GitHub Actions/actual public-data API/Windows/customer deployment NOT_RUN.
-- **P50 full-product user target [작업중]; official UNASSESSED** due unapproved weights and incomplete real-source/GUI/package/customer acceptance. RELEASE HOLD, unpublished; excluded BID OWL remains untouched.
-- Latest product/* branches: 9; products: 10. Previous eight branch references/old product outcomes unchanged. Central tracking updated `kmong-productization@98abf0cf1fb96733ed59a35ca65406661a56d22c`.
+Repo: \`hibi89/Freelancer\` (GitHub **public**). Branch: \`tools/ax-dev-factory-local\`. Use: owner personal development only; not a Kmong product. Formal blueprint completion: **UNASSESSED**. Vercel/Production: **NOT APPLICABLE**.
 
-# STATUS — Freelancer 크몽 5상품 설계 허브
-**2026-11-13 KST · Private · 문서/분기 작업 완료 · 제품 출고 RELEASE HOLD**
+## Implemented in GitHub (source claims, pending independent CI proof)
+- \`axdev/core.py\`: strict task JSON, graph dependency cycle and path validation; single-worker plan; git worktree isolation; OpenCode model command tied to \`ollama/\`; no shell=True; allowlisted Python checks; one correction; HOLD and local SQLite source-spec SHA checkpoints; local Git commit on reviewed result.
+- \`axdev/__main__.py\`: doctor + safe dry-run by default; \`--execute\` opt-in; JSON results.
+- \`tests/test_axdev.py\`: synthetic Git worktree and fail-closed regression tests.
+- 3 OpenCode skills: coding/review/recovery. Full final blueprint F01–F20, HIGH task format and trial README.
+- Existing main/product branches untouched. No private files, tokens or model weights uploaded.
 
-| 제품 | 상품 기획 브랜치 검증 HEAD | 고객 상품 구현/출고 |
-|---|---|---|
-| **AZENTFLOW AX** (HAE+LA) | `product/hae-la-automation@a578aee2300ae053bafe5cdaf1dd8e23385ff47b` | 기존 기술 85% 잠정, 기업형 판매 별도 HOLD |
-| **CITEVAULT AX** (RAG+SMAX/PREP) | `product/rag-enterprise-knowledge@acf4936670bf1205f648d0dff5ca7e48b62fa83a` | 기존 기술 95% 잠정, 기업형 판매 별도 HOLD |
-| **SITECRAFT AX** (REA+Fable/Astra) | `product/rea-website-rebuild@6e2346c3b9d50dea1bde8d5ecb47b47f1567f774` | 기존 기술 P85/P95 일부 검증, 고객형 판매 별도 HOLD |
-| **PROOFQA AX** | `product/proofqa-ax-delivery-audit@54b718f5d5520fae912d1fcc2e70a87ebd8f173c` | **신규 조합 통합 미착수/UNASSESSED** |
-| **ONTOINSIGHT AX** | `product/ontoinsight-ax-data-analytics@afda6eac0802d50cbcd44eb0b99d3daeffbf0922` | **신규 조합 통합 미착수/UNASSESSED** |
+## Not yet verified / not yet implemented
+- GitHub Actions full pass and source SHA **PENDING** (fill in after actual run); end-user Windows10 GTX1050Ti/driver/Ollama/OpenCode live trials **NOT_RUN**.
+- Self-authored tests are not independent business acceptance. AI semantic review and third-party/safe sandbox **NOT IMPLEMENTED**.
+- GitHub plan synchronization, remote push/PR automation, automatic startup/monitoring, real EAI/AXNODE integration, Windows fault-recovery and multi-product throughput benchmark **NOT IMPLEMENTED**.
+- No percentage promotion or release claim.
 
-- 기존 `main` 정리 이력 원본 `d47239f961fc895592147c2afa969ecf64f2bd00`, 3종 문서 허브 기준 `b80423da5f2bd3b5e8dd31d81b0bc26a94a612dc`에서 정상 fast-forward 변경.
-- 이번 최신 작업: 이름 결정, 2개 새 branch와 상세 final blueprint/tech/test/commercial/STATUS/HANDOFF, hub 5종 문서 인덱스 최신화.
-- 검증: GitHub 신규 branch/본문/소스 메타/파일 SHA readback; 신규 제품 실제 기능 0, 신규 CI 0, Windows 고객 인수 0, Production/Vercel 미적용.
-- 신규 제품 기능과 기존 Code Checker/AutoML 제품 진행률은 독립, 퍼센트 재산정 없음. 출시/판매 승인 없음.
-- [정확 SHA·경로 색인](docs/PRODUCT_INDEX.md), [기존 구직 원본 이력 복구](docs/REPOSITORY_RECOVERY.md).
-
-- **브랜드 문서 갱신 2026-11-13 KST:** 기존 3개 기업형 상품 이름을 AZENTFLOW AX, CITEVAULT AX, SITECRAFT AX로 결정하여 각 브랜치 8개 기존 문서 + 브랜드 소개 파일에 반영. 3개 제품의 실행 기능/원본/CI/완성률 변동 0, 상표 검색 전 내부명, RELEASE HOLD.
-
-## 2026-11-13 추가 신상품 인덱스 (기존 5개 과거 표/진도 보존)
-
-- ECHOHOME + PAWTALK: product/echohome-pawtalk-local-ai@603be91d278f4cef1e8e0fe0994bfdb21ca23740 — 신규 설계/미구현·UNASSESSED·HOLD·미등록.
-- MYRADIO AI: product/myradio-ai-dj@5885b2b22f8e4ee7692c08ba96ddd536d2c82e26 — 전체 최종설계 문서 + 오프라인 WAV 권리 필터/선곡/DJ 문장/Windows SAPI 시제품, 로컬 Python 7 PASS·Windows NOT_RUN·공식률 UNASSESSED·HOLD·미등록.
-- 기존 5개 브랜치, 기술·테스트·원본·SHA 및 소비자형 신상품 가격/권리/판매 승인 변경 없음. 자세한 표는 docs/PRODUCT_INDEX.md의 추가 섹션 참조.
-
-
-## 2026-11-13 AXNODE 신규 제품 브랜치 추가
-
-- `product/axnode-sector-runtime`: 사용자 선택 독자 바이너리 파일 A안, `docs/FINAL_BLUEPRINT.md` R01~R29 전체 목표 설계·REQUIREMENTS/AGENTS/STATUS/HANDOFF 별도 등록. 기존 7개 브랜치/8개 제품 보존 후 8개 브랜치/9개 제품.
-- 별도 로컬 POC 19 PASS/0 FAIL/0 SKIP 및 5섹터/852바이트 예제. 브랜치 자체는 **설계 문서만 등록**, 원격 GitHub CI·Windows·3GB·원격 실행·HAE/LA 연결 미검증. 공식률 UNASSESSED / HOLD / 미등록.
-- 해총 kmong-productization 신규 등록부 동기화. 기존 29→19 상품화 분류/진도/등록 이력·다른 브랜치 코드 불변. 실제 GitHub Actions/완전 무료 클라우드 운영 성공 주장 금지.
+## Next gates
+1. GitHub hosted Python3.11 synthetic unit tests, source SHA readback; fix defects.
+2. Owner's disposable Windows Git fixture, \`doctor\`, dry run, model smoke, record 5-task throughput.
+3. Implement remote GitHub task synchronization, explicit safe PR publication and scheduler only after credential/auth safety review.
+4. EAI and AXNODE optional adapters after separate interface design and owner approval.
