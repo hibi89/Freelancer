@@ -87,3 +87,37 @@ def run_eai_goal(eai_repo: Path, expected_commit: str, goal: Path,
         "independent_receipt_accepted": accepted,
         "task_verification": "NOT_VERIFIED",
     }
+
+
+def load_eai_policy(path: Path, approved_task_ids: set[str]) -> tuple[dict, str]:
+    """Bind owner-private EAI receipt policy to exact approved task IDs.
+
+    No customer goal content is exported to GitHub. Policy SHA is persisted
+    with the SQLite queue and cannot be silently dropped on a restart.
+    """
+    path = path.expanduser().absolute()
+    if path.is_symlink() or any(part.is_symlink() for part in path.parents):
+        raise ContractError("EAI policy path contains a symlink")
+    if not path.is_file() or path.stat().st_size > 64 * 1024:
+        raise ContractError("EAI policy missing or too large")
+    data = path.read_bytes()
+    digest = hashlib.sha256(data).hexdigest()
+    try:
+        obj = json.loads(data.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ContractError("EAI policy must be strict UTF-8 JSON") from exc
+    if not isinstance(obj, dict) or set(obj) != {"version", "tasks"} or obj["version"] != 1:
+        raise ContractError("EAI policy unsupported version or fields")
+    tasks = obj["tasks"]
+    if not isinstance(tasks, dict) or not tasks or len(tasks) > 100:
+        raise ContractError("EAI policy requires 1..100 pinned task mappings")
+    if not set(tasks).issubset(approved_task_ids):
+        raise ContractError("EAI policy has unapproved task IDs")
+    fields = {"eai_repo", "expected_sha", "goal", "approved_directory"}
+    for task_id, rule in tasks.items():
+        if (not isinstance(rule, dict) or set(rule) != fields
+                or any(not isinstance(rule[f], str) or not rule[f]
+                       for f in fields)
+                or not SHA40.fullmatch(rule["expected_sha"])):
+            raise ContractError("EAI rule is incomplete or unpinned for " + task_id)
+    return tasks, digest

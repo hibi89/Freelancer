@@ -16,6 +16,8 @@ def main(argv=None):
     p.add_argument("--execute", action="store_true")
     p.add_argument("--daily-model-call-budget", type=int,
                    help="optional UTC daily local model invocation cap")
+    p.add_argument("--eai-policy", type=Path,
+                   help="opt-in owner-private pinned EAI receipt policy")
     p.add_argument("--semantic-review", action="store_true",
                    help="require local Ollama semantic check after deterministic acceptance")
     p.add_argument("--implementation-batch", action="store_true",
@@ -67,7 +69,8 @@ def main(argv=None):
                                 ", ".join(health["blockers"]))
     factory = Factory(Path(obj["repo"]), plan_path, Path(obj["state"]),
                       model=obj["model"], semantic_review=a.semantic_review,
-                      max_daily_model_calls=a.daily_model_call_budget)
+                      max_daily_model_calls=a.daily_model_call_budget,
+                      eai_policy=a.eai_policy)
     try:
         results = (factory.run_implementation_batch(maximum, execute=a.execute)
                    if a.implementation_batch else factory.run_many(maximum, execute=a.execute))

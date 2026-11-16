@@ -3,7 +3,7 @@
   "scope": "AX Dev Factory owner-only local personal tool",
   "official_final_blueprint_completion": "UNASSESSED",
   "provisional_readiness": "72/100 (previous fixed five-domain proxy; not recalculated)",
-  "evidence_basis": "P1 SOURCE IMPLEMENTATION ONLY. Code existence marked IMPLEMENTED for pre-CI 100% metric, NOT a functioning/verified claim. F01-F20 remain official UNASSESSED.",
+  "evidence_basis": "P1 PRE-CI IMPLEMENTATION COMPLETENESS only; new EAI/AXNODE integration NOT_RUN. No official final verification.",
   "requirements": [
     {
       "id": "F01",
@@ -132,23 +132,24 @@
     },
     {
       "id": "F14",
-      "implementation": "PARTIAL",
+      "implementation": "IMPLEMENTED",
       "verification": "NOT_RUN",
       "paths": [
         "axdev/eai_adapter.py",
+        "axdev/core.py",
         "scripts/run_eai_evidence.py"
       ],
-      "remaining_work": "Local SHA-pinned EAI receipt CLI implemented; per-task automatic evidence binding and owner-machine EAI run pending."
+      "remaining_work": "Owner-pinned local EAI SHA/goal policy integrated into independent task review, receipt hashes persisted in SQLite. P2 EAI actual integration NOT_RUN; no external data."
     },
     {
       "id": "F15",
-      "implementation": "PARTIAL",
+      "implementation": "IMPLEMENTED",
       "verification": "NOT_RUN",
       "paths": [
         "axdev/axnode_adapter.py",
         "scripts/export_axnode_checkpoint.py"
       ],
-      "remaining_work": "Typed DAG/checkpoint bridge implemented; native AXNODE .axnode compiler is not in this repository and remains separate."
+      "remaining_work": "Typed AXNODE-style graph/checkpoint export AND independent verification against approved SQLite source implemented; native proprietary .axnode binary compilation belongs to separate AXNODE project and is NOT claimed."
     },
     {
       "id": "F16",

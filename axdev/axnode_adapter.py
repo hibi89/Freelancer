@@ -76,3 +76,21 @@ def export_checkpoint(plan: Path, database: Path, output: Path) -> dict:
         stream.write(data)
     return {"path": str(output), "payload_sha256": hashlib.sha256(data).hexdigest(),
             "nodes": len(result["nodes"]), "native_axnode_binary": False}
+
+
+def verify_checkpoint(plan: Path, database: Path, checkpoint_file: Path) -> dict:
+    """Independent, read-only proof against current approved SQLite source."""
+    if (checkpoint_file.is_symlink() or
+            any(part.is_symlink() for part in checkpoint_file.parents) or
+            not checkpoint_file.is_file() or checkpoint_file.stat().st_size > 128 * 1024):
+        raise ContractError("checkpoint file missing, symlinked or oversized")
+    binary = checkpoint_file.read_bytes()
+    try:
+        candidate = json.loads(binary.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ContractError("invalid typed checkpoint JSON") from exc
+    if candidate != typed_checkpoint(plan, database):
+        raise ContractError("checkpoint differs from current immutable plan/SQLite")
+    return {"bridge_verified_against_source": True,
+            "checkpoint_file_sha256": hashlib.sha256(binary).hexdigest(),
+            "native_axnode_binary": False}

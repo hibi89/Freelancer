@@ -153,7 +153,8 @@ def plan_hash(task: dict) -> str:
 class Factory:
     def __init__(self, repo: Path, plan: Path, state: Path, model: str = "ollama/qwen2.5-coder:3b",
                  coder=None, semantic_review: bool = False, semantic_reviewer=None,
-                 max_daily_model_calls: int | None = None):
+                 max_daily_model_calls: int | None = None,
+                 eai_policy: Path | None = None):
         self.repo, self.state = repo.resolve(), state.resolve()
         if self.state == self.repo or self.repo in self.state.parents:
             raise ContractError("state directory must be outside target repository")
@@ -162,6 +163,12 @@ class Factory:
         if git(self.repo, "rev-parse", "--is-inside-work-tree") != "true":
             raise ContractError("target must be a git repository")
         self.tasks = load_plan(plan)
+        self.eai_tasks = {}
+        self.eai_policy_digest = ""
+        if eai_policy is not None:
+            from .eai_adapter import load_eai_policy
+            self.eai_tasks, self.eai_policy_digest = load_eai_policy(
+                eai_policy, {task["id"] for task in self.tasks})
         self.model = model
         self.coder = coder or self._opencode
         if type(semantic_review) is not bool:
@@ -177,6 +184,14 @@ class Factory:
         (self.state / "worktrees").mkdir(exist_ok=True)
         self.db = sqlite3.connect(self.state / "factory.sqlite3")
         self.db.execute("CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
+        existing_policy = self.db.execute(
+            "SELECT value FROM meta WHERE key='eai_policy_sha256'").fetchone()
+        if existing_policy and existing_policy[0] != self.eai_policy_digest:
+            self.db.close()
+            raise ContractError("pinned EAI policy changed or omitted; manual reconciliation required")
+        if not existing_policy and self.eai_policy_digest:
+            self.db.execute("INSERT INTO meta(key,value) VALUES('eai_policy_sha256',?)",
+                            (self.eai_policy_digest,))
         self.integration_ref = ("refs/heads/axdev/integration-" +
             hashlib.sha256(str(self.state).encode("utf-8")).hexdigest()[:12])
         baseline = self.db.execute("SELECT value FROM meta WHERE key='base_sha'").fetchone()
@@ -206,6 +221,10 @@ class Factory:
         self.db.execute("CREATE TABLE IF NOT EXISTS model_calls "
                         "(id INTEGER PRIMARY KEY, day_utc TEXT NOT NULL, "
                         "task_id TEXT NOT NULL, phase TEXT NOT NULL)")
+        self.db.execute("CREATE TABLE IF NOT EXISTS eai_review_receipts "
+                        "(task_id TEXT NOT NULL, task_spec TEXT NOT NULL, "
+                        "goal_sha256 TEXT NOT NULL, receipt_sha256 TEXT NOT NULL, "
+                        "status TEXT NOT NULL, PRIMARY KEY(task_id,task_spec,receipt_sha256))")
         for task in self.tasks:
             row = self.db.execute("SELECT spec FROM runs WHERE id=?", (task["id"],)).fetchone()
             digest = plan_hash(task)
@@ -434,6 +453,31 @@ class Factory:
             return False, "POST_CHECK_SYMLINK_FORBIDDEN"
         if hashes(after) != reviewed:
             return False, "POST_CHECK_SOURCE_MUTATION"
+        if task["id"] in self.eai_tasks:
+            from .eai_adapter import run_eai_goal
+            rule = self.eai_tasks[task["id"]]
+            try:
+                receipt = run_eai_goal(
+                    Path(rule["eai_repo"]), rule["expected_sha"], Path(rule["goal"]),
+                    Path(rule["approved_directory"]))
+            except (OSError, ValueError, RuntimeError, TimeoutError):
+                return False, "EAI_RECEIPT_UNAVAILABLE"
+            if not receipt["independent_receipt_accepted"]:
+                return False, "EAI_RECEIPT_DISAGREEMENT"
+            # Receipt stores SHA metadata, never source data or model text.
+            self.db.execute(
+                "INSERT OR IGNORE INTO eai_review_receipts "
+                "(task_id,task_spec,goal_sha256,receipt_sha256,status) "
+                "VALUES(?,?,?,?,?)",
+                (task["id"], plan_hash(task), receipt["goal_sha256"],
+                 receipt["receipt_sha256"], receipt["status"]))
+            self.db.commit()
+            try:
+                self._preflight_workspace(task, workspace)
+                if self._changed(workspace) != after or hashes(after) != reviewed:
+                    return False, "POST_EAI_SOURCE_MUTATION"
+            except (OSError, ValueError, RuntimeError):
+                return False, "POST_EAI_UNSAFE_WORKTREE"
         if self.semantic_review_enabled:
             # Separate local-only model call AFTER deterministic checks.
             # Semantic results cannot mark an unverified task VERIFIED.
