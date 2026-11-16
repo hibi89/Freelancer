@@ -205,5 +205,113 @@
       "F17",
       "F18"
     ]
+  },
+  "native_8k_generation": {
+    "schema": 1,
+    "source_sha": "8bd8267c32791c185d505843aba351d6b1878656",
+    "os_build": 26200,
+    "gpu_model": "NVIDIA GeForce GTX 1050 Ti",
+    "cpu_forcing_omitted": true,
+    "backend_requested": "Vulkan",
+    "ollama_no_cloud": true,
+    "manifest_file_sha256": {
+      "qwen3/4b-instruct": "6214d088d3846e16c9fe00adcbabdbfddc61ce4a70daacc46cb2310c38603054",
+      "qwen2.5-coder/3b": "ce40a49b0aa2b3b607d26a603e0f2db06a256cecbc9cca7adf893ae11a80275a"
+    },
+    "prompt_sha256": "c6495f269ed720c0293160deb9f41435f037e1d6f260f08215801605036e51bd",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 128,
+      "temperature": 0
+    },
+    "runs": [
+      {
+        "model": "qwen3:4b-instruct",
+        "status": "PASS",
+        "model_digest": "6214d088d3846e16c9fe00adcbabdbfddc61ce4a70daacc46cb2310c38603054",
+        "single_resident_model": true,
+        "eval_tokens": 128,
+        "prompt_eval_tokens": 6927,
+        "context_length_allocated": 8192,
+        "supports_tools": true,
+        "marker_recalled": true,
+        "eval_tokens_per_second": 4.42,
+        "wall_seconds": 99.83,
+        "reported_vram_bytes": 2675011747,
+        "nvidia_vram_delta_mib": 2570,
+        "gpu_confirmed": true,
+        "ram_before": {
+          "total_mib": 16227,
+          "available_mib": 5016
+        },
+        "ram_after": {
+          "total_mib": 16227,
+          "available_mib": 1818
+        },
+        "unloaded_before_next_model": true
+      },
+      {
+        "model": "qwen2.5-coder:3b",
+        "status": "PASS",
+        "model_digest": "f72c60cabf6237b07f6e632b2c48d533cef25eda2efbd34bed21c5e9c01e6225",
+        "single_resident_model": true,
+        "eval_tokens": 128,
+        "prompt_eval_tokens": 6948,
+        "context_length_allocated": 8192,
+        "supports_tools": true,
+        "marker_recalled": false,
+        "eval_tokens_per_second": 28.06,
+        "wall_seconds": 55.704,
+        "reported_vram_bytes": 2318747565,
+        "nvidia_vram_delta_mib": 2227,
+        "gpu_confirmed": true,
+        "ram_before": {
+          "total_mib": 16227,
+          "available_mib": 5070
+        },
+        "ram_after": {
+          "total_mib": 16227,
+          "available_mib": 2634
+        },
+        "unloaded_before_next_model": true
+      }
+    ],
+    "version": "0.40.16",
+    "dedicated_server_stopped": true
+  },
+  "wsl2_native_model_integration_3b": {
+    "run_started": true,
+    "dedicated_server_stopped": true,
+    "source_sha": "2882e4c56a3a142df3e96beee1fddaa6a55b3756",
+    "scope": "Linux OpenCode in no-egress WSL2; allowlisted stdio to native Windows Ollama",
+    "opencode_exit": 0,
+    "allowed_edit_correct": false,
+    "changed_paths": [],
+    "protected_file_unchanged": true,
+    "original_head_unchanged": true,
+    "original_file_unchanged": true,
+    "write_observed": false,
+    "policy_guard_refused": false,
+    "model_unavailable": false,
+    "prompt_sha256": "c560de2c6ffb49dce072c0c6be0b561d80988f8af681810f7ccef067178efccb",
+    "wsl_exit": 0,
+    "ollama_version": "0.40.16",
+    "nvidia_vram_delta_mib": 2227,
+    "ollama_models": [
+      {
+        "name": "qwen2.5-coder:3b",
+        "digest": "f72c60cabf6237b07f6e632b2c48d533cef25eda2efbd34bed21c5e9c01e6225",
+        "vram_bytes": 2318747565
+      }
+    ],
+    "requests": {
+      "GET /api/tags": 1,
+      "POST /api/show": 1,
+      "POST /v1/chat/completions": 2
+    },
+    "statuses": {
+      "200": 4
+    },
+    "observed_task_result": "FAIL_EMPTY_DIFF"
   }
 }

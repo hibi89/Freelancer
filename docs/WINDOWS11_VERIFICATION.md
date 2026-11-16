@@ -20,7 +20,20 @@ Tested checkout [`a0cd336404f8048323c83f3cabe4b07c364ee22c`](https://github.com/
 | `qwen2.5-coder:3b` | 31.45 | 12.010 s | 1,998 MiB | 3,366 → 1,115 MiB |
 | `qwen3:4b-instruct` | 19.16 | 20.018 s | 2,564 MiB | 2,840 → 965 MiB |
 
-The measurements used temperature 0 and a 2,048-token context. Total request time includes cold loading and prompt evaluation. These were single synthetic generation samples. The 8K target and comparative task success, including the manual GPT baseline in the blueprint, remain NOT_RUN. See the [Ollama hardware documentation](https://docs.ollama.com/gpu) for driver and Vulkan support.
+These single generation samples used temperature 0 and a 2,048-token context. Total request time includes cold loading and prompt evaluation. See the [Ollama hardware documentation](https://docs.ollama.com/gpu) for driver and Vulkan support.
+
+### 8K context on the physical GTX 1050 Ti
+
+At [`8bd8267c32791c185d505843aba351d6b1878656`](https://github.com/hibi89/Freelancer/commit/8bd8267c32791c185d505843aba351d6b1878656), native Ollama allocated **8,192 tokens** for each pinned model. Each evaluated a long synthetic prompt, generated 128 tokens, and unloaded before the other model ran. Both reported tool support. [Allocated context fields](https://docs.ollama.com/api/ps) · [Generation timing fields](https://docs.ollama.com/api/generate)
+
+| Model | Evaluated input tokens | Eval tokens/s | Total request time | NVIDIA VRAM increase | Available RAM before → after |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `qwen2.5-coder:3b` | 6,948 | 28.06 | 55.704 s | 2,227 MiB | 5,070 → 2,634 MiB |
+| `qwen3:4b-instruct` | 6,927 | 4.42 | 99.830 s | 2,570 MiB | 5,016 → 1,818 MiB |
+
+The 4B response reproduced a marker placed at the beginning of the long prompt. The 3B response missed it. Both performance measurements came from a single observed run. The Windows 10 benchmark and manual GPT comparison remain NOT_RUN.
+
+Runtime SHA [`2882e4c56a3a142df3e96beee1fddaa6a55b3756`](https://github.com/hibi89/Freelancer/commit/2882e4c56a3a142df3e96beee1fddaa6a55b3756) pins the Windows Sandbox Ollama launch to one resident model and one active request. A regression check confirmed both limits override inherited values at process start. Guest behavior on Windows 10 remains NOT_RUN. [Ollama concurrency settings](https://docs.ollama.com/faq#how-does-ollama-handle-concurrent-requests)
 
 ## OpenCode integration and defect fix
 
@@ -31,6 +44,8 @@ At `5246d10d0492d430db5d91ea4ea1a393d37b216d`, a repository's `.opencode/agents/
 Official OpenCode releases 2.2.6 and 2.3.0 passed in a WSL2 mount and network namespace with only private loopback. The Factory coding entry selected the intended Git worktree despite a stale inherited working directory. A deterministic Ollama protocol fixture requested an approved write, a prohibited write and a dummy `.env` read. The approved file was updated. The hard policy rejected the other write even when the repository's Markdown agent permitted it. The secret read was denied, and shell and web tools were absent. A separate project JSON override caused exit 125 before any further endpoint request.
 
 The real model integration also passed at `2d7b0c7efb5e07b1bc299ccbeeb1608b352fe626`. OpenCode 2.3.0 ran in isolated WSL2 and reached a dedicated native Windows Ollama 0.40.16 server through a stdio relay that accepted only local model discovery and completion requests for the pinned 4B model. The GTX 1050 Ti increased VRAM usage by 2,565 MiB. The model changed only `probe.py` and the resulting bytes matched the target. The protected file and original checkout stayed unchanged. Both processes exited and the dedicated server stopped.
+
+The same disposable coding prompt with the pinned 3B model at `2882e4c56a3a142df3e96beee1fddaa6a55b3756` was **FAIL**. OpenCode exited 0 and the model completed requests. The worktree had an empty diff and the expected bytes were absent. The original checkout and protected file stayed unchanged. This was one direct coding attempt. [Both coding observations](WINDOWS11_VERIFICATION.json)
 
 ## Remaining Windows 10 device work
 

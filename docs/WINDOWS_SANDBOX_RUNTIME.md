@@ -3,7 +3,7 @@
 The host owns approvals, SQLite state, Git writes and the final verdict.
 
 1. Validate the exact plan SHA256, dependency graph, toolchain and model manifest. Build the source ZIP from raw pinned Git blobs.
-2. Launch the coding guest with networking, clipboard, peripherals and vGPU disabled. Only a fresh outbox is writable. The guest runs Ollama/OpenCode on a disposable worktree and returns `CANDIDATE` bytes or `HOLD`.
+2. Launch the coding guest with networking, clipboard, peripherals and vGPU disabled. Only a fresh outbox is writable. The guest limits Ollama to one resident model and one active request. OpenCode works in a disposable Git worktree and the guest returns `CANDIDATE` bytes or `HOLD`.
 3. After the client exits, validate and seal the bytes outside the outbox. Give the host reviewer a read-only snapshot of the exact candidate Git tree.
 4. The host runs protected project checks and independent callable probes in separate capability-free Windows AppContainers. The host compares actual JSON results with the approved expected values. An existing project test remains protected even when a task adds tests. Verdicts from guest files, stdout labels, EAI or model responses cannot substitute for the host comparison.
 5. Allow one isolated repair using the sealed candidate. A repeated failure is HOLD; only VERIFIED prerequisites unblock dependencies. A trusted proof links the candidate digest, task SHA, Git base/tree/commit, and run ID. Persist PREPARED before atomic ref promotion so interrupted completion can be recovered.

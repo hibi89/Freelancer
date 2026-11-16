@@ -1,6 +1,6 @@
 # AX Dev Factory P2 acceptance evidence · 2026-11-16 KST
 
-Functional source `2d7b0c7efb5e07b1bc299ccbeeb1608b352fe626`, branch `codex/axdev-full-verification`, base `5ab94180471c7ea86344b691fc77ad5c29989071`. The supplemental [Windows 11 report](WINDOWS11_VERIFICATION.md) pins each physical test to its checkout. [PR #3](https://github.com/hibi89/Freelancer/pull/3)
+Functional source `2882e4c56a3a142df3e96beee1fddaa6a55b3756`, branch `codex/axdev-full-verification`, base `5ab94180471c7ea86344b691fc77ad5c29989071`. The supplemental [Windows 11 report](WINDOWS11_VERIFICATION.md) pins each physical test to its checkout. [PR #3](https://github.com/hibi89/Freelancer/pull/3)
 
 **14/20 F-ID acceptance rows PASS. Six rows have device requirements still NOT_RUN.** A row passes only when its listed behavior has evidence at its defined interface. Section 6 device trial gates are tracked separately below. Formal weighted progress is UNASSESSED. Owner real-use remains HOLD.
 
@@ -8,8 +8,8 @@ Functional source `2d7b0c7efb5e07b1bc299ccbeeb1608b352fe626`, branch `codex/axde
 | --- | --- | --- |
 | F01 | PASS | Public plan retrieved at approved branch SHA; Git blob and local SHA256 pinned. Plan mismatch, candidate replay and unauthorized path rejected. Task and oracle immutable across restart. |
 | F02 | PASS | Cycle/unknown dependency rejected; fixture queues prove VERIFIED prerequisite ordering and HOLD isolation. |
-| F03 | NOT_RUN | Queue and worker locks, separate reviewer processes and serial staging exercised. The native slot recovered after abrupt exit. Physical Ollama 3B and 4B each used the single resident slot on Windows 11. Actual Windows 10 Sandbox worker lifecycle and residency remain NOT_RUN. |
-| F04 | NOT_RUN | Official OpenCode rejected wider project config and enforced tool permissions in isolated WSL2. OpenCode plus native Windows 11 Ollama completed the approved edit using the local 4B model. The Windows portable executable reported 2.3.0 and standalone support. Actual Windows Sandbox model tools and paid-provider denial remain NOT_RUN. |
+| F03 | NOT_RUN | Queue and worker locks, separate reviewer processes and serial staging exercised. The native slot recovered after abrupt exit. The guest now explicitly limits Ollama to one resident model and one active inference request. Each local model used one slot during the Windows 11 physical benchmark. Actual Windows 10 Sandbox worker lifecycle and residency remain NOT_RUN. |
+| F04 | NOT_RUN | Official OpenCode rejected wider project config and enforced tool permissions in isolated WSL2. A 4B coding attempt with native Windows 11 Ollama produced the approved edit. The same 3B attempt returned an empty diff. Actual Windows Sandbox model tools and paid-provider denial remain NOT_RUN. |
 | F05 | PASS | Separate Git worktree in synthetic coding; sandbox snapshot and exact isolated integration ref exercised while original checkout and HEAD remained unchanged. |
 | F06 | PASS | Candidate digest and allowlist, tracked test protection, Windows aliases/reparse probes, and AppContainer write denial tested. |
 | F07 | PASS | Native AppContainer executes protected tests and distinct callable probes. A fake successful test process cannot make a wrong callable result pass. |
@@ -21,7 +21,7 @@ Functional source `2d7b0c7efb5e07b1bc299ccbeeb1608b352fe626`, branch `codex/axde
 | F13 | PASS | Live GitHub GET-only import at `5ab94180471c7ea86344b691fc77ad5c29989071`, blob `41fed2876b33831987384b3bcc3c96c79b7cf93e`. First run `created=true`; identical repeat `created=false`. SHA race, alternate HTTP errors and cache guards covered by regression tests. |
 | F14 | PASS | Actual public EAI code `a911540fd07b72533e215849e142148327a5adbc` ran a synthetic goal in a Windows AppContainer. Exit 0, `DECIDED`, independent verifier accepted, receipt SHA256 `158281229032b62cd8ff0da3c5a43815b290ae17ab29322469f1e832093826ec`. Adapter requires the independent policy and exact goal SHA. EAI is an extra gate and cannot grant task VERIFIED. |
 | F15 | PASS | Adapter produces typed nodes, dependency edges and hashes and rechecks checkpoint against current plan and SQLite; changed spec and tampered JSON rejected. Scope is the typed bridge. Native AXNODE binary import was not exercised. |
-| F16 | NOT_RUN | On the Windows 11 GTX 1050 Ti, Ollama 0.40.16 Vulkan measured 31.45 tokens/s for 3B and 19.16 for 4B at 2K context. Target Windows 10, designed context, task success and manual GPT comparison remain NOT_RUN. |
+| F16 | NOT_RUN | On the Windows 11 GTX 1050 Ti, native Ollama allocated the 8,192-token context and measured 28.06 tokens/s for 3B and 4.42 for 4B with long prompts. Both used Vulkan. Target Windows 10 performance and the manual GPT comparison remain NOT_RUN. |
 | F17 | NOT_RUN | Cooperative stop/resume, durable budget, locks and status exercised. Windows 11 Task Scheduler validated and manually invoked the configured disposable queue with the exact arguments. Sandbox-disabled execution failed closed, dry run passed and the temporary task was removed. Actual owner logon and automatic target launch remain NOT_RUN. |
 | F18 | NOT_RUN | The original guest receipt exploit was reproduced and fake promotion denied. The native Windows 11 AppContainer blocked protected file I/O, environment inheritance and connections to live loopback and private-interface listeners. OpenCode denied an unapproved write even with a malicious project Markdown agent granting edits. Actual Windows Sandbox mappings and network denials remain NOT_RUN. |
 | F19 | PASS | Installed local GGUF `qwen3:4b-instruct` returned `SEMANTIC_PASS_LOCAL_ONLY` for a synthetic code sample. Deterministic oracle gates promotion before a semantic verdict; malformed or external model evaluations rejected. |
@@ -42,7 +42,7 @@ Functional source `2d7b0c7efb5e07b1bc299ccbeeb1608b352fe626`, branch `codex/axde
 | 4. Protected tests pass and unauthorized edits HOLD | Native AppContainer checks, real OpenCode permission denials in WSL2 and independent candidate regression tests passed. | NOT_RUN for the full isolated coding path on Windows 10. |
 | 5. No duplicate after replay | Live GitHub import replay and cold Windows 11 controller recovery passed. | NOT_RUN after real Sandbox interruption. |
 | 6. Independent queue after HOLD | Isolated controller synthetic fixture checks one fix, HOLD, independent VERIFIED and dependent QUEUED. | NOT_RUN with the actual coding runtime. |
-| 7. Performance vs manual GPT workflow | Native Windows 11 GPU inference measured for both 3B and 4B. | NOT_RUN on Windows 10 with target context, coding workloads and manual comparison. |
+| 7. Performance vs manual GPT workflow | Native Windows 11 GPU inference measured for both 3B and 4B at 2K and 8K contexts. | NOT_RUN on Windows 10 with target context, coding workloads and manual comparison. |
 
 ## Evidence and next handoff
 
