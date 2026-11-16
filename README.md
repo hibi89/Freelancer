@@ -1,3 +1,5 @@
+> **Verified synthetic milestone (2026-11-16 KST):** Byte-identical GitHub source/test check, Linux Python3.13.5 **10/10 tests PASS**, CLI doctor/dry-run and fake-model protected-test commit PASS. [Exact evidence](docs/VERIFICATION_20261116.md). Windows/GTX1050Ti/real Ollama/OpenCode and remote GitHub PR **NOT TESTED**.
+
 # AX Dev Factory — Personal Local Automation (v0.1)
 
 Branch: `tools/ax-dev-factory-local` in PUBLIC `hibi89/Freelancer`. Personal-use tool, not a Kmong sales product. No secrets, client data, models, API tokens or owner files are stored here.
