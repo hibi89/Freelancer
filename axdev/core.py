@@ -17,6 +17,9 @@ ALLOWED_CHECKS = {
     ("python", "-m", "unittest", "discover", "-s", "tests", "-q"),
     ("python", "-m", "compileall", "-q", "src"),
     ("python", "-m", "compileall", "-q", "axdev"),
+    ("ruff", "check", "--no-cache", "src"),
+    ("ruff", "check", "--no-cache", "."),
+    ("ruff", "check", "--no-cache", "axdev"),
 }
 VALID_STATES = {"QUEUED", "CODING", "REVIEW", "PREPARED", "VERIFIED", "HOLD"}
 
@@ -56,7 +59,9 @@ def safe_path(value: str) -> str:
     p = Path(value)
     if (not value or p.is_absolute() or "\\" in value or ":" in value
             or any(s in ("", ".", "..") for s in value.split("/"))
-            or value.startswith((".git", ".axdev", ".github", ".opencode", ".env"))):
+            or any(segment.lower().startswith((".git", ".axdev", ".github",
+                                                    ".opencode", ".env"))
+                   for segment in value.split("/"))):
         raise ContractError(f"unsafe path: {value!r}")
     return value
 
@@ -149,6 +154,14 @@ class Factory:
         actual_head = git(self.repo, "rev-parse", "HEAD")
         ref_rc, ref_output = call(["git", "rev-parse", "--verify", self.integration_ref], self.repo)
         if baseline is None:
+            existing = self.db.execute(
+                "SELECT COUNT(*) FROM runs WHERE status IN ('VERIFIED','PREPARED')"
+            ).fetchone()[0] if self.db.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='runs'"
+            ).fetchone() else 0
+            if existing:
+                self.db.close()
+                raise ContractError("legacy verified state requires manual integration migration")
             if ref_rc == 0:
                 self.db.close()
                 raise ContractError("existing integration ref without state: manual inspection required")
@@ -253,6 +266,18 @@ class Factory:
         untracked = git(workspace, "ls-files", "--others", "--exclude-standard").splitlines()
         return set(tracked + untracked)
 
+    def _preflight_workspace(self, task: dict, workspace: Path) -> None:
+        if workspace.is_symlink():
+            raise ContractError("worktree path must not be a symlink")
+        for filename in task["files"]:
+            curr = workspace
+            for part in filename.split("/"):
+                curr = curr / part
+                if curr.is_symlink():
+                    raise ContractError("task path contains a symlink")
+                if curr.exists() and curr.is_dir() and part == filename.split("/")[-1]:
+                    raise ContractError("file target is a directory")
+
     def _review(self, task: dict, workspace: Path) -> tuple[bool, str]:
         changed = self._changed(workspace)
         if not changed:
@@ -263,7 +288,9 @@ class Factory:
         if extras:
             return False, "FORBIDDEN_PATHS: " + ", ".join(sorted(extras))
         for command in task["checks"]:
-            rc, out = call([sys.executable, *command[1:]], workspace, timeout=240)
+            cmd = ([sys.executable, *command[1:]]
+                   if command[0] == "python" else command)
+            rc, out = call(cmd, workspace, timeout=240)
             if rc:
                 return False, f"CHECK_FAIL {command}: {out[-1800:]}"
         return True, "ALL_CHECKS_PASS"
@@ -294,7 +321,13 @@ class Factory:
                     "files": task["files"], "checks": task["checks"]}
         try:
             workspace = self._workspace(tid)
+            self._preflight_workspace(task, workspace)
             prior = self.status()[tid]
+            if prior == "CODING":
+                # A crash during coding may leave partial edits. Inspect once; never
+                # rerun an unrestricted model call against an unknown partial state.
+                self._set(tid, "REVIEW", "interrupted coding: inspect changes")
+                prior = "REVIEW"
             if prior == "PREPARED":
                 return self._promote_prepared(tid)
             if prior != "REVIEW":
