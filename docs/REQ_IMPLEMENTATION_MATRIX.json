@@ -179,9 +179,10 @@
       "paths": [
         "axdev/opencode_guard.py",
         "axdev/core.py",
+        "axdev/repo_trust.py",
         "scripts/prepare_windows_sandbox.py"
       ],
-      "remaining_work": "Windows Sandbox disabled-network disposable template code added; Windows edition compatibility, actual OS isolation and real model containment NOT_RUN. No automatic policy changes."
+      "remaining_work": "Fail-closed Git hook/filter/environment trust preflight, secret scrub, local-only provider guard, Windows Sandbox deny-network template present. Full process/OS sandbox execution still absent and Windows edition constraints unknown; cannot claim F18 implemented."
     },
     {
       "id": "F19",

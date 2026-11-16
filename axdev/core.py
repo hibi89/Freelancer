@@ -162,6 +162,10 @@ class Factory:
             raise ContractError("only explicitly selected local Ollama provider is permitted")
         if git(self.repo, "rev-parse", "--is-inside-work-tree") != "true":
             raise ContractError("target must be a git repository")
+        # Reject dangerous Git hooks/filters BEFORE preparing any model worktree.
+        # This is repository-trust hygiene, NOT an OS sandbox.
+        from .repo_trust import assert_safe_git_checkout
+        assert_safe_git_checkout(self.repo)
         self.tasks = load_plan(plan)
         self.eai_tasks = {}
         self.eai_policy_digest = ""
