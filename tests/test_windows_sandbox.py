@@ -109,7 +109,7 @@ class SandboxContractTests(unittest.TestCase):
     def test_prepared_sandbox_task_cannot_promote_legacy_guest_receipt(self):
         host_factory = MagicMock()
         host_factory.status.return_value = {self.task["id"]: "PREPARED"}
-        with patch("axdev.windows_sandbox_runtime._sandbox_binary"), \\
+        with patch("axdev.windows_sandbox_runtime._sandbox_binary"), \
              patch("axdev.windows_sandbox_runtime._read_bundle"):
             result = run_sandbox_one(
                 host_factory, self.task, self.bundle, "0" * 64, True)
