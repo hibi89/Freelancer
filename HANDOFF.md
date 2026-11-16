@@ -1,5 +1,22 @@
 > **[HANDOFF-STARTUP-V2 | ACTIVE | 2026-11-16]** **먼저** `Freelancer@tools/ax-dev-factory-local` 역할/최신 HEAD와 `AGENTS.md` 상단 [OWNER-DEV-EXECUTION-V2](https://github.com/hibi89/hackathon-command-center-2026/blob/kmong-productization/docs/strategy/OWNER_DEV_EXECUTION_CANONICAL_20261116.md)의 적용 범위 및 AX Dev Factory 로컬 도구 예외를 확정한 후 HANDOFF 최신 진행·차단/STATUS/REQUIREMENTS/확정 최종설계/실제 소스를 교차 검증하라. 오래된 HANDOFF 모델 담당·4슬롯 잠금·P85/95 지시는 역사일 뿐 현재 실행순서가 아니다. **웹 Sol High 최초 설계 → 웹 Sol Instant 주력 구현 → 구현 후보 후 전체 CI·수정(위험검사 유지) → Codex Sol Max/Astra Max 독립검수 → High 최종인수 → 사용자 GO 뒤 Luna Extra High 상품등록**. 이 브랜치는 상품이 아닌 개인 로컬 개발 도구로서 원래 F01–F20/격리/로컬 모델/Windows 검증이 우선한다. 원본/기능·데이터/보안·권리·검증 공식률/RELEASE HOLD 불변. 본 공시는 코드 검증 성공을 의미하지 않는다.
 
+## 2026-11-16 P2 hosted verification — updated 10-item handoff
+
+1. **Mission/requirements/stack:** Personal Windows10 GTX1050Ti/16GB AX Dev Factory, Python3.11/SQLite/Git/Ollama/OpenCode and original F01–F20. P1 is **20/20 = 100% implementation candidate**, NOT real-use approval or a weighted final score.
+2. **Delivered/decision:** Corrected Git trust inspection without allowing active executable filters/hooks; added effective attribute checks for planned outputs and five Git-trust regressions. Added six synthetic tests for F14 EAI, F15 AXNODE, F19 semantic review. Existing worktree/one-fix/HOLD/guest receipt and local-only design preserved.
+3. **Tests/verification:** P2 source `9d6fe7f2300fbf135685a71d606a744a9e2d743e`: [Actions #43817078016](https://github.com/hibi89/Freelancer/actions/runs/43817078016) **SUCCESS**, Linux **133/133 PASS**, GitHub-hosted Windows **132 PASS/0 FAIL/1 SKIP**, Windows CMD synthetic readiness PASS. New F14/15/19 tests are mocked/synthetic, not real external model or EAI integrations. Blueprint gate [#43817078258](https://github.com/hibi89/Freelancer/actions/runs/43817078258) must be checked separately.
+4. **Done/in progress/waiting:** GitHub hosted regression fixed and passing; original F01–F20 code candidate unchanged. Formal final acceptance UNASSESSED; actual owner Windows10, isolation/no-egress, offline toolchain and real model E2E NOT_RUN; release HOLD.
+5. **Failure/recovery record:** P1 source `8edcbce2...` failed Linux with 40 errors + 1 assert failure; Windows 39 errors + 1 assert failure/1 skip due dormant global Git LFS rejection and obsolete count. Fix `079d54bc...` passed Linux 127 and Windows 126/1 skip; coverage `9d6fe7f2300fbf135685a71d606a744a9e2d743e` passed 133/132+1 skip. Do not bypass real Git hook/filter risk or relabel mocked tests as model successes. Independent F18 guest receipt authenticity and outbox threat boundary still needs adversarial inspection; do not claim a confirmed exploit without reproduction.
+6. **Repository/branch/SHA/path:** `hibi89/Freelancer` @ `tools/ax-dev-factory-local`; P2 functional source `9d6fe7f2300fbf135685a71d606a744a9e2d743e`. Key changed files `axdev/repo_trust.py`, `axdev/core.py`, `tests/test_repo_trust.py`, `tests/test_req_status.py`, `tests/test_p2_adapters.py`. P1 snapshot `8edcbce2...`; original main and other repositories untouched.
+7. **Production/environment:** local-only, Vercel/Production N/A; GitHub-hosted Windows is NOT user's Windows10. No real Ollama/OpenCode instance launched. Windows Sandbox only on supported Windows edition with virtualization; vGPU off implies possible CPU-only inference.
+8. **Originals/backups/auth:** Git history preserves prior source. SQLite/approved plans/models/tokens are device-private. Public GitHub repo never receives customer source. No force push, permission change, paid API, remote model or production action.
+9. **Next steps/approvals:** read `docs/P2_INDEPENDENT_REVIEW_PACKET.md`, obtain independent Codex technical/security and Astra UI review on pinned source; address verified defects, rerun tests; run disposable first-use on owner's Windows after separately confirming Sandbox availability/offline toolchain and no-egress. No unisolated fallback without owner's explicit new design approval.
+10. **Time/basis:** 2026-11-16 KST, P2 tested code SHA `9d6fe7f2300fbf135685a71d606a744a9e2d743e`, CI #43817078016. This is a docs-only checkpoint; check branch HEAD after documentation commit. Official final score UNASSESSED; user-device trial pending.
+
+Older P1 HANDOFF sections retained below.
+
+---
+
 ## 2026-11-16 P1 implementation 100% candidate — 10-item handoff
 
 1. Goal and stack: AX Dev Factory private owner-local automation, original F01–F20, Windows10/GTX1050Ti/16GB, Python3.11/SQLite/Git/Ollama/OpenCode, no commercialization or Vercel.

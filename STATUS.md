@@ -1,3 +1,19 @@
+# AX Dev Factory — P2 hosted verification checkpoint (2026-11-16 KST)
+
+**Canonical repo/branch:** `hibi89/Freelancer@tools/ax-dev-factory-local`. **P2 tested functional SHA:** `9d6fe7f2300fbf135685a71d606a744a9e2d743e`. **P1 implementation:** F01–F20 20/20 = 100% **code candidate**, unchanged. **Official final acceptance:** UNASSESSED. **Real-use decision:** HOLD. No Vercel/Production.
+
+- **Verified GitHub Actions:** [full Linux + hosted Windows suite #43817078016](https://github.com/hibi89/Freelancer/actions/runs/43817078016) SUCCESS at exact source SHA. Linux Python3.11 **133 PASS / 0 FAIL / 0 SKIP**; hosted Windows Python3.11 **132 PASS / 0 FAIL / 1 SKIP**; Windows CMD no-model fixture/ready gate PASS. [Blueprint evidence gate #43817078258](https://github.com/hibi89/Freelancer/actions/runs/43817078258) was triggered by this SHA; check its final result separately before claiming PASS.
+- **P2 defect correction:** P1 source `8edcbce2b7164cd1b2fdb875f596ceb67ff97b06` failed automated CI [#43814585404](https://github.com/hibi89/Freelancer/actions/runs/43814585404): Linux 122 tests / **40 errors + 1 failure**; Windows 122 tests / **39 errors + 1 failure + 1 skip**. Most errors arose from overly broad rejection of installed but dormant Git LFS registration. Also F01–F20 status test expected an obsolete `NOT_RUN=4` count. Code fix `079d54bc6da1c1596d43bf116355af07b3f0e54d` preserved hook blocking, introduced effective Git-filter attribute checking for tracked and task-approved future paths, and adjusted F18 verification assertion. Five Git-trust regressions added; interim CI [#43816550614](https://github.com/hibi89/Freelancer/actions/runs/43816550614) SUCCESS (Linux 127/127, hosted Windows 126 PASS/1 SKIP).
+- **Coverage expansion:** `9d6fe7f2300fbf135685a71d606a744a9e2d743e` adds six synthetic adapter tests for F14 EAI SHA-pinned policy/advisory evidence, F15 AXNODE typed SQLite checkpoint/forgery rejection and F19 bounded local semantic verdict without launching real model or external EAI.
+- **What remains NOT_RUN:** owner's Windows10 edition/virtualization, Windows Sandbox launch and no-egress/isolation, portable offline bundle dependencies, actual Ollama/OpenCode tool-calling, model/GPU/CPU/memory benchmarking, host process restrictions, physical power-interruption and real repository E2E, owner-controlled remote writes. Hosted Windows CI is not the owner's GTX1050Ti machine. F18 guest-writable receipt boundary requires explicit independent adversarial security review; no physical OS proof exists.
+- **Document interpretation:** `docs/REQ_IMPLEMENTATION_MATRIX.json` and `docs/PRE_CI_IMPLEMENTATION_TRACKER.md` preserve the earlier P1 pre-CI point-in-time source inventory; their old CI-NOT_RUN wording is historical, not the authoritative newest P2 test status. This section and the exact Actions run determine current hosted evidence, without reweighting the formal product score.
+- **Next steps:** complete independent Codex technical/security and Astra design/UX review against the fixed source SHA using `docs/P2_INDEPENDENT_REVIEW_PACKET.md`; resolve findings and rerun affected/whole CI; finally perform one owner-host disposable no-network Windows Sandbox + real-model trial after checking Windows edition and prerequisites. Never fall back automatically to non-isolated execution on Windows Home. No customer/source upload, GitHub permission change, main modification or paid API.
+- **Rollback/reference:** pre-P2 docs head `55864b39e7a89c87de52228202c1083fb28ac015`; first fix parent preserved. No force push. Source `9d6fe7f2300fbf135685a71d606a744a9e2d743e` is the tested functional ref; documentation commits do not imply re-testing that new doc-only SHA.
+
+Historic STATUS entries retained below.
+
+---
+
 # AX Dev Factory — P1 pre-CI source implementation: 100% candidate
 
 **Date:** 2026-11-16 KST. **Implementation:** F01–F20 = 20/20 (100%). **Code SHA:** 8edcbce2b7164cd1b2fdb875f596ceb67ff97b06.
