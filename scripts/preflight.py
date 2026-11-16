@@ -71,7 +71,27 @@ def _ollama_capabilities(model_id: str) -> list[str]:
     return caps
 
 
-def inspect(model: str) -> dict:
+def _git_identity_ready(repo: Path) -> bool:
+    """Check actual author+committer Git identities without exposing emails."""
+    repo = Path(repo).expanduser().absolute()
+    if repo.is_symlink() or any(parent.is_symlink() for parent in repo.parents):
+        return False
+    if not (repo / ".git").exists():
+        return False
+    for role in ("GIT_AUTHOR_IDENT", "GIT_COMMITTER_IDENT"):
+        try:
+            outcome = subprocess.run(["git", "-C", str(repo), "var", role],
+                                     capture_output=True, text=True, errors="replace",
+                                     timeout=5, shell=False, check=False)
+        except (OSError, subprocess.TimeoutExpired):
+            return False
+        # Never persist the actual username/email: only a boolean.
+        if outcome.returncode or not outcome.stdout.strip():
+            return False
+    return True
+
+
+def inspect(model: str, repo: Path | None = None) -> dict:
     result = {"preflight_version": 1, "platform": platform.system(),
               "python": platform.python_version(), "model": model,
               "approved_for_real_tasks": False,
@@ -120,6 +140,12 @@ def inspect(model: str) -> dict:
                 blockers.append("selected Ollama model does not support completion")
             if "tools" not in capabilities:
                 blockers.append("selected Ollama model does not support tool calling")
+    if repo is not None:
+        identity_ok = _git_identity_ready(repo)
+        result["git_author_committer_ready"] = identity_ok
+        result["git_identity_github_account_verified"] = False
+        if not identity_ok:
+            blockers.append("local Git author/committer identity is missing or invalid")
     result["model_capabilities"] = capabilities
     result["model_tool_calls_supported"] = "tools" in capabilities
     found_gpu = shutil.which("nvidia-smi") is not None
@@ -144,8 +170,10 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description="Local-only AXDEV model preflight")
     parser.add_argument("--model", default=os.environ.get("AXDEV_MODEL", "ollama/qwen3:4b-instruct"))
     parser.add_argument("--output", type=Path, help="optional private JSON evidence path (new file only)")
+    parser.add_argument("--repo", type=Path,
+                        help="optional target checkout; checks both Git identities without exposing email")
     options = parser.parse_args(argv)
-    report = inspect(options.model)
+    report = inspect(options.model, options.repo)
     payload = json.dumps(report, ensure_ascii=False, indent=2) + "\n"
     if options.output:
         path = options.output.expanduser().absolute()

@@ -55,7 +55,7 @@ def main(argv=None):
         # A missing model/CLI must NOT consume a task by moving it to HOLD.
         # This read-only host check runs before Factory or any worktree is opened.
         from scripts.preflight import inspect
-        health = inspect(obj["model"])
+        health = inspect(obj["model"], Path(obj["repo"]))
         if not health["ready_for_disposable_model_trial"]:
             raise ContractError("local prerequisites missing; no tasks started: " +
                                 ", ".join(health["blockers"]))

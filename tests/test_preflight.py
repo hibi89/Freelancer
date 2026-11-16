@@ -81,6 +81,35 @@ class PreflightTests(unittest.TestCase):
         self.assertFalse(result["ready_for_disposable_model_trial"])
         self.assertTrue(any("capabilities unavailable" in b for b in result["blockers"]))
 
+    def test_git_author_and_committer_checked_without_exposing_addresses(self):
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as root:
+            project = Path(root) / "trial"
+            (project / ".git").mkdir(parents=True)
+            calls = []
+            def stub(argv, **kwargs):
+                calls.append(argv[-1])
+                return type("C", (), {"returncode": 0,
+                         "stdout": "Example <private@example.invalid> 123 +0000"})()
+            with patch("scripts.preflight.subprocess.run", side_effect=stub):
+                self.assertTrue(__import__("scripts.preflight", fromlist=["_git_identity_ready"])
+                                ._git_identity_ready(project))
+            self.assertEqual(calls, ["GIT_AUTHOR_IDENT", "GIT_COMMITTER_IDENT"])
+
+    def test_git_identity_missing_blocks_repo_trial(self):
+        from pathlib import Path
+        with patch("scripts.preflight._version", side_effect=self.version), \
+             patch("scripts.preflight._ollama_models", return_value=["qwen3:4b-instruct"]), \
+             patch("scripts.preflight._ollama_capabilities", return_value=["completion", "tools"]), \
+             patch("scripts.preflight._git_identity_ready", return_value=False), \
+             patch("scripts.preflight.shutil.which", return_value=None):
+            result = inspect("ollama/qwen3:4b-instruct", Path("temporary"))
+        self.assertFalse(result["ready_for_disposable_model_trial"])
+        self.assertFalse(result["git_author_committer_ready"])
+        self.assertFalse(result["git_identity_github_account_verified"])
+        self.assertIn("local Git author/committer identity is missing or invalid", result["blockers"])
+
     def test_no_remote_calls_are_initiated_from_preflight(self):
         # _ollama_models is the ONLY network call; standalone config is inspected, not executed.
         with patch("scripts.preflight._version", side_effect=self.version), \

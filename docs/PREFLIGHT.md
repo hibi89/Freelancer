@@ -22,3 +22,16 @@ After read-only preflight, the owner may separately opt in to the synthetic
 model test with RUN_TRIAL.cmd and RUN_MODEL_TRIAL.cmd. Actual original
 project workflows, GitHub push/PR, secrets, and automatic startup remain
 out of scope until separately approved. No automatic installation.
+
+
+## Optional target Git identity check (read-only)
+
+`python -m scripts.preflight --repo ABSOLUTE_GIT_CHECKOUT`
+checks both `git var GIT_AUTHOR_IDENT` and
+`git var GIT_COMMITTER_IDENT`. This detects a missing/invalid local
+commit identity **before** queuing live coding; no name or email value is
+written to evidence. The configured queue automatically supplies its
+target checkout. A matching GitHub account is **not** proven by local
+Git configuration and must be reviewed separately before any PR push.
+Synthetic Windows `RUN_PREFLIGHT.cmd` supplies the fixture checkout
+once it exists.
