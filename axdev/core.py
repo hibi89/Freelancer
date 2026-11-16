@@ -322,9 +322,26 @@ class Factory:
         reviewed = hashes(changed)
         # Redirect Python import and compileall bytecode OUTSIDE the worktree.
         # PYTHONDONTWRITEBYTECODE alone does not stop explicit compileall.
-        env = os.environ.copy()
+        # Never pass ChatGPT/GitHub/API credentials or user profile defaults
+        # into project-supplied acceptance tests. This is process-env hygiene,
+        # NOT an OS/network sandbox; untrusted code still needs isolation.
+        safe_host_keys = ("PATH", "SYSTEMROOT", "WINDIR", "COMSPEC",
+                          "PATHEXT", "LANG", "LC_ALL", "LC_CTYPE")
+        env = {k: os.environ[k] for k in safe_host_keys if k in os.environ}
+        review_home = (self.state / "review-home")
+        review_home.mkdir(parents=True, exist_ok=True)
+        env["HOME"] = str(review_home)
+        env["USERPROFILE"] = str(review_home)
+        env["APPDATA"] = str(review_home / "AppData" / "Roaming")
+        env["LOCALAPPDATA"] = str(review_home / "AppData" / "Local")
+        env["TEMP"] = env["TMP"] = env["TMPDIR"] = str(review_home)
         env["PYTHONPYCACHEPREFIX"] = str(self.state / "review-bytecode")
         env["PYTHONDONTWRITEBYTECODE"] = "1"
+        env["PYTHONNOUSERSITE"] = "1"
+        env["NO_PROXY"] = "127.0.0.1,localhost"
+        env["HTTP_PROXY"] = "http://127.0.0.1:9"
+        env["HTTPS_PROXY"] = "http://127.0.0.1:9"
+        env["ALL_PROXY"] = "http://127.0.0.1:9"
         for command in task["checks"]:
             cmd = ([sys.executable, *command[1:]]
                    if command[0] == "python" else command)

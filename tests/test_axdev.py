@@ -95,6 +95,35 @@ class FactoryTests(unittest.TestCase):
         self.assertTrue(all(x["commit"] for x in events))
         f.close()
 
+    def test_review_subprocess_has_no_parent_credentials_or_real_home(self):
+        from axdev import core as core_module
+        self.write_plan([self.task()])
+        f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
+        workspace = f._workspace("AAA-001")
+        self.fake_coder(workspace, "synthetic")
+        actual_call = core_module.call
+        captured = []
+        def wrapped(argv, cwd, timeout=60, env=None, output_limit=6000):
+            if argv and argv[0] == sys.executable and "-m" in argv:
+                captured.append(env.copy())
+            return actual_call(argv, cwd, timeout=timeout, env=env,
+                               output_limit=output_limit)
+        with patch.dict(os.environ, {
+                 "AXDEV_SYNTHETIC_API_KEY": "never_send",
+                 "GITHUB_TOKEN": "synthetic_token",
+                 "OPENAI_API_KEY": "synthetic_key"}):
+            with patch("axdev.core.call", side_effect=wrapped):
+                ok, details = f._review(self.task(), workspace)
+        self.assertTrue(ok, details)
+        self.assertTrue(captured)
+        for env in captured:
+            self.assertNotIn("GITHUB_TOKEN", env)
+            self.assertNotIn("OPENAI_API_KEY", env)
+            self.assertNotIn("AXDEV_SYNTHETIC_API_KEY", env)
+            self.assertEqual(env["HOME"], str(self.state / "review-home"))
+            self.assertEqual(env["PYTHONNOUSERSITE"], "1")
+        f.close()
+
     def test_python_test_bytecode_never_enters_reviewed_git_commit(self):
         self.write_plan([self.task()])
         f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
