@@ -87,11 +87,12 @@ class ImplementationBatchTests(unittest.TestCase):
         f = self.setup_factory([self.task(),
                                 self.task("BBB-002", "src/addon.py", ["AAA-001"])], coder)
         first = f.run_implementation_batch(2, True)
-        self.assertEqual([r["status"] for r in first], ["IMPLEMENTED", "VERIFIED"])
-        self.assertEqual(f.status()["BBB-002"], "QUEUED")
-        second = f.run_implementation_batch(2, True)
-        self.assertEqual([r["status"] for r in second], ["IMPLEMENTED", "VERIFIED"])
+        # Dependency B may be coded in the same invocation only AFTER
+        # A's independent review has promoted A to VERIFIED.
+        self.assertEqual([r["status"] for r in first],
+                         ["IMPLEMENTED", "VERIFIED", "IMPLEMENTED", "VERIFIED"])
         self.assertEqual(f.status()["BBB-002"], "VERIFIED")
+        self.assertEqual(f.run_implementation_batch(2, True), [])
 
     def test_stop_and_resume_from_implemented_without_second_model_call(self):
         calls = []
@@ -173,14 +174,14 @@ class ImplementationBatchTests(unittest.TestCase):
             return 0, "ok"
         f = self.setup_factory([a, b], coder)
         first = f.run_implementation_batch(2, True)
-        self.assertEqual([r["status"] for r in first], ["IMPLEMENTED", "VERIFIED"])
-        self.assertEqual(coded, ["A"])
-        second = f.run_implementation_batch(2, True)
-        # B's modified bytes are identical to already verified A, so
-        # there is no change. Reviewer cannot promote a no-op.
-        self.assertEqual(second[0]["status"], "REVIEW")
-        self.assertEqual(second[-1]["status"], "HOLD")
+        # B is NOT staged alongside A: overlapping edits must wait for
+        # A to be VERIFIED. B then finds it has made no new diff and HOLDS.
+        self.assertEqual([r["status"] for r in first],
+                         ["IMPLEMENTED", "VERIFIED", "REVIEW", "HOLD"])
         self.assertEqual(coded, ["A", "B", "B"])
+        self.assertEqual(f.status()["AAA-001"], "VERIFIED")
+        self.assertEqual(f.status()["BBB-002"], "HOLD")
+        self.assertEqual(f.run_implementation_batch(2, True), [])
 
     def test_single_batch_invocation_chains_multiple_dependency_waves(self):
         tasks = [self.task(), self.task("BBB-002", "src/addon.py", ["AAA-001"])]

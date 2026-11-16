@@ -77,7 +77,7 @@ def _snapshot(work, changed: set[str]) -> tuple[dict[str, bytes | None], str]:
         else:
             data = None
         snapshot[path] = data
-        proof.update(path.encode("utf-8") + b"\\0")
+        proof.update(path.encode("utf-8") + b"\0")
         if data is None:
             proof.update(b"D")
         else:
