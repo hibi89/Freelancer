@@ -1,15 +1,11 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "model": "ollama/qwen2.5-coder:3b",
-  "enabled_providers": [
-    "ollama"
-  ],
   "providers": {
     "ollama": {
       "settings": {
         "baseURL": "http://127.0.0.1:11434/v1"
-      },
-      "package": "@opencode/ai/providers/openai-compatible"
+      }
     }
   },
   "permissions": [
@@ -129,6 +125,11 @@
       "action": "plugin.use",
       "resource": "*",
       "effect": "deny"
+    },
+    {
+      "action": "plugin.use",
+      "resource": "opencode.provider.ollama",
+      "effect": "allow"
     },
     {
       "action": "websearch.use",

@@ -18,6 +18,7 @@ class PreflightTests(unittest.TestCase):
         versions = self.version + ([(True, "GTX 1050 Ti, 4096")] if gpu else [])
         with patch("scripts.preflight._version", side_effect=versions) as ver, \
              patch("scripts.preflight._ollama_models", return_value=list(models)), \
+             patch("scripts.preflight._ollama_capabilities", return_value=["completion", "tools"]), \
              patch("scripts.preflight.shutil.which", return_value="nvidia-smi" if gpu else None):
             result = inspect("ollama/qwen3:4b-instruct")
         return result, ver
@@ -47,6 +48,7 @@ class PreflightTests(unittest.TestCase):
         version[2] = (True, "1.9.9")
         with patch("scripts.preflight._version", side_effect=version), \
              patch("scripts.preflight._ollama_models", return_value=["qwen3:4b-instruct"]), \
+             patch("scripts.preflight._ollama_capabilities", return_value=["completion", "tools"]), \
              patch("scripts.preflight.shutil.which", return_value=None):
             report = inspect("ollama/qwen3:4b-instruct")
         self.assertFalse(report["ready_for_disposable_model_trial"])
@@ -60,14 +62,35 @@ class PreflightTests(unittest.TestCase):
         self.assertFalse(report["ready_for_disposable_model_trial"])
         self.assertFalse(report["model_present"])
 
+    def test_installed_model_without_tools_is_blocked_before_worktree(self):
+        with patch("scripts.preflight._version", side_effect=self.version), \
+             patch("scripts.preflight._ollama_models", return_value=["qwen3:4b-instruct"]), \
+             patch("scripts.preflight._ollama_capabilities", return_value=["completion"]), \
+             patch("scripts.preflight.shutil.which", return_value=None):
+            result = inspect("ollama/qwen3:4b-instruct")
+        self.assertFalse(result["ready_for_disposable_model_trial"])
+        self.assertFalse(result["model_tool_calls_supported"])
+        self.assertIn("selected Ollama model does not support tool calling", result["blockers"])
+
+    def test_show_metadata_unavailable_fails_closed(self):
+        with patch("scripts.preflight._version", side_effect=self.version), \
+             patch("scripts.preflight._ollama_models", return_value=["qwen3:4b-instruct"]), \
+             patch("scripts.preflight._ollama_capabilities", side_effect=RuntimeError("metadata missing")), \
+             patch("scripts.preflight.shutil.which", return_value=None):
+            result = inspect("ollama/qwen3:4b-instruct")
+        self.assertFalse(result["ready_for_disposable_model_trial"])
+        self.assertTrue(any("capabilities unavailable" in b for b in result["blockers"]))
+
     def test_no_remote_calls_are_initiated_from_preflight(self):
         # _ollama_models is the ONLY network call; standalone config is inspected, not executed.
         with patch("scripts.preflight._version", side_effect=self.version), \
              patch("scripts.preflight._ollama_models", return_value=["qwen3:4b-instruct"]) as tags, \
+             patch("scripts.preflight._ollama_capabilities", return_value=["completion", "tools"]) as show, \
              patch("scripts.preflight.shutil.which", return_value=None):
             with patch("builtins.print"):
                 self.assertEqual(main(["--model", "ollama/qwen3:4b-instruct"]), 0)
             tags.assert_called_once_with()
+            show.assert_called_once_with("qwen3:4b-instruct")
 
 
 if __name__ == "__main__":

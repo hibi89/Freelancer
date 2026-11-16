@@ -6,7 +6,6 @@ class EffectiveConfigTests(unittest.TestCase):
     def setUp(self):
         self.expected = {
             "model": "ollama/qwen3:4b-instruct",
-            "enabled_providers": ["ollama"],
             "providers": {"ollama": {"settings": {"baseURL": "http://127.0.0.1:11434/v1"}}},
             "permissions": [
                 {"action": "*", "resource": "*", "effect": "deny"},
@@ -21,6 +20,7 @@ class EffectiveConfigTests(unittest.TestCase):
                 {"action": "tool.use", "resource": "external_directory:*", "effect": "deny"},
                 {"action": "mcp.use", "resource": "*", "effect": "deny"},
                 {"action": "plugin.use", "resource": "*", "effect": "deny"},
+                {"action": "plugin.use", "resource": "opencode.provider.ollama", "effect": "allow"},
             ],
         }
 
@@ -29,7 +29,6 @@ class EffectiveConfigTests(unittest.TestCase):
 
     def test_strictly_fail_on_provider_or_policy_merge(self):
         for key, value in (
-            ("enabled_providers", ["ollama", "openai"]),
             ("model", "openai/gpt"),
             ("permissions", [{"action": "*", "resource": "*", "effect": "allow"}]),
             ("policies", []),

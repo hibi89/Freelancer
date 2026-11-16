@@ -297,9 +297,10 @@ class FactoryTests(unittest.TestCase):
             rc, out = f._opencode(self.repo, "synthetic only")
         self.assertEqual(rc, 0)
         settings = json.loads(intercepted["env"]["OPENCODE_CONFIG_CONTENT"])
-        self.assertEqual(settings["enabled_providers"], ["ollama"])
-        self.assertEqual(settings["providers"]["ollama"]["package"],
-                         "@opencode/ai/providers/openai-compatible")
+        self.assertNotIn("enabled_providers", settings)
+        self.assertNotIn("package", settings["providers"]["ollama"])
+        self.assertIn({"action": "plugin.use", "resource": "opencode.provider.ollama",
+                       "effect": "allow"}, settings["policies"])
         self.assertEqual(settings["policies"][:2], [
             {"action": "provider.use", "resource": "*", "effect": "deny"},
             {"action": "provider.use", "resource": "ollama", "effect": "allow"}])

@@ -47,6 +47,30 @@ def _ollama_models() -> list[str]:
             if isinstance(obj, dict) and isinstance(obj.get("name"), str)]
 
 
+def _ollama_capabilities(model_id: str) -> list[str]:
+    """Ollama's native /api/show reports completion and tool-call capabilities."""
+    if not re.fullmatch(r"[A-Za-z0-9_.:/-]{2,100}", model_id):
+        raise RuntimeError("invalid selected local model ID")
+    request = Request("http://127.0.0.1:11434/api/show",
+                      data=json.dumps({"model": model_id}).encode("utf-8"),
+                      headers={"Content-Type": "application/json"},
+                      method="POST")
+    opener = build_opener(ProxyHandler({}))
+    with opener.open(request, timeout=5) as response:
+        if response.status != 200:
+            raise RuntimeError("Ollama show returned non-200")
+        payload = response.read(65537)
+    if len(payload) > 65536:
+        raise RuntimeError("Ollama show response too large")
+    value = json.loads(payload)
+    if not isinstance(value, dict) or not isinstance(value.get("capabilities"), list):
+        raise RuntimeError("Ollama show did not expose a capability list")
+    caps = value["capabilities"]
+    if any(not isinstance(cap, str) for cap in caps):
+        raise RuntimeError("unexpected Ollama capabilities")
+    return caps
+
+
 def inspect(model: str) -> dict:
     result = {"preflight_version": 1, "platform": platform.system(),
               "python": platform.python_version(), "model": model,
@@ -83,6 +107,21 @@ def inspect(model: str) -> dict:
     result["model_present"] = model_id in installed
     if not result["model_present"]:
         blockers.append("selected Ollama model not installed")
+    # Installed weights alone are not enough: OpenCode needs a completion
+    # model that can emit tool calls for scoped source edits.
+    capabilities = []
+    if result["model_present"]:
+        try:
+            capabilities = _ollama_capabilities(model_id)
+        except (OSError, ValueError, RuntimeError, TimeoutError) as exc:
+            blockers.append("Ollama model capabilities unavailable: " + type(exc).__name__)
+        else:
+            if "completion" not in capabilities:
+                blockers.append("selected Ollama model does not support completion")
+            if "tools" not in capabilities:
+                blockers.append("selected Ollama model does not support tool calling")
+    result["model_capabilities"] = capabilities
+    result["model_tool_calls_supported"] = "tools" in capabilities
     found_gpu = shutil.which("nvidia-smi") is not None
     gpu_ok, gpu_msg = _version("nvidia-smi", "--query-gpu=name,memory.total",
                                "--format=csv,noheader,nounits") if found_gpu else (False, "not found")

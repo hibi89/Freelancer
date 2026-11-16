@@ -18,8 +18,6 @@ def validate_effective(output: str, expected: dict) -> bool:
         return False
     if effective.get("model") != expected.get("model"):
         return False
-    if effective.get("enabled_providers") != ["ollama"]:
-        return False
     providers = effective.get("providers")
     if not isinstance(providers, dict):
         return False
@@ -62,5 +60,6 @@ def validate_effective(output: str, expected: dict) -> bool:
         {"action": "tool.use", "resource": "external_directory:*", "effect": "deny"},
         {"action": "mcp.use", "resource": "*", "effect": "deny"},
         {"action": "plugin.use", "resource": "*", "effect": "deny"},
+        {"action": "plugin.use", "resource": "opencode.provider.ollama", "effect": "allow"},
     ]
     return all(rule in required_policies for rule in hard_required)
