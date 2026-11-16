@@ -20,7 +20,8 @@ from axdev.sandbox_payload import BINARIES, encode_files, extract_snapshot, read
 from axdev.sandbox_review import verify_candidate
 from axdev.windows_review_process import run_restricted, single_sandbox_slot
 from axdev.windows_sandbox_runtime import (
-    BACKEND, _read_bundle, _read_receipt, _wsb, run_sandbox_one, run_sandbox_queue, validate_history,
+    BACKEND, _read_bundle, _read_receipt, _sandbox_running, _wsb, run_sandbox_one,
+    run_sandbox_queue, validate_history,
 )
 from scripts.prepare_offline_bundle import build_manifest
 from scripts.sandbox_guest import _safe_payload, _start_local_ollama
@@ -43,24 +44,45 @@ def copy_python(runtime: Path):
 
 class SandboxGuestStartupTests(unittest.TestCase):
     def test_local_ollama_pins_one_model_and_one_request(self):
-        bundle, workroot = Path("offline-bundle"), Path("sandbox-guest")
         inherited = {"OLLAMA_MAX_LOADED_MODELS": "3", "OLLAMA_NUM_PARALLEL": "4"}
         with (
+            tempfile.TemporaryDirectory() as directory,
             patch.dict(os.environ, inherited),
             patch("scripts.sandbox_guest.subprocess.Popen") as start,
         ):
+            bundle, workroot = Path(directory) / "offline-bundle", Path(directory) / "guest"
+            source = bundle / "models" / "manifests" / "fixture"
+            source.parent.mkdir(parents=True)
+            source.write_bytes(b'{"model":"fixture"}')
             self.assertIs(_start_local_ollama(bundle, workroot), start.return_value)
             self.assertEqual({name: os.environ[name] for name in inherited}, inherited)
+            guest_store = workroot / "models"
+            self.assertEqual((guest_store / "manifests" / "fixture").read_bytes(), source.read_bytes())
         args, options = start.call_args
         self.assertEqual(args[0], [str(bundle / "ollama" / "ollama.exe"), "serve"])
         expected = {
             "OLLAMA_HOST": "127.0.0.1:11434",
-            "OLLAMA_MODELS": str(bundle / "models"),
+            "OLLAMA_MODELS": str(guest_store),
             "OLLAMA_NO_CLOUD": "1",
             "OLLAMA_MAX_LOADED_MODELS": "1",
             "OLLAMA_NUM_PARALLEL": "1",
         }
         self.assertEqual({name: options["env"][name] for name in expected}, expected)
+
+    def test_modern_sandbox_counts_environments_when_a_disconnected_window_remains(self):
+        client = Mock(stdout=b'"WindowsSandboxRemoteSession.exe","123"')
+        for payload, expected in (
+            (b'{"WindowsSandboxEnvironments":[]}', False),
+            (b'{"WindowsSandboxEnvironments":[{"Id":"fixture"}]}', True),
+            (b'{"unexpected":[]}', True),
+        ):
+            with (
+                self.subTest(payload=payload),
+                patch(MOD + ".system_directory", return_value=Path("system")),
+                patch(MOD + "._modern_sandbox_cli", return_value=Path("wsb.exe")),
+                patch(MOD + ".subprocess.run", side_effect=[client, Mock(stdout=payload)]),
+            ):
+                self.assertEqual(_sandbox_running(), expected)
 
 
 class SandboxContractTests(unittest.TestCase):
@@ -114,7 +136,8 @@ class SandboxContractTests(unittest.TestCase):
 
     def test_wsb_disables_redirection_and_only_gives_the_guest_a_disposable_outbox(self):
         input_dir, outbox = self.root / "input", self.root / "outbox"
-        root = ET.fromstring(_wsb(input_dir, self.bundle, outbox))
+        root = ET.fromstring(_wsb(input_dir, self.bundle, outbox, memory_mb=6144))
+        self.assertEqual(root.findtext("MemoryInMB"), "6144")
         for name in ("Networking", "VGpu", "ClipboardRedirection", "PrinterRedirection",
                      "AudioInput", "VideoInput"):
             self.assertEqual(root.findtext(name), "Disable")

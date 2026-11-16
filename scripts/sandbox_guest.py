@@ -5,6 +5,7 @@ import getpass
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -45,10 +46,13 @@ def _toolchain(bundle: Path, expected: str) -> None:
 
 
 def _start_local_ollama(bundle: Path, workroot: Path) -> subprocess.Popen:
+    models = workroot / "models"
+    # Ollama updates its manifests in place. Keep those writes inside the VM.
+    shutil.copytree(bundle / "models", models)
     env = dict(
         os.environ,
         OLLAMA_HOST="127.0.0.1:11434",
-        OLLAMA_MODELS=str(bundle / "models"),
+        OLLAMA_MODELS=str(models),
         OLLAMA_NO_CLOUD="1",
         OLLAMA_MAX_LOADED_MODELS="1",
         OLLAMA_NUM_PARALLEL="1",

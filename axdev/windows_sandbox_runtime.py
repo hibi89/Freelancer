@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from contextlib import ExitStack
+from functools import lru_cache
 import hashlib
 import io
 import json
@@ -80,15 +81,52 @@ def _sandbox_binary() -> Path:
     return executable
 
 
+@lru_cache(maxsize=1)
+def _modern_sandbox_cli() -> Path | None:
+    if os.name != "nt":
+        return None
+    shell = system_directory() / "WindowsPowerShell" / "v1.0" / "powershell.exe"
+    query = ("Get-AppxPackage -Name 'MicrosoftWindows.WindowsSandbox' | "
+             "Where-Object { $_.PublisherId -eq 'cw5n1h2txyewy' } | "
+             "ForEach-Object { $_.InstallLocation }")
+    try:
+        result = subprocess.run(
+            [str(shell), "-NoProfile", "-NonInteractive", "-Command", query],
+            stdin=subprocess.DEVNULL, capture_output=True, timeout=15, check=True,
+            text=True,
+        )
+    except (OSError, UnicodeError, subprocess.SubprocessError):
+        return None
+    locations = result.stdout.strip().splitlines()
+    if len(locations) != 1:
+        return None
+    package = Path(locations[0])
+    cli = package / "wsb.exe"
+    return cli if package.is_absolute() and cli.is_file() else None
+
+
 def _sandbox_running() -> bool:
-    # Windows 10 has one active Sandbox per user. Wait for its host client to
-    # exit before opening another coding guest or advancing the task.
+    # The classic client is the lifecycle indicator on Windows 10. The newer
+    # disconnected window can outlive the VM and is not a lifecycle signal.
     client = system_directory() / "tasklist.exe"
     result = subprocess.run([str(client), "/fo", "csv", "/nh"], check=True,
                             stdin=subprocess.DEVNULL, capture_output=True, timeout=15)
-    clients = (b'"windowssandbox.exe"', b'"windowssandboxclient.exe"',
-               b'"windowssandboxremotesession.exe"')
-    return any(line.lower().startswith(clients) for line in result.stdout.splitlines())
+    lines = result.stdout.lower().splitlines()
+    classic = (b'"windowssandbox.exe"', b'"windowssandboxclient.exe"')
+    if any(line.startswith(classic) for line in lines):
+        return True
+    cli = _modern_sandbox_cli()
+    if cli is None:
+        return any(line.startswith(b'"windowssandboxremotesession.exe"') for line in lines)
+    try:
+        result = subprocess.run(
+            [str(cli), "list", "--raw"], check=True, stdin=subprocess.DEVNULL,
+            capture_output=True, timeout=15,
+        )
+        environments = json.loads(result.stdout)["WindowsSandboxEnvironments"]
+    except (KeyError, TypeError, ValueError, OSError, subprocess.SubprocessError):
+        return True
+    return not isinstance(environments, list) or bool(environments)
 
 
 def _git_data(repo: Path, *args: str, index: Path | None = None, data: bytes | None = None,
@@ -182,11 +220,13 @@ def _candidate_tree(factory: Factory, baseline: str, candidate: Path, task: dict
     return tree
 
 
-def _wsb(input_dir: Path, bundle: Path, outbox: Path) -> bytes:
+def _wsb(input_dir: Path, bundle: Path, outbox: Path, *, memory_mb: int | None = None) -> bytes:
     root = ET.Element("Configuration")
     for name in ("Networking", "VGpu", "ClipboardRedirection",
                  "PrinterRedirection", "AudioInput", "VideoInput"):
         ET.SubElement(root, name).text = "Disable"
+    if memory_mb is not None:
+        ET.SubElement(root, "MemoryInMB").text = str(memory_mb)
     mappings = ET.SubElement(root, "MappedFolders")
     for host, guest, readonly in (
         (input_dir, r"C:\AXDEV_INPUT", True),
@@ -249,7 +289,7 @@ def _prepare(factory: Factory, task: dict, bundle: Path, bundle_sha: str,
                "model": factory.model, "initial_sha256": initial_sha}
     request_sha = write_json(input_dir / "request.json", request)
     (input_dir / "bootstrap.ps1").write_text(_bootstrap(), encoding="utf-8")
-    (root / "launch.wsb").write_bytes(_wsb(input_dir, bundle, outbox))
+    (root / "launch.wsb").write_bytes(_wsb(input_dir, bundle, outbox, memory_mb=6144))
     return {"backend": BACKEND, "run_id": run_id, "base_sha": baseline,
             "request_sha256": request_sha, "bundle_sha256": bundle_sha}
 
@@ -320,9 +360,16 @@ def _start_guest(executable: Path, root: Path) -> subprocess.Popen:
 
 def _wait_candidate(task: dict, record: dict, root: Path, process, timeout: int) -> dict | None:
     _request_matches(root, record, task)
-    end = time.monotonic() + timeout
+    started = time.monotonic()
+    end = started + timeout
+    seen_running = False
     while time.monotonic() < end:
-        if (process is None or process.poll() is not None) and not _sandbox_running():
+        if _sandbox_running():
+            seen_running = True
+        elif ((process is None or process.poll() is not None)
+              and (seen_running or process is None
+                   or (root / "outbox" / "receipt.json").is_file()
+                   or time.monotonic() >= started + 45)):
             return _read_receipt(root, record["run_id"], task, record["base_sha"])
         time.sleep(2)
     return None
