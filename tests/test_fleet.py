@@ -7,7 +7,7 @@ from pathlib import Path
 from unittest.mock import Mock
 
 from axdev.core import ContractError
-from scripts.fleet import create_manifest, load_manifest, fleet_run, fleet_status, fleet_signal
+from scripts.fleet import create_manifest, load_manifest, fleet_run, fleet_status, fleet_signal, main
 
 
 class FleetTests(unittest.TestCase):
@@ -50,6 +50,12 @@ class FleetTests(unittest.TestCase):
         self.assertEqual(fleet_run(self.manifest, runner=stub)["status"], "DRY_RUN")
         self.assertEqual(stub.call_count, 0)
         self.assertFalse((self.manifest.parent / ".axdev-fleet-state").exists())
+
+    def test_configure_cli_returns_success_after_creating_manifest(self):
+        self.assertEqual(main(["configure", "--settings", str(self.settings[0]),
+                               "--settings", str(self.settings[1]), "--output", str(self.manifest)]), 0)
+        self.assertEqual(len(load_manifest(self.manifest)[1]), 2)
+        self.assertEqual(main(["run", "--manifest", str(self.manifest)]), 0)
 
     def test_execute_requires_two_explicit_flags(self):
         self.configure()

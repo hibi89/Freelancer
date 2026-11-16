@@ -323,8 +323,10 @@ class Factory:
         return target
 
     def _opencode(self, cwd: Path, prompt: str) -> tuple[int, str]:
-        if shutil.which("opencode") is None:
+        executable = shutil.which("opencode")
+        if executable is None:
             return 127, "opencode executable not found"
+        command = [str(Path(executable).absolute()), "--standalone"]
         config = (Path(__file__).resolve().parent.parent /
                   "config" / "opencode-local-only.json")
         if not config.is_file():
@@ -351,14 +353,14 @@ class Factory:
         env["HTTP_PROXY"] = "http://127.0.0.1:9"
         env["HTTPS_PROXY"] = "http://127.0.0.1:9"
         env["ALL_PROXY"] = "http://127.0.0.1:9"
-        # OpenCode V2 merges user, project, inline and managed config.
-        # The file alone is not evidence that the effective tool policy is safe.
+        # Inspect with the same binary and private-server mode as the run.
+        # The default background server can have different cached settings.
         from .opencode_guard import validate_effective
-        rc, merged = call(["opencode", "debug", "config"], cwd,
+        rc, merged = call([*command, "debug", "config"], cwd,
                           timeout=40, env=env, output_limit=65536)
         if rc != 0 or not validate_effective(merged, config_obj):
             return 125, "effective OpenCode V2 provider/edit/tool policy could not be verified"
-        return call(["opencode", "run", "--standalone", "--model", self.model, prompt], cwd,
+        return call([*command, "run", "--model", self.model, prompt], cwd,
                     timeout=1200, env=env)
 
     def _prompt(self, task: dict, phase: str, feedback: str = "") -> str:

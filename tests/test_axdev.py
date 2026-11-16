@@ -409,12 +409,13 @@ class FactoryTests(unittest.TestCase):
         f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
         f._active_allowed_files = ("src/feature.py",)
         intercepted = {}
+        executable = str(self.root / "fake-opencode")
         def capture(argv, cwd, timeout=60, env=None, output_limit=6000):
             intercepted.update({"argv": argv, "cwd": cwd, "env": env})
-            if argv == ["opencode", "debug", "config"]:
+            if argv == [executable, "--standalone", "debug", "config"]:
                 return 0, env["OPENCODE_CONFIG_CONTENT"]
             return 0, "synthetic"
-        with patch("axdev.core.shutil.which", return_value="/fake/opencode"), \
+        with patch("axdev.core.shutil.which", return_value=executable), \
              patch("axdev.core.call", side_effect=capture):
             rc, out = f._opencode(self.repo, "synthetic only")
         self.assertEqual(rc, 0)
@@ -433,7 +434,7 @@ class FactoryTests(unittest.TestCase):
                          {"action": "edit", "resource": "src/feature.py", "effect": "allow"})
         self.assertEqual(intercepted["env"]["OPENCODE_AUTO_SHARE"], "false")
         self.assertIn("--model", intercepted["argv"])
-        self.assertIn("--standalone", intercepted["argv"])
+        self.assertEqual(intercepted["argv"][:3], [executable, "--standalone", "run"])
         self.assertEqual(settings["permissions"][0],
                          {"action": "*", "resource": "*", "effect": "deny"})
         f.close()
@@ -443,19 +444,20 @@ class FactoryTests(unittest.TestCase):
         f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
         f._active_allowed_files = ("src/feature.py",)
         invoked = []
+        executable = str(self.root / "fake-opencode")
         def tampered(argv, cwd, timeout=60, env=None, output_limit=6000):
             invoked.append(argv)
-            if argv == ["opencode", "debug", "config"]:
+            if argv == [executable, "--standalone", "debug", "config"]:
                 config = json.loads(env["OPENCODE_CONFIG_CONTENT"])
                 config["policies"].append(
                     {"action": "provider.use", "resource": "openai", "effect": "allow"})
                 return 0, json.dumps(config)
             raise AssertionError("model run must be blocked")
-        with (patch("axdev.core.shutil.which", return_value="/fake/opencode"),
+        with (patch("axdev.core.shutil.which", return_value=executable),
               patch("axdev.core.call", side_effect=tampered)):
             rc, message = f._opencode(self.repo, "test only")
         self.assertEqual(rc, 125)
-        self.assertEqual(invoked, [["opencode", "debug", "config"]])
+        self.assertEqual(invoked, [[executable, "--standalone", "debug", "config"]])
         self.assertIn("could not be verified", message)
         f.close()
 
