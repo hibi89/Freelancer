@@ -58,6 +58,15 @@ No 100% completion claim from CI unit PASS alone. Productization, commercializat
 
 Exact Git blob matches for runtime, CLI, test suite and synthetic trial generator, then Linux Python3.13.5 **10 PASS / 0 FAIL / 0 SKIP** and fake local coder E2E with protected tests/isolated Git commit PASS. No real Ollama/OpenCode, owner Windows10 GTX1050Ti, GitHub hosted CI or real user repository acceptance yet. See [verification details](VERIFICATION_20261116.md). Official full-product score remains UNASSESSED.
 
+## Implemented decision and hosted CI checkpoint — 2026-11-16 KST
+
+- **Fixed personal-use architecture:** High-approved immutable tasks (Spec Kit planning discipline), Python/SQLite scheduler/controller, one OpenCode V2 coder using a local Ollama model, selected original TDD/diagnostic steps aligned to Superpowers, independent Python acceptance tests with optional Ruff, and optional agent-browser only for approved web UI tasks. EAI and AXNODE are separate future adapters; no new independent model or remote paid service.
+- **New safety and correctness:** local integration ref is separate from target main and advances only after independent acceptance; subsequent tasks start from latest verified code. PREPARED commit recovery and interrupted CODING review; nested-sensitive/symlink path rejection; per-task V2 edit permission scope; Ollama provider allowlist; scrub inherited secret environment keys (still not an OS sandbox).
+- **One-time local operation:** `RUN_TRIAL.cmd` no-model synthetic; `RUN_MODEL_TRIAL.cmd` local-only synthetic once; then `scripts.configure_queue` stores private repo/plan paths outside GitHub and `RUN_QUEUE.cmd` runs up to 100 queued tasks without repeated `ㄱ` while the current local plan is executing.
+- **Remote evidence:** GitHub Actions [run 43783778986](https://github.com/hibi89/Freelancer/actions/runs/43783778986) Ubuntu Python3.11 **19 PASS / 0 FAIL / 0 SKIP**, compileall, CLI and disposable fixture/dry-run PASS. [Exact source blob and test evidence](VERIFICATION_20261116_FINAL.md).
+- **Not implemented/tested:** actual user's Windows10/GTX1050Ti Ollama/OpenCode trial, true OS network/process sandbox, secure automatic GitHub remote plan sync and PR, restart scheduler, EAI/AXNODE adapters, AI semantic review, browser or desktop UI integration, multi-project benchmarks. Official whole-blueprint completeness **UNASSESSED**; no release/production claim.
+- **Avoid install explosion:** Ruff opt-in check, not a mandatory download; Graphify/Qwen Code/agent-desktop remain A/B or specialized future options. Installing all trending projects would add cost/complexity without proving local model coding quality.
+
 ## 6. Acceptance for first live trial
 
 (1) `python -m axdev doctor` shows prereqs. (2) sample plan dry run leaves target untouched. (3) on a disposable fixture Git repo, coder creates only two allowed files. (4) protected tests PASS; unauthorized file edits HOLD. (5) replay prevents duplicate task. (6) queue handles independent next task after HOLD. (7) performance metrics are recorded and compared to manual GPT workflow.
