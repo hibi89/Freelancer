@@ -1,3 +1,5 @@
+> **Current test evidence 2026-11-16 KST:** `620fa88fce464aa4b1aa31770d25d896c7583dab`, hosted Linux 96 PASS, Windows 95 PASS/1 SKIP, CMD synthetic dry-run PASS ([Actions #43801392795](https://github.com/hibi89/Freelancer/actions/runs/43801392795)). New independent F11 trial success verifier prevents false model-success claims; F18 policy baseline requires OpenCode >=2.2.6. Original F01–F20 requirements unchanged, formal completion UNASSESSED, provisional 72/100, real owner PC model/GPU not run.
+
 > **2026-11-16 current verified source `2b5bd2bf26e50a37dc2c40c577e253330cd952d7`:** Python3.11 89 PASS, 0 FAIL, 0 SKIP ([run #43799050606](https://github.com/hibi89/Freelancer/actions/runs/43799050606)); no actual Windows/Ollama/OpenCode runtime. F04 V2 native Ollama discovery and `/api/show` capability gate added; F06 Windows path guard; F07 environment scrubbed for acceptance tests; F11 author+committer readiness; F18 no credentials passed to project checks, no OS sandbox. Requirements unchanged. Provisional readiness remains 72/100, official final completion UNASSESSED.
 
 # AX Dev Factory — Personal Local Autonomous Development System

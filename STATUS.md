@@ -1,3 +1,18 @@
+# AX Dev Factory CURRENT — 2026-11-16 KST, native Windows checked
+
+- **Repo/branch:** `hibi89/Freelancer@tools/ax-dev-factory-local`. Last functionality commit **`620fa88fce464aa4b1aa31770d25d896c7583dab`**; last code/CI workflow commit **`cb1ebf3334080e683b86008bf68d4d99d67df217`**. Main `204f70169d4c7bff2d1ad58d024a184c32360a50` remained unchanged at prior readback. No Vercel/production.
+- **Latest verified functional evidence:** [Actions #43801392795](https://github.com/hibi89/Freelancer/actions/runs/43801392795) **SUCCESS** — Linux Python3.11 **96 PASS / 0 FAIL / 0 SKIP** and hosted Windows Python3.11 **95 PASS / 0 FAIL / 1 SKIP**; Windows CMD disposable fixture, initial Git/SQLite plan dry run, ready gate and local metadata report passed. [Blueprint gate #43801393035](https://github.com/hibi89/Freelancer/actions/runs/43801393035) SUCCESS. Workflow-only optimization SHA `cb1ebf...` has independent CI status to be checked; do not assert completion before evidence.
+- **Current changes:** strict `scripts/verify_trial.py` prevents false success when no new tasks are ready; requires single fixed synthetic TRIAL-001 plan, untouched protected tests/original checkout, SQLite VERIFIED spec, allowed-only Git commit and matching event. Owner's `RUN_FIRST_USE.cmd` and `RUN_MODEL_TRIAL.cmd` now check before/after. Windows WinError32 SQLite handle leaks and Windows 8.3 short path comparison fixed; hosted Windows and Linux verified.
+- **Security improvement from official OpenCode V2 policy docs:** `scripts/preflight.py` requires OpenCode **2.2.6+**, because older versions ignore `websearch.use` and `plugin.use` deny controls. No upgrade/install is performed; unsafe/unsupported local CLI stops before model call. Native Ollama provider restricted to localhost remains; policy matching, OS sandbox and actual model tool calls NOT verified on owner's PC.
+- **CI efficiency:** `.github/workflows/axdev-local-tests.yml` now runs expensive Linux + hosted Windows regression tests only on code/config/runner/skill changes, not docs-only STATUS/HANDOFF changes; separate blueprint gate remains in place.
+- **Provisional real-use readiness:** **72/100 unchanged** with fixed five-domain estimate (20 plan, 17 coding+review, 20 checkpoint, 15 GitHub/fleet, **0 owner Windows10 GTX1050Ti model/security validation**). Official full F01–F20 completion **UNASSESSED**. Hosted Windows synthetic PASS is not the owner notebook, and a fake coder passing is not real Ollama inference.
+- **Remaining blocker:** owner's actual Windows10 GTX1050Ti non-admin disposable `RUN_FIRST_USE.cmd` with already-installed local Python/Git/Ollama/OpenCode 2.2.6+ and model with `completion`+`tools`. Record real model result/VRAM/policy/network evidence locally, separately approve publication. No customer data, external model API, GitHub PR or Production touched.
+- **Rollback:** source before this series `fd4f9bbadf18d2c274bd391b60d5bd87a683424d`. Docs-only commit will follow current code/workflow ref; compare exact GitHub SHA on readback.
+
+Older status history follows.
+
+---
+
 # AX Dev Factory — 2026-11-16 KST verified Windows+Linux checkpoint
 
 - **Single source/branch:** `hibi89/Freelancer@tools/ax-dev-factory-local`; latest validated **source SHA** `54da88b6935611c482d98fd9eeb538cc269f6294`. `main` last known `204f70169d4c7bff2d1ad58d024a184c32360a50` (verify separately). No Vercel or Production.
