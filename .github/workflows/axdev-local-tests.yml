@@ -1,0 +1,25 @@
+name: AX Dev Factory synthetic tests
+on:
+  push:
+    branches:
+      - tools/ax-dev-factory-local
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  axdev-python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Python bytecode compilation
+        run: python -m compileall -q axdev tests
+      - name: Synthetic Git worktree review tests
+        run: python -m unittest discover -s tests -p test_axdev.py -v
+      - name: CLI doctor
+        run: python -m axdev doctor --plan examples/sample-plan.json
+      - name: CLI version
+        run: python -m axdev --version
