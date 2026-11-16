@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from axdev.core import ContractError, Factory, load_plan
+from axdev.core import ContractError, Factory, load_plan, single_worker_lock
 
 class FactoryTests(unittest.TestCase):
     def setUp(self):
@@ -98,6 +98,28 @@ class FactoryTests(unittest.TestCase):
         self.assertEqual(f.next_task()["id"], "AAA-001")
         self.assertEqual(f.run_one(True)["status"], "VERIFIED")
         self.assertEqual(f.next_task()["id"], "BBB-002")
+        f.close()
+
+    def test_single_worker_lock(self):
+        with single_worker_lock(self.state):
+            with self.assertRaises(ContractError):
+                with single_worker_lock(self.state):
+                    pass
+        with single_worker_lock(self.state):
+            pass
+
+    def test_independent_job_proceeds_after_hold(self):
+        self.write_plan([self.task("AAA-001"), self.task("BBB-002")])
+        calls = [0]
+        def fail_first(cwd, prompt):
+            calls[0] += 1
+            if "AAA-001" in prompt:
+                return 1, "synthetic model failure"
+            return self.fake_coder(cwd, prompt)
+        f = Factory(self.repo, self.plan, self.state, coder=fail_first)
+        self.assertEqual(f.run_one(True)["status"], "HOLD")
+        self.assertEqual(f.next_task()["id"], "BBB-002")
+        self.assertEqual(f.run_one(True)["status"], "VERIFIED")
         f.close()
 
     def test_resume_contract_changes_rejected(self):
