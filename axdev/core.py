@@ -287,10 +287,41 @@ class Factory:
                 f"CODING SKILL RULES:\n{rules[:2400]}\n"
                 "Implement the smallest compatible change; retain existing behavior.")
 
+    @staticmethod
+    def _git_path_list(workspace: Path, *args: str) -> set[str]:
+        """Enumerate full NUL-separated Git paths; never review truncated output.
+
+        Git's ordinary status omits ignored files, so a model or acceptance
+        test could write an ignored secret/artifact without being detected.
+        A fresh worktree should not contain ignored files. If an interrupted
+        worktree does, fail closed rather than silently accepting its contents.
+        """
+        try:
+            proc = subprocess.run(["git", *args], cwd=workspace, check=False,
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                  timeout=30, shell=False)
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            raise ContractError("Git path inventory unavailable") from exc
+        if (proc.returncode != 0 or len(proc.stdout) > 8 * 1024 * 1024
+                or (proc.stdout and not proc.stdout.endswith(b"\\0"))):
+            raise ContractError("Git path inventory failed or exceeded safe limit")
+        try:
+            names = [part.decode("utf-8")
+                     for part in proc.stdout.split(b"\\0")[:-1]]
+        except UnicodeDecodeError as exc:
+            raise ContractError("Git path inventory contains non-UTF8 names") from exc
+        if any(not name for name in names):
+            raise ContractError("Git path inventory contains an invalid name")
+        return set(names)
+
     def _changed(self, workspace: Path) -> set[str]:
-        tracked = git(workspace, "diff", "--name-only", "HEAD", "--").splitlines()
-        untracked = git(workspace, "ls-files", "--others", "--exclude-standard").splitlines()
-        return set(tracked + untracked)
+        tracked = self._git_path_list(
+            workspace, "diff", "--name-only", "-z", "HEAD", "--")
+        untracked = self._git_path_list(
+            workspace, "ls-files", "--others", "--exclude-standard", "-z")
+        ignored = self._git_path_list(
+            workspace, "ls-files", "--others", "--ignored", "--exclude-standard", "-z")
+        return tracked | untracked | ignored
 
     def _preflight_workspace(self, task: dict, workspace: Path) -> None:
         if workspace.is_symlink():
@@ -305,6 +336,10 @@ class Factory:
                     raise ContractError("file target is a directory")
 
     def _review(self, task: dict, workspace: Path) -> tuple[bool, str]:
+        try:
+            self._preflight_workspace(task, workspace)
+        except ContractError:
+            return False, "UNSAFE_TASK_PATH"
         changed = self._changed(workspace)
         if not changed:
             return False, "NO_CHANGES"
@@ -348,6 +383,10 @@ class Factory:
             rc, out = call(cmd, workspace, timeout=240, env=env)
             if rc:
                 return False, f"CHECK_FAIL {command}: {out[-1800:]}"
+        try:
+            self._preflight_workspace(task, workspace)
+        except ContractError:
+            return False, "POST_CHECK_UNSAFE_TASK_PATH"
         after = self._changed(workspace)
         if after != changed:
             return False, "POST_CHECK_CHANGED_PATHS: " + ", ".join(sorted(after ^ changed))
