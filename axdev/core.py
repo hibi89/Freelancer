@@ -56,7 +56,7 @@ def safe_path(value: str) -> str:
     p = Path(value)
     if (not value or p.is_absolute() or "\\" in value or ":" in value
             or any(s in ("", ".", "..") for s in value.split("/"))
-            or value.startswith(".git") or value.startswith(".axdev")):
+            or value.startswith((".git", ".axdev", ".github", ".opencode", ".env"))):
         raise ContractError(f"unsafe path: {value!r}")
     return value
 
