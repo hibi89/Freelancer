@@ -183,6 +183,33 @@ class SandboxContractTests(unittest.TestCase):
         self.assertEqual(self.factory.db.execute("SELECT attempts FROM runs").fetchone()[0], 1)
         self.assertTrue(list(self.state.glob("sandbox-runs/*/input/initial.json")))
 
+    def test_git_error_after_ref_update_keeps_prepared_proof_for_retry(self):
+        def lose_update_reply(repo, *args):
+            result = git(repo, *args)
+            if args[:2] == ("update-ref", self.factory.integration_ref):
+                raise RuntimeError("Git reply lost after updating ref")
+            return result
+
+        with patch(MOD + "._sandbox_running", return_value=False), \
+                patch(MOD + "._start_guest", side_effect=self._start) as start, \
+                patch(MOD + ".verify_candidate",
+                      return_value={"ok": True, "project_checks": 1, "independent_probes": 1}):
+            with patch("axdev.core.git", side_effect=lose_update_reply):
+                with self.assertRaisesRegex(RuntimeError, "Git reply lost"):
+                    self._run()
+            pending = self._pinned()
+            self.assertNotEqual(pending, self.base)
+            self.assertEqual(self.factory.status()[self.task["id"]], "PREPARED")
+            with patch(MOD + "._host_proof", side_effect=ContractError("proof unavailable")):
+                with self.assertRaisesRegex(ContractError, "proof unavailable"):
+                    self._run()
+            self.assertEqual(self.factory.status()[self.task["id"]], "PREPARED")
+            validate_history(self.repo, self.state, self.factory.db, [self.task],
+                             self.factory.integration_ref, allow_prepared=True)
+            result = self._run()
+        self.assertEqual((result["status"], result["commit"]), ("VERIFIED", pending))
+        start.assert_called_once()
+
     def test_sandbox_queue_keeps_independent_work_after_hold(self):
         plan = self.root / "queue.json"
         independent = dict(self.task, id="BBB-001", files=["src/independent.py"])

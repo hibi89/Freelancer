@@ -85,19 +85,52 @@ jobs:
           if errorlevel 1 exit /b 1
           python -m scripts.first_use_evidence --trial "%USERPROFILE%\AXDEV_TRIAL" --output "%RUNNER_TEMP%\axdev-trial-evidence.json"
           if errorlevel 1 exit /b 1
-      - name: Validate owner startup XML in Windows Task Scheduler (read-only)
+      - name: Verify owner startup with a disposable hosted queue
         shell: powershell
         run: |
           $axFixture = Join-Path $env:RUNNER_TEMP 'AXDEV startup fixture'
-          New-Item -ItemType Directory -Path $axFixture | Out-Null
+          $axEngine = Join-Path $axFixture 'fixture engine'
+          New-Item -ItemType Directory -Path (Join-Path $axEngine 'axdev'), (Join-Path $axEngine 'scripts') | Out-Null
+          New-Item -ItemType File -Path (Join-Path $axEngine 'axdev/core.py'), (Join-Path $axEngine 'scripts/__init__.py') | Out-Null
           $axSettings = Join-Path $axFixture 'settings.json'
           $axDefinition = Join-Path $axFixture 'owner task.xml'
           Set-Content -LiteralPath $axSettings '{}'
-          python -m scripts.prepare_startup --repo (Get-Location) --settings $axSettings --output $axDefinition
+          @'
+          import json
+          import sys
+          from pathlib import Path
+          marker = Path(sys.argv[2]).with_name('scheduled.json')
+          temporary = marker.with_suffix('.tmp')
+          temporary.write_text(json.dumps(sys.argv[1:]), encoding='utf-8')
+          temporary.replace(marker)
+          '@ | Set-Content -LiteralPath (Join-Path $axEngine 'scripts/run_configured_queue.py') -Encoding Ascii
+          python -m scripts.prepare_startup --repo $axEngine --settings $axSettings --output $axDefinition --max-tasks 7
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $axScheduler = New-Object -ComObject 'Schedule.Service'
           $axScheduler.Connect()
           $axFolder = $axScheduler.GetFolder('\')
           $axUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
-          [void]$axFolder.RegisterTask('AXDevFactoryFixtureValidation', [IO.File]::ReadAllText($axDefinition), 1, $axUser, $null, 3, $null)
+          $axTaskName = 'AXDevFactoryFixture-' + [Guid]::NewGuid().ToString('N')
+          $axXml = [IO.File]::ReadAllText($axDefinition)
+          [void]$axFolder.RegisterTask($axTaskName, $axXml, 1, $axUser, $null, 3, $null)
           Write-Output 'Owner startup template accepted by native Windows Task Scheduler validation'
+          if ([Diagnostics.Process]::GetCurrentProcess().SessionId -eq 0) {
+            Write-Output 'Hosted scheduler launch NOT_RUN because the runner has a non-interactive session'
+            return
+          }
+          $axTask = $axFolder.RegisterTask($axTaskName, $axXml, 2, $axUser, $null, 3, $null)
+          try {
+            [void]$axTask.Run($null)
+            $axMarker = Join-Path $axFixture 'scheduled.json'
+            $axDeadline = [DateTime]::UtcNow.AddSeconds(20)
+            while (!(Test-Path -LiteralPath $axMarker) -and [DateTime]::UtcNow -lt $axDeadline) {
+              Start-Sleep -Milliseconds 250
+            }
+            if (!(Test-Path -LiteralPath $axMarker)) { throw 'Hosted task did not invoke the disposable queue' }
+            $axObserved = Get-Content -LiteralPath $axMarker -Raw | ConvertFrom-Json
+            $axExpected = @('--settings', $axSettings, '--max-tasks', '7', '--execute')
+            if (($axObserved -join '|') -cne ($axExpected -join '|')) { throw 'Unexpected hosted task arguments' }
+            Write-Output 'Hosted scheduler invoked the disposable queue with the approved arguments'
+          } finally {
+            $axFolder.DeleteTask($axTaskName, 0)
+          }

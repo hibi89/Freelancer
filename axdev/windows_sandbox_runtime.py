@@ -554,11 +554,19 @@ def run_sandbox_one(factory: Factory, task: dict, bundle: Path, manifest_sha: st
             record, root, process = pending
             state = "CODING"
     except ContractError as exc:
-        # Once PREPARED exists, preserve the host proof for recovery.
-        if factory.status()[tid] == "PREPARED" and state != "PREPARED":
-            raise
+        if factory.status()[tid] == "PREPARED":
+            # Keep the journal when this call prepared it or Git has adopted
+            # its commit. Dropping the proof would leave Git ahead of SQLite.
+            if state != "PREPARED":
+                raise
+            prepared = factory.db.execute("SELECT commit_sha FROM runs WHERE id=?", (tid,)).fetchone()[0]
+            baseline = factory.db.execute("SELECT value FROM meta WHERE key='base_sha'").fetchone()[0]
+            if prepared != baseline and git(factory.repo, "rev-parse", factory.integration_ref) == prepared:
+                raise
         return _hold(factory, tid, str(exc))
     except (OSError, RuntimeError, ValueError, subprocess.SubprocessError, zipfile.BadZipFile) as exc:
+        if factory.status()[tid] == "PREPARED":
+            raise
         return _hold(factory, tid, "SANDBOX_ERROR_" + type(exc).__name__)
 
 
