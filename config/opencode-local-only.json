@@ -1,6 +1,9 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "model": "ollama/qwen2.5-coder:3b",
+  "enabled_providers": [
+    "ollama"
+  ],
   "providers": {
     "ollama": {
       "settings": {
@@ -9,6 +12,21 @@
     }
   },
   "permissions": [
+    {
+      "action": "read",
+      "resource": "*",
+      "effect": "allow"
+    },
+    {
+      "action": "read",
+      "resource": "*.env*",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": "*",
+      "effect": "deny"
+    },
     {
       "action": "shell",
       "resource": "*",
@@ -30,45 +48,13 @@
       "effect": "deny"
     },
     {
-      "action": "read",
-      "resource": "*.env*",
-      "effect": "deny"
-    },
-    {
-      "action": "edit",
-      "resource": "*.env*",
-      "effect": "deny"
-    }
-  ],
-  "policies": [
-    {
-      "action": "provider.use",
+      "action": "subagent",
       "resource": "*",
       "effect": "deny"
     },
     {
-      "action": "provider.use",
-      "resource": "ollama",
-      "effect": "allow"
-    },
-    {
-      "action": "tool.use",
-      "resource": "webfetch:*",
-      "effect": "deny"
-    },
-    {
-      "action": "tool.use",
-      "resource": "websearch:*",
-      "effect": "deny"
-    },
-    {
-      "action": "tool.use",
-      "resource": "external_directory:*",
-      "effect": "deny"
-    },
-    {
-      "action": "tool.use",
-      "resource": "shell:*",
+      "action": "execute",
+      "resource": "*",
       "effect": "deny"
     }
   ]
