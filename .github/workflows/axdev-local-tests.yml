@@ -46,3 +46,23 @@ jobs:
         run: |
           python scripts/prepare_trial.py --output /tmp/axdev-ci-trial
           python -m axdev run --repo /tmp/axdev-ci-trial/trial-repo --plan /tmp/axdev-ci-trial/trial-plan.json --state /tmp/axdev-ci-trial/state
+
+  axdev-windows-smoke:
+    runs-on: windows-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Windows-native synthetic Python regression tests
+        run: python -m unittest discover -s tests -p "test_*.py" -q
+      - name: Windows CMD disposable fixture and independent ready gate (no AI)
+        shell: cmd
+        run: |
+          call RUN_TRIAL.cmd
+          if errorlevel 1 exit /b 1
+          python -m scripts.verify_trial --phase ready --trial "%USERPROFILE%\AXDEV_TRIAL"
+          if errorlevel 1 exit /b 1
+          python -m scripts.first_use_evidence --trial "%USERPROFILE%\AXDEV_TRIAL" --output "%RUNNER_TEMP%\axdev-trial-evidence.json"
+          if errorlevel 1 exit /b 1
