@@ -1,3 +1,16 @@
+# AX Dev Factory CURRENT — 2026-11-16 KST, ignored-path fail-closed review
+
+- **Source of truth:** `hibi89/Freelancer@tools/ax-dev-factory-local`. Latest fully CI-verified functional SHA **`8f5bbd187b58e7d19cb89af3fcc2159cf43a2d3b`**. `main` remains `204f70169d4c7bff2d1ad58d024a184c32360a50`. No production or Vercel.
+- **Implementation:** `axdev/core.py` now inventories tracked, untracked, **Git-ignored** changes with NUL-delimited full byte output instead of a potentially truncated last 6,000 characters. Inventory errors, oversized (>8 MiB) output or undecodable filenames fail closed; unauthorized ignored files cannot silently pass review. Approved-path parent symlinks are checked again after coding and after acceptance commands, before source hashing/promotion. Existing single fix/HOLD, immutable contract, original worktree isolation and local-only policy preserved.
+- **New regression coverage:** four tests for model-written ignored artifacts, acceptance-test ignored side effects, path inventories longer than the old truncation limit and symlinked approved parents. Latest [Linux/hosted Windows CI #43806710204](https://github.com/hibi89/Freelancer/actions/runs/43806710204) **SUCCESS**: Linux Python3.11 **100 PASS / 0 FAIL / 0 SKIP**; hosted Windows Python3.11 **99 PASS / 0 FAIL / 1 SKIP** plus CMD disposable no-model fixture smoke PASS. [Blueprint gate #43806710502](https://github.com/hibi89/Freelancer/actions/runs/43806710502) **SUCCESS**.
+- **Failure and recovery:** first change `222650fb...` failed CI due accidental escaped NUL marker; corrected `7c0c47d6...`. New Windows regression at `8f965669...` failed with 4 `WinError 32` teardown errors because test addCleanup ran after temp deletion. `8f5bbd18...` closes registered SQLite handles before Windows fixture cleanup; Linux+Windows retested SUCCESS. Neither failure was silently classified as passing.
+- **Readiness unchanged:** provisional **72/100** under existing 20+17+20+15+0 engineering proxy. Formal F01–F20 completion **UNASSESSED**. GitHub-hosted Windows is NOT owner's Windows10 GTX1050Ti; no live Ollama/OpenCode model code edit, GPU timings, actual OS sandbox/network proof, PR publication or real project acceptance.
+- **Next gate:** owner non-admin disposable `RUN_FIRST_USE.cmd` once Ollama, supported tool-calling model and OpenCode V2 2.2.6+ are installed; validate model tool edits, independent VERIFIED SHA, RAM/VRAM, policy and network limits. No unauthorized external publication. Previous pre-change branch snapshot `3e4605abba4c5c724e29020ac1f55c002e7ae60d`; preserve normal Git history, no force push.
+
+Historical status preserved below.
+
+---
+
 # AX Dev Factory CURRENT — 2026-11-16 KST, native Windows checked
 
 - **Repo/branch:** `hibi89/Freelancer@tools/ax-dev-factory-local`. Last functionality commit **`620fa88fce464aa4b1aa31770d25d896c7583dab`**; last code/CI workflow commit **`cb1ebf3334080e683b86008bf68d4d99d67df217`**. Main `204f70169d4c7bff2d1ad58d024a184c32360a50` remained unchanged at prior readback. No Vercel/production.
