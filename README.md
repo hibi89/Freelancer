@@ -1,3 +1,37 @@
+# AX Dev Factory — local personal developer, verified synthetic build
+
+**GitHub status (2026-11-16 KST):** Python 3.11 GitHub Actions [run 43783778986](https://github.com/hibi89/Freelancer/actions/runs/43783778986) **19 PASS / 0 FAIL / 0 SKIP**. Exact verified `axdev/core.py` and local-only OpenCode policy Git blobs matched on tools branch. No real Windows/GTX1050Ti/Ollama/OpenCode inference validated. This is not a finished autonomous product.
+
+## One-time laptop setup, shortest route
+
+From Windows PowerShell (Git + Python 3.11+ preinstalled):
+
+```powershell
+git clone --branch tools/ax-dev-factory-local https://github.com/hibi89/Freelancer.git ax-dev-factory
+cd ax-dev-factory
+.\RUN_TRIAL.cmd
+```
+
+This **only** creates a disposable synthetic Git project, checks local prerequisites and dry-runs one task. Your existing projects stay untouched. Once OpenCode V2 and Ollama are installed and checked, execute **only the synthetic test**:
+
+```powershell
+.\RUN_MODEL_TRIAL.cmd
+```
+
+The live trial defaults to your previously installed `ollama/qwen3:4b-instruct` model and does not auto-download any new model. If `opencode` is missing, its official V2 npm install command is `npm install -g @opencode/cli` (manual network download, not auto-executed by this repository). Inspect the `config/opencode-local-only.json` policy and avoid running as administrator.
+
+## Once the synthetic model trial is accepted
+
+```powershell
+python -m scripts.configure_queue --repo "C:\\path\\to\\target-git-repo" --plan "C:\\path\\to\\owner-approved-plan.json"
+.\RUN_QUEUE.cmd
+```
+
+One-time settings are written under `%LOCALAPPDATA%\AXDevFactory\settings.json`, **outside GitHub**, and refuse overwrite. The queue can execute up to 100 approved tasks serially, with one local coding model, protected deterministic review, at most one repair, checkpoint/resume and isolated local Git commit integration. **No automatic remote GitHub plan fetch, push, PR or startup registration yet.** It does not need repeated chat input while its current local queue is processing. An approved plan for a private repo must remain private.
+
+**Hard boundary:** This is not an OS security sandbox; executing imported code/tests is powerful. Only use a disposable, non-admin checkout until the exact OpenCode v2 permissions and local Ollama tool behavior pass the real Windows trial. If the model cannot solve a task, it is marked HOLD; no fabricated success.
+
+---
 > **Verified synthetic milestone (2026-11-16 KST):** Byte-identical GitHub source/test check, Linux Python3.13.5 **10/10 tests PASS**, CLI doctor/dry-run and fake-model protected-test commit PASS. [Exact evidence](docs/VERIFICATION_20261116.md). Windows/GTX1050Ti/real Ollama/OpenCode and remote GitHub PR **NOT TESTED**.
 
 # AX Dev Factory — Personal Local Automation (v0.1)
