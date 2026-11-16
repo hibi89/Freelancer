@@ -14,6 +14,8 @@ def main(argv=None):
     p = argparse.ArgumentParser()
     p.add_argument("--settings", type=Path, default=default_file())
     p.add_argument("--execute", action="store_true")
+    p.add_argument("--semantic-review", action="store_true",
+                   help="require local Ollama semantic check after deterministic acceptance")
     p.add_argument("--implementation-batch", action="store_true",
                    help="stage independent jobs, then independently review each before promotion")
     p.add_argument("--max-tasks", type=int, help="cap this invocation without raising approved settings limit")
@@ -62,7 +64,7 @@ def main(argv=None):
             raise ContractError("local prerequisites missing; no tasks started: " +
                                 ", ".join(health["blockers"]))
     factory = Factory(Path(obj["repo"]), plan_path, Path(obj["state"]),
-                      model=obj["model"])
+                      model=obj["model"], semantic_review=a.semantic_review)
     try:
         results = (factory.run_implementation_batch(maximum, execute=a.execute)
                    if a.implementation_batch else factory.run_many(maximum, execute=a.execute))

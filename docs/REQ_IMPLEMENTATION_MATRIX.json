@@ -3,7 +3,7 @@
   "scope": "AX Dev Factory owner-only local personal tool",
   "official_final_blueprint_completion": "UNASSESSED",
   "provisional_readiness": "72/100 (previous fixed five-domain proxy; not recalculated)",
-  "evidence_basis": "Current GitHub source + previous synthetic CI; this manifest is NOT independent owner-device acceptance.",
+  "evidence_basis": "Source-only P1 implementation audit, new files NOT_RUN; 2026-11-16. No GitHub CI inspection until implementation 100% candidate.",
   "requirements": [
     {
       "id": "F01",
@@ -131,17 +131,23 @@
     },
     {
       "id": "F14",
-      "implementation": "NOT_IMPLEMENTED",
+      "implementation": "PARTIAL",
       "verification": "NOT_RUN",
-      "paths": [],
-      "remaining_work": "Design and implement optional EAI adapter without changing external repo."
+      "paths": [
+        "axdev/eai_adapter.py",
+        "scripts/run_eai_evidence.py"
+      ],
+      "remaining_work": "Local SHA-pinned EAI receipt CLI implemented; per-task automatic evidence binding and owner-machine EAI run pending."
     },
     {
       "id": "F15",
-      "implementation": "NOT_IMPLEMENTED",
+      "implementation": "PARTIAL",
       "verification": "NOT_RUN",
-      "paths": [],
-      "remaining_work": "Design and implement optional AXNODE typed checkpoint adapter."
+      "paths": [
+        "axdev/axnode_adapter.py",
+        "scripts/export_axnode_checkpoint.py"
+      ],
+      "remaining_work": "Typed DAG/checkpoint bridge implemented; native AXNODE .axnode compiler is not in this repository and remains separate."
     },
     {
       "id": "F16",
@@ -173,10 +179,13 @@
     },
     {
       "id": "F19",
-      "implementation": "NOT_IMPLEMENTED",
+      "implementation": "IMPLEMENTED",
       "verification": "NOT_RUN",
-      "paths": [],
-      "remaining_work": "Independent semantic review and proof of bounded behavior remain."
+      "paths": [
+        "axdev/semantic_review.py",
+        "axdev/core.py"
+      ],
+      "remaining_work": "Opt-in independent local Ollama semantic verdict gates review after deterministic checks; not default; P2 model behavior verification pending."
     },
     {
       "id": "F20",

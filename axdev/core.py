@@ -152,7 +152,7 @@ def plan_hash(task: dict) -> str:
 
 class Factory:
     def __init__(self, repo: Path, plan: Path, state: Path, model: str = "ollama/qwen2.5-coder:3b",
-                 coder=None):
+                 coder=None, semantic_review: bool = False, semantic_reviewer=None):
         self.repo, self.state = repo.resolve(), state.resolve()
         if self.state == self.repo or self.repo in self.state.parents:
             raise ContractError("state directory must be outside target repository")
@@ -163,6 +163,10 @@ class Factory:
         self.tasks = load_plan(plan)
         self.model = model
         self.coder = coder or self._opencode
+        if type(semantic_review) is not bool:
+            raise ContractError("semantic_review must be an explicit boolean")
+        self.semantic_review_enabled = semantic_review
+        self.semantic_reviewer = semantic_reviewer
         self.state.mkdir(parents=True, exist_ok=True)
         (self.state / "worktrees").mkdir(exist_ok=True)
         self.db = sqlite3.connect(self.state / "factory.sqlite3")
@@ -396,6 +400,23 @@ class Factory:
             return False, "POST_CHECK_SYMLINK_FORBIDDEN"
         if hashes(after) != reviewed:
             return False, "POST_CHECK_SOURCE_MUTATION"
+        if self.semantic_review_enabled:
+            # Separate local-only model call AFTER deterministic checks.
+            # Semantic results cannot mark an unverified task VERIFIED.
+            from .semantic_review import review_semantics
+            reviewer = self.semantic_reviewer or review_semantics
+            try:
+                approved, reason = reviewer(task, workspace, after, self.model)
+            except (OSError, ValueError, RuntimeError, TimeoutError) as exc:
+                return False, "SEMANTIC_REVIEW_UNAVAILABLE: " + type(exc).__name__
+            if not approved:
+                return False, "SEMANTIC_HOLD: " + str(reason)[:280]
+            try:
+                self._preflight_workspace(task, workspace)
+                if self._changed(workspace) != after or hashes(after) != reviewed:
+                    return False, "POST_SEMANTIC_SOURCE_MUTATION"
+            except (OSError, ValueError, RuntimeError):
+                return False, "POST_SEMANTIC_UNSAFE_WORKTREE"
         return True, "ALL_CHECKS_PASS"
 
     def _promote_prepared(self, tid: str) -> dict:
