@@ -11,3 +11,8 @@ description: Independently check one AX Dev Factory coding task against the same
 6. Review role does not write or repair code. Return precise minimal feedback to the separate coding role.
 7. One correction attempt per task in automatic mode. On repeated failure, HOLD and allow unrelated work to proceed.
 8. A test-pass is an engineering gate, not business/customer acceptance or final blueprint 100%.
+
+
+## Deterministic checks
+- Run original protected tests on the exact worktree commit; optionally run the owner-approved `ruff check --no-cache src` if Ruff is installed and listed in the task contract.
+- Distinguish `verified deterministic checks` from `real model success`, `semantic correctness`, `Windows UI`, and `product 100%`. Those last claims require separate evidence.
