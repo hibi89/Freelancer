@@ -1,3 +1,15 @@
+# AX Dev Factory P1 implementation progress — 2026-11-16 KST
+
+- **Current P1 pre-CI source implementation: 19/20 = 95%.** Exactly one code-coverage unit per original F01–F20, not weighted official verification and not old provisional engineering-readiness 72/100.
+- **P1 source checkpoint:** e8f439484747c7c9e9d69880e9f940f65b627827; starting branch b9adf24dcfba26e45a2c21f8b0441c692aa36112; code change 7 commits / 19 file paths / +1338/-47 lines.
+- **F18 is PARTIAL:** Git filter/hook trust gate, local Ollama policy and disabled-network Windows Sandbox template exist, but actual sandboxed model/reviewer process execution is missing. Therefore NOT P1 100%.
+- **P2 CI and tests:** NOT_RUN/NOT_CHECKED for this source per user command. Existing mandatory GitHub automatic workflows NOT disabled. Historical old-SHA PASS cannot support this latest source.
+- **Real Windows10/GTX1050Ti/Ollama and OS isolation:** NOT_RUN. No public status posted, scheduler task installed, paid service invoked or remote EAI/AXNODE source modified.
+- **Next action:** implement F18 real OS process/network isolation without weakening existing safety. If unavailable on owner OS, document blockage rather than inventing code completion.
+
+Earlier status history preserved below.
+
+---
 # AX Dev Factory — P1 구현 집중 우선 운영 정정 (2026-11-16 KST)
 
 **최우선 사용자 지시:** F01–F20 최종설계 기준 백엔드·프론트엔드 **구현 100% 후보**를 먼저 달성한다. 이 시점 이전에는 매 커밋 GitHub Actions 전체 CI 결과를 수동 조회·대기·검수하지 않는다. 이번 운영 정정은 기존 적용 지시보다 우선하며 F01–F20 범위를 축소하지 않는다.

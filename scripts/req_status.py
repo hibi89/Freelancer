@@ -1,4 +1,4 @@
-"""Read-only F01-F20 source inventory; no completion percentage is inferred."""
+"""P1 F01-F20 code source completeness, separate from unverified product score."""
 from __future__ import annotations
 import argparse
 import json
@@ -51,7 +51,15 @@ def read_status():
             raise ContractError("not implemented requirement must not claim code evidence")
     if seen != IDS:
         raise ContractError("F01-F20 matrix ID set differs")
+    implemented_ids = [e["id"] for e in records if e["implementation"] == "IMPLEMENTED"]
+    pending_ids = [e["id"] for e in records if e["implementation"] != "IMPLEMENTED"]
     return {
+        "pre_ci_completion_definition": "20 F01-F20 source implementation items, equal item count",
+        "pre_ci_completed_ids": implemented_ids,
+        "pre_ci_pending_ids": pending_ids,
+        "pre_ci_implementation_percent": round(100 * len(implemented_ids) / 20, 2),
+        "p1_implementation_100_candidate": len(pending_ids) == 0,
+        "current_source_full_ci": "NOT_RUN",
         "official_final_blueprint_completion": "UNASSESSED",
         "implementation_counts": {
             state: sum(e["implementation"] == state for e in records)

@@ -3,7 +3,7 @@
   "scope": "AX Dev Factory owner-only local personal tool",
   "official_final_blueprint_completion": "UNASSESSED",
   "provisional_readiness": "72/100 (previous fixed five-domain proxy; not recalculated)",
-  "evidence_basis": "P1 pre-CI implementation census only. 19/20 source implementations present; F18 still partial. No post-change tests executed or queried.",
+  "evidence_basis": "2026-11-16 P1 source-only milestone e8f439484747c7c9e9d69880e9f940f65b627827; implementation 19/20, F18 OS sandbox runtime incomplete; no latest-code full CI.",
   "requirements": [
     {
       "id": "F01",
@@ -206,5 +206,7 @@
       ],
       "remaining_work": "Owner-only loopback stop/resume UI, multi-project fleet and explicit two-flag public-safe status/handoff metadata publisher implemented; real GitHub owner-authorized write and UI acceptance NOT_RUN."
     }
-  ]
+  ],
+  "pre_ci_implementation_definition": "P1 100 percent: all 20 F01-F20 source implementations present BEFORE full CI; equal F-ID counts are NOT formal product-acceptance weights.",
+  "current_code_full_ci": "NOT_RUN"
 }
