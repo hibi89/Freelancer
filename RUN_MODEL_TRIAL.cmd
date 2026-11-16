@@ -11,6 +11,8 @@ where python >nul 2>&1 || (echo Python is missing. & exit /b 2)
 where ollama >nul 2>&1 || (echo Ollama is missing. & exit /b 2)
 where opencode >nul 2>&1 || (echo OpenCode V2 is missing. & exit /b 2)
 if not defined AXDEV_MODEL set "AXDEV_MODEL=ollama/qwen3:4b-instruct"
+call "%~dp0RUN_PREFLIGHT.cmd"
+if errorlevel 1 (echo Local preflight not ready. No model launched. & exit /b 2)
 echo Using local model: %AXDEV_MODEL%
 echo This command modifies only a synthetic disposable Git worktree under %TRIAL%.
 echo OpenCode tool permissions are not a full OS sandbox. Keep credentials closed.

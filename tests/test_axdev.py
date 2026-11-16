@@ -208,6 +208,13 @@ class FactoryTests(unittest.TestCase):
         self.assertEqual(rc, 0)
         settings = json.loads(intercepted["env"]["OPENCODE_CONFIG_CONTENT"])
         self.assertEqual(settings["enabled_providers"], ["ollama"])
+        self.assertEqual(settings["providers"]["ollama"]["package"],
+                         "@opencode/ai/providers/openai-compatible")
+        self.assertEqual(settings["policies"][:2], [
+            {"action": "provider.use", "resource": "*", "effect": "deny"},
+            {"action": "provider.use", "resource": "ollama", "effect": "allow"}])
+        self.assertIn({"action": "tool.use", "resource": "shell:*", "effect": "deny"},
+                      settings["policies"])
         edits = [rule for rule in settings["permissions"] if rule["action"] == "edit"]
         self.assertEqual(edits[-1],
                          {"action": "edit", "resource": "src/feature.py", "effect": "allow"})

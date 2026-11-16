@@ -8,7 +8,8 @@
     "ollama": {
       "settings": {
         "baseURL": "http://127.0.0.1:11434/v1"
-      }
+      },
+      "package": "@opencode/ai/providers/openai-compatible"
     }
   },
   "permissions": [
@@ -59,6 +60,78 @@
     },
     {
       "action": "execute",
+      "resource": "*",
+      "effect": "deny"
+    }
+  ],
+  "policies": [
+    {
+      "action": "provider.use",
+      "resource": "*",
+      "effect": "deny"
+    },
+    {
+      "action": "provider.use",
+      "resource": "ollama",
+      "effect": "allow"
+    },
+    {
+      "action": "tool.use",
+      "resource": "shell:*",
+      "effect": "deny"
+    },
+    {
+      "action": "tool.use",
+      "resource": "external_directory:*",
+      "effect": "deny"
+    },
+    {
+      "action": "tool.use",
+      "resource": "webfetch:*",
+      "effect": "deny"
+    },
+    {
+      "action": "tool.use",
+      "resource": "websearch:*",
+      "effect": "deny"
+    },
+    {
+      "action": "tool.use",
+      "resource": "subagent:*",
+      "effect": "deny"
+    },
+    {
+      "action": "tool.use",
+      "resource": "read:*.env*",
+      "effect": "deny"
+    },
+    {
+      "action": "tool.use",
+      "resource": "read:*/.ssh/*",
+      "effect": "deny"
+    },
+    {
+      "action": "tool.use",
+      "resource": "edit:*.env*",
+      "effect": "deny"
+    },
+    {
+      "action": "tool.use",
+      "resource": "edit:*.git*",
+      "effect": "deny"
+    },
+    {
+      "action": "mcp.use",
+      "resource": "*",
+      "effect": "deny"
+    },
+    {
+      "action": "plugin.use",
+      "resource": "*",
+      "effect": "deny"
+    },
+    {
+      "action": "websearch.use",
       "resource": "*",
       "effect": "deny"
     }
