@@ -151,7 +151,7 @@ class Factory:
                             str(target), "HEAD"], self.repo, 60)
             if rc != 0:
                 raise RuntimeError(f"cannot create worktree: {out}")
-        if git(target, "rev-parse", "--show-toplevel") != str(target):
+        if Path(git(target, "rev-parse", "--show-toplevel")).resolve() != target.resolve():
             raise RuntimeError("unexpected worktree root")
         return target
 
