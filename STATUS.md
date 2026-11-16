@@ -1,14 +1,14 @@
 # AX Dev Factory P2 verification checkpoint · 2026-11-16 KST
 
-Functional SHA `642dfba8c942d046a4ff29476e338caa8c661a63` on `codex/axdev-full-verification`. **12/20 acceptance rows PASS; eight remain NOT_RUN.** Weighted completion UNASSESSED. **Owner real-use HOLD.** The [P2 ledger](docs/P2_VERIFICATION_LEDGER.md) lists all F01–F20 and each first-use device gate. [Branch CI and exact checkout](https://github.com/hibi89/Freelancer/actions?query=branch%3Acodex%2Faxdev-full-verification).
+Functional SHA `945c5d61c90f96b7396a330b281b1d18b00fd924` on `codex/axdev-full-verification`. **14/20 acceptance rows PASS; six remain NOT_RUN.** Wsixed completion UNASSESSED. **Owner real-use HOLD.** The [P2 ledger](docs/P2_VERIFICATION_LEDGER.md) lists all F01–F20 and each first-use device gate. [Branch CI and exact checkout](https://github.com/hibi89/Freelancer/actions?query=branch%3Acodex%2Faxdev-full-verification).
 
 - The Windows Sandbox guest produces advisory candidate bytes. A host-owned AppContainer check and independent callable oracle gate the exact Git tree, proof and integration ref. The queue pins approvals, bundle bytes and recovery evidence. A draft PR export also requires an isolated history with matching host evidence.
 - Native Windows 11 reviewer adversarial tests ran. A real local Ollama semantic check and a real isolated EAI synthetic receipt ran. GitHub plan import and replay were checked live.
 - Target Windows 10 unavailable here. Windows Sandbox is disabled and OpenCode unavailable on the current Windows 11 host. The actual Windows 10 isolated coding, hardware, restart and authorized runtime publication checks remain pending.
 
-Follow-up verified the owner dashboard stop/resume loop in a real browser and fixed the two-project CLI configuration exit. OpenCode 2.3.0 standalone was checked on a portable copy; full Windows Sandbox behavior and explicitly approved status publishing remain pending.
+Follow-up verified the owner dashboard stop/resume loop in a real browser and fixed the two-project CLI configuration exit. OpenCode 2.3.0 standalone was checked on a portable copy; full Windows Sandbox behavior remains a device gate.
 
-Off-device follow-up verified Windows kernel lock recovery, the precise Git/SQLite recovery window, the native Task Scheduler XML parser, unattended budget configuration, and guarded PR/metadata publication previews. The ledger separately tracks device-only gates and authorized GitHub write gates.
+Off-device follow-up verified Windows kernel lock recovery, the precise Git/SQLite recovery window, the native Task Scheduler XML parser, unattended budget configuration, and guarded PR/metadata publication previews. The owner-approved [synthetic draft PR](https://github.com/hibi89/Freelancer/pull/4) and [status write](https://github.com/hibi89/Freelancer/commit/f8d9a109839e02911afeda9d5ca6072253f57b06) passed. The remaining six gates require the target Windows 10 device.
 
 Historical snapshots follow.
 
