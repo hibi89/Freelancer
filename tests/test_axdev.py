@@ -434,14 +434,15 @@ class FactoryTests(unittest.TestCase):
         from scripts.publish_pr import preview
         self.write_plan([self.task()])
         self._git("remote", "add", "origin", "https://github.com/hibi89/Freelancer.git")
-        factory = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
-        record = factory.run_one(True)
-        self.assertEqual(record["status"], "VERIFIED")
-        factory.close()
         settings = self.root / "private" / "settings.json"
         with patch("builtins.print"):
             configure_queue(["--repo", str(self.repo), "--plan", str(self.plan),
                              "--settings", str(settings)])
+        configured_state = Path(json.loads(settings.read_text(encoding="utf-8"))["state"])
+        factory = Factory(self.repo, self.plan, configured_state, coder=self.fake_coder)
+        record = factory.run_one(True)
+        self.assertEqual(record["status"], "VERIFIED")
+        factory.close()
         with patch("scripts.publish_pr.subprocess.run", wraps=subprocess.run) as command:
             preview_result = preview(settings, "hibi89/Freelancer", "main",
                                      record["commit"], "axdev/review-aaa-001")
