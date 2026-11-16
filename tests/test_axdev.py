@@ -555,6 +555,38 @@ class FactoryTests(unittest.TestCase):
         self.assertFalse((state / "factory.sqlite3").exists())
         self.assertFalse((state / "worktrees").exists())
 
+    def test_configure_queue_exclusive_create_preserves_original(self):
+        self.write_plan([self.task()])
+        settings = self.root / "private" / "settings.json"
+        settings.parent.mkdir()
+        settings.write_text("ORIGINAL")
+        with self.assertRaises(SystemExit):
+            configure_queue(["--repo", str(self.repo), "--plan", str(self.plan),
+                             "--settings", str(settings)])
+        self.assertEqual(settings.read_text(), "ORIGINAL")
+
+    def test_configure_queue_rejects_symlinked_settings(self):
+        self.write_plan([self.task()])
+        existing = self.root / "existing"
+        existing.write_text("SAFE")
+        target = self.root / "path"
+        try:
+            target.symlink_to(existing)
+        except (OSError, NotImplementedError):
+            self.skipTest("symlink unavailable")
+        with self.assertRaises(SystemExit):
+            configure_queue(["--repo", str(self.repo), "--plan", str(self.plan),
+                             "--settings", str(target)])
+        self.assertEqual(existing.read_text(), "SAFE")
+
+    def test_configure_queue_rejects_invalid_ollama_id(self):
+        self.write_plan([self.task()])
+        settings = self.root / "private" / "settings.json"
+        with self.assertRaises(SystemExit):
+            configure_queue(["--repo", str(self.repo), "--plan", str(self.plan),
+                             "--model", "ollama/", "--settings", str(settings)])
+        self.assertFalse(settings.exists())
+
     def test_configure_queue_refuses_non_git_target(self):
         self.write_plan([self.task()])
         with self.assertRaises(SystemExit):

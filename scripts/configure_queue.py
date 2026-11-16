@@ -4,6 +4,7 @@ import argparse
 import json
 import hashlib
 import os
+import re
 from pathlib import Path
 
 from axdev.core import load_plan, safe_path
@@ -24,7 +25,11 @@ def main(argv=None):
     p.add_argument("--github-path")
     p.add_argument("--github-sha")
     a = p.parse_args(argv)
-    repo, plan, settings = a.repo.resolve(), a.plan.resolve(), a.settings.resolve()
+    repo, plan = a.repo.resolve(), a.plan.resolve()
+    settings = a.settings.expanduser().absolute()
+    if (settings.is_symlink()
+            or any(parent.is_symlink() for parent in settings.parents)):
+        raise SystemExit("settings path must not contain symlinks")
     if not (repo / ".git").exists():
         raise SystemExit("target must be an existing local Git clone")
     if not plan.is_file():
@@ -50,8 +55,8 @@ def main(argv=None):
             raise SystemExit("GitHub task plan path must end in .json")
         remote = {"source": a.github_source, "branch": a.github_branch,
                   "path": a.github_path, "sha": a.github_sha}
-    if not a.model.startswith("ollama/"):
-        raise SystemExit("only local Ollama is supported")
+    if not re.fullmatch(r"ollama/[A-Za-z0-9_.:/-]{2,100}", a.model):
+        raise SystemExit("only valid local Ollama model IDs are supported")
     if settings.exists():
         raise SystemExit("settings exist; refusing overwrite (back up and review manually)")
     state = settings.parent / "state"
@@ -64,8 +69,19 @@ def main(argv=None):
     if remote:
         obj["github"] = remote
     # Contains only paths, hashes and public source coordinates; never secrets.
-    settings.write_text(json.dumps(obj, ensure_ascii=False, indent=2) + "\n",
-                        encoding="utf-8")
+    # Atomic, exclusive creation avoids a race after the existence check.
+    # The file contains local paths and approval hashes, so restrict modes
+    # on platforms that honor O_CREAT permissions. No source repo is touched.
+    try:
+        fd = os.open(settings, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    except FileExistsError as exc:
+        raise SystemExit("settings exist; refusing overwrite") from exc
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as out:
+            out.write(json.dumps(obj, ensure_ascii=False, indent=2) + "\n")
+    except BaseException:
+        settings.unlink(missing_ok=True)
+        raise
     print("Created private path-only configuration:", settings)
     print("Review its contents; then run RUN_QUEUE.cmd once to execute the queue.")
 
