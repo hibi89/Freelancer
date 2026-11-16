@@ -1,3 +1,18 @@
+# Current checkpoint addendum — 2026-11-16 KST (source fb4de6ed0e361c5a6ccd4f6a865fc5f636db2a78)
+
+1. **Mission:** personal Windows10 GTX1050Ti/16GB local autonomous developer; F01–F20 full blueprint, not Kmong sale; no more repeated chat tokens needed for an already approved local queue.
+2. **Changes:** F13 phase-1 SHA-pinned public GitHub plan import `axdev/github_sync.py` + CLI `python -m axdev sync-plan`, immutable local staging, duplicate/no-overwrite and branch-race rejection; V2 permission default deny and private `opencode run --standalone`.
+3. **Tests:** GitHub hosted Actions run 43788443205 SUCCESS, **28 PASS/0 FAIL/0 SKIP Python3.11** (19 existing + 9 new). Compileall, CLI doctor/version, synthetic fixture dry-run PASS. Blueprint gate run 43788443559 SUCCESS. Real GitHub API read/write, Windows/OpenCode/Ollama/GPU NOT_RUN. Verified source commit `fb4de6ed0e361c5a6ccd4f6a865fc5f636db2a78`.
+4. **State:** F13 first read-only staging implemented; continuous polling, tasks auto-gather, remote PR/push, identity/approval workflow, true OS sandbox, full F01–F20 acceptance still outstanding. Official score UNASSESSED.
+5. **Issues:** OpenCode V2 documentation confirms plural ordered permissions, contrary to V1 singular format. Still no host proof effective policy merging, plugin disable or strict network isolation. Initial bulk Git tree creation timed out; switched to individual blobs plus SHA-only tree and committed successfully. No unverified percentage claims.
+6. **Repo/branch/SHA/paths:** `hibi89/Freelancer@tools/ax-dev-factory-local`, source commit `fb4de6ed0e361c5a6ccd4f6a865fc5f636db2a78`; `axdev/github_sync.py`, `tests/test_github_sync.py`, `docs/GITHUB_PLAN_IMPORT.md`, `axdev/core.py`, `config/opencode-local-only.json`.
+7. **Runtime/Production:** Python3.11, Git, optional Ollama/OpenCode V2 locally. Vercel/Production N/A. Read-only importer accesses public GitHub REST HTTPS with zero credentials (unauthenticated rate limits).
+8. **Original/security:** PUBLIC repository; no tokens/customers/private plans. Original main `204f70169d4c7bff2d1ad58d024a184c32360a50` unchanged. Rollback reference `eddb16cd9a13f638f04212c0a7f8ad03be34699e`; no force push. Worktree and SQLite reside locally.
+9. **Next:** real GitHub public import smoke in disposable host, confirm effective V2 permissions and --standalone, Windows GPU single task E2E, then owner-approved safe plan pull/reconciliation, scoped PR creation and status sync. No new execution consent implied by importer.
+10. **Verification timestamp/scope:** 2026-11-16 KST; hosted Linux Python3.11 exact commit `fb4de6ed0e361c5a6ccd4f6a865fc5f636db2a78`, 28 tests. Source-level CI and readback only; actual model, Windows, GPU, external network call NOT VERIFIED. Formal total completion UNASSESSED. See `docs/VERIFICATION_20261116_F13.md`.
+
+---
+
 2026-11-16 KST: Implemented (CI pending) SHA-pinned public GitHub plan import, immutable local staging, V2 CLI standalone/default deny. New synthetic tests and broadened CI. Historical 19 PASS still prior only; Windows/OpenCode/Ollama/network NOT_RUN. Formal completeness UNASSESSED; main/Production untouched. Rollback: eddb16cd9a13f638f04212c0a7f8ad03be34699e.
 
 # AX Dev Factory — 2026-11-16 KST 최종 검증 인수인계 (10항)
