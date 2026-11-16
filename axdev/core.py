@@ -18,7 +18,7 @@ ALLOWED_CHECKS = {
     ("python", "-m", "compileall", "-q", "src"),
     ("python", "-m", "compileall", "-q", "axdev"),
 }
-VALID_STATES = {"QUEUED", "CODING", "REVIEW", "VERIFIED", "HOLD"}
+VALID_STATES = {"QUEUED", "CODING", "REVIEW", "PREPARED", "VERIFIED", "HOLD"}
 
 class ContractError(ValueError):
     pass
@@ -142,6 +142,21 @@ class Factory:
         self.state.mkdir(parents=True, exist_ok=True)
         (self.state / "worktrees").mkdir(exist_ok=True)
         self.db = sqlite3.connect(self.state / "factory.sqlite3")
+        self.db.execute("CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
+        self.integration_ref = ("refs/heads/axdev/integration-" +
+            hashlib.sha256(str(self.state).encode("utf-8")).hexdigest()[:12])
+        baseline = self.db.execute("SELECT value FROM meta WHERE key='base_sha'").fetchone()
+        actual_head = git(self.repo, "rev-parse", "HEAD")
+        ref_rc, ref_output = call(["git", "rev-parse", "--verify", self.integration_ref], self.repo)
+        if baseline is None:
+            if ref_rc == 0:
+                self.db.close()
+                raise ContractError("existing integration ref without state: manual inspection required")
+            git(self.repo, "update-ref", self.integration_ref, actual_head)
+            self.db.execute("INSERT INTO meta (key,value) VALUES ('base_sha',?)", (actual_head,))
+        elif ref_rc != 0:
+            self.db.close()
+            raise ContractError("integration ref is missing: manual recovery required")
         self.db.execute("CREATE TABLE IF NOT EXISTS runs "
                         "(id TEXT PRIMARY KEY, spec TEXT NOT NULL, status TEXT NOT NULL, "
                         "attempts INTEGER NOT NULL DEFAULT 0, evidence TEXT NOT NULL DEFAULT '', "
@@ -170,7 +185,7 @@ class Factory:
     def next_task(self) -> dict | None:
         states = self.status()
         for t in self.tasks:
-            if states[t["id"]] in ("QUEUED", "CODING", "REVIEW"):
+            if states[t["id"]] in ("QUEUED", "CODING", "REVIEW", "PREPARED"):
                 if all(states[d] == "VERIFIED" for d in t.get("depends_on", [])):
                     return t
         return None
@@ -180,7 +195,7 @@ class Factory:
         if not target.exists():
             # Separate worktree; never modify the user's current checkout.
             rc, out = call(["git", "worktree", "add", "-b", f"axdev/{tid}",
-                            str(target), "HEAD"], self.repo, 60)
+                            str(target), self.integration_ref], self.repo, 60)
             if rc != 0:
                 raise RuntimeError(f"cannot create worktree: {out}")
         if Path(git(target, "rev-parse", "--show-toplevel")).resolve() != target.resolve():
@@ -235,6 +250,22 @@ class Factory:
                 return False, f"CHECK_FAIL {command}: {out[-1800:]}"
         return True, "ALL_CHECKS_PASS"
 
+    def _promote_prepared(self, tid: str) -> dict:
+        row = self.db.execute("SELECT commit_sha FROM runs WHERE id=?", (tid,)).fetchone()
+        commit = row[0] if row else ""
+        if not commit or not re.fullmatch(r"[0-9a-f]{40}", commit):
+            raise ContractError("prepared commit SHA missing")
+        current = git(self.repo, "rev-parse", self.integration_ref)
+        if current != commit:
+            parent = git(self.repo, "rev-parse", commit + "^")
+            if parent != current:
+                raise ContractError("integration advanced or diverged; manual reconciliation required")
+            git(self.repo, "update-ref", self.integration_ref, commit, current)
+        self._set(tid, "VERIFIED",
+                  "DETERMINISTIC_CHECKS_PASS; promoted to isolated local integration ref", commit)
+        return {"id": tid, "status": "VERIFIED", "commit": commit,
+                "integration_ref": self.integration_ref}
+
     def run_one(self, execute: bool = False) -> dict:
         task = self.next_task()
         if task is None:
@@ -246,6 +277,8 @@ class Factory:
         try:
             workspace = self._workspace(tid)
             prior = self.status()[tid]
+            if prior == "PREPARED":
+                return self._promote_prepared(tid)
             if prior != "REVIEW":
                 self._set(tid, "CODING")
                 rc, output = self.coder(workspace, self._prompt(task, "CODING"))
@@ -273,9 +306,10 @@ class Factory:
             git(workspace, "add", "--", *changed)
             git(workspace, "commit", "-m", f"axdev: {tid} reviewed local change")
             commit = git(workspace, "rev-parse", "HEAD")
-            self._set(tid, "VERIFIED", "DETERMINISTIC_CHECKS_PASS (not buyer acceptance)", commit)
-            return {"id": tid, "status": "VERIFIED", "commit": commit,
-                    "workspace": str(workspace)}
+            self._set(tid, "PREPARED", "accepted tests; awaiting isolated ref promotion", commit)
+            result = self._promote_prepared(tid)
+            result["workspace"] = str(workspace)
+            return result
         except Exception as e:
             self._set(tid, "HOLD", f"EXECUTION_EXCEPTION: {e}")
             return {"id": tid, "status": "HOLD", "reason": str(e)[:500]}
