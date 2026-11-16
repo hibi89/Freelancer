@@ -98,8 +98,14 @@ def _read_bundle(bundle: Path, expected_sha: str) -> None:
 def _sandbox_binary() -> Path:
     if os.name != "nt":
         raise ContractError("Windows Sandbox is unavailable on this host")
-    system = Path(os.environ.get("SystemRoot", r"C:\Windows"))
-    executable = _no_reparse(system / "System32" / "WindowsSandbox.exe")
+    import ctypes
+    system_directory = ctypes.create_unicode_buffer(512)
+    size = ctypes.windll.kernel32.GetSystemDirectoryW(
+        system_directory, len(system_directory))
+    if not 1 <= size < len(system_directory):
+        raise ContractError("trusted Windows System32 path unavailable")
+    executable = _no_reparse(
+        Path(system_directory.value) / "WindowsSandbox.exe")
     if not executable.is_file():
         raise ContractError("Windows Sandbox unavailable; Windows Home is unsupported")
     return executable
@@ -289,6 +295,8 @@ def _reconcile(factory: Factory, task: dict, result: dict, baseline: str) -> dic
     changed = factory._changed(workspace)
     if changed != set(result["decoded_files"]):
         raise ContractError("sandbox import changed unexpected or no-op file scope")
+    for name in changed:
+        _no_reparse(workspace / Path(name))
     if any((workspace / name).is_symlink() for name in changed):
         raise ContractError("sandbox imported unsafe symlink")
     git(workspace, "add", "--", *sorted(changed))
@@ -323,9 +331,12 @@ def run_sandbox_one(factory: Factory, task: dict, bundle: Path, manifest_sha: st
         run_id, root, baseline = _prepare(factory, task, bundle, manifest_sha)
         factory._set(tid, "CODING", "SANDBOX_RUN:" + run_id)
         try:
-            # .wsb file association uses the installed Microsoft sandbox.
-            # The backend never executes guest tools directly on the host.
-            os.startfile(str(root / "launch.wsb"))
+            # Launch the trusted Windows System32 binary directly, rather
+            # than trusting a user-overridable .wsb file association.
+            subprocess.Popen(
+                [str(_sandbox_binary()), str(root / "launch.wsb")],
+                stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL, shell=False, cwd=root)
         except OSError as exc:
             factory._set(tid, "HOLD", "SANDBOX_LAUNCH_FAILED")
             return {"id": tid, "status": "HOLD", "reason": type(exc).__name__}

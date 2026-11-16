@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import base64
 import hashlib
+import getpass
 import json
 import os
 import re
@@ -252,6 +253,10 @@ def main(argv=None):
     parser.add_argument("--bundle", default=r"C:\AXDEV_BUNDLE", type=Path)
     parser.add_argument("--outbox", default=r"C:\AXDEV_OUTBOX", type=Path)
     args = parser.parse_args(argv)
+    # Sandbox images normally run as WDAGUtilityAccount. This heuristic
+    # rejects accidental host invocation; it does not replace OS isolation.
+    if os.name != "nt" or getpass.getuser().casefold() != "wdagutilityaccount":
+        raise ValueError("SANDBOX_GUEST_ACCOUNT_REQUIRED")
     request = _safe_payload((args.input / "request.json").read_bytes())
     response = {"version": 1, "run_id": request["run_id"],
                 "base_sha": request["base_sha"],
