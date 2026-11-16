@@ -430,6 +430,39 @@ class FactoryTests(unittest.TestCase):
                              "--plan", str(self.plan),
                              "--settings", str(self.root / "missing.json")])
 
+    def test_preview_pr_checks_verified_commit_and_origin_without_remote_write(self):
+        from scripts.publish_pr import preview
+        self.write_plan([self.task()])
+        self._git("remote", "add", "origin", "https://github.com/hibi89/Freelancer.git")
+        factory = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
+        record = factory.run_one(True)
+        self.assertEqual(record["status"], "VERIFIED")
+        factory.close()
+        settings = self.root / "private" / "settings.json"
+        with patch("builtins.print"):
+            configure_queue(["--repo", str(self.repo), "--plan", str(self.plan),
+                             "--settings", str(settings)])
+        with patch("scripts.publish_pr.subprocess.run", wraps=subprocess.run) as command:
+            preview_result = preview(settings, "hibi89/Freelancer", "main",
+                                     record["commit"], "axdev/review-aaa-001")
+        self.assertEqual(preview_result["verified_task_ids"], ["AAA-001"])
+        self.assertEqual(preview_result["changed_files"], ["src/feature.py"])
+        self.assertFalse(preview_result["remote_write_executed"])
+        self.assertTrue(all("push" not in str(c.args) for c in command.call_args_list))
+        with self.assertRaisesRegex(ContractError, "moved or does not match"):
+            preview(settings, "hibi89/Freelancer", "main", "a" * 40,
+                    "axdev/review-aaa-001")
+        with self.assertRaisesRegex(ContractError, "origin URL"):
+            preview(settings, "someoneelse/Freelancer", "main",
+                    record["commit"], "axdev/review-aaa-001")
+
+    def test_pr_publish_requires_both_explicit_flags(self):
+        from scripts.publish_pr import main
+        with self.assertRaisesRegex(ContractError, "BOTH"):
+            main(["--approved-repo", "hibi89/Freelancer", "--base", "main",
+                  "--expected-commit", "a" * 40, "--head", "axdev/review-aaa-001",
+                  "--publish"])
+
     def test_resume_contract_changes_rejected(self):
         self.write_plan([self.task()])
         Factory(self.repo, self.plan, self.state, coder=self.fake_coder).close()
