@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "tasks": [
+    {
+      "id": "DEMO-001",
+      "goal": "Create src/hello.py with a function greet(name) returning 'Hello, ' plus name. Add tests in tests/test_hello.py; tests must pass. Only edit the two listed files.",
+      "files": [
+        "src/hello.py",
+        "tests/test_hello.py"
+      ],
+      "depends_on": [],
+      "checks": [
+        [
+          "python",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-q"
+        ]
+      ]
+    }
+  ]
+}
