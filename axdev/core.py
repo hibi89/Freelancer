@@ -107,12 +107,12 @@ def load_plan(path: Path) -> list[dict]:
         visit(tid, set(), done)
     return data["tasks"]
 
-def call(argv: list[str], cwd: Path, timeout: int = 60) -> tuple[int, str]:
+def call(argv: list[str], cwd: Path, timeout: int = 60, env=None) -> tuple[int, str]:
     try:
         p = subprocess.run(argv, cwd=cwd, text=True, encoding="utf-8",
                            errors="replace", stdout=subprocess.PIPE,
                            stderr=subprocess.STDOUT, timeout=timeout,
-                           shell=False, check=False)
+                           shell=False, check=False, env=env)
         return p.returncode, p.stdout[-6000:]
     except (OSError, subprocess.TimeoutExpired) as e:
         return 124, str(e)
@@ -190,7 +190,16 @@ class Factory:
     def _opencode(self, cwd: Path, prompt: str) -> tuple[int, str]:
         if shutil.which("opencode") is None:
             return 127, "opencode executable not found"
-        return call(["opencode", "run", "--model", self.model, prompt], cwd, timeout=1200)
+        config = (Path(__file__).resolve().parent.parent /
+                  "config" / "opencode-local-only.json")
+        if not config.is_file():
+            return 125, "missing local-only OpenCode policy"
+        env = os.environ.copy()
+        env["OPENCODE_CONFIG"] = str(config)
+        # Inline policy may have stronger precedence in some OpenCode releases.
+        env["OPENCODE_CONFIG_CONTENT"] = config.read_text(encoding="utf-8")
+        return call(["opencode", "run", "--model", self.model, prompt], cwd,
+                    timeout=1200, env=env)
 
     def _prompt(self, task: dict, phase: str, feedback: str = "") -> str:
         paths = ", ".join(task["files"])
