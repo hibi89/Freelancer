@@ -6,6 +6,7 @@ candidate worktrees remain local; no network or PR is used here.
 from __future__ import annotations
 
 import json
+import hashlib
 import time
 from datetime import datetime, timezone
 
@@ -52,12 +53,36 @@ def _stage(factory, task: dict) -> dict:
             # before any more coding, with no unverified promotion.
             factory._set(tid, "REVIEW", "batch immediate scope review required")
             return {"id": tid, "status": "REVIEW", "review_pending": True}
-        factory._set(tid, "IMPLEMENTED", "coder finished; acceptance not run")
+        digest = _snapshot(work, changed)[1]
+        factory._set(tid, "IMPLEMENTED", "BATCH_STAGE_SHA256:" + digest)
         return {"id": tid, "status": "IMPLEMENTED",
                 "verified": False, "changed_files": sorted(changed)}
     except Exception as exc:
         factory._set(tid, "HOLD", "BATCH_IMPLEMENT_EXCEPTION: " + str(exc))
         return {"id": tid, "status": "HOLD", "reason": str(exc)[:500]}
+
+
+def _snapshot(work, changed: set[str]) -> tuple[dict[str, bytes | None], str]:
+    """Hash exact approved staged bytes; detects tampering across restarts."""
+    snapshot: dict[str, bytes | None] = {}
+    proof = hashlib.sha256()
+    for path in sorted(changed):
+        file = work / path
+        if file.is_symlink():
+            raise ContractError("staged source contains a symlink")
+        if file.is_file():
+            data = file.read_bytes()
+        elif file.exists():
+            raise ContractError("staged source has unsupported file type")
+        else:
+            data = None
+        snapshot[path] = data
+        proof.update(path.encode("utf-8") + b"\\0")
+        if data is None:
+            proof.update(b"D")
+        else:
+            proof.update(b"F" + hashlib.sha256(data).digest())
+    return snapshot, proof.hexdigest()
 
 
 def materialize_review_workspace(factory, task: dict):
@@ -74,17 +99,11 @@ def materialize_review_workspace(factory, task: dict):
     changed = factory._changed(source)
     if not changed or changed - set(task["files"]):
         raise ContractError("staged changes are missing or outside approved scope")
-    snapshot = {}
-    for path in changed:
-        src = source / path
-        if src.is_symlink():
-            raise ContractError("staged source contains a symlink")
-        if src.is_file():
-            snapshot[path] = src.read_bytes()
-        elif src.exists():
-            raise ContractError("staged source has unsupported file type")
-        else:
-            snapshot[path] = None  # Approved deletion.
+    snapshot, digest = _snapshot(source, changed)
+    row = factory.db.execute(
+        "SELECT evidence FROM runs WHERE id=?", (tid,)).fetchone()
+    if not row or row[0] != "BATCH_STAGE_SHA256:" + digest:
+        raise ContractError("staged worktree bytes changed after implementation")
 
     target = factory.state / "worktrees" / ("batch-review-" + tid)
     if target.is_symlink():
@@ -123,53 +142,73 @@ def run_implementation_batch(factory, maximum: int, execute: bool) -> list[dict]
         raise ContractError("max tasks 1..100")
     if not execute:
         return [factory.run_one(False)]
-    results: list[dict] = []
-    with single_worker_lock(factory.state):
-        states = factory.status()
-        pending = any(value in PENDING for value in states.values())
-        if not pending:
-            occupied: set[str] = set()
-            count = 0
-            for task in factory.tasks:
-                if count >= maximum:
-                    break
-                if (factory.state / "STOP.REQUESTED").exists():
-                    break
-                states = factory.status()
-                if (states[task["id"]] != "QUEUED" or
-                        any(states[dep] != "VERIFIED"
-                            for dep in task.get("depends_on", []))):
-                    continue
-                # Staged siblings cannot edit overlapping paths. A dependent
-                # task must wait for its prerequisite to become VERIFIED.
-                filenames = {path.casefold() for path in task["files"]}
-                if filenames & occupied:
-                    continue
-                started = time.monotonic()
-                result = _stage(factory, task)
-                count += 1
-                results.append(result)
-                _event(factory, result, time.monotonic() - started)
-                if result["status"] == "IMPLEMENTED":
-                    occupied |= filenames
-                if result["status"] == "REVIEW":
-                    # A scope anomaly must be assessed immediately.
-                    break
 
-        # After all eligible coding invocations, run independent acceptance.
-        # If a stop was requested, leave IMPLEMENTED records for explicit
-        # later resume without another model invocation.
-        for _ in range(maximum):
+    results: list[dict] = []
+    remaining = maximum
+    accounted: set[str] = set()
+    with single_worker_lock(factory.state):
+        while True:
             if (factory.state / "STOP.REQUESTED").exists():
                 results.append({"status": "STOP_REQUESTED",
                                 "message": "pending review retained in SQLite"})
                 break
-            if not any(value in PENDING for value in factory.status().values()):
+            states = factory.status()
+            pending = any(value in PENDING for value in states.values())
+
+            if not pending and remaining:
+                occupied: set[str] = set()
+                staged = 0
+                for task in factory.tasks:
+                    if remaining == 0 or (factory.state / "STOP.REQUESTED").exists():
+                        break
+                    states = factory.status()
+                    if (states[task["id"]] != "QUEUED" or
+                            any(states[dep] != "VERIFIED"
+                                for dep in task.get("depends_on", []))):
+                        continue
+                    # Stage only independent tasks with non-overlapping paths.
+                    names = {path.casefold() for path in task["files"]}
+                    if occupied & names:
+                        continue
+                    began = time.monotonic()
+                    outcome = _stage(factory, task)
+                    results.append(outcome)
+                    _event(factory, outcome, time.monotonic() - began)
+                    staged += 1
+                    remaining -= 1
+                    accounted.add(task["id"])
+                    if outcome["status"] == "IMPLEMENTED":
+                        occupied |= names
+                    if outcome["status"] == "REVIEW":
+                        break
+                if not staged:
+                    break
+
+            # Complete pending implementation/recovery before queuing another
+            # dependent wave. Validation never trusts model self-reporting.
+            while any(value in PENDING for value in factory.status().values()):
+                if (factory.state / "STOP.REQUESTED").exists():
+                    results.append({"status": "STOP_REQUESTED",
+                                    "message": "pending review retained in SQLite"})
+                    return results
+                next_task = factory.next_task()
+                if next_task is None:
+                    # A pending task is blocked by an unverified dependency.
+                    return results
+                tid = next_task["id"]
+                if tid not in accounted:
+                    if remaining == 0:
+                        return results
+                    accounted.add(tid)
+                    remaining -= 1
+                began = time.monotonic()
+                outcome = factory.run_one(True)
+                results.append(outcome)
+                _event(factory, outcome, time.monotonic() - began)
+                if outcome["status"] == "NO_READY_TASK":
+                    return results
+            if remaining == 0:
                 break
-            started = time.monotonic()
-            result = factory.run_one(True)
-            results.append(result)
-            _event(factory, result, time.monotonic() - started)
-            if result["status"] == "NO_READY_TASK":
-                break
+            # Remaining capacity can start a new independent wave, including
+            # tasks whose prerequisites just became VERIFIED.
     return results

@@ -68,7 +68,13 @@ def main(argv=None):
                    if a.implementation_batch else factory.run_many(maximum, execute=a.execute))
         print(json.dumps({"results": results, "states": factory.status()},
                          ensure_ascii=False, indent=2))
-        return 2 if any(x["status"] == "HOLD" for x in results) else 0
+        if any(x["status"] == "HOLD" for x in results):
+            return 2
+        if a.implementation_batch and any(
+                s in ("CODING", "IMPLEMENTED", "REVIEW", "PREPARED")
+                for s in factory.status().values()):
+            return 3  # Pending review is not successful completion.
+        return 0
     finally:
         factory.close()
 

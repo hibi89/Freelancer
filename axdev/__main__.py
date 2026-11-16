@@ -50,12 +50,24 @@ def main(argv=None):
         return 0
     f = None
     try:
+        if a.execute and a.implementation_batch:
+            from scripts.preflight import inspect
+            health = inspect(a.model, a.repo)
+            if not health["ready_for_disposable_model_trial"]:
+                raise ContractError("local prerequisites missing; no tasks started: " +
+                                    ", ".join(health["blockers"]))
         f = Factory(a.repo, a.plan, a.state, model=a.model)
         result = (f.run_implementation_batch(a.max_tasks, a.execute)
                   if a.implementation_batch else f.run_many(a.max_tasks, a.execute))
         print(json.dumps({"results": result, "states": f.status()},
                          ensure_ascii=False, indent=2))
-        return 0 if all(x["status"] not in ("HOLD",) for x in result) else 2
+        if any(x["status"] == "HOLD" for x in result):
+            return 2
+        if a.implementation_batch and any(
+                s in ("CODING", "IMPLEMENTED", "REVIEW", "PREPARED")
+                for s in f.status().values()):
+            return 3  # Some code is implemented but not independently verified.
+        return 0
     finally:
         if f:
             f.close()

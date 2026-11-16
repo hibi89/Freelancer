@@ -182,6 +182,40 @@ class ImplementationBatchTests(unittest.TestCase):
         self.assertEqual(second[-1]["status"], "HOLD")
         self.assertEqual(coded, ["A", "B", "B"])
 
+    def test_single_batch_invocation_chains_multiple_dependency_waves(self):
+        tasks = [self.task(), self.task("BBB-002", "src/addon.py", ["AAA-001"])]
+        seen = []
+        def coder(work, prompt):
+            seen.append("B" if "BBB-002" in prompt else "A")
+            return self.coder(work, prompt)
+        f = self.setup_factory(tasks, coder)
+        result = f.run_implementation_batch(5, True)
+        self.assertEqual([r["status"] for r in result],
+                         ["IMPLEMENTED", "VERIFIED", "IMPLEMENTED", "VERIFIED"], result)
+        self.assertEqual(seen, ["A", "B"])
+        self.assertEqual(f.status()["BBB-002"], "VERIFIED")
+
+    def test_restarted_staged_source_tampering_is_held_not_promoted(self):
+        calls = []
+        def coder(work, prompt):
+            calls.append(prompt)
+            result = self.coder(work, prompt)
+            (self.state / "STOP.REQUESTED").write_text("stop")
+            return result
+        f = self.setup_factory([self.task()], coder)
+        first = f.run_implementation_batch(1, True)
+        self.assertEqual([r["status"] for r in first],
+                         ["IMPLEMENTED", "STOP_REQUESTED"], first)
+        (self.state / "worktrees" / "AAA-001" / "src" / "feature.py").write_text(
+            "value = 999\n")
+        (self.state / "STOP.REQUESTED").unlink()
+        resumed = f.run_implementation_batch(1, True)
+        self.assertEqual([r["status"] for r in resumed], ["HOLD"], resumed)
+        self.assertIn("bytes changed", resumed[0]["reason"])
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(git(self.repo, "rev-parse", f.integration_ref),
+                         git(self.repo, "rev-parse", "HEAD"))
+
     def test_batch_dry_run_never_calls_model(self):
         f = self.setup_factory([self.task()],
                                coder=lambda *args: self.fail("model called"))
