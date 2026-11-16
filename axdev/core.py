@@ -303,11 +303,11 @@ class Factory:
         except (OSError, subprocess.TimeoutExpired) as exc:
             raise ContractError("Git path inventory unavailable") from exc
         if (proc.returncode != 0 or len(proc.stdout) > 8 * 1024 * 1024
-                or (proc.stdout and not proc.stdout.endswith(b"\\0"))):
+                or (proc.stdout and not proc.stdout.endswith(b"\0"))):
             raise ContractError("Git path inventory failed or exceeded safe limit")
         try:
             names = [part.decode("utf-8")
-                     for part in proc.stdout.split(b"\\0")[:-1]]
+                     for part in proc.stdout.split(b"\0")[:-1]]
         except UnicodeDecodeError as exc:
             raise ContractError("Git path inventory contains non-UTF8 names") from exc
         if any(not name for name in names):
