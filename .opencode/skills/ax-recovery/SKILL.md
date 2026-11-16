@@ -9,3 +9,9 @@ description: Repair one failed AX Dev Factory task once from independent test ev
 4. Do not repeat an identical action without changed evidence. Controller allows one automated fix attempt; then HOLD.
 5. Respect task dependency graph; never mark dependent tasks complete while prerequisite remains unverified.
 6. Preserve logs, evidence, Git branch and rollback point; report remaining unknowns clearly.
+
+
+## One-pass systematic debugging
+- Compare the first failing assertion with expected behavior. Identify the likely root cause using the smallest diff and one targeted reproduction.
+- Change one hypothesis with the least patch; do not restart a failed task from scratch or repeat identical commands.
+- If the failure is due to unavailable tools, unresolved dependencies, broad architecture changes, or a missing human approval, HOLD without consuming more model invocations.
