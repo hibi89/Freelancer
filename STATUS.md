@@ -1,3 +1,18 @@
+# AX Dev Factory — 2026-11-16 KST current checkpoint (89-test source)
+
+**Exact tested source SHA:** `2b5bd2bf26e50a37dc2c40c577e253330cd952d7`; public repo `hibi89/Freelancer`, branch `tools/ax-dev-factory-local`. Main `204f70169d4c7bff2d1ad58d024a184c32360a50` unchanged. No Vercel/production.
+
+- **Hosted source evidence:** [AX Dev Factory 89-test CI #43799050606](https://github.com/hibi89/Freelancer/actions/runs/43799050606) SUCCESS, Python3.11 **89 PASS / 0 FAIL / 0 SKIP**. [Blueprint evidence gate #43799051019](https://github.com/hibi89/Freelancer/actions/runs/43799051019) SUCCESS. Earlier public GitHub SHA-pinned live read at [#43790449613](https://github.com/hibi89/Freelancer/actions/runs/43790449613), not repeated now to avoid anonymous rate limits.
+- **Implemented and synthetic-tested this turn:** OpenCode V2 native Ollama provider (removed manual incompatible package and deprecated V1 provider allowlist); hard provider policies still allow **only** Ollama; built-in Ollama discovery plugin exception. `scripts/preflight.py` checks selected local model advertises both `completion` + `tools` from Ollama localhost /api/show, Git author+committer identity (boolean only), and CLI capabilities, before factory begins. `axdev/core.py` rejects DOS reserved and case-colliding Windows paths and runs independent acceptance tests in a private minimal environment with inherited API keys/tokens removed. `scripts/configure_queue.py` writes reviewed settings with exclusive new-file creation and refuses symlink output.
+- **Outstanding / not verified:** actual OpenCode V2 executable policy enforcement/installed version, real Ollama coding/tool-call E2E, Windows10 GTX1050Ti benchmark/VRAM and real owner GitHub identities, OS sandbox, external PR (requires separate owner approval), Windows boot scheduling. Do not infer operating-system isolation from env/proxy filtering. Main/customer data untouched.
+- **Engineering readiness:** **72/100 provisional** with fixed weights 20 approved plan, 17 isolated coding/review, 20 checkpoint, 15 GitHub/fleet, 0 Windows/model/security E2E. Same score as previous source: new safeguards do not substitute live on-device proof. Formal F01–F20 final-design completion **UNASSESSED**. Evidence: [scorecard](docs/PROGRESS_SCORECARD.md).
+- **Minimal next owner-only validation when possible:** in this branch checkout, run `RUN_FIRST_USE.cmd` on a disposable non-admin Windows host with pre-installed Python3.11+, Git, OpenCode V2 and Ollama and a tool-capable local model. It does not download/install/publish. Inspect result before approved real task queue.
+- **Rollback:** previous checkpoint `72a275a9c94d4a8f9eb9794e4c437bf391b913fb`; preserve history, no force push. Source and docs updated separately; this is the current tested-source SHA, not the documentation commit SHA.
+
+Historical STATUS records below are retained for audit.
+
+---
+
 # AX Dev Factory current engineering checkpoint — 2026-11-16 12:10 KST
 
 - **Repository/branch:** `hibi89/Freelancer@tools/ax-dev-factory-local`; most recent tested **source SHA** `50dc2acb506f74f8330a25bb89c4e00fba3e1b56`. `main` `204f70169d4c7bff2d1ad58d024a184c32360a50` unchanged; no Production/Vercel.

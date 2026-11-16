@@ -1,3 +1,5 @@
+> **2026-11-16 current verified source `2b5bd2bf26e50a37dc2c40c577e253330cd952d7`:** Python3.11 89 PASS, 0 FAIL, 0 SKIP ([run #43799050606](https://github.com/hibi89/Freelancer/actions/runs/43799050606)); no actual Windows/Ollama/OpenCode runtime. F04 V2 native Ollama discovery and `/api/show` capability gate added; F06 Windows path guard; F07 environment scrubbed for acceptance tests; F11 author+committer readiness; F18 no credentials passed to project checks, no OS sandbox. Requirements unchanged. Provisional readiness remains 72/100, official final completion UNASSESSED.
+
 # AX Dev Factory — Personal Local Autonomous Development System
 
 **Date:** 2026-11-16 KST. **Type:** owner-only internal productivity tool; NOT a Kmong product. **Canonical repo:** hibi89/Freelancer, branch tools/ax-dev-factory-local. **Formal total completion:** UNASSESSED until owner-approved weights and real acceptance evidence. **Deployment:** local Windows10/11, no Vercel.
