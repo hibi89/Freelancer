@@ -209,10 +209,28 @@ class Factory:
                   "config" / "opencode-local-only.json")
         if not config.is_file():
             return 125, "missing local-only OpenCode policy"
-        env = os.environ.copy()
+        config_obj = json.loads(config.read_text(encoding="utf-8"))
+        allowed = getattr(self, "_active_allowed_files", None)
+        if not allowed:
+            return 125, "coding task scope absent: refusing model execution"
+        # V2 uses last matching rule; only exact task filenames may be written.
+        config_obj["model"] = self.model
+        config_obj["permissions"] += [
+            {"action": "edit", "resource": path, "effect": "allow"}
+            for path in allowed
+        ]
+        env = {key: value for key, value in os.environ.items()
+               if not any(secret in key.upper() for secret in
+                          ("TOKEN", "API_KEY", "PASSWORD", "SECRET", "CREDENTIAL"))}
         env["OPENCODE_CONFIG"] = str(config)
-        # Inline policy may have stronger precedence in some OpenCode releases.
-        env["OPENCODE_CONFIG_CONTENT"] = config.read_text(encoding="utf-8")
+        env["OPENCODE_CONFIG_CONTENT"] = json.dumps(config_obj)
+        env["OPENCODE_AUTO_SHARE"] = "false"
+        env["OPENCODE_DISABLE_AUTOUPDATE"] = "true"
+        env["OPENCODE_DISABLE_FREE_MODELS"] = "true"
+        env["NO_PROXY"] = "127.0.0.1,localhost"
+        env["HTTP_PROXY"] = "http://127.0.0.1:9"
+        env["HTTPS_PROXY"] = "http://127.0.0.1:9"
+        env["ALL_PROXY"] = "http://127.0.0.1:9"
         return call(["opencode", "run", "--model", self.model, prompt], cwd,
                     timeout=1200, env=env)
 
@@ -281,6 +299,7 @@ class Factory:
                 return self._promote_prepared(tid)
             if prior != "REVIEW":
                 self._set(tid, "CODING")
+                self._active_allowed_files = tuple(task["files"])
                 rc, output = self.coder(workspace, self._prompt(task, "CODING"))
                 if rc:
                     self._set(tid, "HOLD", f"MODEL_FAILURE {rc}: {output}")
@@ -294,6 +313,7 @@ class Factory:
                     return {"id": tid, "status": "HOLD", "reason": feedback[-500:]}
                 self.db.execute("UPDATE runs SET attempts=attempts+1 WHERE id=?", (tid,))
                 self.db.commit()
+                self._active_allowed_files = tuple(task["files"])
                 rc, output = self.coder(workspace, self._prompt(task, "FIX_ONCE", feedback))
                 if rc:
                     self._set(tid, "HOLD", f"FIX_MODEL_FAILURE: {output}")
