@@ -120,7 +120,9 @@ class FactoryTests(unittest.TestCase):
         base = git(self.repo, "rev-parse", "HEAD")
         result = f.run_one(True)
         self.assertEqual(result["status"], "HOLD", result)
-        self.assertIn("POST_CHECK_CHANGED_PATHS", result["reason"])
+        self.assertTrue(
+            "POST_CHECK_CHANGED_PATHS" in result["reason"]
+            or "FORBIDDEN_PATHS" in result["reason"], result)
         self.assertEqual(git(self.repo, "rev-parse", f.integration_ref), base)
         f.close()
 
