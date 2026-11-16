@@ -1,3 +1,15 @@
+# AX Dev Factory P2 verification checkpoint · 2026-11-16 KST
+
+Functional SHA `f2becd6d3b9c19347516cd46f40186cc211f7340` on `codex/axdev-full-verification`. **12/20 acceptance rows PASS; eight remain NOT_RUN.** Weighted completion UNASSESSED. **Owner real-use HOLD.** The [P2 ledger](docs/P2_VERIFICATION_LEDGER.md) lists all F01–F20 and each first-use device gate. [Branch CI and exact checkout](https://github.com/hibi89/Freelancer/actions?query=branch%3Acodex%2Faxdev-full-verification).
+
+- The Windows Sandbox guest produces advisory candidate bytes. A host-owned AppContainer check and independent callable oracle gate the exact Git tree, proof and integration ref. The queue pins approvals, bundle bytes and recovery evidence. A draft PR export also requires an isolated history with matching host evidence.
+- Native Windows 11 reviewer adversarial tests ran. A real local Ollama semantic check and a real isolated EAI synthetic receipt ran. GitHub plan import and replay were checked live.
+- Target Windows 10 unavailable here. Windows Sandbox is disabled and OpenCode unavailable on the current Windows 11 host. The actual Windows 10 isolated coding, hardware, restart and authorized runtime publication checks remain pending.
+
+Historical snapshots follow.
+
+---
+
 # AX Dev Factory — P2 security and dashboard checkpoint (2026-11-16 KST)
 
 **Canonical:** `hibi89/Freelancer@tools/ax-dev-factory-local`. **CI-verified functional SHA:** `841f957664023ac04cb4ee9abc4870d2a11596b3`; historical code candidate F01–F20 20/20 is NOT verified final acceptance. **검증 완료율: UNASSESSED** — no owner-approved F01–F20 weights / full acceptance evidence. **Owner real-use: HOLD.** Do not reuse the former 72/100 engineering-readiness proxy as validation completion.

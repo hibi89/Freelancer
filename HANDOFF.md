@@ -1,3 +1,14 @@
+# AX Dev Factory P2 verification checkpoint · 2026-11-16 KST
+
+1. Read the [F01–F20 evidence ledger](docs/P2_VERIFICATION_LEDGER.md) and the [Windows isolation runtime contract](docs/WINDOWS_SANDBOX_RUNTIME.md). Base commit `5ab94180471c7ea86344b691fc77ad5c29989071`; functional source `f2becd6d3b9c19347516cd46f40186cc211f7340` on `codex/axdev-full-verification`. GitHub Actions and the draft PR contain final HEAD evidence. [Branch checks](https://github.com/hibi89/Freelancer/actions?query=branch%3Acodex%2Faxdev-full-verification).
+2. Review the F18 boundary in `axdev/windows_sandbox_runtime.py`, `axdev/sandbox_review.py` and `axdev/windows_review_process.py`. Coding guest sends a candidate, acceptance executes under restricted OS identities, host compares outputs and binds exact Git objects to stored proof. Check the forgery, failed repair, recovery and network/filesystem regressions in `tests/test_windows_sandbox.py`.
+3. Acceptance **12/20**, with eight rows pending and owner real-use **HOLD**. Windows 11 AppContainer attack tests, native Ollama semantic inference, actual EAI and live GitHub plan import/replay are available. Run the Windows 10 gates on an authorized device with an enabled Sandbox and pinned offline runtime before readiness decisions.
+4. The original branch remains the PR base and rollback reference. OpenCode runtime, owner scheduling, actual AXDEV public export and target power interruption require evidence on the supported setup. Use disposable fixtures and private evidence. The operator must approve a specific repository, commit and public export before runtime publication.
+
+Historical snapshots follow.
+
+---
+
 > **[HANDOFF-STARTUP-V2 | ACTIVE | 2026-11-16]** **먼저** `Freelancer@tools/ax-dev-factory-local` 역할/최신 HEAD와 `AGENTS.md` 상단 [OWNER-DEV-EXECUTION-V2](https://github.com/hibi89/hackathon-command-center-2026/blob/kmong-productization/docs/strategy/OWNER_DEV_EXECUTION_CANONICAL_20261116.md)의 적용 범위 및 AX Dev Factory 로컬 도구 예외를 확정한 후 HANDOFF 최신 진행·차단/STATUS/REQUIREMENTS/확정 최종설계/실제 소스를 교차 검증하라. 오래된 HANDOFF 모델 담당·4슬롯 잠금·P85/95 지시는 역사일 뿐 현재 실행순서가 아니다. **웹 Sol High 최초 설계 → 웹 Sol Instant 주력 구현 → 구현 후보 후 전체 CI·수정(위험검사 유지) → Codex Sol Max/Astra Max 독립검수 → High 최종인수 → 사용자 GO 뒤 Luna Extra High 상품등록**. 이 브랜치는 상품이 아닌 개인 로컬 개발 도구로서 원래 F01–F20/격리/로컬 모델/Windows 검증이 우선한다. 원본/기능·데이터/보안·권리·검증 공식률/RELEASE HOLD 불변. 본 공시는 코드 검증 성공을 의미하지 않는다.
 
 ## Latest stage-1 P2 security checkpoint — 2026-11-16 KST
