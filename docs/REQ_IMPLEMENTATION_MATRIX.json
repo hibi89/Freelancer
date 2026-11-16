@@ -3,7 +3,7 @@
   "scope": "AX Dev Factory owner-only local personal tool",
   "official_final_blueprint_completion": "UNASSESSED",
   "provisional_readiness": "72/100 (previous fixed five-domain proxy; not recalculated)",
-  "evidence_basis": "P1 PRE-CI IMPLEMENTATION COMPLETENESS only; new EAI/AXNODE integration NOT_RUN. No official final verification.",
+  "evidence_basis": "P1 pre-CI implementation census only. 19/20 source implementations present; F18 still partial. No post-change tests executed or queried.",
   "requirements": [
     {
       "id": "F01",
@@ -195,14 +195,15 @@
     },
     {
       "id": "F20",
-      "implementation": "PARTIAL",
-      "verification": "PARTIAL",
+      "implementation": "IMPLEMENTED",
+      "verification": "NOT_RUN",
       "paths": [
-        "scripts/owner_dashboard.py",
         "scripts/fleet.py",
+        "scripts/owner_dashboard.py",
+        "scripts/publish_queue_status.py",
         "scripts/publish_pr.py"
       ],
-      "remaining_work": "Loopback-only owner stop/resume/status UI implemented; per-task approval UI and remote PR/handoff status sync remain outside first slice."
+      "remaining_work": "Owner-only loopback stop/resume UI, multi-project fleet and explicit two-flag public-safe status/handoff metadata publisher implemented; real GitHub owner-authorized write and UI acceptance NOT_RUN."
     }
   ]
 }
