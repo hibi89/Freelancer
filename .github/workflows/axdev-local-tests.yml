@@ -31,6 +31,15 @@ jobs:
         run: python -m axdev doctor --plan examples/sample-plan.json
       - name: CLI version
         run: python -m axdev --version
+      - name: Public GitHub SHA-pinned live read-only import (push only)
+        if: github.event_name == 'push'
+        env:
+          APPROVED_SHA: ${{ github.sha }}
+        run: |
+          python -m axdev sync-plan --source hibi89/Freelancer --branch tools/ax-dev-factory-local --path examples/sample-plan.json --expected-sha "$APPROVED_SHA" --output "$RUNNER_TEMP/axdev-approved-plan.json"
+          python -m axdev sync-plan --source hibi89/Freelancer --branch tools/ax-dev-factory-local --path examples/sample-plan.json --expected-sha "$APPROVED_SHA" --output "$RUNNER_TEMP/axdev-approved-plan.json"
+          python -m axdev doctor --plan "$RUNNER_TEMP/axdev-approved-plan.json"
+
       - name: Disposable fixture generator and no-model dry-run
         run: |
           python scripts/prepare_trial.py --output /tmp/axdev-ci-trial

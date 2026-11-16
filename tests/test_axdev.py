@@ -274,6 +274,73 @@ class FactoryTests(unittest.TestCase):
             configure_queue(["--repo", str(self.repo),
                              "--plan", str(self.plan), "--settings", str(settings)])
 
+    def test_pinned_remote_queue_idempotent_offline_fallback(self):
+        from urllib.error import URLError
+        self.write_plan([self.task()])
+        settings = self.root / "private" / "settings.json"
+        flags = ["--repo", str(self.repo), "--plan", str(self.plan),
+                 "--settings", str(settings),
+                 "--github-source", "hibi89/Freelancer",
+                 "--github-branch", "tools/ax-dev-factory-local",
+                 "--github-path", "examples/sample-plan.json",
+                 "--github-sha", "a" * 40]
+        with patch("builtins.print"):
+            configure_queue(flags)
+        saved = json.loads(settings.read_text(encoding="utf-8"))
+        self.assertEqual(saved["github"]["sha"], "a" * 40)
+        self.assertEqual(len(saved["plan_sha256"]), 64)
+        with patch("scripts.run_configured_queue.sync_public_plan") as importer:
+            with patch("builtins.print"):
+                self.assertEqual(run_configured_queue(["--settings", str(settings)]), 0)
+        importer.assert_called_once()
+        with patch("scripts.run_configured_queue.sync_public_plan",
+                   side_effect=URLError("synthetic offline")):
+            with patch("builtins.print"):
+                self.assertEqual(run_configured_queue(["--settings", str(settings)]), 0)
+        self.assertFalse((self.state / "worktrees" / "AAA-001").exists())
+
+    def test_pinned_remote_queue_rejects_local_tampering_before_network(self):
+        self.write_plan([self.task()])
+        settings = self.root / "private" / "settings.json"
+        with patch("builtins.print"):
+            configure_queue(["--repo", str(self.repo), "--plan", str(self.plan),
+                             "--settings", str(settings),
+                             "--github-source", "hibi89/Freelancer",
+                             "--github-branch", "tools/ax-dev-factory-local",
+                             "--github-path", "examples/sample-plan.json",
+                             "--github-sha", "a" * 40])
+        self.plan.write_text('{"version":1,"tasks":[]}', encoding="utf-8")
+        with patch("scripts.run_configured_queue.sync_public_plan") as importer:
+            with self.assertRaisesRegex(ContractError, "SHA256 differs"):
+                run_configured_queue(["--settings", str(settings), "--execute"])
+        importer.assert_not_called()
+        self.assertFalse((self.state / "worktrees" / "AAA-001").exists())
+
+    def test_remote_source_change_fails_closed_before_coder(self):
+        self.write_plan([self.task()])
+        settings = self.root / "private" / "settings.json"
+        with patch("builtins.print"):
+            configure_queue(["--repo", str(self.repo), "--plan", str(self.plan),
+                             "--settings", str(settings),
+                             "--github-source", "hibi89/Freelancer",
+                             "--github-branch", "tools/ax-dev-factory-local",
+                             "--github-path", "examples/sample-plan.json",
+                             "--github-sha", "a" * 40])
+        with patch("scripts.run_configured_queue.sync_public_plan",
+                   side_effect=ContractError("branch changed since approval")):
+            with self.assertRaisesRegex(ContractError, "branch changed"):
+                run_configured_queue(["--settings", str(settings), "--execute"])
+        self.assertFalse((self.state / "worktrees" / "AAA-001").exists())
+
+    def test_configure_queue_rejects_partial_github_coordinates(self):
+        self.write_plan([self.task()])
+        settings = self.root / "private" / "settings.json"
+        with self.assertRaises(SystemExit):
+            configure_queue(["--repo", str(self.repo), "--plan", str(self.plan),
+                             "--settings", str(settings),
+                             "--github-source", "hibi89/Freelancer"])
+        self.assertFalse(settings.exists())
+
     def test_configure_queue_refuses_non_git_target(self):
         self.write_plan([self.task()])
         with self.assertRaises(SystemExit):

@@ -44,7 +44,8 @@ def branch_sha(repo, branch):
     return sha
 
 def sync_public_plan(repo, branch, path, expected_sha, output):
-    if not isinstance(repo, str) or not REPO.fullmatch(repo):
+    if (not isinstance(repo, str) or not REPO.fullmatch(repo)
+            or any(part in (".", "..") for part in repo.split("/"))):
         raise ContractError("invalid owner/repo")
     if (not isinstance(branch, str) or not BRANCH.fullmatch(branch)
             or ".." in branch or "//" in branch or branch.endswith(("/", ".lock"))):
@@ -90,8 +91,8 @@ def sync_public_plan(repo, branch, path, expected_sha, output):
     if branch_sha(repo, branch) != first:
         raise ContractError("branch advanced during import")
     output = Path(output).expanduser().absolute()
-    if output.is_symlink():
-        raise ContractError("symlink output refused")
+    if output.is_symlink() or any(parent.is_symlink() for parent in output.parents):
+        raise ContractError("symlink output or parent refused")
     if output.exists():
         if not output.is_file() or output.read_bytes() != raw:
             raise ContractError("existing plan differs: no overwrite")

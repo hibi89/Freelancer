@@ -74,6 +74,22 @@ class ImportTests(unittest.TestCase):
         with self.assertRaises(ContractError):
             self.sync(answers=answers)
         self.assertFalse(self.output.exists())
+    def test_reject_symlink_parent(self):
+        target = Path(self.temp.name) / "real"
+        target.mkdir()
+        link = Path(self.temp.name) / "redirect"
+        try:
+            link.symlink_to(target, target_is_directory=True)
+        except (OSError, NotImplementedError):
+            self.skipTest("symlink unavailable")
+        with self.assertRaisesRegex(ContractError, "symlink"):
+            self.sync(output=link / "plan.json")
+        self.assertFalse((target / "plan.json").exists())
+
+    def test_reject_dot_repo_segment(self):
+        with self.assertRaisesRegex(ContractError, "invalid owner/repo"):
+            self.sync(repo="../Freelancer")
+
     def test_reject_symlink_output(self):
         target = Path(self.temp.name) / "protected"
         target.write_text("SAFE")

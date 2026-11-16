@@ -2,10 +2,13 @@
 from __future__ import annotations
 import argparse
 import json
+import hashlib
+from urllib.error import HTTPError, URLError
 from pathlib import Path
 
 from scripts.configure_queue import default_file
 from axdev.core import ContractError, Factory
+from axdev.github_sync import sync_public_plan
 
 def main(argv=None):
     p = argparse.ArgumentParser()
@@ -18,7 +21,27 @@ def main(argv=None):
     maximum = int(obj.get("max_tasks", 1))
     if not 1 <= maximum <= 100:
         raise ContractError("invalid max tasks")
-    factory = Factory(Path(obj["repo"]), Path(obj["plan"]), Path(obj["state"]),
+    plan_path = Path(obj["plan"])
+    approved = obj.get("plan_sha256")
+    if approved is not None:
+        if (not isinstance(approved, str) or len(approved) != 64
+                or hashlib.sha256(plan_path.read_bytes()).hexdigest() != approved):
+            raise ContractError("local approved plan SHA256 differs: refusing execution")
+    remote = obj.get("github")
+    if remote is not None:
+        if approved is None or not isinstance(remote, dict):
+            raise ContractError("remote queue requires pinned local SHA256 and source")
+        try:
+            sync_public_plan(remote["source"], remote["branch"], remote["path"],
+                             remote["sha"], plan_path)
+        except HTTPError:
+            raise
+        except (URLError, TimeoutError) as exc:
+            # Offline operation is safe only with an unchanged, owner-approved cache.
+            print("AXDEV_REMOTE_UNREACHABLE: using identical SHA256-pinned local plan")
+        if hashlib.sha256(plan_path.read_bytes()).hexdigest() != approved:
+            raise ContractError("remote plan differs from approved local SHA256")
+    factory = Factory(Path(obj["repo"]), plan_path, Path(obj["state"]),
                       model=obj["model"])
     try:
         results = factory.run_many(maximum, execute=a.execute)
