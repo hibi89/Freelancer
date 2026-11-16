@@ -24,10 +24,14 @@ jobs:
         with:
           python-version: '3.11'
       - name: Python bytecode compilation
-        run: python -m compileall -q axdev tests
+        run: python -m compileall -q axdev scripts tests
       - name: Synthetic Git worktree review tests
         run: python -m unittest discover -s tests -p test_axdev.py -v
       - name: CLI doctor
         run: python -m axdev doctor --plan examples/sample-plan.json
       - name: CLI version
         run: python -m axdev --version
+      - name: Disposable fixture generator and no-model dry-run
+        run: |
+          python scripts/prepare_trial.py --output /tmp/axdev-ci-trial
+          python -m axdev run --repo /tmp/axdev-ci-trial/trial-repo --plan /tmp/axdev-ci-trial/trial-plan.json --state /tmp/axdev-ci-trial/state
