@@ -11,48 +11,31 @@ import json
 from pathlib import Path
 
 from axdev.core import ContractError
-from axdev.windows_sandbox_runtime import BINARIES, _no_reparse
+from axdev.sandbox_payload import no_reparse
+from axdev.windows_sandbox_runtime import MAX_MANIFEST, bundle_inventory
 
 
 def build_manifest(bundle: Path) -> dict:
-    root = _no_reparse(bundle)
-    if not root.is_dir():
-        raise ContractError("offline bundle root is absent")
-    results = {}
-    for name in BINARIES:
-        file = _no_reparse(root / Path(name))
-        if not file.is_file():
-            raise ContractError("required portable offline binary missing")
-        hasher = hashlib.sha256()
-        with file.open("rb") as stream:
-            while True:
-                data = stream.read(1024 * 1024)
-                if not data:
-                    break
-                hasher.update(data)
-        results[name] = hasher.hexdigest()
-    if not _no_reparse(root / "models").is_dir():
-        raise ContractError("offline Ollama model cache absent")
-    return {"version": 1, "executables": results,
-            "models_pinned_by_this_manifest": False,
-            "source_trust": "OWNER_MUST_CONFIRM"}
+    return {"version": 2, "files": bundle_inventory(bundle)}
 
 
 def main(argv=None):
     p = argparse.ArgumentParser(description="Create-only local offline toolchain manifest")
     p.add_argument("--offline-bundle", type=Path, required=True)
     a = p.parse_args(argv)
-    bundle = _no_reparse(a.offline_bundle)
-    manifest = _no_reparse(bundle / "manifest.json")
+    bundle = no_reparse(a.offline_bundle)
+    manifest = no_reparse(bundle / "manifest.json")
     if manifest.exists():
         raise ContractError("manifest exists; refusing overwrite")
     data = (json.dumps(build_manifest(bundle), ensure_ascii=False,
                        indent=2, sort_keys=True) + "\n").encode("utf-8")
+    if len(data) > MAX_MANIFEST:
+        raise ContractError("offline bundle manifest exceeds size limit")
     with manifest.open("xb") as output:
         output.write(data)
     digest = hashlib.sha256(data).hexdigest()
     print(json.dumps({"manifest_sha256": digest, "bundle": str(bundle),
-                      "models_pinned": False,
+                      "models_pinned": True,
                       "external_downloads": False, "executed": False},
                      ensure_ascii=False, indent=2))
     return 0

@@ -60,13 +60,18 @@ def main(argv=None):
         if hashlib.sha256(plan_path.read_bytes()).hexdigest() != approved:
             raise ContractError("remote plan differs from approved local SHA256")
     if a.execute:
-        # A missing model/CLI must NOT consume a task by moving it to HOLD.
-        # This read-only host check runs before Factory or any worktree is opened.
-        from scripts.preflight import inspect
-        health = inspect(obj["model"], Path(obj["repo"]))
-        if not health["ready_for_disposable_model_trial"]:
-            raise ContractError("local prerequisites missing; no tasks started: " +
-                                ", ".join(health["blockers"]))
+        sandbox = obj.get("sandbox")
+        if not isinstance(sandbox, dict) or set(sandbox) != {"bundle", "manifest_sha256"}:
+            raise ContractError("configure the approved offline Sandbox bundle before starting tasks")
+        from axdev.windows_sandbox_runtime import run_sandbox_queue
+        from scripts.run_sandbox_queue import report
+        results, states = run_sandbox_queue(
+            Path(obj["repo"]), plan_path, Path(obj["state"]), Path(sandbox["bundle"]),
+            sandbox["manifest_sha256"], obj["model"], maximum, True,
+            plan_sha256=approved, daily_budget=a.daily_model_call_budget,
+            eai_policy=a.eai_policy, semantic_review=a.semantic_review,
+            implementation_batch=a.implementation_batch)
+        return report(results, states)
     factory = Factory(Path(obj["repo"]), plan_path, Path(obj["state"]),
                       model=obj["model"], semantic_review=a.semantic_review,
                       max_daily_model_calls=a.daily_model_call_budget,

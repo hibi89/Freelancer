@@ -24,6 +24,8 @@ def main(argv=None):
     p.add_argument("--github-branch")
     p.add_argument("--github-path")
     p.add_argument("--github-sha")
+    p.add_argument("--offline-bundle", type=Path)
+    p.add_argument("--bundle-manifest-sha256")
     a = p.parse_args(argv)
     repo, plan = a.repo.resolve(), a.plan.resolve()
     settings = a.settings.expanduser().absolute()
@@ -57,6 +59,10 @@ def main(argv=None):
                   "path": a.github_path, "sha": a.github_sha}
     if not re.fullmatch(r"ollama/[A-Za-z0-9_.:/-]{2,100}", a.model):
         raise SystemExit("only valid local Ollama model IDs are supported")
+    if bool(a.offline_bundle) != bool(a.bundle_manifest_sha256):
+        raise SystemExit("offline bundle and approved manifest SHA256 must be supplied together")
+    if a.offline_bundle and not re.fullmatch(r"[0-9a-f]{64}", a.bundle_manifest_sha256):
+        raise SystemExit("offline bundle manifest SHA256 is invalid")
     if settings.exists():
         raise SystemExit("settings exist; refusing overwrite (back up and review manually)")
     state = settings.parent / "state"
@@ -68,6 +74,9 @@ def main(argv=None):
     obj["plan_sha256"] = hashlib.sha256(plan.read_bytes()).hexdigest()
     if remote:
         obj["github"] = remote
+    if a.offline_bundle:
+        obj["sandbox"] = {"bundle": str(a.offline_bundle.absolute()),
+                          "manifest_sha256": a.bundle_manifest_sha256}
     # Contains only paths, hashes and public source coordinates; never secrets.
     # Atomic, exclusive creation avoids a race after the existence check.
     # The file contains local paths and approval hashes, so restrict modes

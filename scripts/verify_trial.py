@@ -22,6 +22,11 @@ CHECK = ["python", "-m", "unittest", "discover", "-s", "tests", "-q"]
 GOAL = ("Create src/hello.py defining greet(name) returning 'Hello, ' + name. "
         "Two pre-existing protected unittest cases must pass. "
         "Do not edit tests or any other file.")
+ACCEPTANCE = [
+    {"module": "src.hello", "function": "greet", "args": [name],
+     "kwargs": {}, "expected": "Hello, " + name}
+    for name in ("", "Independent reviewer")
+]
 PROTECTED_TEST = (
     "import unittest\n"
     "from src.hello import greet\n"
@@ -78,7 +83,8 @@ def verify(trial: Path, phase: str) -> dict:
             or tasks[0].get("goal") != GOAL
             or tasks[0].get("files") != ALLOWED
             or tasks[0].get("depends_on") != []
-            or tasks[0].get("checks") != [CHECK]):
+            or tasks[0].get("checks") != [CHECK]
+            or tasks[0].get("acceptance") != ACCEPTANCE):
         raise ContractError("synthetic trial plan differs from fixed acceptance contract")
     if Path(_git(repo, "rev-parse", "--show-toplevel")).resolve() != repo:
         raise ContractError("synthetic Git root differs from expected fixture")
@@ -95,7 +101,7 @@ def verify(trial: Path, phase: str) -> dict:
     if not SHA40.fullmatch(baseline):
         raise ContractError("synthetic baseline SHA missing")
     db = _read_only_db(state)
-    row = meta = None
+    row = meta = backend = None
     if db is not None:
         try:
             row = db.execute(
@@ -103,6 +109,7 @@ def verify(trial: Path, phase: str) -> dict:
                 (TASK,)).fetchone()
             all_count = db.execute("SELECT COUNT(*) FROM runs").fetchone()[0]
             meta = db.execute("SELECT value FROM meta WHERE key='base_sha'").fetchone()
+            backend = db.execute("SELECT value FROM meta WHERE key='execution_backend'").fetchone()
         finally:
             db.close()
         if all_count != 1 or not row or not meta or meta[0] != baseline:
@@ -119,10 +126,17 @@ def verify(trial: Path, phase: str) -> dict:
     commit = row[4]
     if not isinstance(commit, str) or not SHA40.fullmatch(commit):
         raise ContractError("synthetic task verified commit SHA missing")
-    if "DETERMINISTIC_CHECKS_PASS" not in row[3]:
-        raise ContractError("synthetic acceptance evidence missing")
     integration = ("refs/heads/axdev/integration-" +
                    hashlib.sha256(str(state.resolve()).encode("utf-8")).hexdigest()[:12])
+    if backend:
+        from axdev.windows_sandbox_runtime import validate_history
+        db = _read_only_db(state)
+        try:
+            validate_history(repo, state, db, tasks, integration, allow_prepared=False)
+        finally:
+            db.close()
+    elif "DETERMINISTIC_CHECKS_PASS" not in row[3]:
+        raise ContractError("synthetic acceptance evidence missing")
     if _git(repo, "rev-parse", "--verify", integration) != commit:
         raise ContractError("synthetic integration ref differs from verified commit")
     if _git(repo, "rev-parse", commit + "^") != baseline:

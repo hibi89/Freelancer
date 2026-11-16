@@ -37,13 +37,16 @@ def single_worker_lock(state: Path):
         file.seek(0)
         file.write(b"0")
         file.flush()
-        if os.name == "nt":
-            import msvcrt
-            file.seek(0)
-            msvcrt.locking(file.fileno(), msvcrt.LK_NBLCK, 1)
-        else:
-            import fcntl
-            fcntl.flock(file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        try:
+            if os.name == "nt":
+                import msvcrt
+                file.seek(0)
+                msvcrt.locking(file.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+                fcntl.flock(file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError as e:
+            raise ContractError("another AXDEV worker is already active") from e
         try:
             yield
         finally:
@@ -52,8 +55,6 @@ def single_worker_lock(state: Path):
                 msvcrt.locking(file.fileno(), msvcrt.LK_UNLCK, 1)
             else:
                 fcntl.flock(file.fileno(), fcntl.LOCK_UN)
-    except OSError as e:
-        raise ContractError("another AXDEV worker is already active") from e
     finally:
         file.close()
 
@@ -112,6 +113,9 @@ def load_plan(path: Path) -> list[dict]:
         if (not isinstance(checks, list) or not checks or
                 any(not isinstance(c, list) or tuple(c) not in ALLOWED_CHECKS for c in checks)):
             raise ContractError(f"{tid}: unsupported check command")
+        if "acceptance" in t:
+            from .sandbox_review import validate_acceptance
+            validate_acceptance(t["acceptance"])
     tasks = {t["id"]: t for t in data["tasks"]}
     def visit(k, active, done):
         if k in active:
@@ -176,6 +180,7 @@ class Factory:
                 eai_policy, {task["id"] for task in self.tasks})
         self.model = model
         self.coder = coder or self._opencode
+        self._injected_coder = coder is not None
         if type(semantic_review) is not bool:
             raise ContractError("semantic_review must be an explicit boolean")
         self.semantic_review_enabled = semantic_review
@@ -243,6 +248,25 @@ class Factory:
 
     def status(self) -> dict[str, str]:
         return dict(self.db.execute("SELECT id,status FROM runs").fetchall())
+
+    def require_isolated_state(self, backend: str, approved_plan: str) -> None:
+        row = self.db.execute("SELECT value FROM meta WHERE key='execution_backend'").fetchone()
+        policy = json.dumps([backend, approved_plan, self.model, self.semantic_review_enabled])
+        if row:
+            if row[0] != policy:
+                raise ContractError("queue backend, approved plan or review policy changed")
+            return
+        base = self.db.execute("SELECT value FROM meta WHERE key='base_sha'").fetchone()[0]
+        if ("VERIFIED" in self.status().values() or
+                git(self.repo, "rev-parse", self.integration_ref) != base):
+            raise ContractError("isolated execution requires a fresh state for legacy verified code")
+        self.db.execute("INSERT INTO meta(key,value) VALUES('execution_backend',?)", (policy,))
+        self.db.commit()
+
+    def _require_injected_coder(self) -> None:
+        if (not self._injected_coder or self.db.execute(
+                "SELECT 1 FROM meta WHERE key='execution_backend'").fetchone()):
+            raise ContractError("live local execution requires the isolated Windows queue")
 
     def _set(self, tid: str, status: str, evidence: str = "", commit: str = "") -> None:
         if status not in VALID_STATES:
@@ -502,7 +526,7 @@ class Factory:
                 return False, "POST_SEMANTIC_UNSAFE_WORKTREE"
         return True, "ALL_CHECKS_PASS"
 
-    def _promote_prepared(self, tid: str) -> dict:
+    def _promote_prepared(self, tid: str, *, evidence: str | None = None) -> dict:
         row = self.db.execute("SELECT commit_sha FROM runs WHERE id=?", (tid,)).fetchone()
         commit = row[0] if row else ""
         if not commit or not re.fullmatch(r"[0-9a-f]{40}", commit):
@@ -513,12 +537,14 @@ class Factory:
             if parent != current:
                 raise ContractError("integration advanced or diverged; manual reconciliation required")
             git(self.repo, "update-ref", self.integration_ref, commit, current)
-        self._set(tid, "VERIFIED",
+        self._set(tid, "VERIFIED", evidence or
                   "DETERMINISTIC_CHECKS_PASS; promoted to isolated local integration ref", commit)
         return {"id": tid, "status": "VERIFIED", "commit": commit,
                 "integration_ref": self.integration_ref}
 
     def run_one(self, execute: bool = False) -> dict:
+        if execute:
+            self._require_injected_coder()
         task = self.next_task()
         if task is None:
             return {"status": "NO_READY_TASK", "states": self.status()}
@@ -621,6 +647,8 @@ class Factory:
 
     def run_implementation_batch(self, maximum: int, execute: bool) -> list[dict]:
         """Optional code-first / independent-review-later mode."""
+        if execute:
+            self._require_injected_coder()
         from .batch import run_implementation_batch
         return run_implementation_batch(self, maximum, execute)
 

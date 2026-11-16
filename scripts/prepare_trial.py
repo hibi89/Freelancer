@@ -50,7 +50,12 @@ def main():
                     "Do not edit tests or any other file.",
             "files": ["src/hello.py"],
             "depends_on": [],
-            "checks": [["python", "-m", "unittest", "discover", "-s", "tests", "-q"]]
+            "checks": [["python", "-m", "unittest", "discover", "-s", "tests", "-q"]],
+            "acceptance": [
+                {"module": "src.hello", "function": "greet", "args": [name],
+                 "kwargs": {}, "expected": "Hello, " + name}
+                for name in ("", "Independent reviewer")
+            ],
         }]
     }
     plan_file = out / "trial-plan.json"

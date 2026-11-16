@@ -620,13 +620,13 @@ class FactoryTests(unittest.TestCase):
         settings = self.root / "private" / "settings.json"
         with patch("builtins.print"):
             configure_queue(["--repo", str(self.repo), "--plan", str(self.plan),
-                             "--settings", str(settings)])
+                             "--settings", str(settings), "--offline-bundle", str(self.root / "bundle"),
+                             "--bundle-manifest-sha256", "0" * 64])
         configured = json.loads(settings.read_text(encoding="utf-8"))
         state = Path(configured["state"])
-        with patch("scripts.preflight.inspect",
-                   return_value={"ready_for_disposable_model_trial": False,
-                                 "blockers": ["synthetic local model missing"]}):
-            with self.assertRaisesRegex(ContractError, "prerequisites missing"):
+        with patch("axdev.windows_sandbox_runtime._sandbox_binary",
+                   side_effect=ContractError("Windows Sandbox unavailable")):
+            with self.assertRaisesRegex(ContractError, "Windows Sandbox unavailable"):
                 run_configured_queue(["--settings", str(settings), "--execute"])
         self.assertFalse((state / "factory.sqlite3").exists())
         self.assertFalse((state / "worktrees").exists())

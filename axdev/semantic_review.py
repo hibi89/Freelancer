@@ -22,6 +22,26 @@ class _NeverRedirect(HTTPRedirectHandler):
         return None
 
 
+def require_installed_model(model: str) -> None:
+    """The trusted local inference service must expose a local GGUF model."""
+    name = model.removeprefix("ollama/")
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+(?::[A-Za-z0-9_.-]+)?", name) or "cloud" in name.lower():
+        raise ValueError("semantic model must be an installed local model")
+    url = "http://127.0.0.1:11434/api/show"
+    request = Request(url, data=json.dumps({"model": name}).encode(),
+                      headers={"Content-Type": "application/json"}, method="POST")
+    opener = build_opener(ProxyHandler({}), _NeverRedirect())
+    with opener.open(request, timeout=8) as response:
+        raw = response.read(512 * 1024 + 1)
+        if response.geturl() != url or response.status != 200 or len(raw) > 512 * 1024:
+            raise ValueError("local semantic model metadata unavailable")
+    metadata = json.loads(raw)
+    if (not isinstance(metadata, dict) or metadata.get("remote_model") or metadata.get("remote_host")
+            or not isinstance(metadata.get("details"), dict)
+            or metadata["details"].get("format") != "gguf" or not metadata.get("model_info")):
+        raise ValueError("semantic model is not backed by local GGUF weights")
+
+
 def _source_payload(workspace: Path, changed: set[str]) -> list[dict]:
     if not changed or len(changed) > 16:
         raise ValueError("review source count outside approved bounds")

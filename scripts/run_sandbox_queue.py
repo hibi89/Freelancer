@@ -14,15 +14,26 @@ from axdev.core import ContractError, load_plan
 from axdev.windows_sandbox_runtime import run_sandbox_queue
 
 
+def report(results: list[dict], states: dict) -> int:
+    print(json.dumps({"results": results, "states": states}, ensure_ascii=False, indent=2))
+    if any(item.get("status") == "HOLD" for item in results):
+        return 2
+    if any(state != "VERIFIED" for state in states.values()):
+        return 3
+    return 0
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description="AXDEV isolated Windows Sandbox queue")
     p.add_argument("--repo", type=Path, required=True)
     p.add_argument("--plan", type=Path, required=True)
+    p.add_argument("--plan-sha256", help="SHA256 of the approved local plan bytes")
     p.add_argument("--state", type=Path, required=True)
     p.add_argument("--offline-bundle", type=Path, required=True)
     p.add_argument("--bundle-manifest-sha256", required=True)
     p.add_argument("--model", default="ollama/qwen2.5-coder:3b")
     p.add_argument("--max-tasks", type=int, default=1)
+    p.add_argument("--daily-model-call-budget", type=int)
     p.add_argument("--execute", action="store_true")
     p.add_argument("--confirm-isolated-run", action="store_true",
                    help="explicitly launch owner-installed Windows Sandbox")
@@ -44,18 +55,9 @@ def main(argv=None):
         raise ContractError("isolated execution requires supported Windows Sandbox host")
     results, states = run_sandbox_queue(
         args.repo, args.plan, args.state, args.offline_bundle,
-        args.bundle_manifest_sha256, args.model, args.max_tasks, True)
-    print(json.dumps({"results": results, "states": states,
-                      "local_sandbox_e2e": "UNASSESSED",
-                      "no_remote_publish": True},
-                     ensure_ascii=False, indent=2))
-    if any(item.get("status") == "HOLD" for item in results):
-        return 2
-    if any(item.get("status") != "VERIFIED" for item in results):
-        return 3
-    if not results and any(state != "VERIFIED" for state in states.values()):
-        return 3  # Blocked dependencies or held work are not completion.
-    return 0
+        args.bundle_manifest_sha256, args.model, args.max_tasks, True,
+        plan_sha256=args.plan_sha256, daily_budget=args.daily_model_call_budget)
+    return report(results, states)
 
 
 if __name__ == "__main__":

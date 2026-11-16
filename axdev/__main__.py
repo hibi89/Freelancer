@@ -31,6 +31,9 @@ def main(argv=None):
                      help="stage independent tasks, then review before verification")
     run.add_argument("--execute", action="store_true",
                      help="Opt in to local model tool execution and code writes")
+    run.add_argument("--offline-bundle", type=Path)
+    run.add_argument("--bundle-manifest-sha256")
+    run.add_argument("--plan-sha256")
     sync = sub.add_parser("sync-plan", help="Read-only import of SHA-pinned public GitHub task JSON")
     sync.add_argument("--source", required=True)
     sync.add_argument("--branch", required=True)
@@ -56,12 +59,17 @@ def main(argv=None):
         return 0
     f = None
     try:
-        if a.execute and a.implementation_batch:
-            from scripts.preflight import inspect
-            health = inspect(a.model, a.repo)
-            if not health["ready_for_disposable_model_trial"]:
-                raise ContractError("local prerequisites missing; no tasks started: " +
-                                    ", ".join(health["blockers"]))
+        if a.execute:
+            if not a.offline_bundle or not a.bundle_manifest_sha256:
+                raise ContractError("live execution requires an approved offline Windows Sandbox bundle")
+            from .windows_sandbox_runtime import run_sandbox_queue
+            from scripts.run_sandbox_queue import report
+            results, states = run_sandbox_queue(
+                a.repo, a.plan, a.state, a.offline_bundle, a.bundle_manifest_sha256,
+                a.model, a.max_tasks, True, plan_sha256=a.plan_sha256,
+                daily_budget=a.daily_model_call_budget, eai_policy=a.eai_policy,
+                semantic_review=a.semantic_review, implementation_batch=a.implementation_batch)
+            return report(results, states)
         f = Factory(a.repo, a.plan, a.state, model=a.model,
                     semantic_review=a.semantic_review,
                     max_daily_model_calls=a.daily_model_call_budget,
