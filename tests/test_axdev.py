@@ -9,6 +9,8 @@ from unittest.mock import patch
 from axdev.core import git
 
 from axdev.core import ContractError, Factory, load_plan, single_worker_lock
+from scripts.configure_queue import main as configure_queue
+from scripts.run_configured_queue import main as run_configured_queue
 
 class FactoryTests(unittest.TestCase):
     def setUp(self):
@@ -250,6 +252,31 @@ class FactoryTests(unittest.TestCase):
         f.coder = forbidden
         self.assertEqual(f.run_one(True)["status"], "HOLD")
         f.close()
+
+    def test_one_time_local_queue_configuration_and_dry_run(self):
+        self.write_plan([self.task()])
+        settings = self.root / "private" / "settings.json"
+        with patch("builtins.print"):
+            configure_queue(["--repo", str(self.repo),
+                             "--plan", str(self.plan), "--settings", str(settings)])
+        self.assertTrue(settings.exists())
+        value = json.loads(settings.read_text(encoding="utf-8"))
+        self.assertEqual(value["model"], "ollama/qwen3:4b-instruct")
+        self.assertTrue(Path(value["state"]).is_relative_to(settings.parent))
+        with patch("builtins.print"):
+            self.assertEqual(run_configured_queue(["--settings", str(settings)]), 0)
+        state = Path(value["state"])
+        self.assertFalse((state / "worktrees" / "AAA-001").exists())
+        with self.assertRaises(SystemExit):
+            configure_queue(["--repo", str(self.repo),
+                             "--plan", str(self.plan), "--settings", str(settings)])
+
+    def test_configure_queue_refuses_non_git_target(self):
+        self.write_plan([self.task()])
+        with self.assertRaises(SystemExit):
+            configure_queue(["--repo", str(self.root),
+                             "--plan", str(self.plan),
+                             "--settings", str(self.root / "missing.json")])
 
     def test_resume_contract_changes_rejected(self):
         self.write_plan([self.task()])
