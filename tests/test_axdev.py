@@ -32,6 +32,9 @@ class FactoryTests(unittest.TestCase):
         self.state = self.root / "state"
 
     def tearDown(self):
+        # Unittest normally runs addCleanup after tearDown. Close registered
+        # SQLite readers first or Windows locks the disposable state folder.
+        self.doCleanups()
         self.temp.cleanup()
 
     def _git(self, *args):
