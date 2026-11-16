@@ -62,9 +62,15 @@ class DashboardHttpSecurityTests(unittest.TestCase):
 
     def test_rebound_post_denied_despite_known_csrf(self):
         data = "csrf=" + self.token
-        code, _ = self.request(
-            "POST", "/stop", data=data,
-            host="attacker.example:" + str(self.port))
+        try:
+            code, _ = self.request(
+                "POST", "/stop", data=data,
+                host="attacker.example:" + str(self.port))
+        except (ConnectionAbortedError, ConnectionResetError):
+            # On Windows, rejecting a POST before draining its untrusted
+            # body can produce a TCP reset instead of an HTTP 403 response.
+            # Both must be fail-closed; control() must still NOT be called.
+            code = 403
         self.assertEqual(code, 403)
         self.stub.assert_not_called()
 
