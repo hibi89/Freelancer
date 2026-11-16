@@ -1,3 +1,17 @@
+# AX Dev Factory — P1 구현 집중 우선 운영 정정 (2026-11-16 KST)
+
+**최우선 사용자 지시:** F01–F20 최종설계 기준 백엔드·프론트엔드 **구현 100% 후보**를 먼저 달성한다. 이 시점 이전에는 매 커밋 GitHub Actions 전체 CI 결과를 수동 조회·대기·검수하지 않는다. 이번 운영 정정은 기존 적용 지시보다 우선하며 F01–F20 범위를 축소하지 않는다.
+
+1. **P1 구현:** 매 `ㄱ`에서 미구현/부분 구현의 실제 코드를 가능한 한 많이 완성한다. 파일 범위·민감정보·불변 계약·중복 실행·저장 데이터 안전에 관한 필수 최소 게이트는 유지하지만, 전체 회귀 CI 결과 조회와 일괄 검수는 뒤로 미룬다. 다음 구현으로 진행하는 데 CI 완료를 대기 조건으로 삼지 않는다.
+2. **GitHub Actions:** 기존 자동 트리거 및 필수 CI/보안 설정은 끄거나 우회하지 않는다. 코드 커밋으로 GitHub가 자체 실행한 CI를 매번 확인·대기할 의무는 없다. CI가 눈에 띄게 실패하더라도 안전상 즉시 차단할 결함이 아니라면 P2의 결함 목록에 남기고 구현을 이어간다. 실패를 PASS로 표기하지 않는다.
+3. **P2 검증 시작 조건:** F01–F20 전체의 구현 근거가 코드/경로/커밋으로 채워져 `IMPLEMENTATION_100_CANDIDATE`로 판단된 뒤, 전체 CI·통합·보안·Windows·실모델/복구 검증을 묶어 수행한다. 실제 PC·권한·외부 의존 때문에 수행 못 한 항목은 `NOT_RUN`·HOLD로 기록한다.
+4. **예외:** API 키/토큰 유출, 무단 네트워크 전송, 고객 원본 훼손, 경로 탈출, 권한 상승, 중복 실행 등 즉시 위험이 있는 경우에는 영향 범위의 필수 안전 검사를 건너뛰지 않는다. 기존 독립 검수·one-fix/HOLD와 계약 검증을 코드에서 제거하지 않는다.
+5. **보고:** 구현 전→후를 F-ID와 코드 경로/SHA로 보고한다. CI가 미실행이면 `NOT_RUN`, 공식 완성률은 `UNASSESSED`. 근거 없는 +1%p 금지. 다음 작업은 F14/F15/F19 등 기능 구현이며, CI 재조회·문서 반복 갱신이 아니다.
+
+**정정 사유:** 직전 개발에서는 사용자 지시와 달리 기능 코드 커밋마다 전체 CI를 조회·대기하고 후속 수정에 시간을 소모했다. 정책 인수인계 자체는 읽었으나 실행자가 P1/P2 경계를 잘못 적용한 것이다. 해당 방식 반복 금지.
+
+---
+
 # AX Dev Factory — current 10-item handoff (2026-11-16 KST, optional implementation batching)
 
 1. **Goal/requirements/stack:** Owner-only personal local autonomous development on Windows10/GTX1050Ti/16GB, Python3.11+SQLite, approved immutable GitHub contracts → single Ollama/OpenCode V2 coder → isolated worktrees → deterministic independent reviewer and one-fix/HOLD → recovery. Full F01–F20 blueprint preserved; no Kmong sale, Production or Vercel.
