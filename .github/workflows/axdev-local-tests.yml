@@ -3,6 +3,14 @@ on:
   push:
     branches:
       - tools/ax-dev-factory-local
+  pull_request:
+    branches:
+      - tools/ax-dev-factory-local
+    paths:
+      - 'axdev/**'
+      - 'tests/test_axdev.py'
+      - 'config/opencode-local-only.json'
+      - '.github/workflows/axdev-local-tests.yml'
   workflow_dispatch:
 permissions:
   contents: read
