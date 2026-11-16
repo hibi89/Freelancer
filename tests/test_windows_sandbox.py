@@ -12,10 +12,12 @@ import tempfile
 import unittest
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from axdev.core import ContractError, plan_hash
-from axdev.windows_sandbox_runtime import _wsb, _read_receipt, _read_bundle
+from axdev.windows_sandbox_runtime import (
+    _wsb, _read_receipt, _read_bundle, _reconcile, run_sandbox_one,
+)
 from scripts.sandbox_guest import _safe_payload, _extract
 
 BASE = "a" * 40
@@ -91,6 +93,30 @@ class SandboxContractTests(unittest.TestCase):
         self._write(data)
         with self.assertRaisesRegex(ContractError, "not bound"):
             _read_receipt(self.root, RUN, self.task, BASE)
+
+    def test_guest_can_forge_passing_receipt_but_cannot_promote(self):
+        # Simulate an untrusted guest that knows every task/request identifier
+        # and can write a self-consistent digest plus a fake Git SHA.
+        self._write(self._receipt())
+        advisory = _read_receipt(self.root, RUN, self.task, BASE)
+        self.assertEqual(advisory["status"], "VERIFIED")
+        host_factory = MagicMock()
+        with self.assertRaisesRegex(ContractError, "UNATTESTED"):
+            _reconcile(host_factory, self.task, advisory, BASE)
+        host_factory._workspace.assert_not_called()
+        host_factory._promote_prepared.assert_not_called()
+
+    def test_prepared_sandbox_task_cannot_promote_legacy_guest_receipt(self):
+        host_factory = MagicMock()
+        host_factory.status.return_value = {self.task["id"]: "PREPARED"}
+        with patch("axdev.windows_sandbox_runtime._sandbox_binary"), \\
+             patch("axdev.windows_sandbox_runtime._read_bundle"):
+            result = run_sandbox_one(
+                host_factory, self.task, self.bundle, "0" * 64, True)
+        self.assertEqual(result["status"], "HOLD")
+        self.assertFalse(result["verified"])
+        self.assertEqual(result["reason"], "SANDBOX_UNATTESTED_PREPARED")
+        host_factory._promote_prepared.assert_not_called()
 
     def test_guest_refuses_unpinned_model(self):
         request = {"version": 1, "run_id": RUN, "base_sha": BASE,

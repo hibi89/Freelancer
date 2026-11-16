@@ -1,3 +1,5 @@
+> **P2 SECURITY HOLD (2026-11-16):** A same-account sandbox guest, model and project checks can all write the mapped outbox. A plausible SHA/path/task-bound `receipt.json` is therefore **NOT** independent verification. The host must not import it into the VERIFIED integration ref. The code now rejects claimed guest VERIFIED receipts and historical untrusted PREPARED resume, preserving an advisory outbox for inspection. F18 remains BLOCKED until an OS-separated reviewer or independently trusted attestation scheme is implemented, tested and owner-device verified. This intentionally supersedes the optimistic promotion steps in the P1 historical flow below. No unisolated fallback or owner approval is implied. 
+
 # F18 — Windows Sandbox execution: source contract and P2 gates
 
 **Status:** P1 code implemented; Windows on-device execution and isolation NOT_RUN. Host data remains private. No Windows optional features or network permissions are modified by this repository.

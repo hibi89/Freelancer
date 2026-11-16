@@ -309,44 +309,16 @@ def _read_receipt(root: Path, run_id: str, task: dict, baseline: str) -> dict | 
 
 
 def _reconcile(factory: Factory, task: dict, result: dict, baseline: str) -> dict:
-    tid = task["id"]
-    if any(factory.status()[dep] != "VERIFIED" for dep in task.get("depends_on", [])):
-        raise ContractError("sandbox dependent prerequisite not VERIFIED")
-    if git(factory.repo, "rev-parse", factory.integration_ref) != baseline:
-        raise ContractError("integration advanced while guest was executing")
-    workspace = factory._workspace(tid)
-    factory._preflight_workspace(task, workspace)
-    if factory._changed(workspace):
-        raise ContractError("host integration workspace already contains changes")
-    for path, content in result["decoded_files"].items():
-        destination = _no_reparse(workspace / Path(path))
-        if not (destination.resolve() == workspace or workspace in destination.resolve().parents):
-            raise ContractError("sandbox output path escaped isolated worktree")
-        if content is None:
-            if destination.is_dir():
-                raise ContractError("sandbox deletion targets a directory")
-            destination.unlink(missing_ok=True)
-        else:
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            destination.write_bytes(content)
-    factory._preflight_workspace(task, workspace)
-    changed = factory._changed(workspace)
-    if changed != set(result["decoded_files"]):
-        raise ContractError("sandbox import changed unexpected or no-op file scope")
-    for name in changed:
-        _no_reparse(workspace / Path(name))
-    if any((workspace / name).is_symlink() for name in changed):
-        raise ContractError("sandbox imported unsafe symlink")
-    git(workspace, "add", "--", *sorted(changed))
-    git(workspace, "commit", "-m", "axdev: " + tid + " sandbox reviewed local change")
-    host_sha = git(workspace, "rev-parse", "HEAD")
-    factory._set(tid, "PREPARED",
-                 "ISOLATED_GUEST_VERIFIED; awaiting ref promotion", host_sha)
-    outcome = factory._promote_prepared(tid)
-    outcome["sandbox_isolated_candidate"] = True
-    outcome["guest_commit"] = result["guest_commit"]
-    outcome["source_tests_run_on_host"] = False
-    return outcome
+    """Never promote a guest-writable receipt as independent acceptance.
+
+    The model and approved project tests run as the SAME Windows Sandbox
+    account that can write receipt.json. Matching run IDs, hashes, paths and
+    a claimed guest Git SHA authenticate the *payload*, not its test verdict.
+    Until the reviewer has a separately enforced OS identity/attestation
+    boundary, the host must never import/commit/promote these bytes.
+    """
+    raise ContractError("SANDBOX_RECEIPT_UNATTESTED")
+
 
 
 def run_sandbox_one(factory: Factory, task: dict, bundle: Path, manifest_sha: str,
@@ -359,7 +331,11 @@ def run_sandbox_one(factory: Factory, task: dict, bundle: Path, manifest_sha: st
     _read_bundle(bundle, manifest_sha)  # No executable auto-download or installs.
     state = factory.status()[tid]
     if state == "PREPARED":
-        return factory._promote_prepared(tid)
+        # Historical PREPARED entries may have been created from forged
+        # guest-controlled receipts. Do not silently complete that promotion.
+        factory._set(tid, "HOLD", "SANDBOX_UNATTESTED_PREPARED")
+        return {"id": tid, "status": "HOLD", "verified": False,
+                "reason": "SANDBOX_UNATTESTED_PREPARED"}
     if state == "QUEUED":
         # Reserve two bounded model calls for potential one-fix review.
         if not factory._reserve_model_call(tid, "SANDBOX_CODING"):
@@ -411,12 +387,16 @@ def run_sandbox_one(factory: Factory, task: dict, bundle: Path, manifest_sha: st
         factory._set(tid, "HOLD", "SANDBOX_GUEST_HOLD:" + reply["error_code"])
         return {"id": tid, "status": "HOLD",
                 "reason": "SANDBOX_GUEST_HOLD"}
-    try:
-        return _reconcile(factory, task, reply, baseline)
-    except (OSError, ValueError, RuntimeError) as exc:
-        factory._set(tid, "HOLD", "SANDBOX_IMPORT_REJECTED:" + type(exc).__name__)
-        return {"id": tid, "status": "HOLD",
-                "reason": "SANDBOX_IMPORT_REJECTED"}
+    # A malicious coding process can read request.json and write an entirely
+    # plausible receipt.json without ever executing acceptance commands.
+    # Preserve the receipt for offline inspection, but never turn it into a
+    # local VERIFIED Git commit or advance dependent tasks.
+    factory._set(tid, "HOLD", "SANDBOX_RECEIPT_UNATTESTED")
+    return {"id": tid, "status": "HOLD", "verified": False,
+            "guest_status": "CLAIMED_VERIFIED",
+            "reason": "SANDBOX_RECEIPT_UNATTESTED"}
+    # Any future promotion must first introduce an independently enforced
+    # reviewer identity and a host-verifiable approval proof, with tests.
 
 
 def run_sandbox_queue(repo: Path, plan: Path, state: Path, bundle: Path,
