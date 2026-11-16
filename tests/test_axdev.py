@@ -491,6 +491,22 @@ class FactoryTests(unittest.TestCase):
                              "--github-source", "hibi89/Freelancer"])
         self.assertFalse(settings.exists())
 
+    def test_failed_prerequisites_do_not_consume_or_hold_any_task(self):
+        self.write_plan([self.task()])
+        settings = self.root / "private" / "settings.json"
+        with patch("builtins.print"):
+            configure_queue(["--repo", str(self.repo), "--plan", str(self.plan),
+                             "--settings", str(settings)])
+        configured = json.loads(settings.read_text(encoding="utf-8"))
+        state = Path(configured["state"])
+        with patch("scripts.preflight.inspect",
+                   return_value={"ready_for_disposable_model_trial": False,
+                                 "blockers": ["synthetic local model missing"]}):
+            with self.assertRaisesRegex(ContractError, "prerequisites missing"):
+                run_configured_queue(["--settings", str(settings), "--execute"])
+        self.assertFalse((state / "factory.sqlite3").exists())
+        self.assertFalse((state / "worktrees").exists())
+
     def test_configure_queue_refuses_non_git_target(self):
         self.write_plan([self.task()])
         with self.assertRaises(SystemExit):

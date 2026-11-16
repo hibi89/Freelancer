@@ -51,6 +51,14 @@ def main(argv=None):
             print("AXDEV_REMOTE_UNREACHABLE: using identical SHA256-pinned local plan")
         if hashlib.sha256(plan_path.read_bytes()).hexdigest() != approved:
             raise ContractError("remote plan differs from approved local SHA256")
+    if a.execute:
+        # A missing model/CLI must NOT consume a task by moving it to HOLD.
+        # This read-only host check runs before Factory or any worktree is opened.
+        from scripts.preflight import inspect
+        health = inspect(obj["model"])
+        if not health["ready_for_disposable_model_trial"]:
+            raise ContractError("local prerequisites missing; no tasks started: " +
+                                ", ".join(health["blockers"]))
     factory = Factory(Path(obj["repo"]), plan_path, Path(obj["state"]),
                       model=obj["model"])
     try:
