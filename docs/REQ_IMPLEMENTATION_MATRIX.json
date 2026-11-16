@@ -3,7 +3,7 @@
   "scope": "AX Dev Factory owner-only local personal tool",
   "official_final_blueprint_completion": "UNASSESSED",
   "provisional_readiness": "72/100 (previous fixed five-domain proxy; not recalculated)",
-  "evidence_basis": "2026-11-16 P1 source-only milestone e8f439484747c7c9e9d69880e9f940f65b627827; implementation 19/20, F18 OS sandbox runtime incomplete; no latest-code full CI.",
+  "evidence_basis": "2026-11-16 code-only F18 checkpoint 8edcbce2b7164cd1b2fdb875f596ceb67ff97b06. No current-source CI viewed or executed. Formal final acceptance UNASSESSED.",
   "requirements": [
     {
       "id": "F01",
@@ -174,15 +174,19 @@
     },
     {
       "id": "F18",
-      "implementation": "PARTIAL",
-      "verification": "PARTIAL",
+      "implementation": "IMPLEMENTED",
+      "verification": "NOT_RUN",
       "paths": [
-        "axdev/opencode_guard.py",
-        "axdev/core.py",
+        "axdev/windows_sandbox_runtime.py",
+        "scripts/sandbox_guest.py",
+        "scripts/run_sandbox_queue.py",
+        "scripts/prepare_offline_bundle.py",
+        "scripts/prepare_windows_sandbox.py",
         "axdev/repo_trust.py",
-        "scripts/prepare_windows_sandbox.py"
+        "axdev/opencode_guard.py",
+        "tests/test_windows_sandbox.py"
       ],
-      "remaining_work": "Fail-closed Git hook/filter/environment trust preflight, secret scrub, local-only provider guard, Windows Sandbox deny-network template present. Full process/OS sandbox execution still absent and Windows edition constraints unknown; cannot claim F18 implemented."
+      "remaining_work": "P1 Windows Sandbox execution path implemented: model and review in guest, read-only source and owner-pinned offline tools, single per-run writable outbox, strict receipt and allowed-path SHA import. Actual Win10/virtualization, Sandbox launch, Ollama, CPU/VRAM and no-egress evidence NOT_RUN. Windows Home explicitly unsupported."
     },
     {
       "id": "F19",
@@ -207,6 +211,7 @@
       "remaining_work": "Owner-only loopback stop/resume UI, multi-project fleet and explicit two-flag public-safe status/handoff metadata publisher implemented; real GitHub owner-authorized write and UI acceptance NOT_RUN."
     }
   ],
-  "pre_ci_implementation_definition": "P1 100 percent: all 20 F01-F20 source implementations present BEFORE full CI; equal F-ID counts are NOT formal product-acceptance weights.",
-  "current_code_full_ci": "NOT_RUN"
+  "pre_ci_implementation_definition": "20/20 original F01-F20 source implementations prior to bundled CI; NOT an independently validated acceptance score.",
+  "current_code_full_ci": "NOT_RUN_NOT_CHECKED",
+  "pre_ci_implementation_100_candidate": true
 }

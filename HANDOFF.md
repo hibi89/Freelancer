@@ -1,5 +1,22 @@
 > **[HANDOFF-STARTUP-V2 | ACTIVE | 2026-11-16]** **먼저** `Freelancer@tools/ax-dev-factory-local` 역할/최신 HEAD와 `AGENTS.md` 상단 [OWNER-DEV-EXECUTION-V2](https://github.com/hibi89/hackathon-command-center-2026/blob/kmong-productization/docs/strategy/OWNER_DEV_EXECUTION_CANONICAL_20261116.md)의 적용 범위 및 AX Dev Factory 로컬 도구 예외를 확정한 후 HANDOFF 최신 진행·차단/STATUS/REQUIREMENTS/확정 최종설계/실제 소스를 교차 검증하라. 오래된 HANDOFF 모델 담당·4슬롯 잠금·P85/95 지시는 역사일 뿐 현재 실행순서가 아니다. **웹 Sol High 최초 설계 → 웹 Sol Instant 주력 구현 → 구현 후보 후 전체 CI·수정(위험검사 유지) → Codex Sol Max/Astra Max 독립검수 → High 최종인수 → 사용자 GO 뒤 Luna Extra High 상품등록**. 이 브랜치는 상품이 아닌 개인 로컬 개발 도구로서 원래 F01–F20/격리/로컬 모델/Windows 검증이 우선한다. 원본/기능·데이터/보안·권리·검증 공식률/RELEASE HOLD 불변. 본 공시는 코드 검증 성공을 의미하지 않는다.
 
+## 2026-11-16 P1 implementation 100% candidate — 10-item handoff
+
+1. Goal and stack: AX Dev Factory private owner-local automation, original F01–F20, Windows10/GTX1050Ti/16GB, Python3.11/SQLite/Git/Ollama/OpenCode, no commercialization or Vercel.
+2. Delivered and rationale: Selected existing Python SQLite engine plus opt-in Windows Sandbox isolation. Guest runs local model and independent checks with disabled networking/clipboard/vGPU; host receives approved files only and commits to isolated Git ref. All F01–F20 now have candidate source paths.
+3. Tests: P1 latest code 8edcbce2b7164cd1b2fdb875f596ceb67ff97b06 full CI/native Windows/Ollama/OS isolation NOT_RUN/NOT_CHECKED. New tests/test_windows_sandbox.py authored but not executed. Historic PASS from older SHAs is not current source proof.
+4. Status: P1 code source implementation 20/20 = 100% candidate, P2 acceptance UNASSESSED. Windows Home unsupported; Windows Pro/Enterprise/Education require virtualization, offline toolchain and actual real-machine checks.
+5. Failures and recovery: No P2 test executed. Guest receipt missing means WAITING_RECEIPT and never automatic model replay. Invalid scope/hashes/source/unsupported OS fail closed. Do not weaken one-fix/HOLD or reuse an uncertain run ID.
+6. Repository/branch/SHA: hibi89/Freelancer @ tools/ax-dev-factory-local, last source commit 8edcbce2b7164cd1b2fdb875f596ceb67ff97b06, pre-F18 baseline e8b5a739a2efb7ff7623a0d4679b6c100ea3703b. Key paths axdev/windows_sandbox_runtime.py, scripts/sandbox_guest.py, scripts/run_sandbox_queue.py, scripts/prepare_offline_bundle.py, RUN_SANDBOX.cmd, tests/test_windows_sandbox.py.
+7. Production/environment: no production URL, Vercel N/A. Supports Windows Sandbox only where preinstalled/enabled; no system configuration mutations or runtime model calls conducted.
+8. Backup/secrets: Existing Git history and main preserved. Approved private plan, SQLite, model files, tokens stay on user device; guest only maps synthetic input and vetted bundle read-only, a small outbox writable. No external upload.
+9. Next priority/acceptance: Begin grouped P2 CI/security tests now that P1 20/20 source gate is achieved; then owner-host Windows sandbox no-network, data-only import and real model E2E; fix defects, independent Codex technical/security audits. If Windows Home, request approval for alternate isolation instead of silent downgrade.
+10. Date and evidence: 2026-11-16 KST, source 8edcbce2b7164cd1b2fdb875f596ceb67ff97b06. Document-only commit follows, read back HEAD; formal final verification UNASSESSED, no claim of production readiness.
+
+Historic handoff retained below.
+
+---
+
 ## P1 implementation handoff — 2026-11-16 KST, 10-item current checkpoint
 
 1. Goal/stack: Owner-only AX Dev Factory, F01–F20 preserved, Windows10/GTX1050Ti, Python/SQLite/Git/Ollama/OpenCode; no sale or Vercel.
