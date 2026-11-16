@@ -23,16 +23,16 @@ Do not start dependent tasks until their prerequisites are VERIFIED. Repeated ba
 | ID | Requirement | Current evidence |
 |---|---|---|
 | F01 | GitHub source-first High task contract with stable IDs/allowed file paths | JSON v1 parser/tests in branch; remote task sync pending |
-| F02 | Dependency graph validation, no cycles/unknown IDs | Implemented; CI/host proof pending |
+| F02 | Dependency graph validation, no cycles/unknown IDs | Implemented; exact-source Linux synthetic tests PASS (host Windows/CI pending) |
 | F03 | One coding worker, one test reviewer, no second model residency | Controller serial implementation; performance untested |
 | F04 | Local Ollama provider only, no paid external LLM API | Model name guard; runtime network sandbox pending |
-| F05 | Isolated Git worktree, original checkout unchanged | Code; unit synthetic verification pending |
-| F06 | Exact allowed changed paths and fail-closed unsafe modifications | Code; unit synthetic verification pending |
-| F07 | Independent deterministic acceptance commands | Code; protected external acceptance suite pending |
-| F08 | At most one fix attempt, then HOLD | Code; unit synthetic verification pending |
-| F09 | Persistent SQLite state and task-spec SHA | Code; crash/power-loss recovery pending |
-| F10 | Resume incomplete worktree safely | Basic worktree resume code; Windows crash E2E pending |
-| F11 | Verified local commit and SHA-backed evidence | Code; real Git identity/commit acceptance pending |
+| F05 | Isolated Git worktree, original checkout unchanged | Code; exact-source Linux synthetic tests PASS (Windows pending) |
+| F06 | Exact allowed changed paths and fail-closed unsafe modifications | Code; exact-source Linux synthetic tests PASS (Windows pending) |
+| F07 | Independent deterministic acceptance commands | Linux synthetic deterministic checks PASS; broader externally pinned suites pending |
+| F08 | At most one fix attempt, then HOLD | Code; exact-source Linux synthetic tests PASS (Windows pending) |
+| F09 | Persistent SQLite state and task-spec SHA | Linux synthetic state/spec pin PASS; power-loss and Windows pending |
+| F10 | Resume incomplete worktree safely | Linux REVIEW resume unit test PASS; Windows crash E2E pending |
+| F11 | Verified local commit and SHA-backed evidence | Synthetic local Git commit PASS; real owner identity/PR pending |
 | F12 | GitHub push/PR with auth and branch protection | NOT IMPLEMENTED; separate approval gate |
 | F13 | GitHub source/task synchronization without duplicate execution | NOT IMPLEMENTED |
 | F14 | EAI independent cognition/evidence adapter | NOT IMPLEMENTED |
@@ -53,6 +53,10 @@ No 100% completion claim from CI unit PASS alone. Productization, commercializat
 - Model can issue local code tool calls; **v0.1 OpenCode is not an OS security sandbox**. Use a trusted non-admin Windows account and disposable clone. Do not give the agent secrets.
 - Local state outside target project. No auto-push, delete, deployment, remote customer file exchange or paid API.
 - Windows Defender, signing, driver compatibility, actual Ollama/OpenCode versions and real code success require host verification.
+
+## Verified checkpoint — 2026-11-16 KST
+
+Exact Git blob matches for runtime, CLI, test suite and synthetic trial generator, then Linux Python3.13.5 **10 PASS / 0 FAIL / 0 SKIP** and fake local coder E2E with protected tests/isolated Git commit PASS. No real Ollama/OpenCode, owner Windows10 GTX1050Ti, GitHub hosted CI or real user repository acceptance yet. See [verification details](VERIFICATION_20261116.md). Official full-product score remains UNASSESSED.
 
 ## 6. Acceptance for first live trial
 
