@@ -14,6 +14,8 @@ def main(argv=None):
     p = argparse.ArgumentParser()
     p.add_argument("--settings", type=Path, default=default_file())
     p.add_argument("--execute", action="store_true")
+    p.add_argument("--daily-model-call-budget", type=int,
+                   help="optional UTC daily local model invocation cap")
     p.add_argument("--semantic-review", action="store_true",
                    help="require local Ollama semantic check after deterministic acceptance")
     p.add_argument("--implementation-batch", action="store_true",
@@ -64,7 +66,8 @@ def main(argv=None):
             raise ContractError("local prerequisites missing; no tasks started: " +
                                 ", ".join(health["blockers"]))
     factory = Factory(Path(obj["repo"]), plan_path, Path(obj["state"]),
-                      model=obj["model"], semantic_review=a.semantic_review)
+                      model=obj["model"], semantic_review=a.semantic_review,
+                      max_daily_model_calls=a.daily_model_call_budget)
     try:
         results = (factory.run_implementation_batch(maximum, execute=a.execute)
                    if a.implementation_batch else factory.run_many(maximum, execute=a.execute))
@@ -72,6 +75,8 @@ def main(argv=None):
                          ensure_ascii=False, indent=2))
         if any(x["status"] == "HOLD" for x in results):
             return 2
+        if any(x["status"] == "BUDGET_WAIT" for x in results):
+            return 3
         if a.implementation_batch and any(
                 s in ("CODING", "IMPLEMENTED", "REVIEW", "PREPARED")
                 for s in factory.status().values()):

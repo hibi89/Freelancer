@@ -21,6 +21,8 @@ def main(argv=None):
     run.add_argument("--state", type=Path, required=True)
     run.add_argument("--model", default="ollama/qwen2.5-coder:3b")
     run.add_argument("--max-tasks", type=int, default=1)
+    run.add_argument("--daily-model-call-budget", type=int,
+                     help="optional durable UTC daily model-invocation cap")
     run.add_argument("--semantic-review", action="store_true",
                      help="require separate local Ollama semantic verdict after deterministic checks")
     run.add_argument("--implementation-batch", action="store_true",
@@ -59,13 +61,16 @@ def main(argv=None):
                 raise ContractError("local prerequisites missing; no tasks started: " +
                                     ", ".join(health["blockers"]))
         f = Factory(a.repo, a.plan, a.state, model=a.model,
-                    semantic_review=a.semantic_review)
+                    semantic_review=a.semantic_review,
+                    max_daily_model_calls=a.daily_model_call_budget)
         result = (f.run_implementation_batch(a.max_tasks, a.execute)
                   if a.implementation_batch else f.run_many(a.max_tasks, a.execute))
         print(json.dumps({"results": result, "states": f.status()},
                          ensure_ascii=False, indent=2))
         if any(x["status"] == "HOLD" for x in result):
             return 2
+        if any(x["status"] == "BUDGET_WAIT" for x in result):
+            return 3
         if a.implementation_batch and any(
                 s in ("CODING", "IMPLEMENTED", "REVIEW", "PREPARED")
                 for s in f.status().values()):

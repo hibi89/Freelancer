@@ -3,7 +3,7 @@
   "scope": "AX Dev Factory owner-only local personal tool",
   "official_final_blueprint_completion": "UNASSESSED",
   "provisional_readiness": "72/100 (previous fixed five-domain proxy; not recalculated)",
-  "evidence_basis": "Source-only P1 implementation audit, new files NOT_RUN; 2026-11-16. No GitHub CI inspection until implementation 100% candidate.",
+  "evidence_basis": "Source-only P1 implementation; F14/F15/F17/F19/F20 new code NOT_RUN until pre-CI implementation 100%.",
   "requirements": [
     {
       "id": "F01",
@@ -163,9 +163,11 @@
       "implementation": "PARTIAL",
       "verification": "PARTIAL",
       "paths": [
-        "scripts/queue_control.py"
+        "axdev/core.py",
+        "scripts/daily_status.py",
+        "scripts/prepare_startup.py"
       ],
-      "remaining_work": "Startup scheduler, daily report, and real budget controls remain."
+      "remaining_work": "Daily model-call reservation budget, status and optional Windows Task Scheduler XML + explicit registration implemented; real restart and service mode NOT_RUN."
     },
     {
       "id": "F18",
@@ -192,10 +194,11 @@
       "implementation": "PARTIAL",
       "verification": "PARTIAL",
       "paths": [
+        "scripts/owner_dashboard.py",
         "scripts/fleet.py",
-        "scripts/run_configured_queue.py"
+        "scripts/publish_pr.py"
       ],
-      "remaining_work": "Approval UI and remote PR/status/handoff sync remain."
+      "remaining_work": "Loopback-only owner stop/resume/status UI implemented; per-task approval UI and remote PR/handoff status sync remain outside first slice."
     }
   ]
 }

@@ -38,6 +38,9 @@ def _stage(factory, task: dict) -> dict:
         factory._preflight_workspace(task, work)
         if factory._changed(work):
             raise ContractError("queued batch worktree already has changes")
+        if not factory._reserve_model_call(tid, "BATCH_CODING"):
+            return {"id": tid, "status": "BUDGET_WAIT",
+                    "reason": "daily local model-call cap reached"}
         factory._set(tid, "CODING", "batch coding in progress")
         factory._active_allowed_files = tuple(task["files"])
         rc, output = factory.coder(work, factory._prompt(task, "CODING"))
@@ -179,8 +182,10 @@ def run_implementation_batch(factory, maximum: int, execute: bool) -> list[dict]
                     accounted.add(task["id"])
                     if outcome["status"] == "IMPLEMENTED":
                         occupied |= names
-                    if outcome["status"] == "REVIEW":
+                    if outcome["status"] in ("REVIEW", "BUDGET_WAIT"):
                         break
+                if results and results[-1]["status"] == "BUDGET_WAIT":
+                    return results
                 if not staged:
                     break
 
@@ -205,7 +210,7 @@ def run_implementation_batch(factory, maximum: int, execute: bool) -> list[dict]
                 outcome = factory.run_one(True)
                 results.append(outcome)
                 _event(factory, outcome, time.monotonic() - began)
-                if outcome["status"] == "NO_READY_TASK":
+                if outcome["status"] in ("NO_READY_TASK", "BUDGET_WAIT"):
                     return results
             if remaining == 0:
                 break

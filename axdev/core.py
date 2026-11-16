@@ -152,7 +152,8 @@ def plan_hash(task: dict) -> str:
 
 class Factory:
     def __init__(self, repo: Path, plan: Path, state: Path, model: str = "ollama/qwen2.5-coder:3b",
-                 coder=None, semantic_review: bool = False, semantic_reviewer=None):
+                 coder=None, semantic_review: bool = False, semantic_reviewer=None,
+                 max_daily_model_calls: int | None = None):
         self.repo, self.state = repo.resolve(), state.resolve()
         if self.state == self.repo or self.repo in self.state.parents:
             raise ContractError("state directory must be outside target repository")
@@ -167,6 +168,11 @@ class Factory:
             raise ContractError("semantic_review must be an explicit boolean")
         self.semantic_review_enabled = semantic_review
         self.semantic_reviewer = semantic_reviewer
+        if (max_daily_model_calls is not None and
+                (type(max_daily_model_calls) is not int or
+                 not 1 <= max_daily_model_calls <= 10000)):
+            raise ContractError("daily model-call budget must be 1..10000")
+        self.max_daily_model_calls = max_daily_model_calls
         self.state.mkdir(parents=True, exist_ok=True)
         (self.state / "worktrees").mkdir(exist_ok=True)
         self.db = sqlite3.connect(self.state / "factory.sqlite3")
@@ -197,6 +203,9 @@ class Factory:
                         "(id TEXT PRIMARY KEY, spec TEXT NOT NULL, status TEXT NOT NULL, "
                         "attempts INTEGER NOT NULL DEFAULT 0, evidence TEXT NOT NULL DEFAULT '', "
                         "commit_sha TEXT NOT NULL DEFAULT '')")
+        self.db.execute("CREATE TABLE IF NOT EXISTS model_calls "
+                        "(id INTEGER PRIMARY KEY, day_utc TEXT NOT NULL, "
+                        "task_id TEXT NOT NULL, phase TEXT NOT NULL)")
         for task in self.tasks:
             row = self.db.execute("SELECT spec FROM runs WHERE id=?", (task["id"],)).fetchone()
             digest = plan_hash(task)
@@ -217,6 +226,31 @@ class Factory:
         self.db.execute("UPDATE runs SET status=?, evidence=?, commit_sha=? WHERE id=?",
                         (status, evidence[-3000:], commit, tid))
         self.db.commit()
+
+    def _reserve_model_call(self, task_id: str, phase: str) -> bool:
+        """Persistent count-before-call budget; not a model-run success claim.
+
+        Never start a new model invocation when its optional daily cap is
+        exhausted. A crash after reservation may overcount (fail closed).
+        """
+        day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            if self.max_daily_model_calls is not None:
+                count = self.db.execute(
+                    "SELECT COUNT(*) FROM model_calls WHERE day_utc=?", (day,)
+                ).fetchone()[0]
+                if count >= self.max_daily_model_calls:
+                    self.db.rollback()
+                    return False
+            self.db.execute(
+                "INSERT INTO model_calls(day_utc,task_id,phase) VALUES(?,?,?)",
+                (day, task_id, phase))
+            self.db.commit()
+            return True
+        except BaseException:
+            self.db.rollback()
+            raise
 
     def next_task(self) -> dict | None:
         states = self.status()
@@ -465,6 +499,9 @@ class Factory:
             if prior == "PREPARED":
                 return self._promote_prepared(tid)
             if prior != "REVIEW":
+                if not self._reserve_model_call(tid, "CODING"):
+                    return {"id": tid, "status": "BUDGET_WAIT",
+                            "reason": "daily local model-call cap reached"}
                 self._set(tid, "CODING")
                 self._active_allowed_files = tuple(task["files"])
                 rc, output = self.coder(workspace, self._prompt(task, "CODING"))
@@ -478,6 +515,9 @@ class Factory:
                 if used >= 1:
                     self._set(tid, "HOLD", feedback)
                     return {"id": tid, "status": "HOLD", "reason": feedback[-500:]}
+                if not self._reserve_model_call(tid, "FIX_ONCE"):
+                    return {"id": tid, "status": "BUDGET_WAIT",
+                            "reason": "daily local model-call cap reached before repair"}
                 self.db.execute("UPDATE runs SET attempts=attempts+1 WHERE id=?", (tid,))
                 self.db.commit()
                 self._active_allowed_files = tuple(task["files"])
@@ -526,7 +566,7 @@ class Factory:
                     # are deliberately excluded. SQLite remains canonical state.
                     with (self.state / "run-events.jsonl").open("a", encoding="utf-8") as fp:
                         fp.write(json.dumps(event, ensure_ascii=False) + "\n")
-                if result["status"] in ("NO_READY_TASK", "DRY_RUN"):
+                if result["status"] in ("NO_READY_TASK", "DRY_RUN", "BUDGET_WAIT"):
                     break
         return results
 
