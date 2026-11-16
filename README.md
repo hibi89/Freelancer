@@ -23,7 +23,7 @@ The live trial defaults to your previously installed `ollama/qwen3:4b-instruct` 
 ## Once the synthetic model trial is accepted
 
 ```powershell
-python -m scripts.configure_queue --repo "C:\\path\\to\\target-git-repo" --plan "C:\\path\\to\\owner-approved-plan.json"
+python -m scripts.configure_queue --repo "C:\path\to\target-git-repo" --plan "C:\path\to\owner-approved-plan.json"
 .\RUN_QUEUE.cmd
 ```
 
