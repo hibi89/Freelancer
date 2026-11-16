@@ -431,9 +431,13 @@ class FactoryTests(unittest.TestCase):
         self.assertNotIn("package", settings["providers"]["ollama"])
         self.assertIn({"action": "plugin.use", "resource": "opencode.provider.ollama",
                        "effect": "allow"}, settings["policies"])
-        self.assertEqual(settings["policies"][:2], [
+        self.assertEqual(settings["policies"][:4], [
+            {"action": "tool.use", "resource": "edit:*", "effect": "deny"},
+            {"action": "tool.use", "resource": "edit:src/feature.py", "effect": "allow"},
             {"action": "provider.use", "resource": "*", "effect": "deny"},
             {"action": "provider.use", "resource": "ollama", "effect": "allow"}])
+        self.assertIn({"action": "tool.use", "resource": "edit:*.env*", "effect": "deny"},
+                      settings["policies"][4:])
         self.assertIn({"action": "tool.use", "resource": "shell:*", "effect": "deny"},
                       settings["policies"])
         edits = [rule for rule in settings["permissions"] if rule["action"] == "edit"]

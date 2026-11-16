@@ -66,6 +66,7 @@ def validate_config_sources(output: str, expected: dict) -> bool:
     hard_required = [
         {"action": "provider.use", "resource": "*", "effect": "deny"},
         {"action": "provider.use", "resource": "ollama", "effect": "allow"},
+        {"action": "tool.use", "resource": "edit:*", "effect": "deny"},
         {"action": "tool.use", "resource": "shell:*", "effect": "deny"},
         {"action": "tool.use", "resource": "webfetch:*", "effect": "deny"},
         {"action": "tool.use", "resource": "websearch:*", "effect": "deny"},

@@ -341,6 +341,14 @@ class Factory:
             {"action": "edit", "resource": path, "effect": "allow"}
             for path in allowed
         ]
+        # Agent Markdown can override ordinary permission rules. This policy
+        # applies after agent rules, with the configured sensitive path denies
+        # kept last so they still take precedence.
+        config_obj["policies"][:0] = [
+            {"action": "tool.use", "resource": "edit:*", "effect": "deny"},
+            *({"action": "tool.use", "resource": f"edit:{path}", "effect": "allow"}
+              for path in allowed),
+        ]
         env = {key: value for key, value in os.environ.items()
                if not any(secret in key.upper() for secret in
                           ("TOKEN", "API_KEY", "PASSWORD", "SECRET", "CREDENTIAL"))}

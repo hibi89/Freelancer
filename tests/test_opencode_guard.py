@@ -12,6 +12,8 @@ class ConfigSourceTests(unittest.TestCase):
                 {"action": "edit", "resource": "src/hello.py", "effect": "allow"},
             ],
             "policies": [
+                {"action": "tool.use", "resource": "edit:*", "effect": "deny"},
+                {"action": "tool.use", "resource": "edit:src/hello.py", "effect": "allow"},
                 {"action": "provider.use", "resource": "*", "effect": "deny"},
                 {"action": "provider.use", "resource": "ollama", "effect": "allow"},
                 {"action": "tool.use", "resource": "shell:*", "effect": "deny"},
@@ -67,11 +69,13 @@ class ConfigSourceTests(unittest.TestCase):
             self.assertFalse(validate_config_sources(output, self.expected))
 
     def test_missing_tool_hard_denies_are_not_accepted(self):
-        expected = dict(self.expected)
-        expected["policies"] = [p for p in self.expected["policies"]
-                                if p.get("resource") != "shell:*"]
-        output = json.dumps([self.inline_document(expected)])
-        self.assertFalse(validate_config_sources(output, expected))
+        for removed in ("edit:*", "shell:*"):
+            with self.subTest(removed=removed):
+                expected = dict(self.expected)
+                expected["policies"] = [rule for rule in self.expected["policies"]
+                                        if rule["resource"] != removed]
+                output = json.dumps([self.inline_document(expected)])
+                self.assertFalse(validate_config_sources(output, expected))
 
 
 if __name__ == "__main__":
