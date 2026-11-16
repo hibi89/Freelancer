@@ -1,9 +1,11 @@
 # AX Dev Factory P2 verification checkpoint · 2026-11-16 KST
 
-1. Read the [F01–F20 evidence ledger](docs/P2_VERIFICATION_LEDGER.md) and the [Windows isolation runtime contract](docs/WINDOWS_SANDBOX_RUNTIME.md). Base commit `5ab94180471c7ea86344b691fc77ad5c29989071`; functional source `f2becd6d3b9c19347516cd46f40186cc211f7340` on `codex/axdev-full-verification`. GitHub Actions and the draft PR contain final HEAD evidence. [Branch checks](https://github.com/hibi89/Freelancer/actions?query=branch%3Acodex%2Faxdev-full-verification).
+1. Read the [F01–F20 evidence ledger](docs/P2_VERIFICATION_LEDGER.md) and the [Windows isolation runtime contract](docs/WINDOWS_SANDBOX_RUNTIME.md). Base commit `5ab94180471c7ea86344b691fc77ad5c29989071`; functional source `00a53fca634ee857640e32b74edf624a31ec8273` on `codex/axdev-full-verification`. GitHub Actions and the draft PR contain final HEAD evidence. [Branch checks](https://github.com/hibi89/Freelancer/actions?query=branch%3Acodex%2Faxdev-full-verification).
 2. Review the F18 boundary in `axdev/windows_sandbox_runtime.py`, `axdev/sandbox_review.py` and `axdev/windows_review_process.py`. Coding guest sends a candidate, acceptance executes under restricted OS identities, host compares outputs and binds exact Git objects to stored proof. Check the forgery, failed repair, recovery and network/filesystem regressions in `tests/test_windows_sandbox.py`.
 3. Acceptance **12/20**, with eight rows pending and owner real-use **HOLD**. Windows 11 AppContainer attack tests, native Ollama semantic inference, actual EAI and live GitHub plan import/replay are available. Run the Windows 10 gates on an authorized device with an enabled Sandbox and pinned offline runtime before readiness decisions.
 4. The original branch remains the PR base and rollback reference. OpenCode runtime, owner scheduling, actual AXDEV public export and target power interruption require evidence on the supported setup. Use disposable fixtures and private evidence. The operator must approve a specific repository, commit and public export before runtime publication.
+
+Follow-up verified the owner dashboard stop/resume loop in a real browser and fixed the two-project CLI configuration exit. OpenCode 2.3.0 standalone was checked on a portable copy; full Windows Sandbox behavior and explicitly approved status publishing remain pending.
 
 Historical snapshots follow.
 

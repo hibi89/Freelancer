@@ -1,10 +1,12 @@
 # AX Dev Factory P2 verification checkpoint · 2026-11-16 KST
 
-Functional SHA `f2becd6d3b9c19347516cd46f40186cc211f7340` on `codex/axdev-full-verification`. **12/20 acceptance rows PASS; eight remain NOT_RUN.** Weighted completion UNASSESSED. **Owner real-use HOLD.** The [P2 ledger](docs/P2_VERIFICATION_LEDGER.md) lists all F01–F20 and each first-use device gate. [Branch CI and exact checkout](https://github.com/hibi89/Freelancer/actions?query=branch%3Acodex%2Faxdev-full-verification).
+Functional SHA `00a53fca634ee857640e32b74edf624a31ec8273` on `codex/axdev-full-verification`. **12/20 acceptance rows PASS; eight remain NOT_RUN.** Weighted completion UNASSESSED. **Owner real-use HOLD.** The [P2 ledger](docs/P2_VERIFICATION_LEDGER.md) lists all F01–F20 and each first-use device gate. [Branch CI and exact checkout](https://github.com/hibi89/Freelancer/actions?query=branch%3Acodex%2Faxdev-full-verification).
 
 - The Windows Sandbox guest produces advisory candidate bytes. A host-owned AppContainer check and independent callable oracle gate the exact Git tree, proof and integration ref. The queue pins approvals, bundle bytes and recovery evidence. A draft PR export also requires an isolated history with matching host evidence.
 - Native Windows 11 reviewer adversarial tests ran. A real local Ollama semantic check and a real isolated EAI synthetic receipt ran. GitHub plan import and replay were checked live.
 - Target Windows 10 unavailable here. Windows Sandbox is disabled and OpenCode unavailable on the current Windows 11 host. The actual Windows 10 isolated coding, hardware, restart and authorized runtime publication checks remain pending.
+
+Follow-up verified the owner dashboard stop/resume loop in a real browser and fixed the two-project CLI configuration exit. OpenCode 2.3.0 standalone was checked on a portable copy; full Windows Sandbox behavior and explicitly approved status publishing remain pending.
 
 Historical snapshots follow.
 

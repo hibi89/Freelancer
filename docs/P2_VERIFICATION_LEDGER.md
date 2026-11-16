@@ -1,6 +1,6 @@
 # AX Dev Factory P2 acceptance evidence · 2026-11-16 KST
 
-Functional source `f2becd6d3b9c19347516cd46f40186cc211f7340`, branch `codex/axdev-full-verification`, based on `5ab94180471c7ea86344b691fc77ad5c29989071`. The following handoff commit changes documentation only. The PR checks check out the exact PR HEAD. [GitHub Actions for this branch](https://github.com/hibi89/Freelancer/actions?query=branch%3Acodex%2Faxdev-full-verification).
+Functional source `00a53fca634ee857640e32b74edf624a31ec8273`, branch `codex/axdev-full-verification`, based on `5ab94180471c7ea86344b691fc77ad5c29989071`. The following handoff commit changes documentation only. The PR checks check out the exact PR HEAD. [GitHub Actions for this branch](https://github.com/hibi89/Freelancer/actions?query=branch%3Acodex%2Faxdev-full-verification).
 
 **12/20 F-ID acceptance rows PASS. Eight rows have requirements still NOT_RUN.** A row passes only when its listed behavior has evidence at its defined interface. Section 6 device trial gates are tracked separately below. Formal weighted progress is UNASSESSED. Owner real-use remains HOLD.
 
@@ -9,7 +9,7 @@ Functional source `f2becd6d3b9c19347516cd46f40186cc211f7340`, branch `codex/axde
 | F01 | PASS | Public plan retrieved at approved branch SHA; Git blob and local SHA256 pinned. Plan mismatch, candidate replay and unauthorized path rejected. Task and oracle immutable across restart. |
 | F02 | PASS | Cycle/unknown dependency rejected; fixture queues prove VERIFIED prerequisite ordering and HOLD isolation. |
 | F03 | NOT_RUN | Queue and worker locks, disjoint coding/reviewer processes and serial staging exercised. Real OpenCode worker lifecycle and single resident model on target remain untested. |
-| F04 | NOT_RUN | Effective Ollama-only policy checked synthetically; local Ollama metadata and generation tested on Windows 11. Real offline OpenCode tool calls and provider enforcement untested. |
+| F04 | NOT_RUN | Effective Ollama-only policy checked synthetically; local Ollama metadata and generation tested on Windows 11. Official Windows OpenCode 2.3.0 portable binary starts and advertises standalone mode. Config inspection and execution use the same executable and private-server mode. The AppContainer-only CLI diagnostic could not complete its private service transport. Real Windows Sandbox tool calls and provider enforcement remain untested. |
 | F05 | PASS | Separate Git worktree in synthetic coding; sandbox snapshot and exact isolated integration ref exercised while original checkout and HEAD remained unchanged. |
 | F06 | PASS | Candidate digest and allowlist, tracked test protection, Windows aliases/reparse probes, and AppContainer write denial tested. |
 | F07 | PASS | Native AppContainer executes protected tests and distinct callable probes. A fake successful test process cannot make a wrong callable result pass. |
@@ -25,13 +25,13 @@ Functional source `f2becd6d3b9c19347516cd46f40186cc211f7340`, branch `codex/axde
 | F17 | NOT_RUN | Cooperative stop/resume, invocation caps, durable budget, locks and metadata events tested. Actual owner startup, OS task registration and scheduled launch untested. |
 | F18 | NOT_RUN | Original receipt exploit reproduced at the data boundary. Fake promotion denied; separate host AppContainer denies private file I/O, snapshot writes and connection to a listening localhost port on Windows 11. Forged project test result and proof mutation regressions pass. Windows 10 Sandbox launch, VM mapping and actual no-egress still require device proof. |
 | F19 | PASS | Installed local GGUF `qwen3:4b-instruct` returned `SEMANTIC_PASS_LOCAL_ONLY` for a synthetic code sample. Deterministic oracle gates promotion before a semantic verdict; malformed or external model evaluations rejected. |
-| F20 | NOT_RUN | Synthetic sequential fleet, approved plan checks, caps, loopback HTTP owner dashboard, CSRF and Host validation covered. Live owner browser use and authorized status synchronization untested. |
+| F20 | NOT_RUN | Synthetic sequential fleet, approved plan checks, caps, loopback HTTP owner dashboard, CSRF and Host validation covered. Real browser on a disposable Windows 11 fixture confirmed ELIGIBLE → PAUSED → ELIGIBLE after repairing a 403 caused by the form referrer policy. Two-project CLI configure, dry-run and status passed after fixing a false nonzero exit. Metadata-only preview showed one queued task, and a single publish flag refused the write. Authorized GitHub status publication remains untested. |
 
 ## Final blueprint §6 trial gates
 
 | Gate | Evidence | Target trial |
 | --- | --- | --- |
-| 1. Prerequisites | Win11 preflight detected Ollama, GTX 1050 Ti and the tool-capable installed model; OpenCode unavailable; Windows Sandbox optional feature disabled. | NOT_RUN on Windows 10; current-host readiness FAIL. |
+| 1. Prerequisites | Win11 preflight detected Ollama, GTX 1050 Ti and the tool-capable installed model; OpenCode absent on PATH; an official 2.3.0 portable copy was inspected separately. Windows Sandbox optional feature disabled. | NOT_RUN on Windows 10; current-host readiness FAIL. |
 | 2. Safe dry run | Synthetic fixture and dry-run verification in Linux/Windows CI. | NOT_RUN on the target device. |
 | 3. Allowed changes by the coder | Synthetic scope, candidate validation and exact Git bytes. | NOT_RUN with real OpenCode in Windows Sandbox. |
 | 4. Protected tests pass and unauthorized edits HOLD | Native AppContainer positive and adversarial tests plus guarded candidate and commit regression tests. | NOT_RUN for the full isolated coding path on Windows 10. |
@@ -42,6 +42,6 @@ Functional source `f2becd6d3b9c19347516cd46f40186cc211f7340`, branch `codex/axde
 ## Evidence and next handoff
 
 - The baseline Linux `139 PASS`, hosted Windows `138 PASS / 1 SKIP`, and CMD fixture pass remain tied to `841f957664023ac04cb4ee9abc4870d2a11596b3`. [Baseline CI](https://github.com/hibi89/Freelancer/actions/runs/43820637531).
-- The PR checks and its evidence comment/body record final hosted test results and checkout SHA. A successful hosted job cannot certify the owner's machine. Python-native AppContainer tests exercise the reviewer alone.
+- Follow-up regressions cover the fleet CLI exit and browser form headers. The portable OpenCode 2.3.0 executable SHA256 is `38153a142354634c82b5cfe6c00b19df15a71e6cf8c17ef5f5c1a4cc684a6917`. The PR checks and its body record final hosted test results and checkout SHA. A successful hosted job cannot certify the owner's machine. Python-native AppContainer tests exercise the reviewer alone.
 - Remaining blocker is access to the supported Windows 10 machine with an enabled Sandbox and an owner-vetted offline toolchain. Then exercise denial and real coding, interrupted runs, startup, performance and allowed publication checks. Start with the fixed disposable fixture in [Windows Sandbox runtime](WINDOWS_SANDBOX_RUNTIME.md). Keep private state, logs and test assets on the device.
 - Manual High handoff should compare the final design and exact branch diff, review the scope of the independent oracle, and rerun every missing device gate. Relevant evidence is the reviewable PR and these source-linked results.
