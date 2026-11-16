@@ -47,7 +47,7 @@ No 100% completion claim from CI unit PASS alone. Productization, commercializat
 
 ## 5. Performance / safety policy
 
-- Start with \`ollama/qwen2.5-coder:3b\` vs installed \`qwen3:4b-instruct\`, compare real throughput & task success. 8K context target; increase only after measuring. One model call at a time.
+- Start with `ollama/qwen2.5-coder:3b` vs installed `qwen3:4b-instruct`, compare real throughput & task success. 8K context target; increase only after measuring. One model call at a time.
 - CPU validation may run while a **different** task is coding later, only after separate reviewer isolation is implemented; v0.1 does both sequentially for correctness and memory safety.
 - Python 3.11 standard library. Exact argv check allowlist. No arbitrary task-command execution or shell=True.
 - Model can issue local code tool calls; **v0.1 OpenCode is not an OS security sandbox**. Use a trusted non-admin Windows account and disposable clone. Do not give the agent secrets.
@@ -56,6 +56,6 @@ No 100% completion claim from CI unit PASS alone. Productization, commercializat
 
 ## 6. Acceptance for first live trial
 
-(1) \`python -m axdev doctor\` shows prereqs. (2) sample plan dry run leaves target untouched. (3) on a disposable fixture Git repo, coder creates only two allowed files. (4) protected tests PASS; unauthorized file edits HOLD. (5) replay prevents duplicate task. (6) queue handles independent next task after HOLD. (7) performance metrics are recorded and compared to manual GPT workflow.
+(1) `python -m axdev doctor` shows prereqs. (2) sample plan dry run leaves target untouched. (3) on a disposable fixture Git repo, coder creates only two allowed files. (4) protected tests PASS; unauthorized file edits HOLD. (5) replay prevents duplicate task. (6) queue handles independent next task after HOLD. (7) performance metrics are recorded and compared to manual GPT workflow.
 
 Only after these pass, target a non-sensitive existing Kmong code repo and a single High-approved small issue. Runtime execution on user's Windows laptop cannot be validated through this GitHub-only session.
