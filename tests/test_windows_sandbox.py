@@ -20,7 +20,7 @@ from axdev.sandbox_payload import BINARIES, encode_files, extract_snapshot, read
 from axdev.sandbox_review import verify_candidate
 from axdev.windows_review_process import run_restricted, single_sandbox_slot
 from axdev.windows_sandbox_runtime import (
-    BACKEND, _read_bundle, _read_receipt, _sandbox_running, _wsb, run_sandbox_one,
+    BACKEND, _read_bundle, _read_receipt, _sandbox_running, _wait_candidate, _wsb, run_sandbox_one,
     run_sandbox_queue, validate_history,
 )
 from scripts.prepare_offline_bundle import build_manifest
@@ -43,6 +43,31 @@ def copy_python(runtime: Path):
 
 
 class SandboxGuestStartupTests(unittest.TestCase):
+    def test_waits_through_the_gap_between_launcher_and_sandbox_registration(self):
+        receipt = {"status": "CANDIDATE"}
+        record = {"run_id": "fixture", "base_sha": "a" * 40}
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "outbox").mkdir()
+            states = iter((True, False, True, False))
+
+            def sandbox_is_running():
+                active = next(states)
+                if not active and next_check.call_count == 4:
+                    (root / "outbox" / "receipt.json").touch()
+                return active
+
+            with (
+                patch(MOD + "._request_matches"),
+                patch(MOD + "._sandbox_running", side_effect=sandbox_is_running) as next_check,
+                patch(MOD + "._read_receipt", return_value=receipt) as read,
+                patch(MOD + ".time.sleep"),
+            ):
+                process = Mock(**{"poll.return_value": 0})
+                self.assertEqual(_wait_candidate({}, record, root, process, 10), receipt)
+                self.assertEqual(next_check.call_count, 4)
+                read.assert_called_once_with(root, "fixture", {}, "a" * 40)
+
     def test_local_ollama_pins_one_model_and_one_request(self):
         inherited = {"OLLAMA_MAX_LOADED_MODELS": "3", "OLLAMA_NUM_PARALLEL": "4"}
         with (

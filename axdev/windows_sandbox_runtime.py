@@ -360,17 +360,21 @@ def _start_guest(executable: Path, root: Path) -> subprocess.Popen:
 
 def _wait_candidate(task: dict, record: dict, root: Path, process, timeout: int) -> dict | None:
     _request_matches(root, record, task)
-    started = time.monotonic()
-    end = started + timeout
-    seen_running = False
+    end = time.monotonic() + timeout
+    idle_since = None
     while time.monotonic() < end:
-        if _sandbox_running():
-            seen_running = True
-        elif ((process is None or process.poll() is not None)
-              and (seen_running or process is None
-                   or (root / "outbox" / "receipt.json").is_file()
-                   or time.monotonic() >= started + 45)):
-            return _read_receipt(root, record["run_id"], task, record["base_sha"])
+        if (process is not None and process.poll() is None) or _sandbox_running():
+            idle_since = None
+        else:
+            if (root / "outbox" / "receipt.json").is_file():
+                return _read_receipt(root, record["run_id"], task, record["base_sha"])
+            # The launcher can exit before the app has registered its guest.
+            # A transient gap must not abandon a run whose VM is still starting.
+            now = time.monotonic()
+            if idle_since is None:
+                idle_since = now
+            elif now - idle_since >= 45:
+                return None
         time.sleep(2)
     return None
 
