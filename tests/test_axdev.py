@@ -141,6 +141,23 @@ class FactoryTests(unittest.TestCase):
         self.assertIn("POST_CHECK_SOURCE_MUTATION", result["reason"])
         f.close()
 
+    def test_windows_reserved_and_alias_paths_are_rejected_portably(self):
+        for name in ("src/CON.txt", "src/prn.py", "src/LPT9", "src/AUX",
+                     "src/file.", "src/file ", "src/foo?bar.py",
+                     "src/p|q.py", "src/nul", "src/COM1.py"):
+            task = self.task()
+            task["files"] = [name]
+            self.write_plan([task])
+            with self.subTest(name=name), self.assertRaises(ContractError):
+                load_plan(self.plan)
+
+    def test_case_colliding_paths_rejected_for_windows(self):
+        t = self.task()
+        t["files"] = ["src/Main.py", "src/main.py"]
+        self.write_plan([t])
+        with self.assertRaisesRegex(ContractError, "Windows"):
+            load_plan(self.plan)
+
     def test_invalid_path_and_cycle(self):
         bad = self.task()
         bad["files"] = ["../oops"]

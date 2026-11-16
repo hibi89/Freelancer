@@ -57,13 +57,29 @@ def single_worker_lock(state: Path):
     finally:
         file.close()
 
+_WINDOWS_RESERVED = frozenset(
+    {"CON", "PRN", "AUX", "NUL", "CONIN$", "CONOUT$"} |
+    {f"{prefix}{suffix}" for prefix in ("COM", "LPT")
+     for suffix in "123456789¹²³"}
+)
+
 def safe_path(value: str) -> str:
+    if not isinstance(value, str):
+        raise ContractError("file path must be text")
     p = Path(value)
-    if (not value or p.is_absolute() or "\\" in value or ":" in value
-            or any(s in ("", ".", "..") for s in value.split("/"))
+    segments = value.split("/")
+    if (not value or p.is_absolute() or "\\" in value
+            or any(s in ("", ".", "..") for s in segments)
             or any(segment.lower().startswith((".git", ".axdev", ".github",
                                                     ".opencode", ".env"))
-                   for segment in value.split("/"))):
+                   for segment in segments)
+            # Windows disallows these characters and aliasing names. Reject
+            # them even on Linux so the same approved plan remains portable.
+            or any(any(ord(ch) < 32 or ch in '<>:"|?*' for ch in s)
+                   for s in segments)
+            or any(s.endswith((" ", ".")) for s in segments)
+            or any(s.split(".")[0].upper() in _WINDOWS_RESERVED
+                   for s in segments)):
         raise ContractError(f"unsafe path: {value!r}")
     return value
 
@@ -87,8 +103,8 @@ def load_plan(path: Path) -> list[dict]:
             if not isinstance(p, str):
                 raise ContractError("file path must be text")
             safe_path(p)
-        if len(set(t["files"])) != len(t["files"]):
-            raise ContractError(f"{tid}: repeated file")
+        if len({p.casefold() for p in t["files"]}) != len(t["files"]):
+            raise ContractError(f"{tid}: repeated file or Windows case collision")
         deps = t.get("depends_on", [])
         if not isinstance(deps, list) or len(deps) != len(set(deps)):
             raise ContractError(f"{tid}: invalid dependencies")
