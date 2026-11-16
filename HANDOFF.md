@@ -1,3 +1,5 @@
+2026-11-16 KST: Implemented (CI pending) SHA-pinned public GitHub plan import, immutable local staging, V2 CLI standalone/default deny. New synthetic tests and broadened CI. Historical 19 PASS still prior only; Windows/OpenCode/Ollama/network NOT_RUN. Formal completeness UNASSESSED; main/Production untouched. Rollback: eddb16cd9a13f638f04212c0a7f8ad03be34699e.
+
 # AX Dev Factory — 2026-11-16 KST 최종 검증 인수인계 (10항)
 
 1. **목표·용도·기술:** GTX1050Ti/16GB Windows10 개인 무인 순차 개발; GPT-6 High 사전 task JSON → 로컬 Ollama/OpenCode V2 코딩 1개 → 독립 결정론적 검수 → 1회 수정/HOLD → 다음 독립 태스크. Python3.11 stdlib/SQLite/Git worktree. Spec Kit은 명세 작성 참조, Superpowers는 절차 원칙만 적용, Ruff 선택형, 브라우저/GUI 도구는 선택형 미래 어댑터. 크몽 판매·제품 등록 범위 제외.

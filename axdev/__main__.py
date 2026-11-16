@@ -23,6 +23,12 @@ def main(argv=None):
     run.add_argument("--max-tasks", type=int, default=1)
     run.add_argument("--execute", action="store_true",
                      help="Opt in to local model tool execution and code writes")
+    sync = sub.add_parser("sync-plan", help="Read-only import of SHA-pinned public GitHub task JSON")
+    sync.add_argument("--source", required=True)
+    sync.add_argument("--branch", required=True)
+    sync.add_argument("--path", required=True)
+    sync.add_argument("--expected-sha", required=True)
+    sync.add_argument("--output", required=True, type=Path)
     a = p.parse_args(argv)
     if a.command == "doctor":
         result = {"python": sys.version.split()[0],
@@ -34,6 +40,11 @@ def main(argv=None):
         if a.plan:
             result["task_count"] = len(load_plan(a.plan))
         print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    if a.command == "sync-plan":
+        from .github_sync import sync_public_plan
+        value = sync_public_plan(a.source, a.branch, a.path, a.expected_sha, a.output)
+        print(json.dumps(value, ensure_ascii=False, indent=2))
         return 0
     f = None
     try:

@@ -213,6 +213,9 @@ class FactoryTests(unittest.TestCase):
                          {"action": "edit", "resource": "src/feature.py", "effect": "allow"})
         self.assertEqual(intercepted["env"]["OPENCODE_AUTO_SHARE"], "false")
         self.assertIn("--model", intercepted["argv"])
+        self.assertIn("--standalone", intercepted["argv"])
+        self.assertEqual(settings["permissions"][0],
+                         {"action": "*", "resource": "*", "effect": "deny"})
         f.close()
 
     def test_interrupted_coding_reviews_existing_diff_without_model(self):

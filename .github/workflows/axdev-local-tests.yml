@@ -8,7 +8,7 @@ on:
       - tools/ax-dev-factory-local
     paths:
       - 'axdev/**'
-      - 'tests/test_axdev.py'
+      - 'tests/**'
       - 'config/opencode-local-only.json'
       - '.github/workflows/axdev-local-tests.yml'
   workflow_dispatch:
@@ -26,7 +26,7 @@ jobs:
       - name: Python bytecode compilation
         run: python -m compileall -q axdev scripts tests
       - name: Synthetic Git worktree review tests
-        run: python -m unittest discover -s tests -p test_axdev.py -v
+        run: python -m unittest discover -s tests -p "test_*.py" -v
       - name: CLI doctor
         run: python -m axdev doctor --plan examples/sample-plan.json
       - name: CLI version

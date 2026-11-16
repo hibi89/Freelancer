@@ -13,6 +13,11 @@
   },
   "permissions": [
     {
+      "action": "*",
+      "resource": "*",
+      "effect": "deny"
+    },
+    {
       "action": "read",
       "resource": "*",
       "effect": "allow"

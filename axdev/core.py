@@ -244,7 +244,7 @@ class Factory:
         env["HTTP_PROXY"] = "http://127.0.0.1:9"
         env["HTTPS_PROXY"] = "http://127.0.0.1:9"
         env["ALL_PROXY"] = "http://127.0.0.1:9"
-        return call(["opencode", "run", "--model", self.model, prompt], cwd,
+        return call(["opencode", "run", "--standalone", "--model", self.model, prompt], cwd,
                     timeout=1200, env=env)
 
     def _prompt(self, task: dict, phase: str, feedback: str = "") -> str:
