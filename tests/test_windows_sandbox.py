@@ -7,6 +7,7 @@ from contextlib import nullcontext
 from pathlib import Path
 import shutil
 import socket
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -17,7 +18,7 @@ import zipfile
 from axdev.core import ContractError, Factory, git, plan_hash
 from axdev.sandbox_payload import BINARIES, encode_files, extract_snapshot, read_json, write_json
 from axdev.sandbox_review import verify_candidate
-from axdev.windows_review_process import run_restricted
+from axdev.windows_review_process import run_restricted, single_sandbox_slot
 from axdev.windows_sandbox_runtime import (
     BACKEND, _read_bundle, _read_receipt, _wsb, run_sandbox_one, run_sandbox_queue, validate_history,
 )
@@ -142,6 +143,20 @@ class SandboxContractTests(unittest.TestCase):
                     self._run()
             self.assertEqual(self.factory.status()[self.task["id"]], "PREPARED")
             self.assertEqual(self._pinned(), self.base)
+            set_status = self.factory._set
+
+            def stop_after_ref_update(tid, status, evidence="", commit=""):
+                if status == "VERIFIED":
+                    raise SystemExit
+                set_status(tid, status, evidence, commit)
+
+            with patch.object(self.factory, "_set", side_effect=stop_after_ref_update):
+                with self.assertRaises(SystemExit):
+                    self._run()
+            self.assertNotEqual(self._pinned(), self.base)
+            self.assertEqual(self.factory.status()[self.task["id"]], "PREPARED")
+            validate_history(self.repo, self.state, self.factory.db, [self.task],
+                             self.factory.integration_ref, allow_prepared=True)
             outcome = self._run()
         self.assertEqual(outcome["status"], "VERIFIED")
         self.assertEqual(self._pinned(), outcome["commit"])
@@ -270,6 +285,23 @@ class SandboxContractTests(unittest.TestCase):
 
 @unittest.skipUnless(os.name == "nt", "requires Windows AppContainer kernel")
 class NativeAppContainerTests(unittest.TestCase):
+    def test_windows_coding_slot_recovers_after_abrupt_process_exit(self):
+        child = [sys.executable, "-c", """
+import os
+from axdev.core import ContractError
+from axdev.windows_review_process import single_sandbox_slot
+try:
+    with single_sandbox_slot():
+        os._exit(17)
+except ContractError:
+    os._exit(23)
+"""]
+        with single_sandbox_slot():
+            self.assertEqual(subprocess.run(child, timeout=10).returncode, 23)
+        self.assertEqual(subprocess.run(child, timeout=10).returncode, 17)
+        with single_sandbox_slot():
+            self.assertEqual(subprocess.run(child, timeout=10).returncode, 23)
+
     def test_appcontainer_enforces_private_file_network_and_source_boundaries(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

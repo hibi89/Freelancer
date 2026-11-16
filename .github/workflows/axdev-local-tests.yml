@@ -85,3 +85,19 @@ jobs:
           if errorlevel 1 exit /b 1
           python -m scripts.first_use_evidence --trial "%USERPROFILE%\AXDEV_TRIAL" --output "%RUNNER_TEMP%\axdev-trial-evidence.json"
           if errorlevel 1 exit /b 1
+      - name: Validate owner startup XML in Windows Task Scheduler (read-only)
+        shell: powershell
+        run: |
+          $axFixture = Join-Path $env:RUNNER_TEMP 'AXDEV startup fixture'
+          New-Item -ItemType Directory -Path $axFixture | Out-Null
+          $axSettings = Join-Path $axFixture 'settings.json'
+          $axDefinition = Join-Path $axFixture 'owner task.xml'
+          Set-Content -LiteralPath $axSettings '{}'
+          python -m scripts.prepare_startup --repo (Get-Location) --settings $axSettings --output $axDefinition
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $axScheduler = New-Object -ComObject 'Schedule.Service'
+          $axScheduler.Connect()
+          $axFolder = $axScheduler.GetFolder('\')
+          $axUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+          [void]$axFolder.RegisterTask('AXDevFactoryFixtureValidation', [IO.File]::ReadAllText($axDefinition), 1, $axUser, $null, 3, $null)
+          Write-Output 'Owner startup template accepted by native Windows Task Scheduler validation'

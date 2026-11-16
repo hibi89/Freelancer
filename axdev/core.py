@@ -355,7 +355,10 @@ class Factory:
         env["ALL_PROXY"] = "http://127.0.0.1:9"
         # Inspect with the same binary and private-server mode as the run.
         # The default background server can have different cached settings.
-        from .opencode_guard import validate_effective
+        from .opencode_guard import supported_release, validate_effective
+        rc, release = call([command[0], "--version"], cwd, timeout=15, env=env)
+        if rc != 0 or not supported_release(release):
+            return 125, "OpenCode 2.2.6+ stable release required for enforced policies"
         rc, merged = call([*command, "debug", "config"], cwd,
                           timeout=40, env=env, output_limit=65536)
         if rc != 0 or not validate_effective(merged, config_obj):

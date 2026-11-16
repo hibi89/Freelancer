@@ -44,6 +44,40 @@ def _safe_origin(origin: str, approved_repo: str) -> bool:
     )
 
 
+def _verify_remote_base(repo: Path, base: str, baseline: str) -> str:
+    ref = "refs/heads/" + base
+    output = _git(repo, "ls-remote", "--heads", "origin", ref)
+    fields = output.split("\t")
+    if len(fields) != 2 or fields[1] != ref or not SHA.fullmatch(fields[0]):
+        raise ContractError("approved remote base branch is missing or ambiguous")
+    remote = fields[0]
+    if remote != baseline:
+        try:
+            _git(repo, "--no-replace-objects", "merge-base", "--is-ancestor", baseline, remote)
+        except ContractError as exc:
+            raise ContractError("local baseline must already be on the approved remote base; refresh and review") from exc
+    return remote
+
+
+def _confirmed_draft(repo: Path, inspection: dict, url: str) -> str:
+    remote = inspection["repository"]
+    if not re.fullmatch(r"https://github\.com/" + re.escape(remote) + r"/pull/[1-9][0-9]*", url):
+        raise ContractError("draft PR URL did not match the approved repository; inspect remote")
+    result = subprocess.run(["gh", "pr", "view", url,
+                             "--json", "isDraft,headRefOid,baseRefName,headRefName,url"],
+                            cwd=repo, capture_output=True, text=True, timeout=25, check=False)
+    try:
+        observed = json.loads(result.stdout)
+    except ValueError as exc:
+        raise ContractError("draft PR creation needs remote reconciliation") from exc
+    expected = {"isDraft": True, "headRefOid": inspection["reviewed_commit"],
+                "baseRefName": inspection["base_branch"], "headRefName": inspection["head_branch"],
+                "url": url}
+    if result.returncode or observed != expected:
+        raise ContractError("draft PR result differs from the approved base or reviewed head; inspect remote")
+    return url
+
+
 def preview(settings_path: Path, approved_repo: str, base: str,
             expected_commit: str, head_branch: str, *, require_sandbox: bool = False) -> dict:
     if not isinstance(approved_repo, str) or not REMOTE.fullmatch(approved_repo):
@@ -155,6 +189,7 @@ def publish_draft(settings_path: Path, inspection: dict) -> dict:
         raise ContractError("GitHub CLI account does not match approved repository owner")
     repo = Path(json.loads(settings_path.read_text(encoding="utf-8"))["repo"]).resolve()
     head = inspection["head_branch"]
+    remote_base = _verify_remote_base(repo, inspection["base_branch"], inspection["source_baseline"])
     remote_refs = _git(repo, "ls-remote", "--heads", "origin", "refs/heads/" + head)
     if remote_refs:
         raise ContractError("PR publication head branch already exists; manual reconciliation")
@@ -162,7 +197,8 @@ def publish_draft(settings_path: Path, inspection: dict) -> dict:
     commit = inspection["reviewed_commit"]
     env = dict(os.environ, GIT_TERMINAL_PROMPT="0")
     push = subprocess.run(["git", "-c", "credential.helper=", "-c",
-                           "credential.https://github.com.helper=!gh auth git-credential", "push",
+                           "credential.https://github.com.helper=!gh auth git-credential",
+                           "-c", "remote.origin.mirror=false", "push", "--no-follow-tags",
                            "origin", commit + ":refs/heads/" + head], cwd=repo, env=env,
                           stdin=subprocess.DEVNULL, capture_output=True, timeout=60, check=False)
     if push.returncode:
@@ -171,7 +207,7 @@ def publish_draft(settings_path: Path, inspection: dict) -> dict:
             "Manual security/code/identity review is required before merging.\n"
             "Verified task IDs: " + ", ".join(inspection["verified_task_ids"]))
     try:
-        pr = subprocess.run(["gh", "pr", "create", "--repo", inspection["repository"],
+        pr = subprocess.run(["gh", "pr", "create", "--repo", "github.com/" + inspection["repository"],
                              "--base", inspection["base_branch"], "--head", head,
                              "--draft", "--title", "AXDEV reviewed local tasks",
                              "--body", body],
@@ -181,8 +217,12 @@ def publish_draft(settings_path: Path, inspection: dict) -> dict:
         raise ContractError("branch pushed; PR creation unverified; inspect remote manually") from exc
     if pr.returncode:
         raise ContractError("branch pushed but draft PR failed; do not retry push automatically")
-    return dict(inspection, remote_write_executed=True, pr_created=True,
-                pr_url=pr.stdout.strip(), identity_verified=True)
+    try:
+        url = _confirmed_draft(repo, inspection, pr.stdout.strip())
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise ContractError("branch pushed; PR confirmation unavailable; inspect remote") from exc
+    return dict(inspection, remote_write_executed=True, pr_created=True, pr_url=url,
+                approved_remote_base=remote_base, identity_verified=True)
 
 
 def main(argv=None):

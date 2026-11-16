@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import hashlib
 import json
 import re
 import shutil
@@ -76,7 +77,7 @@ def publish(preview: dict, expected_remote_blob: str | None = None) -> dict:
     # Verify actual authenticated identity before any publication. Do not
     # interpolate a shell, construct arbitrary command or print auth tokens.
     try:
-        actor = subprocess.run(["gh", "api", "user", "--jq", ".login"],
+        actor = subprocess.run(["gh", "api", "--hostname", "github.com", "user", "--jq", ".login"],
                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                text=True, check=False, timeout=15, shell=False)
     except (OSError, subprocess.TimeoutExpired) as exc:
@@ -89,11 +90,11 @@ def publish(preview: dict, expected_remote_blob: str | None = None) -> dict:
     if (not REPO.fullmatch(repo) or not BRANCH.fullmatch(branch)
             or path != REMOTE_PATH):
         raise ContractError("unapproved remote publication target")
-    content = base64.b64encode(
-        (json.dumps(preview["payload"], sort_keys=True, ensure_ascii=False,
-                    indent=2) + "\n").encode("utf-8")
-    ).decode("ascii")
-    cmd = ["gh", "api", "--method", "PUT",
+    payload = (json.dumps(preview["payload"], sort_keys=True, ensure_ascii=False,
+                          indent=2) + "\n").encode("utf-8")
+    blob = hashlib.sha1(f"blob {len(payload)}\0".encode("ascii") + payload).hexdigest()
+    content = base64.b64encode(payload).decode("ascii")
+    cmd = ["gh", "api", "--hostname", "github.com", "--method", "PUT",
            "/repos/" + repo + "/contents/" + path,
            "--raw-field", "message=docs(axdev): owner-approved local status metadata",
            "--raw-field", "branch=" + branch,
@@ -110,12 +111,15 @@ def publish(preview: dict, expected_remote_blob: str | None = None) -> dict:
     try:
         response = json.loads(result.stdout)
         commit = response["commit"]["sha"]
+        written = response["content"]
     except (ValueError, KeyError, TypeError) as exc:
         raise ContractError("GitHub publication outcome unverified; inspect remote") from exc
-    if not SHA40.fullmatch(commit):
-        raise ContractError("GitHub publication commit SHA invalid")
+    if (not isinstance(commit, str) or not SHA40.fullmatch(commit)
+            or not isinstance(written, dict) or written.get("path") != path
+            or written.get("sha") != blob):
+        raise ContractError("GitHub publication response does not match the approved status bytes; inspect remote")
     return dict(preview, external_write_executed=True, commit_sha=commit,
-                identity_verified=True, owner_approval_required=False)
+                blob_sha=blob, identity_verified=True, owner_approval_required=False)
 
 
 def main(argv=None):

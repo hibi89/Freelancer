@@ -26,6 +26,7 @@ def main(argv=None):
     p.add_argument("--github-sha")
     p.add_argument("--offline-bundle", type=Path)
     p.add_argument("--bundle-manifest-sha256")
+    p.add_argument("--daily-model-call-budget", type=int)
     a = p.parse_args(argv)
     repo, plan = a.repo.resolve(), a.plan.resolve()
     settings = a.settings.expanduser().absolute()
@@ -63,6 +64,8 @@ def main(argv=None):
         raise SystemExit("offline bundle and approved manifest SHA256 must be supplied together")
     if a.offline_bundle and not re.fullmatch(r"[0-9a-f]{64}", a.bundle_manifest_sha256):
         raise SystemExit("offline bundle manifest SHA256 is invalid")
+    if a.daily_model_call_budget is not None and not 1 <= a.daily_model_call_budget <= 10000:
+        raise SystemExit("daily model-call budget must be 1..10000")
     if settings.exists():
         raise SystemExit("settings exist; refusing overwrite (back up and review manually)")
     state = settings.parent / "state"
@@ -77,6 +80,8 @@ def main(argv=None):
     if a.offline_bundle:
         obj["sandbox"] = {"bundle": str(a.offline_bundle.absolute()),
                           "manifest_sha256": a.bundle_manifest_sha256}
+    if a.daily_model_call_budget is not None:
+        obj["daily_model_call_budget"] = a.daily_model_call_budget
     # Contains only paths, hashes and public source coordinates; never secrets.
     # Atomic, exclusive creation avoids a race after the existence check.
     # The file contains local paths and approval hashes, so restrict modes

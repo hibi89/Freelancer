@@ -2,15 +2,19 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import os
+import re
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from axdev.core import ContractError
+from axdev.windows_review_process import system_directory
 
 NS = "http://schemas.microsoft.com/windows/2004/02/mit/task"
+SID = re.compile(r"S-1-[0-9]+(?:-[0-9]+)+")
 
 
 def _element(parent, tag: str, text: str | None = None):
@@ -18,6 +22,15 @@ def _element(parent, tag: str, text: str | None = None):
     if text is not None:
         item.text = text
     return item
+
+
+def _current_user_sid() -> str:
+    result = subprocess.run([str(system_directory() / "whoami.exe"), "/user", "/fo", "csv", "/nh"],
+                            stdin=subprocess.DEVNULL, capture_output=True, timeout=10, check=False)
+    rows = list(csv.reader(result.stdout.decode("utf-8", errors="replace").splitlines()))
+    if result.returncode or len(rows) != 1 or len(rows[0]) != 2 or not SID.fullmatch(rows[0][1]):
+        raise ContractError("could not identify the current Windows account for the startup trigger")
+    return rows[0][1]
 
 
 def build_startup_task(repo: Path, settings: Path, max_tasks: int = 30) -> bytes:
@@ -29,6 +42,7 @@ def build_startup_task(repo: Path, settings: Path, max_tasks: int = 30) -> bytes
         raise ContractError("startup paths must not contain symlinks")
     if not (repo / "axdev" / "core.py").is_file() or not settings.is_file():
         raise ContractError("approved local project and settings must exist")
+    owner = _current_user_sid()
     ET.register_namespace("", NS)
     task = ET.Element("{" + NS + "}Task", version="1.4")
     reg = _element(task, "RegistrationInfo")
@@ -36,8 +50,11 @@ def build_startup_task(repo: Path, settings: Path, max_tasks: int = 30) -> bytes
     triggers = _element(task, "Triggers")
     logon = _element(triggers, "LogonTrigger")
     _element(logon, "Enabled", "true")
+    _element(logon, "UserId", owner)
     principals = _element(task, "Principals")
     principal = _element(principals, "Principal")
+    principal.set("id", "Owner")
+    _element(principal, "UserId", owner)
     _element(principal, "LogonType", "InteractiveToken")
     _element(principal, "RunLevel", "LeastPrivilege")
     options = _element(task, "Settings")
@@ -48,13 +65,14 @@ def build_startup_task(repo: Path, settings: Path, max_tasks: int = 30) -> bytes
     _element(options, "Enabled", "true")
     _element(options, "StartWhenAvailable", "false")
     actions = _element(task, "Actions")
+    actions.set("Context", "Owner")
     action = _element(actions, "Exec")
     _element(action, "Command", str(Path(sys.executable).resolve()))
     _element(action, "Arguments", "-m scripts.run_configured_queue --settings "
              + subprocess.list2cmdline([str(settings)]) +
              " --max-tasks " + str(max_tasks) + " --execute")
     _element(action, "WorkingDirectory", str(repo.resolve()))
-    return ET.tostring(task, encoding="utf-8", xml_declaration=True)
+    return ET.tostring(task, encoding="utf-16", xml_declaration=True)
 
 
 def main(argv=None):
@@ -82,8 +100,8 @@ def main(argv=None):
     if a.register:
         # Never replace an existing OS task; no /F, elevation or hidden launch.
         result = subprocess.run(
-            ["schtasks.exe", "/Create", "/TN", "AXDevFactoryOwnerLocal",
-             "/XML", str(output)], shell=False, capture_output=True,
+            [str(system_directory() / "schtasks.exe"), "/Create", "/TN", "AXDevFactoryOwnerLocal",
+             "/XML", str(output)], shell=False, stdin=subprocess.DEVNULL, capture_output=True,
             timeout=30, check=False)
         if result.returncode != 0:
             raise ContractError("OS scheduler registration failed; inspect manually")

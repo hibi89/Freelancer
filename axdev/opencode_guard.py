@@ -5,6 +5,14 @@ A matching config is a STATIC check, not a proof that tools obey policy.
 """
 from __future__ import annotations
 import json
+import re
+
+MINIMUM_RELEASE = (2, 2, 6)
+
+
+def supported_release(output: str) -> bool:
+    release = re.fullmatch(r"(?:opencode\s+)?v?(\d{1,4})\.(\d{1,4})\.(\d{1,4})", output.strip(), re.I)
+    return release is not None and tuple(map(int, release.groups())) >= MINIMUM_RELEASE
 
 
 def validate_effective(output: str, expected: dict) -> bool:

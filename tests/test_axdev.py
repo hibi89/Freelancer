@@ -412,6 +412,8 @@ class FactoryTests(unittest.TestCase):
         executable = str(self.root / "fake-opencode")
         def capture(argv, cwd, timeout=60, env=None, output_limit=6000):
             intercepted.update({"argv": argv, "cwd": cwd, "env": env})
+            if argv == [executable, "--version"]:
+                return 0, "opencode v2.3.0"
             if argv == [executable, "--standalone", "debug", "config"]:
                 return 0, env["OPENCODE_CONFIG_CONTENT"]
             return 0, "synthetic"
@@ -447,6 +449,8 @@ class FactoryTests(unittest.TestCase):
         executable = str(self.root / "fake-opencode")
         def tampered(argv, cwd, timeout=60, env=None, output_limit=6000):
             invoked.append(argv)
+            if argv == [executable, "--version"]:
+                return 0, "opencode v2.3.0"
             if argv == [executable, "--standalone", "debug", "config"]:
                 config = json.loads(env["OPENCODE_CONFIG_CONTENT"])
                 config["policies"].append(
@@ -457,9 +461,23 @@ class FactoryTests(unittest.TestCase):
               patch("axdev.core.call", side_effect=tampered)):
             rc, message = f._opencode(self.repo, "test only")
         self.assertEqual(rc, 125)
-        self.assertEqual(invoked, [[executable, "--standalone", "debug", "config"]])
+        self.assertEqual(invoked, [[executable, "--version"], [executable, "--standalone", "debug", "config"]])
         self.assertIn("could not be verified", message)
         f.close()
+
+    def test_opencode_version_gate_precedes_config_and_coding(self):
+        self.write_plan([self.task()])
+        f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
+        self.addCleanup(f.close)
+        f._active_allowed_files = ("src/feature.py",)
+        executable = str(self.root / "fake-opencode")
+        for old in ("opencode v2.2.5", "opencode v2.2.6-beta.1"):
+            with patch("axdev.core.shutil.which", return_value=executable), \
+                    patch("axdev.core.call", return_value=(0, old)) as call:
+                rc, _ = f._opencode(self.repo, "synthetic only")
+            self.assertEqual(rc, 125)
+            self.assertEqual(call.call_args.args[0], [executable, "--version"])
+            call.assert_called_once()
 
     def test_interrupted_coding_reviews_existing_diff_without_model(self):
         self.write_plan([self.task()])
@@ -632,6 +650,20 @@ class FactoryTests(unittest.TestCase):
                 run_configured_queue(["--settings", str(settings), "--execute"])
         self.assertFalse((state / "factory.sqlite3").exists())
         self.assertFalse((state / "worktrees").exists())
+
+    def test_configured_budget_applies_to_unattended_and_manual_runs(self):
+        self.write_plan([self.task()])
+        settings = self.root / "private" / "settings.json"
+        with patch("builtins.print"):
+            configure_queue(["--repo", str(self.repo), "--plan", str(self.plan),
+                             "--settings", str(settings), "--offline-bundle", str(self.root / "bundle"),
+                             "--bundle-manifest-sha256", "0" * 64, "--daily-model-call-budget", "6"])
+            args = ["--settings", str(settings), "--execute"]
+            for override, expected in (([], 6), (["--daily-model-call-budget", "10"], 6),
+                                       (["--daily-model-call-budget", "2"], 2)):
+                with patch("axdev.windows_sandbox_runtime.run_sandbox_queue", return_value=([], {})) as run:
+                    self.assertEqual(run_configured_queue(args + override), 0)
+                    self.assertEqual(run.call_args.kwargs["daily_budget"], expected)
 
     def test_configure_queue_exclusive_create_preserves_original(self):
         self.write_plan([self.task()])

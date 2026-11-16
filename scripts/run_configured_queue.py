@@ -34,6 +34,11 @@ def main(argv=None):
         if not 1 <= a.max_tasks <= 100:
             raise ContractError("requested max tasks outside 1..100")
         maximum = min(maximum, a.max_tasks)
+    budgets = [value for value in (obj.get("daily_model_call_budget"), a.daily_model_call_budget)
+               if value is not None]
+    if any(type(value) is not int or not 1 <= value <= 10000 for value in budgets):
+        raise ContractError("daily model-call budget must be 1..10000")
+    daily_budget = min(budgets) if budgets else None
     plan_path = Path(obj["plan"])
     approved = obj.get("plan_sha256")
     if approved is not None:
@@ -68,13 +73,13 @@ def main(argv=None):
         results, states = run_sandbox_queue(
             Path(obj["repo"]), plan_path, Path(obj["state"]), Path(sandbox["bundle"]),
             sandbox["manifest_sha256"], obj["model"], maximum, True,
-            plan_sha256=approved, daily_budget=a.daily_model_call_budget,
+            plan_sha256=approved, daily_budget=daily_budget,
             eai_policy=a.eai_policy, semantic_review=a.semantic_review,
             implementation_batch=a.implementation_batch)
         return report(results, states)
     factory = Factory(Path(obj["repo"]), plan_path, Path(obj["state"]),
                       model=obj["model"], semantic_review=a.semantic_review,
-                      max_daily_model_calls=a.daily_model_call_budget,
+                      max_daily_model_calls=daily_budget,
                       eai_policy=a.eai_policy)
     try:
         results = (factory.run_implementation_batch(maximum, execute=a.execute)
