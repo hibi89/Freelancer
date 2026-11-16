@@ -1,3 +1,5 @@
+> **[OWNER-DEV-EXECUTION-V2 | AXDEV-EXCEPTION | 2026-11-16]** [전 프로젝트 웹 High 설계→Instant 주력 코딩 공통 정책](https://github.com/hibi89/hackathon-command-center-2026/blob/kmong-productization/docs/strategy/OWNER_DEV_EXECUTION_CANONICAL_20261116.md)은 **이 AX Dev Factory 자체를 개발하는 ChatGPT 작업 분담**에만 적용한다. **기존 개인 로컬 자율개발 엔진의 High 승인 불변 작업계약·Ollama/OpenCode/SQLite·격리 Git 작업트리·독립 리뷰·one-fix/HOLD·Windows 실모델 검증 F01–F20은 그대로 유지.** 이 브랜치를 크몽 상품/중앙 GitHub App으로 임의 전환 금지. 웹 Sol High가 최초설계·필수 작업큐·위험판정을 하고 웹 Sol Instant가 안전한 구현 READY를 묶어 진행할 수 있다. 전체 CI는 구현 후보 후 일괄하되 파일경로·토큰·권한·원본 보호 즉시검사와 기존 필수 CI는 생략 금지. 새 채팅은 이 AGENTS 최신역할→정확 HEAD→HANDOFF/STATUS→REQUIREMENTS/최종설계→실코드/F01–F20로 복원하고 구형 HANDOFF의 숫자/담당이 새 정책을 덮지 않는다.
+
 # AX Dev Factory — Agent operating principles
 
 This is a personal-use automation TOOL branch, not a new Kmong product or AXNODE v1 release. Source: `hibi89/Freelancer@tools/ax-dev-factory-local` (GitHub repository currently **PUBLIC**). Existing `main`, `product/*`, EAI `feature/*` and AXNODE `product/axnode-sector-runtime` remain unchanged.
