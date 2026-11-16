@@ -313,5 +313,294 @@
       "200": 4
     },
     "observed_task_result": "FAIL_EMPTY_DIFF"
+  },
+  "native_windows_sandbox_acceptance": {
+    "source_sha": "448fcc34bb328b179f314af62c0d14afc94fc0a5",
+    "manual_reference": {
+      "source_sha": "31ff8b9a02ace6748f5cc39153e156c86d1ac8f3",
+      "task": "LIVE-001",
+      "task_sha256": "484ed24c5806f336dbed1180f0a77d0abca0d3cace948a441d3d03df52517642",
+      "method": "One manual GPT-authored patch applied by Codex in a separate worktree",
+      "candidate_tree": "4811629cf31433944320fc3993239486ce59df60",
+      "archive_sha256": "6ca0aac9763fa673e348408202db82fa679480ac81659ac92827ea92c894c03d",
+      "approved_files": [
+        "src/alpha.py",
+        "src/bravo.py"
+      ],
+      "independent_verdict": {
+        "ok": true,
+        "project_checks": 1,
+        "independent_probes": 2
+      },
+      "task_read_to_verdict_seconds": 93.538,
+      "original_head_unchanged": true
+    },
+    "plan_sha256": "843c53c97b77609d4a49bdd5cf55da5d91d65f7301bdb71502b5c0900405eaac",
+    "offline_4b_bundle_sha256": "7c75713fd1edafd77c33eed4648eb252cc485043b6d3d70ce1406a29ffadfbfd",
+    "sandbox_attempts": [
+      {
+        "task": "LIVE-001",
+        "task_sha256": "484ed24c5806f336dbed1180f0a77d0abca0d3cace948a441d3d03df52517642",
+        "receipt_status": "CANDIDATE",
+        "approved_changes": [
+          "src/alpha.py",
+          "src/bravo.py"
+        ],
+        "sandbox_launch_to_candidate_seconds": 347.762,
+        "independent_approval": {
+          "commit": "d63d29d2176b4ea0e5b32534e53f1c790036fec9",
+          "tree": "4811629cf31433944320fc3993239486ce59df60",
+          "candidate_sha256": "7ff6c2c53f0d0817c53f4fc4a6607b3612af0d8bc7a0a5cb8b9bba94ce277971",
+          "project_checks": 1,
+          "independent_probes": 2
+        },
+        "guest_resources": {
+          "wdgAccount": true,
+          "guestBuild": "26100",
+          "ramMiB": 6143,
+          "defaultIPv4Routes": 0,
+          "sampled": true,
+          "readOnly": {
+            "input": true,
+            "bundle": true
+          },
+          "models": [
+            {
+              "name": "qwen3:4b-instruct",
+              "digest": "6214d088d3846e16c9fe00adcbabdbfddc61ce4a70daacc46cb2310c38603054",
+              "size": 3186108660,
+              "size_vram": 0,
+              "context_length": 4096
+            }
+          ],
+          "availableMiB": 1053
+        }
+      },
+      {
+        "task": "LIVE-002",
+        "task_sha256": "9568a22444ee3f75890a28365a14c4fec8fcd16d99de1bc730c8a4996207f275",
+        "receipt_status": "CANDIDATE",
+        "approved_changes": [
+          "src/held.py"
+        ],
+        "sandbox_launch_to_candidate_seconds": 317.783
+      },
+      {
+        "task": "LIVE-002",
+        "task_sha256": "9568a22444ee3f75890a28365a14c4fec8fcd16d99de1bc730c8a4996207f275",
+        "receipt_status": "CANDIDATE",
+        "approved_changes": [
+          "src/held.py"
+        ],
+        "sandbox_launch_to_candidate_seconds": 305.059
+      },
+      {
+        "task": "LIVE-003",
+        "task_sha256": "308c59c94adf8461ec5d82bd955baa850cd7ece50697f537eae888eedf8882c3",
+        "receipt_status": "CANDIDATE",
+        "approved_changes": [
+          "src/next.py"
+        ],
+        "sandbox_launch_to_candidate_seconds": 258.789,
+        "independent_approval": {
+          "commit": "9aca791fc5cce5fca55203e76f3e63d56b2a2e49",
+          "tree": "474fadc404376d52c1b1778b07a84533902376c3",
+          "candidate_sha256": "2b332d63e879df688e895ef88b6cef1e0ba13f0362efe8964801a8aaeb4cb1e8",
+          "project_checks": 1,
+          "independent_probes": 1
+        }
+      },
+      {
+        "task": "LIVE-005",
+        "task_sha256": "f9768529fa0a871d62918806f05b323e379d812b83cf1ab692d4117b24124bc6"
+      }
+    ],
+    "git_sqlite_crash": {
+      "source_sha": "e9572001907bababd3dd051be41ff69217f298c2",
+      "prepared_commit": "d63d29d2176b4ea0e5b32534e53f1c790036fec9",
+      "sqlite_status": "PREPARED",
+      "ref_adopted": true,
+      "original_git_head_unchanged": true,
+      "candidate_sha256": "7ff6c2c53f0d0817c53f4fc4a6607b3612af0d8bc7a0a5cb8b9bba94ce277971",
+      "controller_exit": 73,
+      "model_calls": 1
+    },
+    "git_sqlite_recovery": {
+      "source_sha": "e9572001907bababd3dd051be41ff69217f298c2",
+      "results": [
+        {
+          "id": "LIVE-001",
+          "status": "VERIFIED",
+          "commit": "d63d29d2176b4ea0e5b32534e53f1c790036fec9",
+          "integration_ref": "refs/heads/axdev/integration-b576bdfe6b18"
+        }
+      ],
+      "states": {
+        "LIVE-001": "VERIFIED",
+        "LIVE-002": "QUEUED",
+        "LIVE-003": "QUEUED",
+        "LIVE-004": "QUEUED",
+        "LIVE-005": "QUEUED"
+      },
+      "model_calls": {
+        "LIVE-001": 1
+      },
+      "repair_attempts": {
+        "LIVE-001": 0,
+        "LIVE-002": 0,
+        "LIVE-003": 0,
+        "LIVE-004": 0,
+        "LIVE-005": 0
+      },
+      "base_sha": "ce59d175c3f25f7a3ece506269b6f6892d6e7ce5",
+      "original_git_head_unchanged": true,
+      "original_worktree_clean": true
+    },
+    "queue_repair_and_hold": {
+      "source_sha": "31ff8b9a02ace6748f5cc39153e156c86d1ac8f3",
+      "results": [
+        {
+          "id": "LIVE-002",
+          "status": "HOLD",
+          "verified": false,
+          "reason": "INDEPENDENT_PROBE_FAILED"
+        },
+        {
+          "id": "LIVE-003",
+          "status": "WAITING_SANDBOX_EXIT"
+        }
+      ],
+      "states": {
+        "LIVE-001": "VERIFIED",
+        "LIVE-002": "HOLD",
+        "LIVE-003": "QUEUED",
+        "LIVE-004": "QUEUED",
+        "LIVE-005": "QUEUED"
+      },
+      "model_calls": {
+        "LIVE-001": 1,
+        "LIVE-002": 2
+      },
+      "repair_attempts": {
+        "LIVE-001": 0,
+        "LIVE-002": 1,
+        "LIVE-003": 0,
+        "LIVE-004": 0,
+        "LIVE-005": 0
+      },
+      "base_sha": "ce59d175c3f25f7a3ece506269b6f6892d6e7ce5",
+      "original_git_head_unchanged": true,
+      "original_worktree_clean": true
+    },
+    "queue_completion": {
+      "source_sha": "448fcc34bb328b179f314af62c0d14afc94fc0a5",
+      "results": [
+        {
+          "id": "LIVE-003",
+          "status": "VERIFIED",
+          "commit": "9aca791fc5cce5fca55203e76f3e63d56b2a2e49",
+          "integration_ref": "refs/heads/axdev/integration-b576bdfe6b18"
+        },
+        {
+          "id": "LIVE-005",
+          "status": "HOLD",
+          "verified": false,
+          "reason": "SANDBOX_ERROR_TimeoutError"
+        }
+      ],
+      "states": {
+        "LIVE-001": "VERIFIED",
+        "LIVE-002": "HOLD",
+        "LIVE-003": "VERIFIED",
+        "LIVE-004": "QUEUED",
+        "LIVE-005": "HOLD"
+      },
+      "model_calls": {
+        "LIVE-001": 1,
+        "LIVE-002": 2,
+        "LIVE-003": 1,
+        "LIVE-005": 1
+      },
+      "repair_attempts": {
+        "LIVE-001": 0,
+        "LIVE-002": 1,
+        "LIVE-003": 0,
+        "LIVE-004": 0,
+        "LIVE-005": 0
+      },
+      "base_sha": "ce59d175c3f25f7a3ece506269b6f6892d6e7ce5",
+      "original_git_head_unchanged": true,
+      "original_worktree_clean": true
+    },
+    "forced_native_abort": {
+      "source_sha": "448fcc34bb328b179f314af62c0d14afc94fc0a5",
+      "task": "ABRT-001",
+      "native_guest_marker": true,
+      "stopped_own_environment": true,
+      "no_candidate_at_stop": true,
+      "external_provider": {
+        "finished": true,
+        "exitCode": 1,
+        "exclusionObserved": true,
+        "networkCallError": false,
+        "exceptionType": null,
+        "stage": "done"
+      }
+    },
+    "forced_abort_queue_outcome": {
+      "source_sha": "448fcc34bb328b179f314af62c0d14afc94fc0a5",
+      "results": [
+        {
+          "id": "ABRT-001",
+          "status": "HOLD",
+          "verified": false,
+          "reason": "SANDBOX_EXITED_WITHOUT_CANDIDATE"
+        }
+      ],
+      "states": {
+        "ABRT-001": "HOLD"
+      },
+      "model_calls": 1,
+      "original_head_unchanged": true
+    },
+    "native_isolation": {
+      "source_sha": "e9572001907bababd3dd051be41ff69217f298c2",
+      "host_listener_positive": true,
+      "headless_logon_command": false,
+      "exact_sandbox_id_closed": true,
+      "host_markers_unchanged": true,
+      "guest": {
+        "guestAccount": true,
+        "guestBuild": 26100,
+        "unsharedFileVisible": false,
+        "inputRead": true,
+        "bundleRead": true,
+        "inputWriteDenied": true,
+        "bundleWriteDenied": true,
+        "hostTcpConnected": false,
+        "defaultIPv4Routes": 0,
+        "guestLoopbackConnected": true
+      },
+      "pass": true
+    },
+    "native_logon": {
+      "source_sha": "9a74fd014e5b2a0a1a865e94ba203306a20903d7",
+      "taskState": "Ready",
+      "taskResult": 2,
+      "automaticAtLogon": true,
+      "bootChanged": true,
+      "leastPrivilege": true,
+      "argsMatched": true,
+      "events": [
+        {
+          "timestamp_utc": "2026-11-16T19:49:14.312951+09:00",
+          "task_id": "TRIAL-001",
+          "status": "HOLD",
+          "duration_seconds": 521.828
+        }
+      ],
+      "taskRemoved": true
+    },
+    "sandbox_closed_at_completion": true
   }
 }

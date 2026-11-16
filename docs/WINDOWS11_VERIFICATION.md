@@ -1,8 +1,20 @@
-# Windows 11 physical-device verification · 2026-11-16 KST
+# Windows 11 physical-device verification · 2026-11-17 KST
 
-The target acceptance baseline is **14/20 F-ID rows PASS**. F03, F04, F10, F16, F17 and F18 each retain a Windows 10 requirement marked **NOT_RUN**. The checks below supplement the baseline. [Acceptance ledger](P2_VERIFICATION_LEDGER.md) · [Observed test outputs](WINDOWS11_VERIFICATION.json)
+The earlier acceptance baseline was **14/20 F-ID rows PASS**. F03, F04, F10, F16, F17 and F18 retain Windows 10 device checks marked **NOT_RUN**. [Acceptance ledger](P2_VERIFICATION_LEDGER.md) · [Observed test outputs](WINDOWS11_VERIFICATION.json)
 
-The physical host used Windows 11 Pro build 26200, 15.8 GiB RAM and a GeForce GTX 1050 Ti with 4,096 MiB VRAM and driver 552.22. The Windows Sandbox optional feature was disabled and the standard System32 executable was absent. Native guest launch and in-guest isolation were **NOT_RUN**. Tests used disposable synthetic repositories and model prompts.
+The physical host used Windows 11 Pro build 26200, an Intel Core i7-8750H, 15.8 GiB RAM and a GeForce GTX 1050 Ti with 4,096 MiB VRAM and driver 552.22. The owner authorized enabling Windows Sandbox and one restart. The actual guest ran build 26100. Tests used disposable synthetic repositories and model prompts.
+
+## Native Windows Sandbox lifecycle
+
+- **Coding and independent approval.** Windows OpenCode 2.3.0 and Ollama 0.40.16 ran pinned `qwen3:4b-instruct` offline. The guest returned only the two approved files. A host AppContainer ran one protected project check and two independent probes before Git accepted commit `d63d29d2176b4ea0e5b32534e53f1c790036fec9`. The controller exited at the injected crash after Git adopted the commit and before SQLite recorded verification. A new process recovered the same commit with one total coding reservation. The original checkout remained clean. Source `e9572001907bababd3dd051be41ff69217f298c2`.
+- **Guest isolation.** The read-only input and bundle allowed reads and denied writes. A file outside the mapped folders was invisible. The guest reached its own loopback service, had no IPv4 default route and could not reach a TCP listener that the host independently reached. The test closed its exact Sandbox instance.
+- **On-device resource use.** The observer saw one resident model, with 3,186,108,660 bytes reported by Ollama. The guest had 6,143 MiB total and 1,053 MiB available at the sample. Its context was 4,096 and its VRAM allocation was zero with vGPU disabled. The 8K GPU comparison below was measured on the host.
+- **Actual login.** On the approved restart, the Windows logon trigger invoked the exact configured queue at least privilege. The first run returned `HOLD` while Ollama attempted to update a read-only model store. The temporary scheduled task was removed. The guest model store now uses a writable copy inside the VM.
+- **Same-task manual reference.** One GPT-authored patch applied by Codex in a separate worktree changed the same two files and passed the same one check and two independent probes. Task read to verdict took 93.538 seconds. The native Sandbox attempt took 347.8 seconds from run creation to candidate. The timings cover different intervals, including machine and tool overhead.
+
+The Windows 11 launch now pins the instance ID to the host's run record. The host closes that exact instance when the guest publishes a result and reads the candidate after closure. The Windows 10 launcher remains available. [Runtime source](https://github.com/hibi89/Freelancer/commit/31ff8b9a02ace6748f5cc39153e156c86d1ac8f3)
+
+The live queue rejected the candidate and its one repair, recorded HOLD and resumed without a new call for the held task. The dependent remained queued. The independent next task reached VERIFIED at `9aca791fc5cce5fca55203e76f3e63d56b2a2e49`. The external-provider canary refused `openai/gpt-4o` before any observed network-call error. The controller force-stopped its exact native Sandbox before a receipt and recorded HOLD. An earlier combined canary timed out. The separate abort fixture established the final result. The final native source was `448fcc34bb328b179f314af62c0d14afc94fc0a5`. [Linux and Windows CI](https://github.com/hibi89/Freelancer/actions/runs/43977508805)
 
 ## Native Windows 11 observations
 
@@ -31,7 +43,7 @@ At [`8bd8267c32791c185d505843aba351d6b1878656`](https://github.com/hibi89/Freela
 | `qwen2.5-coder:3b` | 6,948 | 28.06 | 55.704 s | 2,227 MiB | 5,070 → 2,634 MiB |
 | `qwen3:4b-instruct` | 6,927 | 4.42 | 99.830 s | 2,570 MiB | 5,016 → 1,818 MiB |
 
-The 4B response reproduced a marker placed at the beginning of the long prompt. The 3B response missed it. Both performance measurements came from a single observed run. The Windows 10 benchmark and manual GPT comparison remain NOT_RUN.
+The 4B response reproduced a marker placed at the beginning of the long prompt. The 3B response missed it. Both performance measurements came from a single observed run. The Windows 10 benchmark remains NOT_RUN.
 
 Runtime SHA [`2882e4c56a3a142df3e96beee1fddaa6a55b3756`](https://github.com/hibi89/Freelancer/commit/2882e4c56a3a142df3e96beee1fddaa6a55b3756) pins the Windows Sandbox Ollama launch to one resident model and one active request. A regression check confirmed both limits override inherited values at process start. Guest behavior on Windows 10 remains NOT_RUN. [Ollama concurrency settings](https://docs.ollama.com/faq#how-does-ollama-handle-concurrent-requests)
 
