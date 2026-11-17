@@ -8,7 +8,8 @@
 ## 0. Owner-selected exact reference image
 
 - **Owner's actual uploaded image:** `AXDEV_DESKTOP_UI_STANDARD_20261117.png` (508 × 279 px), SHA-256 **`6043e2d17fe79c62e6b1f05e284b583e26aa3e8c153419ee5e2060065014f33f`**.
-- **Persistent owner Library location:** `/AX Dev Factory/Design References/AXDEV_DESKTOP_UI_STANDARD_20261117.png`. The image has been stored there; GitHub currently stores this precise specification rather than duplicating the raster original.
+- **GitHub versioned image reference:** [selected dark desktop thumbnail (330×181 WebP)](design/AXDEV_DESKTOP_REFERENCE_20261117.webp). The original 508×279 screenshot is archived unmodified in the private owner Library.
+- **Persistent owner Library location:** `/AX Dev Factory/Design References/AXDEV_DESKTOP_UI_STANDARD_20261117.png`. The original image is stored there; GitHub includes the smaller actual-image preview above and this specification for Codex/Astra design reference.
 - **Visual identity is fixed by owner:** dark midnight-navy, restrained violet/teal status highlights, dense operator-workstation layout. The provided screenshot is a **visual reference**, not evidence that every pictured metric or control already exists.
 - **Astra Max revision policy:** may propose improved polish, accessibility and responsive behavior; must preserve the functional zones, natural-language command entry, immutable approval gate, semantics of state, and the offline/isolated security posture. Changes become official only after final-design review/owner direction.
 
