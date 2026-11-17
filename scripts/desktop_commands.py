@@ -66,7 +66,10 @@ def _read_object(path: Path, limit: int = 65536) -> dict:
 
 
 def _repo_path(repo: Path) -> Path:
-    repo = _safe_local(repo).resolve(strict=True)
+    try:
+        repo = _safe_local(repo).resolve(strict=True)
+    except OSError as exc:
+        raise ContractError("command repository path is missing or inaccessible") from exc
     if not repo.is_dir() or not (repo / ".git").exists():
         raise ContractError("command requires an existing approved local Git checkout")
     return repo
