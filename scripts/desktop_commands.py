@@ -80,9 +80,10 @@ def save_draft(goal: str, repo: Path, *, home: Path | None = None) -> dict:
             any(ord(c) < 32 and c not in "\n\t" for c in goal)):
         raise ContractError("command must contain 1..4000 safe characters")
     repo = _repo_path(repo)
-    root = _private_dir(home if home is not None else drafts_home())
+    root = _safe_local(home if home is not None else drafts_home())
     if root == repo or repo in root.parents or root in repo.parents:
         raise ContractError("private drafts must be separate from the source repository")
+    _private_dir(root)
     task_id = "CMD-" + secrets.token_hex(6).upper()
     record = {
         "version": 1, "id": task_id, "goal": goal,
