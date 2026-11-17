@@ -10,6 +10,7 @@ import html
 import hmac
 import json
 import secrets
+import sqlite3
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs
@@ -60,7 +61,7 @@ def handler_factory(settings: Path, port: int, secret: str):
                 return self._send(404, "Not found")
             try:
                 state = control("status", settings)
-            except (OSError, ValueError) as exc:
+            except (OSError, ValueError, sqlite3.Error, KeyError, TypeError) as exc:
                 return self._send(503, "Queue status unavailable: " +
                                   html.escape(type(exc).__name__))
             self._send(200, render_dashboard(state, secret))
@@ -86,7 +87,7 @@ def handler_factory(settings: Path, port: int, secret: str):
                 return self._send(403, "Owner token missing or invalid")
             try:
                 control(self.path[1:], settings, confirm=self.path == "/resume")
-            except (OSError, ValueError):
+            except (OSError, ValueError, sqlite3.Error, KeyError, TypeError):
                 return self._send(503, "Local control unavailable")
             self.send_response(303)
             self.send_header("Location", "/")
