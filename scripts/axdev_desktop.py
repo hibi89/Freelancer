@@ -89,6 +89,22 @@ def _model_label(settings_path: Path) -> str:
     return "미설정"
 
 
+def _sandbox_configuration(settings_path: Path) -> str:
+    """Report only config readiness, never a live Windows Sandbox instance."""
+    try:
+        obj = json.loads(settings_path.read_text(encoding="utf-8"))
+        config = obj.get("sandbox")
+        if (isinstance(config, dict) and
+                isinstance(config.get("bundle"), str) and
+                isinstance(config.get("manifest_sha256"), str) and
+                re.fullmatch(r"[a-f0-9]{64}", config["manifest_sha256"]) and
+                Path(config["bundle"]).is_dir()):
+            return "구성됨"
+    except (OSError, ValueError, TypeError):
+        return "미확인"
+    return "미설정"
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="AX Dev Factory standalone owner GUI")
     parser.add_argument("--settings", type=Path, default=default_file())
@@ -317,7 +333,7 @@ def main(argv=None) -> int:
                 (percent, str(verified) + " / " + str(total) + " 작업 · 제품 공식 검증률 아님"),
                 (str(held), "HOLD 작업 (승인 없이 재시도 안 함)"),
                 (_model_label(self.settings), "선택된 Ollama 모델 · 실행 상태 미측정"),
-                ("설정됨" if not error else "미확인", "격리 정책은 실행 때 검증 / 자동 성공 주장 금지"),
+                (_sandbox_configuration(self.settings), "격리 정책은 실행 때 검증 / 자동 성공 주장 금지"),
             ]
             for i, (value, hint) in enumerate(rows):
                 self.kpis[i][0].configure(text=value)
