@@ -1,9 +1,10 @@
 # AX Dev Factory P2 handoff · 2026-11-17 KST
 
-1. **Windows 11 field acceptance passed 20/20 F-ID rows (100% by row count).** The earlier checkpoint passed 14/20. The six Windows 10 device checks remain NOT_RUN. Formal weighted completion remains UNASSESSED. Review runtime `448fcc34bb328b179f314af62c0d14afc94fc0a5` on `codex/axdev-full-verification`. The acceptance baseline before native testing was `9a74fd014e5b2a0a1a865e94ba203306a20903d7`. [PR #3](https://github.com/hibi89/Freelancer/pull/3)
+1. **Windows 11 final field checkpoint has 19 PASS and F17 end-to-end NOT_RUN.** The earlier checkpoint passed 14/20. The six Windows 10 device checks remain NOT_RUN. Formal weighted completion remains UNASSESSED. Review runtime `448fcc34bb328b179f314af62c0d14afc94fc0a5` on `codex/axdev-full-verification`. The acceptance baseline before native testing was `9a74fd014e5b2a0a1a865e94ba203306a20903d7`. [PR #3](https://github.com/hibi89/Freelancer/pull/3)
 2. Compare the final source diff, the immutable fixture plan and the host AppContainer proof against the independent acceptance checks. Review the launch, shutdown and recovery boundaries in `axdev/windows_sandbox_runtime.py`. [Windows 11 physical verification](docs/WINDOWS11_VERIFICATION.md) · [Machine-readable evidence](docs/WINDOWS11_VERIFICATION.json)
 3. Reuse the final source-pinned CI and protect the Windows 10 fallback. The six Windows 10 field checks require a separate device run. [Linux and Windows CI](https://github.com/hibi89/Freelancer/actions/runs/43977508805) · [Windows 10 steps](docs/WINDOWS11_VERIFICATION.md#remaining-windows-10-device-work)
 4. Review the 3B coding failure, the accepted 4B observations and the separate host GPU and guest CPU measurements. The repository evidence contains only disposable fixture metadata.
+5. **Web Sol High F17 gate.** The temporary task at checkout `3d920478802b216ca7e2f2acd4dfd55d512eb280` is registered and awaits a fresh owner login. Review the automatic task exit, actual standard-user token, one 4B coding reservation, independent AppContainer outcome, matching Git and SQLite state, replay and cleanup evidence after that login. Independent model review, final design acceptance and real-use approval remain separate. [F17 trial record](https://github.com/hibi89/Freelancer/pull/3#issuecomment-6934793190)
 
 ## Earlier checkpoint
 

@@ -1,9 +1,10 @@
 # AX Dev Factory P2 verification checkpoint · 2026-11-17 KST
 
-Functional source `448fcc34bb328b179f314af62c0d14afc94fc0a5` on `codex/axdev-full-verification`. **Windows 11 field acceptance passed 20/20 F-ID rows (100% by row count).** The earlier checkpoint passed 14/20. The six Windows 10 device checks remain NOT_RUN. Formal weighted completion remains UNASSESSED. [P2 acceptance ledger](docs/P2_VERIFICATION_LEDGER.md) · [PR #3](https://github.com/hibi89/Freelancer/pull/3)
+Functional source `448fcc34bb328b179f314af62c0d14afc94fc0a5` on `codex/axdev-full-verification`. **Windows 11 final field checkpoint has 19 PASS and F17 end-to-end NOT_RUN.** The earlier 14/20 checkpoint and subsequent physical-device evidence remain recorded. The six Windows 10 device checks remain NOT_RUN. Formal weighted completion remains UNASSESSED. [P2 acceptance ledger](docs/P2_VERIFICATION_LEDGER.md) · [PR #3](https://github.com/hibi89/Freelancer/pull/3)
 
 - The native Windows 11 guest performed the approved 4B edit. Independent AppContainers verified the candidate and the Git/SQLite crash test recovered the same commit without rerunning the model. The retry, HOLD, independent continuation, forced termination and actual logon checks produced separate physical evidence. [Windows 11 physical verification](docs/WINDOWS11_VERIFICATION.md)
 - Production uses a writable model store inside the guest, assigns the modern Windows Sandbox instance ID before launch and waits for shutdown before launching the next task. The Windows 10 launcher remains available.
+- F17's final trial uses checkout `3d920478802b216ca7e2f2acd4dfd55d512eb280`. The owner-approved least-privilege temporary task is registered. Task Scheduler reports `0x41303` (never run) while the existing Windows session remains active. The prior automatic run's model-store HOLD and the fixed runtime's separate native success remain in the field record. [F17 trial record](https://github.com/hibi89/Freelancer/pull/3#issuecomment-6934793190)
 - Linux passed 155 tests with 2 skips. Hosted Windows passed 156 with 1 skip. [Linux and Windows CI](https://github.com/hibi89/Freelancer/actions/runs/43977508805) · [Blueprint evidence check](https://github.com/hibi89/Freelancer/actions/runs/43977498171)
 
 ## Earlier checkpoint
