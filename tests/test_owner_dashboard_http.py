@@ -100,5 +100,14 @@ class DashboardHttpSecurityTests(unittest.TestCase):
         self.stub.assert_not_called()
 
 
+    def test_corrupt_private_status_is_503_without_owner_token(self):
+        import sqlite3
+        self.stub.side_effect = sqlite3.DatabaseError("synthetic-corrupt-sqlite")
+        status, data = self.request("GET", "/")
+        self.assertEqual(status, 503)
+        self.assertNotIn(self.token, data)
+        status, _ = self.request("POST", "/stop", data="csrf=" + self.token)
+        self.assertEqual(status, 503)
+
 if __name__ == "__main__":
     unittest.main()
