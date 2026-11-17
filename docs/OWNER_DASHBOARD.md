@@ -1,3 +1,5 @@
+> **Updated 2026-11-17:** This document describes the *legacy optional browser status viewer*. The owner now selected a **native Windows EXE as primary interface**; see [AXDEV_DESKTOP_UI_STANDARD](AXDEV_DESKTOP_UI_STANDARD.md) and `RUN_AXDEV_DESKTOP.cmd`. The native GUI is not served over HTTP and adds an approved natural-language command composer. The old loopback viewer is preserved for rollback only.
+
 # AX Dev Factory — Owner Console (Windows 11)
 
 This is the local owner-facing interface for the existing AX Dev Factory F01–F20 engine. It does not change the immutable task contract, review identity, local Git integration behavior, model permissions or publishing policy.

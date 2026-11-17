@@ -1,3 +1,18 @@
+# AX Dev Factory native GUI/EXE handoff (2026-11-17 KST)
+
+1. **Goal/design:** Owner approved dark workstation reference screenshot from conversation, SHA-256 `6043e2d17fe79c62e6b1f05e284b583e26aa3e8c153419ee5e2060065014f33f`; original saved in owner Library; preview [GitHub WebP](docs/design/AXDEV_DESKTOP_REFERENCE_20261117.webp) and details [UI standard](docs/AXDEV_DESKTOP_UI_STANDARD.md). Main interface Windows native Tkinter EXE; no HTTP server.
+2. **Implemented:** sidebar, honest metric cards, private log whitelist, current SQLite tasks and stop/resume/status, prominent command bar: text→local inert draft→user supplies exact paths & independent acceptance→SHA-pinned single-run approval→separate local Sandbox worker. Leaves F01–F20 engine untouched.
+3. **Tests:** source code SHA `13fa06dac65b3228e83a68742f93997c854f4736` full [CI #44007176562](https://github.com/hibi89/Freelancer/actions/runs/44007176562) Linux 170 PASS/2 SKIP, Windows 171 PASS/1 SKIP; command module 8/8 PASS. [EXE #44007169354](https://github.com/hibi89/Freelancer/actions/runs/44007169354) build + package self-check PASS; [blueprint #44007169679](https://github.com/hibi89/Freelancer/actions/runs/44007169679) SUCCESS. No owner Windows GUI native visual E2E performed.
+4. **Progress/blockers:** native desktop implementation source candidate; formal weighted verification UNASSESSED; actual Windows 11 interactive EXE/UX and local Sandbox worker integration through the new GUI NOT_RUN; independent model audit NOT_RUN; original Windows10 gates six NOT_RUN. Real-use release HOLD.
+5. **Prior failures/fixes:** Windows CI first failed invalid-path test because raw FileNotFoundError was raised; corrected to ContractError. First GUI EXE selfcheck job falsely failed because Windows GUI process wasn't awaited; fixed CI to Start-Process -Wait. Re-ran, SUCCESS. No failed test suppressed or disabled.
+6. **Repository:** `hibi89/Freelancer` feature branch `feature/axdev-owner-product-ui-20261117`, tested SHA `13fa06dac65b3228e83a68742f93997c854f4736`, parent PR3 F01–F20 accepted candidate `663d2074cfad3e556d8c665a62fdef10c2342079`. PR5 remains draft, no merge. File paths `scripts/axdev_desktop.py`, `scripts/desktop_commands.py`, `tests/test_axdev_desktop.py`, Windows `RUN_AXDEV_DESKTOP.cmd`, `BUILD_AXDEV_EXE.cmd`, `.github/workflows/axdev-desktop-exe.yml`, design docs/thumbnail.
+7. **Runtime:** Windows 11 Pro, Python 3.11+ for source launch; optional unsigned `AXDevFactory.exe` needs no local Python itself but worker requires offline approved existing Ollama/OpenCode/Sandbox bundle. Private settings `%LOCALAPPDATA%\\AXDevFactory\\settings.json`, drafts under `desktop-commands`. No Production URL or cloud server.
+8. **Preservation/security:** original plan/approved public code untouched. No secrets, local model files, SQLite, customer data uploaded. EXE unsigned developer preview only; sandbox stays fail-closed on invalid credentials/config. User must explicitly approve any protected install or Windows settings alteration.
+9. **Next READY:** actual Win11 machine screenshot/UI accessibility test, command save→owner approval→one synthetic model edit→AppContainer VERIFY + Git/SQLite; confirm close/restart/duplicate prevention and failure handling. Do not claim production-ready.
+10. **KST evidence date:** 2026-11-17, code `13fa06dac65b3228e83a68742f93997c854f4736`; docs-only future SHA must remain distinguished from source tested SHA.
+
+---
+
 # AX Dev Factory Owner Console — High product UI handoff (2026-11-17 KST)
 
 1. **Mission/design:** Preserve personal local autonomous-development F01–F20 engine; add production-quality **local owner console**, not a new SaaS/Kmong product. No API/network execution from the UI.

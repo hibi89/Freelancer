@@ -1,3 +1,15 @@
+# AX Dev Factory — native Windows EXE frontend checkpoint (2026-11-17 KST)
+
+- **Owner standard:** dark offline workstation screenshot is stored unmodified in owner's private Library (see `docs/AXDEV_DESKTOP_UI_STANDARD.md`); downsized actual reference image [in GitHub](docs/design/AXDEV_DESKTOP_REFERENCE_20261117.webp). Keyboard/sidebar/console/command-input approval UX follows this reference as a functional V1, not exact pixel reproduction.
+- **Code tested SHA:** `13fa06dac65b3228e83a68742f93997c854f4736` on feature branch `feature/axdev-owner-product-ui-20261117` / [draft PR #5](https://github.com/hibi89/Freelancer/pull/5). Source implementation: native `scripts/axdev_desktop.py` Python Tkinter, `scripts/desktop_commands.py` private draft + SHA-pinned approval, `RUN_AXDEV_DESKTOP.cmd`, `BUILD_AXDEV_EXE.cmd` and controlled unsigned Windows CI build. No localhost HTTP server is required by the new primary UI.
+- **Source validation:** [Linux/Windows CI #44007176562](https://github.com/hibi89/Freelancer/actions/runs/44007176562) SUCCESS, Linux **170 PASS / 2 SKIP**, hosted Windows **171 PASS / 1 SKIP**. Command inbox isolated tests **8/8 PASS**. [Blueprint gate #44007169679](https://github.com/hibi89/Freelancer/actions/runs/44007169679) SUCCESS.
+- **Windows EXE artifact:** [Windows EXE CI #44007169354](https://github.com/hibi89/Freelancer/actions/runs/44007169354) SUCCESS; `AXDevFactory.exe` **13,335,771 bytes**, SHA-256 **`1F746C8913AA5A077485352FBBD4CBCCC93CB501C2F7D45B0007C1D1A88A5434`**, unsigned temporary CI artifact ID `14294573518` (expires 2026-11-24). Package self-check passed; no model call took place during build.
+- **Safety:** no external SaaS or paid AI; natural-language command is inert DRAFT; approval requires allowed files and independent callable acceptance probes; EXE runs one approved offline Sandbox task in a separate process only after another user confirmation. Original global settings/queue and verified Git HEAD are preserved.
+- **Not yet verified:** actual GUI rendering/functionality on *owner's Windows 11* machine, full EXE GUI keyboard/DPI/contrast, approved real Ollama/Sandbox end-to-end through the newly added GUI, and owner real-use acceptance. The earlier F01–F20 Windows 11 acceptance stays 20/20 PASS **candidate** from PR #3; official weighted completion UNASSESSED, release HOLD; six Windows 10 device checks NOT_RUN.
+- **Next:** actual connected owner Windows 11 EXE synthetic end-to-end and screenshot verification, then final High acceptance; no main merge until approval. Screenshots are visual specifications, not a substitute for executing the GUI.
+
+---
+
 # AX Dev Factory — Owner Console product UI verification checkpoint (2026-11-17 KST)
 
 - **UI source SHA:** `77f0dd9da5aa9dc6a7c9842573f778fe24949faa` on `feature/axdev-owner-product-ui-20261117`, [PR #5](https://github.com/hibi89/Freelancer/pull/5). Parent F01–F20 Windows 11 implementation and stage-1 evidence from PR #3 functional `448fcc34bb328b179f314af62c0d14afc94fc0a5`, acceptance doc SHA `663d2074cfad3e556d8c665a62fdef10c2342079` are preserved.
