@@ -54,6 +54,8 @@ def _safe_events(settings_path: Path, limit: int = 40) -> list[str]:
                 data = json.loads(line)
             except (ValueError, TypeError):
                 continue
+            if not isinstance(data, dict):
+                continue
             task, status = data.get("task_id"), data.get("status")
             if (isinstance(task, str) and re.fullmatch(r"[A-Z][A-Z0-9_-]{2,39}", task)
                     and status in ("IMPLEMENTED", "VERIFIED", "HOLD")):
@@ -450,6 +452,12 @@ def main(argv=None) -> int:
 
 def entrypoint() -> int:
     # An EXE can start its own separate worker process without a Python console.
+    if len(sys.argv) >= 2 and sys.argv[1] == "--axdev-selfcheck":
+        import tkinter
+        from axdev.windows_sandbox_runtime import run_sandbox_queue
+        from scripts.desktop_commands import inspect_approval
+        print("AXDEV_DESKTOP_EXE_SELF_CHECK: PASS")
+        return 0
     if len(sys.argv) >= 2 and sys.argv[1] == "--axdev-worker":
         from scripts.run_configured_queue import main as run_queue
         return run_queue(sys.argv[2:])
