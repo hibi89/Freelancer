@@ -1,7 +1,7 @@
 # OpenCode V2 effective-config fail-closed guard
 
 Before every live model call, AX Dev Factory now runs
-`opencode debug config` in the **same Git worktree and environment** as
+`opencode --standalone debug config` in the **same Git worktree and environment** as
 the coding call. It validates the merged, resolved JSON without writing
 or echoing the returned configuration. The check expects:
 

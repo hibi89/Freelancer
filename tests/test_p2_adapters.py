@@ -74,9 +74,12 @@ class AdapterContractTests(unittest.TestCase):
             raise AssertionError("unexpected Git command")
 
         for status, rc, accepted in (("AGREE", 0, True), ("CONFLICT", 2, False)):
-            payload = json.dumps({"status": status}).encode("utf-8")
+            payload = json.dumps({"status": status, "input": {"sha256": hashlib.sha256(goal.read_bytes()).hexdigest()},
+                                  "verification": {"status": "PASS", "checks": ["independent"],
+                                                   "policy": "READ_ONLY;NO_REMOTE;NO_AUTOMATIC_REPAIR"}}).encode("utf-8")
             result = subprocess.CompletedProcess([], rc, stdout=payload, stderr=b"")
             with patch("axdev.eai_adapter.git", side_effect=git_check), \
+                 patch("axdev.eai_adapter.assert_safe_git_checkout"), \
                  patch("axdev.eai_adapter.subprocess.run", return_value=result) as runner:
                 record = run_eai_goal(repo, sha, goal, approved)
             self.assertEqual(record["independent_receipt_accepted"], accepted)

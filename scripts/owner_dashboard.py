@@ -10,12 +10,14 @@ import html
 import hmac
 import json
 import secrets
+import sqlite3
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs
 
 from axdev.core import ContractError
 from scripts.queue_control import control
+from scripts.owner_dashboard_view import render_dashboard
 
 
 def handler_factory(settings: Path, port: int, secret: str):
@@ -32,7 +34,9 @@ def handler_factory(settings: Path, port: int, secret: str):
             self.send_header("Content-Length", str(length))
             self.send_header("Cache-Control", "no-store")
             self.send_header("X-Content-Type-Options", "nosniff")
-            self.send_header("Referrer-Policy", "no-referrer")
+            # Browsers can send Origin: null for a form POST under no-referrer.
+            # Keep the exact loopback origin while suppressing cross-site referrers.
+            self.send_header("Referrer-Policy", "same-origin")
             self.send_header("X-Frame-Options", "DENY")
             self.send_header("Content-Security-Policy",
                 "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; "
@@ -57,37 +61,10 @@ def handler_factory(settings: Path, port: int, secret: str):
                 return self._send(404, "Not found")
             try:
                 state = control("status", settings)
-            except (OSError, ValueError) as exc:
+            except (OSError, ValueError, sqlite3.Error, KeyError, TypeError) as exc:
                 return self._send(503, "Queue status unavailable: " +
                                   html.escape(type(exc).__name__))
-            counts = "".join("<tr><th scope='row'>" + html.escape(key) +
-                             "</th><td>" + str(value) + "</td></tr>"
-                             for key, value in sorted(state["counts"].items()))
-            paused = "PAUSED" if state["stop_requested"] else "ELIGIBLE"
-            mark = html.escape(secret, quote=True)
-            page = (
-                "<!doctype html><html lang='ko'><meta charset='utf-8'>"
-                "<meta name='viewport' content='width=device-width,initial-scale=1'>"
-                "<title>AX Dev Factory — Owner</title>"
-                "<style>body{font:16px system-ui;background:#10141c;color:#f4f5f9;"
-                "max-width:760px;margin:3rem auto;padding:1rem}table{width:100%;"
-                "border-collapse:collapse}td,th{text-align:left;padding:.8rem;"
-                "border-bottom:1px solid #3b4250}button{padding:.9rem 1.4rem;"
-                "border:0;border-radius:.5rem;cursor:pointer;margin:.4rem}"
-                "form{display:inline-block}</style>"
-                "<main><h1>AX Dev Factory</h1><p>Local owner-only controls; "
-                "queue execution is never started from this dashboard.</p>"
-                "<p>Status: <strong>" + paused + "</strong></p>"
-                "<table><caption>SQLite task checkpoints (not verified model results)"
-                "</caption>" + counts + "</table>"
-                "<form method='post' action='/stop'><input type='hidden' name='csrf' value='" +
-                mark + "'><button type='submit'>Stop after task</button></form>"
-                "<form method='post' action='/resume'><input type='hidden' name='csrf' value='" +
-                mark + "'><button type='submit'>Confirm resume signal</button></form>"
-                "<p>Resume clears a stop signal; it does not execute the model.</p>"
-                "</main></html>"
-            )
-            self._send(200, page)
+            self._send(200, render_dashboard(state, secret))
 
         def do_POST(self):
             if not self._local_request() or self.path not in ("/stop", "/resume"):
@@ -110,7 +87,7 @@ def handler_factory(settings: Path, port: int, secret: str):
                 return self._send(403, "Owner token missing or invalid")
             try:
                 control(self.path[1:], settings, confirm=self.path == "/resume")
-            except (OSError, ValueError):
+            except (OSError, ValueError, sqlite3.Error, KeyError, TypeError):
                 return self._send(503, "Local control unavailable")
             self.send_response(303)
             self.send_header("Location", "/")

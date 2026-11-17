@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import shutil
 import sqlite3
@@ -16,6 +17,7 @@ import subprocess
 from pathlib import Path
 
 from axdev.core import ContractError, load_plan, plan_hash, safe_path
+from axdev.repo_trust import assert_safe_git_checkout
 from scripts.configure_queue import default_file
 
 REMOTE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
@@ -42,8 +44,42 @@ def _safe_origin(origin: str, approved_repo: str) -> bool:
     )
 
 
+def _verify_remote_base(repo: Path, base: str, baseline: str) -> str:
+    ref = "refs/heads/" + base
+    output = _git(repo, "ls-remote", "--heads", "origin", ref)
+    fields = output.split("\t")
+    if len(fields) != 2 or fields[1] != ref or not SHA.fullmatch(fields[0]):
+        raise ContractError("approved remote base branch is missing or ambiguous")
+    remote = fields[0]
+    if remote != baseline:
+        try:
+            _git(repo, "--no-replace-objects", "merge-base", "--is-ancestor", baseline, remote)
+        except ContractError as exc:
+            raise ContractError("local baseline must already be on the approved remote base; refresh and review") from exc
+    return remote
+
+
+def _confirmed_draft(repo: Path, inspection: dict, url: str) -> str:
+    remote = inspection["repository"]
+    if not re.fullmatch(r"https://github\.com/" + re.escape(remote) + r"/pull/[1-9][0-9]*", url):
+        raise ContractError("draft PR URL did not match the approved repository; inspect remote")
+    result = subprocess.run(["gh", "pr", "view", url,
+                             "--json", "isDraft,headRefOid,baseRefName,headRefName,url"],
+                            cwd=repo, capture_output=True, text=True, timeout=25, check=False)
+    try:
+        observed = json.loads(result.stdout)
+    except ValueError as exc:
+        raise ContractError("draft PR creation needs remote reconciliation") from exc
+    expected = {"isDraft": True, "headRefOid": inspection["reviewed_commit"],
+                "baseRefName": inspection["base_branch"], "headRefName": inspection["head_branch"],
+                "url": url}
+    if result.returncode or observed != expected:
+        raise ContractError("draft PR result differs from the approved base or reviewed head; inspect remote")
+    return url
+
+
 def preview(settings_path: Path, approved_repo: str, base: str,
-            expected_commit: str, head_branch: str) -> dict:
+            expected_commit: str, head_branch: str, *, require_sandbox: bool = False) -> dict:
     if not isinstance(approved_repo, str) or not REMOTE.fullmatch(approved_repo):
         raise ContractError("invalid approved GitHub owner/repo")
     if any(p in (".", "..") for p in approved_repo.split("/")):
@@ -73,8 +109,13 @@ def preview(settings_path: Path, approved_repo: str, base: str,
     if digest != obj.get("plan_sha256"):
         raise ContractError("approved plan SHA256 mismatch")
     tasks = load_plan(plan)
-    if not _safe_origin(_git(repo, "remote", "get-url", "origin"), approved_repo):
-        raise ContractError("origin URL differs from the explicitly approved repository")
+    assert_safe_git_checkout(repo)
+    fetch_url = _git(repo, "remote", "get-url", "--all", "origin")
+    push_url = _git(repo, "remote", "get-url", "--push", "--all", "origin")
+    if not _safe_origin(fetch_url, approved_repo) or not _safe_origin(push_url, approved_repo):
+        raise ContractError("origin URL for fetch or push differs from the approved repository")
+    if require_sandbox and not push_url.startswith("https://github.com/"):
+        raise ContractError("actual publication requires HTTPS with the verified GitHub CLI identity")
 
     ref = "refs/heads/axdev/integration-" + hashlib.sha256(
         str(state).encode("utf-8")).hexdigest()[:12]
@@ -85,6 +126,14 @@ def preview(settings_path: Path, approved_repo: str, base: str,
         baseline = conn.execute("SELECT value FROM meta WHERE key='base_sha'").fetchone()
         saved = dict((id_, (digest_, status)) for id_, digest_, status
                      in conn.execute("SELECT id, spec, status FROM runs"))
+        if require_sandbox:
+            from axdev.windows_sandbox_runtime import BACKEND, validate_history
+            row = conn.execute("SELECT value FROM meta WHERE key='execution_backend'").fetchone()
+            policy = json.loads(row[0]) if row else None
+            if (not isinstance(policy, list) or len(policy) != 4 or
+                    policy[:2] != [BACKEND, digest]):
+                raise ContractError("actual publication requires host-reviewed isolated execution evidence")
+            validate_history(repo, state, conn, tasks, ref, allow_prepared=False)
     if not baseline or not SHA.fullmatch(baseline[0]):
         raise ContractError("verified integration baseline missing")
     allowed = set()
@@ -102,13 +151,15 @@ def preview(settings_path: Path, approved_repo: str, base: str,
                    baseline[0] + ".." + actual).splitlines()
     if not parents:
         raise ContractError("no verified commits after baseline")
-    diff = _git(repo, "diff", "--name-status", "--no-renames", baseline[0], actual)
+    diff = _git(repo, "diff", "--name-status", "--no-renames", "-z", baseline[0], actual)
+    fields = diff.split("\0")
+    if not fields or fields[-1] != "" or len(fields) % 2 != 1:
+        raise ContractError("malformed Git export path inventory")
     files = []
-    for line in diff.splitlines():
-        parts = line.split("\t", 1)
-        if len(parts) != 2 or parts[0] not in ("A", "M"):
+    for status, name in zip(fields[:-1:2], fields[1:-1:2]):
+        if status not in ("A", "M"):
             raise ContractError("PR export includes deletion, renaming or unexpected changes")
-        filename = safe_path(parts[1])
+        filename = safe_path(name)
         if filename not in allowed:
             raise ContractError("PR path outside approved tasks: " + repr(filename) + " not in " + repr(sorted(allowed)))
         files.append(filename)
@@ -128,23 +179,35 @@ def publish_draft(settings_path: Path, inspection: dict) -> dict:
     """Only called after a separately confirmed --publish --confirm-public-export."""
     if not shutil.which("gh"):
         raise ContractError("GitHub CLI gh must be installed and authenticated")
-    gh = subprocess.run(["gh", "api", "user", "--jq", ".login"],
+    refreshed = preview(settings_path, inspection["repository"], inspection["base_branch"],
+                        inspection["reviewed_commit"], inspection["head_branch"], require_sandbox=True)
+    if inspection != refreshed:
+        raise ContractError("reviewed publication evidence changed")
+    gh = subprocess.run(["gh", "api", "--hostname", "github.com", "user", "--jq", ".login"],
                         capture_output=True, text=True, timeout=15, check=False)
     if gh.returncode or gh.stdout.strip() != inspection["repository"].split("/")[0]:
         raise ContractError("GitHub CLI account does not match approved repository owner")
     repo = Path(json.loads(settings_path.read_text(encoding="utf-8"))["repo"]).resolve()
     head = inspection["head_branch"]
+    remote_base = _verify_remote_base(repo, inspection["base_branch"], inspection["source_baseline"])
     remote_refs = _git(repo, "ls-remote", "--heads", "origin", "refs/heads/" + head)
     if remote_refs:
         raise ContractError("PR publication head branch already exists; manual reconciliation")
     # Deliberately no --force, no follow-up merge, and no remote delete on partial errors.
     commit = inspection["reviewed_commit"]
-    _git(repo, "push", "origin", commit + ":refs/heads/" + head)
+    env = dict(os.environ, GIT_TERMINAL_PROMPT="0")
+    push = subprocess.run(["git", "-c", "credential.helper=", "-c",
+                           "credential.https://github.com.helper=!gh auth git-credential",
+                           "-c", "remote.origin.mirror=false", "push", "--no-follow-tags",
+                           "origin", commit + ":refs/heads/" + head], cwd=repo, env=env,
+                          stdin=subprocess.DEVNULL, capture_output=True, timeout=60, check=False)
+    if push.returncode:
+        raise ContractError("approved GitHub branch push failed")
     body = ("AX Dev Factory draft. Only locally reviewed Git worktree commits.\n"
             "Manual security/code/identity review is required before merging.\n"
             "Verified task IDs: " + ", ".join(inspection["verified_task_ids"]))
     try:
-        pr = subprocess.run(["gh", "pr", "create", "--repo", inspection["repository"],
+        pr = subprocess.run(["gh", "pr", "create", "--repo", "github.com/" + inspection["repository"],
                              "--base", inspection["base_branch"], "--head", head,
                              "--draft", "--title", "AXDEV reviewed local tasks",
                              "--body", body],
@@ -154,8 +217,12 @@ def publish_draft(settings_path: Path, inspection: dict) -> dict:
         raise ContractError("branch pushed; PR creation unverified; inspect remote manually") from exc
     if pr.returncode:
         raise ContractError("branch pushed but draft PR failed; do not retry push automatically")
-    return dict(inspection, remote_write_executed=True, pr_created=True,
-                pr_url=pr.stdout.strip(), identity_verified=True)
+    try:
+        url = _confirmed_draft(repo, inspection, pr.stdout.strip())
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise ContractError("branch pushed; PR confirmation unavailable; inspect remote") from exc
+    return dict(inspection, remote_write_executed=True, pr_created=True, pr_url=url,
+                approved_remote_base=remote_base, identity_verified=True)
 
 
 def main(argv=None):
@@ -171,7 +238,8 @@ def main(argv=None):
     # Both publication flags are required. This tool is never invoked by RUN_QUEUE.
     if a.publish != a.confirm_public_export:
         raise ContractError("publication requires BOTH --publish and --confirm-public-export")
-    view = preview(a.settings, a.approved_repo, a.base, a.expected_commit, a.head)
+    view = preview(a.settings, a.approved_repo, a.base, a.expected_commit, a.head,
+                   require_sandbox=a.publish)
     if a.publish:
         view = publish_draft(a.settings, view)
     print(json.dumps(view, ensure_ascii=False, indent=2))

@@ -16,6 +16,8 @@ import sys
 from urllib.request import ProxyHandler, Request, build_opener
 from pathlib import Path
 
+from axdev.opencode_guard import supported_release
+
 
 def _version(executable: str, *args: str) -> tuple[bool, str]:
     found = shutil.which(executable)
@@ -112,12 +114,9 @@ def inspect(model: str, repo: Path | None = None) -> dict:
     oc_help, help_text = _version("opencode", "run", "--help")
     standalone = oc_help and "--standalone" in help_text
     checks["opencode"]["standalone_advertised"] = standalone
-    release = re.search(r"(?<!\d)(\d+)\.(\d+)\.(\d+)(?!\d)",
-                        checks["opencode"]["version"])
-    parts = tuple(map(int, release.groups())) if release else ()
     # plugin.use needs >=2.2.3; websearch.use is ignored before 2.2.6.
     # A permissive older CLI must never silently bypass deny policies.
-    if checks["opencode"]["found_and_runs"] and parts < (2, 2, 6):
+    if checks["opencode"]["found_and_runs"] and not supported_release(checks["opencode"]["version"]):
         blockers.append("OpenCode 2.2.6+ required for effective V2 hard policies")
     if not standalone:
         blockers.append("OpenCode --standalone option not confirmed")

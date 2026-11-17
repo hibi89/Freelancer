@@ -22,7 +22,7 @@ To publish later, the owner must separately authorize the repository,
 external code transfer and account identity, review the diff locally,
 have GitHub CLI installed and authenticated as repository owner, then add
 **both** flags --publish --confirm-public-export. Only then a non-force
-push of the reviewed commit and a **DRAFT** PR creation is attempted.
+push of the reviewed commit and a **DRAFT** PR creation is attempted. The local baseline must already be reachable from the approved GitHub base branch. The push excludes implicit tags and mirrored refs. The result must read back as a draft on the approved base and exact reviewed commit.
 
 Publication is not run by default, RUN_QUEUE.cmd, or GitHub Actions.
 A branch push can succeed while PR creation fails; in that case the
