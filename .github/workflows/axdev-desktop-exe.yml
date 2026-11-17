@@ -40,8 +40,9 @@ jobs:
         shell: powershell
         run: |
           if (!(Test-Path dist/AXDevFactory.exe)) { throw "No Windows EXE produced" }
-          & .\dist\AXDevFactory.exe --axdev-selfcheck
-          if ($LASTEXITCODE -ne 0) { throw "Packaged import selfcheck failed" }
+          $binary = (Resolve-Path .\dist\AXDevFactory.exe).Path
+          $process = Start-Process -FilePath $binary -ArgumentList '--axdev-selfcheck' -PassThru -Wait
+          if ($process.ExitCode -ne 0) { throw "Packaged import selfcheck failed: $($process.ExitCode)" }
           $exe = Get-Item dist/AXDevFactory.exe
           $sha = (Get-FileHash $exe.FullName -Algorithm SHA256).Hash
           Write-Output "AXDEV_UNSIGNED_EXE_SHA256=$sha"
