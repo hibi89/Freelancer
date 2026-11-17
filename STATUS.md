@@ -1,38 +1,21 @@
-> **[2026-11-13 WORKNOVA Desk P50 신규 기술 개발 인수]** Private `product/worknova-desk-local` 독립 오프라인 Python/SQLite 상품 신규 구현; 정확 기능 SHA `6b7f86738fb6ed6c7b965523955efcae3285d1f7` 소스·테스트·문서 11/11 blob SHA 일치, local Python3.13.5 18 PASS/0 FAIL/0 SKIP. 자동 blueprint 검사 #43377108605 SUCCESS(제품 Python CI 아님). 최종설계 공식률 UNASSESSED, 목표 P50·[작업중] 유지, Windows/실 고객/GUI·DOCX/PDF/결제 미검증, RELEASE HOLD. 원본 PayPal/기타 product/* 불변. [제품 전체 설계](https://github.com/hibi89/Freelancer/blob/product/worknova-desk-local/docs/FINAL_BLUEPRINT.md) · [해총 기록](https://github.com/hibi89/hackathon-command-center-2026/blob/kmong-productization/docs/audits/FREELANCER_BRANCH_COMPLETION_REGISTRY_20261113.md). 이후 WD-03 견적개정/WD-09 복원/Windows GUI 및 공식 가중치·수용 검증부터. 본 main은 인덱스 문서만 갱신하며 2026-11-13 KST 코드/CI/Production 신규 실행 없음. 
+# AX ZERO — STATUS (2026-11-17 KST)
 
-## 2026-11-13 BID AX 별도 공공입찰 준비상품 신규 구현
-- New private `product/bid-ax-public-procurement@d614c08e611ef15d388865034ada215e10c8da6e`: committed Python offline core/CLI/fixtures/tests/21-requirement full blueprint, 12/12 readback; local unit 19/19 PASS; verified CLI smoke. GitHub Actions/actual public-data API/Windows/customer deployment NOT_RUN.
-- **P50 full-product user target [작업중]; official UNASSESSED** due unapproved weights and incomplete real-source/GUI/package/customer acceptance. RELEASE HOLD, unpublished; excluded BID OWL remains untouched.
-- Latest product/* branches: 9; products: 10. Previous eight branch references/old product outcomes unchanged. Central tracking updated `kmong-productization@98abf0cf1fb96733ed59a35ca65406661a56d22c`.
+**Repository:** `hibi89/Freelancer` · **Branch:** `product/ax-zero-local` · **base SHA:** `4982ce06cc0e74cbb45fc161b03051b8e0fe2db7`.
 
-# STATUS — Freelancer 크몽 5상품 설계 허브
-**2026-11-13 KST · Private · 문서/분기 작업 완료 · 제품 출고 RELEASE HOLD**
+## 완료된 것 (설계만)
+- 사용자 최초 스크린샷 **5단계** + 사용자 구두로 확장된 AI 호출 제거율/효율 KPI, SKILL.md 프로그램화, 에이전트 판단, 변경감지·선택 재컴파일, AXNODE 연동을 **최종설계**로 통합.
+- `REQ-01~36` 전체 수용 계약, P1 구현 큐 18개, P2 검증 큐 9개, 단계 게이트, KPI/보안/연동/런북·수용 매트릭스 작성.
+- 설계 선택: Freelancer 독립 product 브랜치; 로컬 제한 IR/Python first; AXNODE optional serializer, EAI/MLA 원본 무변경.
+- 정확 SHA는 GitHub 최신 branch HEAD로 확인하고 HANDOFF에 인계. 문서 완료는 제품 작동의 증거 아님.
 
-| 제품 | 상품 기획 브랜치 검증 HEAD | 고객 상품 구현/출고 |
-|---|---|---|
-| **AZENTFLOW AX** (HAE+LA) | `product/hae-la-automation@a578aee2300ae053bafe5cdaf1dd8e23385ff47b` | 기존 기술 85% 잠정, 기업형 판매 별도 HOLD |
-| **CITEVAULT AX** (RAG+SMAX/PREP) | `product/rag-enterprise-knowledge@acf4936670bf1205f648d0dff5ca7e48b62fa83a` | 기존 기술 95% 잠정, 기업형 판매 별도 HOLD |
-| **SITECRAFT AX** (REA+Fable/Astra) | `product/rea-website-rebuild@6e2346c3b9d50dea1bde8d5ecb47b47f1567f774` | 기존 기술 P85/P95 일부 검증, 고객형 판매 별도 HOLD |
-| **PROOFQA AX** | `product/proofqa-ax-delivery-audit@54b718f5d5520fae912d1fcc2e70a87ebd8f173c` | **신규 조합 통합 미착수/UNASSESSED** |
-| **ONTOINSIGHT AX** | `product/ontoinsight-ax-data-analytics@afda6eac0802d50cbcd44eb0b99d3daeffbf0922` | **신규 조합 통합 미착수/UNASSESSED** |
+## 미구현 / 미검증
+- **P1 실제 코드 구현: 0/36 REQ**, P1 태스크 0/18 DONE.
+- P2 전체 테스트/CI/Windows/브라우저/실 모델 절감 측정: **0/9 실행, NOT_RUN**.
+- 공식 가중치 기반 검증률 **UNASSESSED**, RELEASE HOLD, 크몽 미등록, Production 미적용.
+- 최초 예시 1,000→720(72%) 가상 시나리오, 현재 실측 절감률 **NOT_MEASURED**.
 
-- 기존 `main` 정리 이력 원본 `d47239f961fc895592147c2afa969ecf64f2bd00`, 3종 문서 허브 기준 `b80423da5f2bd3b5e8dd31d81b0bc26a94a612dc`에서 정상 fast-forward 변경.
-- 이번 최신 작업: 이름 결정, 2개 새 branch와 상세 final blueprint/tech/test/commercial/STATUS/HANDOFF, hub 5종 문서 인덱스 최신화.
-- 검증: GitHub 신규 branch/본문/소스 메타/파일 SHA readback; 신규 제품 실제 기능 0, 신규 CI 0, Windows 고객 인수 0, Production/Vercel 미적용.
-- 신규 제품 기능과 기존 Code Checker/AutoML 제품 진행률은 독립, 퍼센트 재산정 없음. 출시/판매 승인 없음.
-- [정확 SHA·경로 색인](docs/PRODUCT_INDEX.md), [기존 구직 원본 이력 복구](docs/REPOSITORY_RECOVERY.md).
+## 다음 READY
+`AXZ-001`, `AXZ-003`, `AXZ-006` 개발 착수. 작업마다 원본/비밀/기존 main·다른 상품 브랜치 보존. 고위험 코드 즉시 검사; 전체 CI/브라우저 P2 후행.
 
-- **브랜드 문서 갱신 2026-11-13 KST:** 기존 3개 기업형 상품 이름을 AZENTFLOW AX, CITEVAULT AX, SITECRAFT AX로 결정하여 각 브랜치 8개 기존 문서 + 브랜드 소개 파일에 반영. 3개 제품의 실행 기능/원본/CI/완성률 변동 0, 상표 검색 전 내부명, RELEASE HOLD.
-
-## 2026-11-13 추가 신상품 인덱스 (기존 5개 과거 표/진도 보존)
-
-- ECHOHOME + PAWTALK: product/echohome-pawtalk-local-ai@603be91d278f4cef1e8e0fe0994bfdb21ca23740 — 신규 설계/미구현·UNASSESSED·HOLD·미등록.
-- MYRADIO AI: product/myradio-ai-dj@5885b2b22f8e4ee7692c08ba96ddd536d2c82e26 — 전체 최종설계 문서 + 오프라인 WAV 권리 필터/선곡/DJ 문장/Windows SAPI 시제품, 로컬 Python 7 PASS·Windows NOT_RUN·공식률 UNASSESSED·HOLD·미등록.
-- 기존 5개 브랜치, 기술·테스트·원본·SHA 및 소비자형 신상품 가격/권리/판매 승인 변경 없음. 자세한 표는 docs/PRODUCT_INDEX.md의 추가 섹션 참조.
-
-
-## 2026-11-13 AXNODE 신규 제품 브랜치 추가
-
-- `product/axnode-sector-runtime`: 사용자 선택 독자 바이너리 파일 A안, `docs/FINAL_BLUEPRINT.md` R01~R29 전체 목표 설계·REQUIREMENTS/AGENTS/STATUS/HANDOFF 별도 등록. 기존 7개 브랜치/8개 제품 보존 후 8개 브랜치/9개 제품.
-- 별도 로컬 POC 19 PASS/0 FAIL/0 SKIP 및 5섹터/852바이트 예제. 브랜치 자체는 **설계 문서만 등록**, 원격 GitHub CI·Windows·3GB·원격 실행·HAE/LA 연결 미검증. 공식률 UNASSESSED / HOLD / 미등록.
-- 해총 kmong-productization 신규 등록부 동기화. 기존 29→19 상품화 분류/진도/등록 이력·다른 브랜치 코드 불변. 실제 GitHub Actions/완전 무료 클라우드 운영 성공 주장 금지.
+## 변경·경계
+이번 작업은 신규 브랜치/설계 문서 등록만 하며 AXNODE, MLA, EAI, 기존 Freelancer `main`, 해총 GitHub App Production/Actions/19 SKU·29원천 기록을 변경하지 않는다. 해총 원장에는 새 **내부 R&D 후보**로 별도 등록하고 중복 상품 숫자에 산입하지 않는다.

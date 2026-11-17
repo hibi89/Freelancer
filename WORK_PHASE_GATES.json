@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0",
+  "product_id": "AX-ZERO",
+  "created_kst": "2026-11-17",
+  "blueprint_lock": "REQ-01..REQ-36",
+  "owner_functional_scope": "first 5 steps + all later features incl AI Elimination Rate, agent judgement, drift/recompile, AXNODE optional",
+  "p0": {
+    "status": "DESIGNED_AND_GITHUB_REGISTRATION_PENDING_READBACK"
+  },
+  "p1": {
+    "status": "READY",
+    "implemented_req_count": 0,
+    "total_req_count": 36,
+    "implemented_task_count": 0,
+    "total_task_count": 18,
+    "official_implementation_percentage": 0
+  },
+  "p2": {
+    "status": "LOCKED",
+    "unlocked_only_if": [
+      "P1 all 36 REQ implemented on one exact source SHA",
+      "High signs off P1 candidate SHA",
+      "no unresolved critical safety blocker"
+    ],
+    "completed_verification_tasks": 0,
+    "total_verification_tasks": 9,
+    "official_weighted_verification_rate": "UNASSESSED"
+  },
+  "p3": {
+    "status": "NOT_STARTED",
+    "codex_technical_independent_audit": "NOT_RUN",
+    "astra_ui_independent_audit": "NOT_RUN"
+  },
+  "p4": {
+    "status": "NOT_STARTED",
+    "high_final_acceptance": "NOT_RUN"
+  },
+  "p5": {
+    "status": "RELEASE_HOLD",
+    "user_go": false,
+    "kmong_registration": "NOT_REGISTERED"
+  },
+  "no_auto_remote_execution": true,
+  "no_paid_or_production_actions": true
+}

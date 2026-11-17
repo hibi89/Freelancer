@@ -1,0 +1,327 @@
+{
+  "schema_version": "1.0",
+  "product_id": "AX-ZERO",
+  "phase": "P2_VERIFICATION",
+  "phase_status": "LOCKED",
+  "created_kst": "2026-11-17",
+  "task_count": 9,
+  "completion_policy": "P2 only after exact SHA P1 candidate + High approval; independent evidence required; weighted verified percentage UNASSESSED until approved",
+  "tasks": [
+    {
+      "task_id": "AXZ-V001",
+      "req_ids": [
+        "REQ-01",
+        "REQ-02",
+        "REQ-03",
+        "REQ-04",
+        "REQ-05",
+        "REQ-06",
+        "REQ-07",
+        "REQ-08",
+        "REQ-09",
+        "REQ-10"
+      ],
+      "name": "Static, schema, parser and unit full suite",
+      "depends_on": [
+        "P1_100_CANDIDATE",
+        "HIGH_APPROVAL_SHA_GATE"
+      ],
+      "allowed_paths": [
+        "tests/",
+        "docs/",
+        "verifier/",
+        "security/",
+        "ui/",
+        "packaging/"
+      ],
+      "acceptance": "Real independent execution on pinned source SHA with PASS/FAIL/SKIP/NOT_RUN evidence, no generator self-pass, preserve prior functionality",
+      "risk": "HIGH",
+      "status": "LOCKED_P2",
+      "evidence_sha": null,
+      "blockers": [
+        "P1 incomplete",
+        "High acceptance SHA not established"
+      ]
+    },
+    {
+      "task_id": "AXZ-V002",
+      "req_ids": [
+        "REQ-05",
+        "REQ-06",
+        "REQ-11",
+        "REQ-12",
+        "REQ-16",
+        "REQ-18",
+        "REQ-20",
+        "REQ-35"
+      ],
+      "name": "Sandbox, supply chain, prompt injection, approval security",
+      "depends_on": [
+        "P1_100_CANDIDATE",
+        "HIGH_APPROVAL_SHA_GATE"
+      ],
+      "allowed_paths": [
+        "tests/",
+        "docs/",
+        "verifier/",
+        "security/",
+        "ui/",
+        "packaging/"
+      ],
+      "acceptance": "Real independent execution on pinned source SHA with PASS/FAIL/SKIP/NOT_RUN evidence, no generator self-pass, preserve prior functionality",
+      "risk": "HIGH",
+      "status": "LOCKED_P2",
+      "evidence_sha": null,
+      "blockers": [
+        "P1 incomplete",
+        "High acceptance SHA not established"
+      ]
+    },
+    {
+      "task_id": "AXZ-V003",
+      "req_ids": [
+        "REQ-13",
+        "REQ-14",
+        "REQ-15",
+        "REQ-16",
+        "REQ-17",
+        "REQ-18"
+      ],
+      "name": "Diff/shadow/promotion malicious case and independent oracle",
+      "depends_on": [
+        "P1_100_CANDIDATE",
+        "HIGH_APPROVAL_SHA_GATE"
+      ],
+      "allowed_paths": [
+        "tests/",
+        "docs/",
+        "verifier/",
+        "security/",
+        "ui/",
+        "packaging/"
+      ],
+      "acceptance": "Real independent execution on pinned source SHA with PASS/FAIL/SKIP/NOT_RUN evidence, no generator self-pass, preserve prior functionality",
+      "risk": "HIGH",
+      "status": "LOCKED_P2",
+      "evidence_sha": null,
+      "blockers": [
+        "P1 incomplete",
+        "High acceptance SHA not established"
+      ]
+    },
+    {
+      "task_id": "AXZ-V004",
+      "req_ids": [
+        "REQ-21",
+        "REQ-22",
+        "REQ-23",
+        "REQ-24",
+        "REQ-25",
+        "REQ-26",
+        "REQ-27"
+      ],
+      "name": "Drift impact graph, rollback, corruption, recovery integration",
+      "depends_on": [
+        "P1_100_CANDIDATE",
+        "HIGH_APPROVAL_SHA_GATE"
+      ],
+      "allowed_paths": [
+        "tests/",
+        "docs/",
+        "verifier/",
+        "security/",
+        "ui/",
+        "packaging/"
+      ],
+      "acceptance": "Real independent execution on pinned source SHA with PASS/FAIL/SKIP/NOT_RUN evidence, no generator self-pass, preserve prior functionality",
+      "risk": "HIGH",
+      "status": "LOCKED_P2",
+      "evidence_sha": null,
+      "blockers": [
+        "P1 incomplete",
+        "High acceptance SHA not established"
+      ]
+    },
+    {
+      "task_id": "AXZ-V005",
+      "req_ids": [
+        "REQ-28",
+        "REQ-29",
+        "REQ-30"
+      ],
+      "name": "My Local AI/EAI/AXNODE contracts and no-regression",
+      "depends_on": [
+        "P1_100_CANDIDATE",
+        "HIGH_APPROVAL_SHA_GATE"
+      ],
+      "allowed_paths": [
+        "tests/",
+        "docs/",
+        "verifier/",
+        "security/",
+        "ui/",
+        "packaging/"
+      ],
+      "acceptance": "Real independent execution on pinned source SHA with PASS/FAIL/SKIP/NOT_RUN evidence, no generator self-pass, preserve prior functionality",
+      "risk": "HIGH",
+      "status": "LOCKED_P2",
+      "evidence_sha": null,
+      "blockers": [
+        "P1 incomplete",
+        "High acceptance SHA not established"
+      ]
+    },
+    {
+      "task_id": "AXZ-V006",
+      "req_ids": [
+        "REQ-31",
+        "REQ-32",
+        "REQ-33",
+        "REQ-34"
+      ],
+      "name": "KPI and controlled baseline performance/variance",
+      "depends_on": [
+        "P1_100_CANDIDATE",
+        "HIGH_APPROVAL_SHA_GATE"
+      ],
+      "allowed_paths": [
+        "tests/",
+        "docs/",
+        "verifier/",
+        "security/",
+        "ui/",
+        "packaging/"
+      ],
+      "acceptance": "Real independent execution on pinned source SHA with PASS/FAIL/SKIP/NOT_RUN evidence, no generator self-pass, preserve prior functionality",
+      "risk": "HIGH",
+      "status": "LOCKED_P2",
+      "evidence_sha": null,
+      "blockers": [
+        "P1 incomplete",
+        "High acceptance SHA not established"
+      ]
+    },
+    {
+      "task_id": "AXZ-V007",
+      "req_ids": [
+        "REQ-09",
+        "REQ-10",
+        "REQ-27",
+        "REQ-33",
+        "REQ-35",
+        "REQ-36"
+      ],
+      "name": "Windows 10/11 package offline & optional providers consent",
+      "depends_on": [
+        "P1_100_CANDIDATE",
+        "HIGH_APPROVAL_SHA_GATE"
+      ],
+      "allowed_paths": [
+        "tests/",
+        "docs/",
+        "verifier/",
+        "security/",
+        "ui/",
+        "packaging/"
+      ],
+      "acceptance": "Real independent execution on pinned source SHA with PASS/FAIL/SKIP/NOT_RUN evidence, no generator self-pass, preserve prior functionality",
+      "risk": "HIGH",
+      "status": "LOCKED_P2",
+      "evidence_sha": null,
+      "blockers": [
+        "P1 incomplete",
+        "High acceptance SHA not established"
+      ]
+    },
+    {
+      "task_id": "AXZ-V008",
+      "req_ids": [
+        "REQ-31",
+        "REQ-32"
+      ],
+      "name": "Dashboard browser/accessibility/responsiveness + user flow",
+      "depends_on": [
+        "P1_100_CANDIDATE",
+        "HIGH_APPROVAL_SHA_GATE"
+      ],
+      "allowed_paths": [
+        "tests/",
+        "docs/",
+        "verifier/",
+        "security/",
+        "ui/",
+        "packaging/"
+      ],
+      "acceptance": "Real independent execution on pinned source SHA with PASS/FAIL/SKIP/NOT_RUN evidence, no generator self-pass, preserve prior functionality",
+      "risk": "HIGH",
+      "status": "LOCKED_P2",
+      "evidence_sha": null,
+      "blockers": [
+        "P1 incomplete",
+        "High acceptance SHA not established"
+      ]
+    },
+    {
+      "task_id": "AXZ-V009",
+      "req_ids": [
+        "REQ-01",
+        "REQ-02",
+        "REQ-03",
+        "REQ-04",
+        "REQ-05",
+        "REQ-06",
+        "REQ-07",
+        "REQ-08",
+        "REQ-09",
+        "REQ-10",
+        "REQ-11",
+        "REQ-12",
+        "REQ-13",
+        "REQ-14",
+        "REQ-15",
+        "REQ-16",
+        "REQ-17",
+        "REQ-18",
+        "REQ-19",
+        "REQ-20",
+        "REQ-21",
+        "REQ-22",
+        "REQ-23",
+        "REQ-24",
+        "REQ-25",
+        "REQ-26",
+        "REQ-27",
+        "REQ-28",
+        "REQ-29",
+        "REQ-30",
+        "REQ-31",
+        "REQ-32",
+        "REQ-33",
+        "REQ-34",
+        "REQ-35",
+        "REQ-36"
+      ],
+      "name": "End-to-end acceptance/security/recovery final matrix",
+      "depends_on": [
+        "P1_100_CANDIDATE",
+        "HIGH_APPROVAL_SHA_GATE"
+      ],
+      "allowed_paths": [
+        "tests/",
+        "docs/",
+        "verifier/",
+        "security/",
+        "ui/",
+        "packaging/"
+      ],
+      "acceptance": "Real independent execution on pinned source SHA with PASS/FAIL/SKIP/NOT_RUN evidence, no generator self-pass, preserve prior functionality",
+      "risk": "HIGH",
+      "status": "LOCKED_P2",
+      "evidence_sha": null,
+      "blockers": [
+        "P1 incomplete",
+        "High acceptance SHA not established"
+      ]
+    }
+  ]
+}

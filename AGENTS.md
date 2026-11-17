@@ -1,20 +1,27 @@
-> **[OWNER-DEV-EXECUTION-V2 | ACTIVE]** [2026-11-16 사용자 확정 최신 실행·복원 정본](https://github.com/hibi89/hackathon-command-center-2026/blob/kmong-productization/docs/strategy/OWNER_DEV_EXECUTION_CANONICAL_20261116.md): 웹 **GPT-6 Sol High 최초 최종설계·작업 큐** → **Sol Instant 주력 BE/FE 구현 100% 후보** → 전체 CI·결함 수정(위험변경 즉시 최소안전검사) → Codex Sol Max/Astra Max 독립 검수 → High 최종 인수 → 사용자 GO 후 Codex Luna Extra High 등록. 이전 '4개 슬롯', High 독점 구현, 회차별 전체 CI, 중간 검수 순서는 효력상 대체. 프로젝트 고유 확정설계·보안/원본·권리/승인/RELEASE HOLD는 유지. **새 채팅: repo·브랜치/HEAD와 AGENTS 정책 우선 → HANDOFF→STATUS→REQUIREMENTS→최종설계→소스/큐**. HANDOFF 연혁이 정책을 덮어쓰지 않는다. 이 공시는 자동 개발/출시 승인 아니며 개발을 재개하려면 해당 제품/브랜치 임무 확인 필요. 구현률과 공식 검증률 구분.
+# AGENTS — AX ZERO 전용 임무 잠금 (2026-11-17 KST)
 
-> **[OWNER-FINAL-BLUEPRINT-100 | 2026-11-13 KST | 사용자 확정·전체 저장소 최우선]** 제품 공식 **최종완성률은 사용자 확정 최종설계도 전체 100%**를 분모로 한다. 총괄·작업자는 임의로 설계를 축소하거나, 해커톤용 MVP·합성 테스트·CI PASS·85/95% 내부 마일스톤을 최종완성률로 혼용할 수 없다. 최종설계 요구사항 ID→코드→정확 SHA 실제 검증→미구현/미검증 및 사용자 승인 가중치를 추적해 계산한다. 근거·가중치가 미비하면 **최종설계 기준 UNASSESSED(재산정 대기)**로 표시하고 종전 수치는 **과거 내부 마일스톤**으로 보존한다. 크몽 관련 완성률은 해총 `kmong-productization` 원장에 동기화한다. [작업중]/등록완료/RELEASE HOLD 등 기존 별도 상태는 보존한다. 상충하는 구형 진척률 산정 지시보다 우선. [공통 전체 규칙](https://github.com/hibi89/hackathon-command-center-2026/blob/kmong-productization/docs/strategy/FINAL_BLUEPRINT_COMPLETION_STANDARD_20261113.md). 정책 커밋은 코드 수정·성공 테스트·제품 출시·재산정 완료를 의미하지 않는다.
+## 0. Identity / 범위
+- 유일 대상: `hibi89/Freelancer@product/ax-zero-local`; 독립된 로컬 AI 작업 컴파일·검증·진화 엔진 **AX ZERO**. AXNODE, EAI, My Local AI 및 다른 `product/*`, `main` 원본 변경 금지.
+- 사용자 명시 신규 임무이므로 해총의 단독 `ㄱ` 기본 GitHub App 업무와 혼동하지 않는다. **이 채팅에 AX ZERO 임무가 고정된 뒤 `ㄱ`은 AX ZERO의 READY 구현 작업만 실행.**
+- GitHub 정확 HEAD→AGENTS→HANDOFF→STATUS→REQUIREMENTS→docs/FINAL_BLUEPRINT→단계 게이트/큐→실제 코드 순으로 재개. 최신 정책이 오래된 인수인계보다 우선.
 
-# AGENTS — 5대 크몽 상품 설계 저장소
-- GitHub 비공개 `hibi89/Freelancer`의 `main`은 5개 상품 인덱스이며 `product/*` 5개 브랜치가 각 최종설계·수용 기준의 소유자다. 실제 제품 소스/CI/배포는 해당 독립 원본 GitHub 저장소에 존재한다.
-- 새 채팅 또는 사용자 `ㄱ`: 해당 상품 branch의 `HANDOFF.md → STATUS.md → AGENTS.md → REQUIREMENTS.md → docs/FINAL_BLUEPRINT.md → 원본 제품 최신 HANDOFF/STATUS/AGENTS/REQUIREMENTS/코드` 순으로 확인한다.
-- 제품 최종완성률 `50→70→85→95→100`은 **문서에 확정한 전체 제품 설계의 검증 단계**. 설계 파일만 작성하고 신규 코드를 구현하지 않은 경우 진행률을 임의로 부여하지 않는다.
-- 아키텍처는 최소 2개 안을 성능·비용·유지보수·법적 권리·데이터 보안으로 비교해 채택 근거를 기록한다.
-- 원본 코드/실 고객 정보/비밀번호·API 키·비공개 SMAX/PREP·회사 자료를 이 저장소/외부 AI/Public Repo로 무단 복사/업로드하지 않는다.
-- 계정, 외부 통신, 유료 비용, CI 분 사용, 보안/권한, 원본 변경, 신규 배포/도메인/사업자/계약 범위는 사전 승인 대상. AI의 추정/고객 실증/CI PASS/미검증을 분리한다.
-- 사용자가 제품 실제 개발을 지시할 때 해총 `hibi89/hackathon-command-center-2026@kmong-productization`의 해당 제품 `[작업중]` 지침 확인 후 정확 SHA·목표/검증 기준을 기록한다. 목표 미달 표시 임의 삭제 금지.
-- 문서·기능 변경 후 `STATUS.md`, `HANDOFF.md` 10항과 Git SHA·CI PASS/FAIL/SKIP·미검증 및 복구 방법 최신화. 의미 없는 CI·재배포·빈 커밋·force push 금지.
-- 고객에게는 지원된 기능·언어/파일·페이지·수정횟수·검수 기준·모델/브라우저/서버 비용·라이선스/영수증 정책을 명시. 광고 문구에 미구현 Graphify/agent-browser/Auto Ontology 통합을 구현 완료처럼 표기하지 않는다.
-- 원본 `Freelancer` 업워크 자료는 현행 트리에서만 제거, 과거 Git 이력으로 복구 가능. 다른 3개 제품 브랜치의 기존 작업/기록 유지.
+## 1. 고정 기능
+사용자 최초 5단계(첫 AI 해결 → 공통 규칙 추출 → 작은 프로그램 생성 → 합성 독립 검증 → AI 없는 모듈 승격)를 **다섯 단계 그대로** 유지. 이후 추가된 SKILL.md 컴파일·에이전트 판단·변경 감지·영향 그래프·선택 재컴파일·롤백·AI 호출 제거율/절감률과 대시보드·AXNODE 선택적 연동을 삭제하지 않는다.
 
-## 신규 product 브랜치 생성 시 해총 중앙 원장 등록 의무 (2026-11-13 사용자 지시)
-- `product/*` 브랜치 생성 **동일 작업 단위**에서 해총 `hibi89/hackathon-command-center-2026@kmong-productization`의 `docs/audits/FREELANCER_BRANCH_COMPLETION_REGISTRY_20261113.md`에 신규 상품/브랜치/최종완성률을 등록한다. 설계만 있어도 `UNASSESSED`로 즉시 등록하며, 공식 퍼센트 산정까지 기다리지 않는다.
-- 브랜치와 상품은 1:N 가능(ECHOHOME·PAWTALK처럼 한 브랜치 두 상품). 기존 원천 29종·판매 19종 및 등록완료 이력은 덮어쓰거나 중복 집계하지 않는다.
-- 이 지침은 **담당 GPT 작업 시 즉시 동기화하는 운영 규칙**이다. 별도 무인 이벤트 자동화는 교차 저장소 인증/권한/워크플로 검증 전까지 미구현이므로 무인 자동 등록 완료라고 주장하지 않는다.
+## 2. 단계·역할
+- P0: 최종설계 High/실행 큐·위험·수용 확정(본 문서 집합), P1: Instant BE/FE 구현 후보 100%까지 다수 READY 묶음, P2: 구현후 전체 CI/통합/보안/회귀/브라우저 실검증, P3: Codex Sol Max·Astra Max 독립 감사, P4: High 최종 인수, P5: 사용자 별도 GO 전 배포/크몽 등록 금지.
+- P1에서는 기존 필수 CI 보호를 해제하지 않으며 syntax/type/국소 smoke와 **보안·인증·권한·비밀·고객데이터 변경 즉시 검사**만 유지. 반복 브라우저/Playwright/반응형/a11y E2E는 P2로 이관. `IMPLEMENTED_UNVERIFIED`를 `VERIFIED`로 표시 금지.
+- **공식 가중치가 확정되지 않은 검증률은 UNASSESSED**. 구현 범위 36개 REQ 기준 완료건수/전체건수 보고. % 사용 시 정확한 산식과 코드 SHA 필수. P1 코드 전무에서 100% 주장 금지.
+
+## 3. 신뢰·보안 절대조건
+- 모델이 작성한 프로그램·테스트·영수증은 신뢰되지 않는다. 승인과 독립 검증기는 생성 모델의 제어 밖에 있어야 한다. 셀프 테스트 PASS=공식 검증 PASS 아님.
+- 기본 offline/no network/no auto-install/no raw shell/no unrestricted Python exec. SKILL.md·모델 응답·도구 로그는 불신 입력. 최소권한 allowlist·실효 샌드박스·크기/시간/메모리/횟수 한도. 격리 없으면 실제 코드 실행 불가.
+- 중요 조작(삭제·결제·고객 원본 수정·권한 상승·외부 데이터 전송·상용/Production) 개별 사전 승인. 공개 GitHub에 키/토큰/.env/개인정보/고객 원본/모델 가중치 저장 금지.
+- 원본 브랜치와 정상 코드 보존; 임의 main merge·force push·빈 커밋 반복·권한변경 금지. 실패 2회 무진전 시 STOP/PIVOT. Windows 일괄 실행/브라우저/실기기는 실행한 경우만 PASS.
+
+## 4. 작업 계약
+- `INSTANT_TASK_QUEUE.json`: `task_id,req_ids,depends_on,allowed_paths,acceptance,safety_checks,risk,status,evidence_sha,blockers` 전수 유지. 첫 READY `AXZ-001/003/006`, 독립 작업 병렬 가능.
+- `VERIFICATION_TASK_QUEUE.json` P2는 P1 후보 완성+High 정확 SHA 승인 전 LOCKED. QA 코드는 P1에 작성 가능하나 종합 실행은 P2.
+- 각 작업 결과 실제 커밋 SHA, 정확 paths, 검증 PASS/FAIL/SKIP/NOT_RUN, 위험/차단, 잔여 READY와 P1 구현건수/36·P2 공식 검증률을 기록. 주요 갱신 때 STATUS/HANDOFF 10항 최신화.
+- 분산·원격·호환 AXNODE는 `docs/INTEGRATION_CONTRACTS.md` 계약 아래 선택형; AXNODE 미구현 때문에 AX ZERO 개발 정지 금지.
+- 현재 설계만 저장; 소스·CI·실행·실 Windows·공식 제품 검증 **NOT_RUN**, RELEASE HOLD, 크몽 미등록.
