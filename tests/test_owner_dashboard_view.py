@@ -1,7 +1,7 @@
 """Owner UI renderer safety and accessible-state tests, no network/AI calls."""
 import unittest
 
-from owner_dashboard_view import render_dashboard
+from scripts.owner_dashboard_view import render_dashboard
 
 
 class DashboardViewTests(unittest.TestCase):
