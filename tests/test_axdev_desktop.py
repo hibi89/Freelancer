@@ -10,7 +10,7 @@ from unittest.mock import patch
 
 from axdev.core import ContractError
 from scripts import desktop_commands as commands
-from scripts.axdev_desktop import _model_label, _safe_events, _safe_status
+from scripts.axdev_desktop import _model_label, _safe_events, _safe_status, _sandbox_configuration
 
 
 class DesktopCommandTests(unittest.TestCase):
@@ -125,6 +125,12 @@ class DesktopCommandTests(unittest.TestCase):
         self.assertEqual(len(messages), 2)
         self.assertNotIn("TOKEN-NEVER-EXPOSE", "".join(messages))
         self.assertIn("VERIFIED", messages[0])
+
+    def test_sandbox_card_never_invents_live_isolation(self):
+        self.assertEqual(_sandbox_configuration(self.settings), "미설정")
+        (Path(self.tmp.name) / "offline-bundle").mkdir()
+        self.assertEqual(_sandbox_configuration(self.settings), "구성됨")
+        self.assertNotEqual(_sandbox_configuration(self.settings), "실행 중")
 
     def test_status_unavailable_is_not_claimed_pass(self):
         (self.repo / ".git").rmdir()
