@@ -53,5 +53,13 @@ class DashboardViewTests(unittest.TestCase):
         self.assertIn('확인되지 않음', page)
 
 
+    def test_task_list_is_bounded_and_does_not_expose_external_links(self):
+        tasks = {f"TASK-{number:03d}": "QUEUED" for number in range(16)}
+        page = render_dashboard(self.sample(tasks=tasks), "local-only")
+        self.assertEqual(page.count("<tr><td>TASK-"), 12)
+        self.assertIn("외 4개 작업", page)
+        self.assertNotIn("https://", page)
+        self.assertNotIn("<script", page)
+
 if __name__ == '__main__':
     unittest.main()
