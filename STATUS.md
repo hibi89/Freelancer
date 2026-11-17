@@ -1,3 +1,31 @@
+# AX Dev Factory P2 verification checkpoint · 2026-11-17 KST
+
+Functional source `448fcc34bb328b179f314af62c0d14afc94fc0a5` on `codex/axdev-full-verification`. **Windows 11 field verification candidate has F01–F20 = 20/20 PASS.** The six Windows 10 device checks remain NOT_RUN. Formal weighted completion remains UNASSESSED. [P2 acceptance ledger](docs/P2_VERIFICATION_LEDGER.md) · [PR #3](https://github.com/hibi89/Freelancer/pull/3)
+
+- The native Windows 11 guest performed the approved 4B edit. Independent AppContainers verified the candidate and the Git/SQLite crash test recovered the same commit without rerunning the model. The retry, HOLD, independent continuation, forced termination and actual logon checks produced separate physical evidence. [Windows 11 physical verification](docs/WINDOWS11_VERIFICATION.md)
+- Production uses a writable model store inside the guest, assigns the modern Windows Sandbox instance ID before launch and waits for shutdown before launching the next task. The Windows 10 launcher remains available.
+- F17 passed in one continuous Windows 11 run at checkout `3d920478802b216ca7e2f2acd4dfd55d512eb280`. The 2026-11-17 owner login automatically started the task at 10:53:07 KST. The standard-user task exited `0`. One 4B coding reservation produced an independently verified edit with matching Git and SQLite state. Concurrent starts were blocked, replay produced zero tasks, and the temporary scheduled task was removed. [F17 evidence](docs/P2_VERIFICATION_LEDGER.md#f17-windows-11-end-to-end-evidence)
+- Linux passed 155 tests with 2 skips. Hosted Windows passed 156 with 1 skip. [Linux and Windows CI](https://github.com/hibi89/Freelancer/actions/runs/43977508805) · [Blueprint evidence check](https://github.com/hibi89/Freelancer/actions/runs/43977498171)
+
+## Earlier checkpoint
+
+# AX Dev Factory P2 verification checkpoint · 2026-11-16 KST
+
+Functional SHA `2882e4c56a3a142df3e96beee1fddaa6a55b3756` on `codex/axdev-full-verification`. **14/20 acceptance rows PASS. Six remain NOT_RUN on the target Windows 10 machine.** Weighted completion is UNASSESSED. Owner real-use remains HOLD. [P2 acceptance ledger](docs/P2_VERIFICATION_LEDGER.md) · [PR #3](https://github.com/hibi89/Freelancer/pull/3)
+
+- The Windows Sandbox guest produces advisory candidate bytes. A host-owned AppContainer check and independent callable oracle gate the exact Git tree, proof and integration ref. The queue pins approvals, bundle bytes and recovery evidence. A draft PR export also requires an isolated history with matching host evidence.
+- Native Windows 11 device checks passed for AppContainer file and network denial, controller crash recovery, manual Task Scheduler invocation and GTX 1050 Ti Vulkan inference with both local model sizes at 2K and 8K context. The Windows Sandbox Ollama launch now explicitly limits model residency and requests to one each. [Physical-device evidence and remaining target steps](docs/WINDOWS11_VERIFICATION.md)
+- The OpenCode guard verifies configuration sources and enforces file scope even when a repository agent grants broader edit access. In the isolated WSL2 coding trial with native Windows Ollama, the 4B model completed the approved edit and the 3B model produced an empty diff. Attack probes denied the prohibited edit and private-file read. Native Windows Sandbox was disabled on this host and stayed NOT_RUN.
+- The hosted Linux and Windows jobs passed on the functional SHA above. GitHub pins each job to that checkout. [Hosted CI](https://github.com/hibi89/Freelancer/actions/runs/43845344492) · [Blueprint evidence check](https://github.com/hibi89/Freelancer/actions/runs/43845331370)
+
+Follow-up verified the owner dashboard stop/resume loop in a real browser and fixed the two-project CLI configuration exit. OpenCode 2.3.0 standalone was checked on a portable copy; full Windows Sandbox behavior remains a device gate.
+
+Off-device follow-up verified Windows kernel lock recovery, the precise Git/SQLite recovery window, the native Task Scheduler XML parser, unattended budget configuration, and guarded PR/metadata publication previews. The owner-approved [synthetic draft PR](https://github.com/hibi89/Freelancer/pull/4) and [status write](https://github.com/hibi89/Freelancer/commit/f8d9a109839e02911afeda9d5ca6072253f57b06) passed. The remaining six gates require the target Windows 10 device.
+
+Historical snapshots follow.
+
+---
+
 # AX Dev Factory — P2 security and dashboard checkpoint (2026-11-16 KST)
 
 **Canonical:** `hibi89/Freelancer@tools/ax-dev-factory-local`. **CI-verified functional SHA:** `841f957664023ac04cb4ee9abc4870d2a11596b3`; historical code candidate F01–F20 20/20 is NOT verified final acceptance. **검증 완료율: UNASSESSED** — no owner-approved F01–F20 weights / full acceptance evidence. **Owner real-use: HOLD.** Do not reuse the former 72/100 engineering-readiness proxy as validation completion.

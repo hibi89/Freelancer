@@ -1,427 +1,750 @@
-"""Owner-opted Windows Sandbox executor for local code and acceptance.
-
-The host NEVER invokes Ollama, OpenCode, or user acceptance commands. A
-Windows Sandbox guest runs the existing Factory on a disposable snapshot.
-Only approved content bytes return through a fresh, single-purpose outbox,
-then the host imports/commits the reviewed result to a local integration ref.
-
-Not a tested OS sandbox until exercised on the owner's Windows edition.
-Windows Home/disabled Sandbox: fail closed, with NO fallback to host model.
-"""
+"""Windows Sandbox coding, AppContainer acceptance and host-only Git promotion."""
 from __future__ import annotations
 
-import base64
+from contextlib import ExitStack
+from functools import lru_cache
 import hashlib
-import json
 import io
+import json
 import os
-import re
-import secrets
-import stat
-import zipfile
-import subprocess
-import time
-import xml.etree.ElementTree as ET
 from pathlib import Path
+import shutil
+import secrets
+import subprocess
+import tempfile
+import time
+from uuid import UUID
+import xml.etree.ElementTree as ET
+import zipfile
 
-from .core import ContractError, Factory, git, plan_hash, safe_path
+from .core import ContractError, Factory, git, plan_hash, single_worker_lock
+from .batch import _event
+from .sandbox_payload import (
+    BINARIES, MAX_ARCHIVE, MAX_RECEIPT, RUN_ID, SHA40, SHA256,
+    decode_files, extract_snapshot, hex_sha, no_reparse, portable_path, read_json, snapshot_entries, write_json,
+)
+from .sandbox_review import verify_candidate, validate_acceptance
+from .windows_review_process import run_restricted, single_sandbox_slot, system_directory
 
-SHA40 = re.compile(r"^[0-9a-f]{40}$")
-SHA256 = re.compile(r"^[0-9a-f]{64}$")
-RUN = re.compile(r"^[0-9a-f]{32}$")
-MAX_ARCHIVE = 64 * 1024 * 1024
-MAX_CODE = 8 * 1024 * 1024
-MAX_RECEIPT = 12 * 1024 * 1024
-BINARIES = ("python/python.exe", "git/cmd/git.exe",
-            "ollama/ollama.exe", "opencode/opencode.exe")
+MAX_MANIFEST = 4 * 1024 * 1024
+BACKEND = "windows-sandbox-v2"
 ENGINE = (
     "axdev/__init__.py", "axdev/core.py", "axdev/repo_trust.py",
-    "axdev/batch.py", "axdev/opencode_guard.py", "axdev/semantic_review.py",
-    "axdev/eai_adapter.py", "axdev/axnode_adapter.py",
-    "config/opencode-local-only.json",
-    ".opencode/skills/ax-coding/SKILL.md",
+    "axdev/batch.py", "axdev/opencode_guard.py", "axdev/sandbox_payload.py",
+    "config/opencode-local-only.json", ".opencode/skills/ax-coding/SKILL.md",
     "scripts/sandbox_guest.py",
 )
 
 
-def _hex_sha(path: Path) -> str:
-    result = hashlib.sha256()
-    with path.open("rb") as data:
-        while True:
-            part = data.read(1024 * 1024)
-            if not part:
-                return result.hexdigest()
-            result.update(part)
+def bundle_inventory(bundle: Path) -> dict[str, str]:
+    bundle = no_reparse(bundle)
+    if not bundle.is_dir():
+        raise ContractError("offline bundle directory missing")
+    top = {"python", "git", "ollama", "opencode", "models", "ruff", "manifest.json"}
+    if any(item.name not in top for item in bundle.iterdir()):
+        raise ContractError("offline bundle contains an unexpected root entry")
+    files = {}
+    for directory, folders, names in os.walk(bundle, followlinks=False, onerror=_walk_error):
+        for name in folders:
+            no_reparse(Path(directory) / name)
+        for name in names:
+            file = no_reparse(Path(directory) / name)
+            relative = file.relative_to(bundle).as_posix()
+            if relative == "manifest.json":
+                continue
+            if len(files) >= 20000 or not file.is_file():
+                raise ContractError("invalid or oversized offline bundle inventory")
+            files[relative] = hex_sha(file)
+    if not set(BINARIES) <= files.keys() or not any(p.startswith("models/") for p in files):
+        raise ContractError("offline binaries or model data are missing")
+    return files
 
 
-def _no_reparse(path: Path):
-    """Fail closed on symbolic links and NTFS junction/reparse ancestors."""
-    absolute = path.expanduser().absolute()
-    for item in (absolute, *absolute.parents):
-        if item.is_symlink():
-            raise ContractError("sandbox path is a symbolic link")
-        try:
-            attributes = item.lstat().st_file_attributes
-        except (FileNotFoundError, AttributeError):
-            continue
-        if attributes & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0x400):
-            raise ContractError("sandbox path uses a Windows reparse point")
-    return absolute
+def _walk_error(exc):
+    raise exc
 
 
-def _reject_mapped_reparse_tree(root: Path) -> None:
-    """Never share a junction/symlink that could escape the offline bundle.
-
-    Read-only mapping does not guarantee that host-side reparse points are
-    confined to the approved source tree. Refuse them before Sandbox launch.
-    """
-    visited = 0
-    for directory, folders, files in os.walk(root, followlinks=False):
-        _no_reparse(Path(directory))
-        visited += len(folders) + len(files)
-        if visited > 200000:
-            raise ContractError("offline bundle contains too many host paths")
-        for name in (*folders, *files):
-            _no_reparse(Path(directory) / name)
-
-
-def _read_bundle(bundle: Path, expected_sha: str) -> None:
-    if not isinstance(expected_sha, str) or not SHA256.fullmatch(expected_sha):
+def _read_bundle(bundle: Path, expected_sha: str) -> dict:
+    if not SHA256.fullmatch(expected_sha):
         raise ContractError("offline bundle manifest SHA256 must be owner-pinned")
-    manifest = bundle / "manifest.json"
-    _no_reparse(bundle)
-    _no_reparse(manifest)
-    if not manifest.is_file() or manifest.stat().st_size > 4096:
-        raise ContractError("missing offline bundle manifest")
-    if _hex_sha(manifest) != expected_sha:
+    data, digest = read_json(bundle / "manifest.json", MAX_MANIFEST)
+    if digest != expected_sha:
         raise ContractError("offline runtime bundle hash mismatched approved pin")
-    try:
-        data = json.loads(manifest.read_text(encoding="utf-8"))
-    except (OSError, ValueError) as exc:
-        raise ContractError("invalid offline bundle manifest") from exc
-    if (not isinstance(data, dict) or data.get("version") != 1
-            or not isinstance(data.get("executables"), dict)
-            or set(data["executables"]) != set(BINARIES)):
-        raise ContractError("offline bundle manifest schema differs")
-    for name in BINARIES:
-        file = _no_reparse(bundle / Path(name))
-        expected = data["executables"][name]
-        if (not isinstance(expected, str) or not SHA256.fullmatch(expected)
-                or not file.is_file() or _hex_sha(file) != expected):
-            raise ContractError("offline runtime binary missing/changed")
-    if not _no_reparse(bundle / "models").is_dir():
-        raise ContractError("offline model cache missing")
-    _reject_mapped_reparse_tree(bundle)
+    if data.get("version") != 2 or data.get("files") != bundle_inventory(bundle):
+        raise ContractError("offline runtime files differ from the approved manifest")
+    return data
 
 
 def _sandbox_binary() -> Path:
-    if os.name != "nt":
-        raise ContractError("Windows Sandbox is unavailable on this host")
-    import ctypes
-    system_directory = ctypes.create_unicode_buffer(512)
-    size = ctypes.windll.kernel32.GetSystemDirectoryW(
-        system_directory, len(system_directory))
-    if not 1 <= size < len(system_directory):
-        raise ContractError("trusted Windows System32 path unavailable")
-    executable = _no_reparse(
-        Path(system_directory.value) / "WindowsSandbox.exe")
+    executable = no_reparse(system_directory() / "WindowsSandbox.exe")
     if not executable.is_file():
-        raise ContractError("Windows Sandbox unavailable; Windows Home is unsupported")
+        raise ContractError("Windows Sandbox unavailable; a supported enabled host is required")
     return executable
 
 
-def _engine_copy(destination: Path) -> None:
-    source = Path(__file__).resolve().parent.parent
-    for relative in ENGINE:
-        origin = _no_reparse(source / Path(relative))
-        if not origin.is_file() or origin.stat().st_size > 2 * 1024 * 1024:
-            raise ContractError("trusted AXDEV engine file unavailable/oversized")
-        target = destination / Path(relative)
-        target.parent.mkdir(parents=True, exist_ok=True)
-        with origin.open("rb") as reader, target.open("xb") as writer:
-            writer.write(reader.read(2 * 1024 * 1024 + 1))
-
-
-def _archive_verified_base(factory: Factory, baseline: str, path: Path) -> str:
+@lru_cache(maxsize=1)
+def _modern_sandbox_cli() -> Path | None:
+    if os.name != "nt":
+        return None
+    shell = system_directory() / "WindowsPowerShell" / "v1.0" / "powershell.exe"
+    query = ("Get-AppxPackage -Name 'MicrosoftWindows.WindowsSandbox' | "
+             "Where-Object { $_.PublisherId -eq 'cw5n1h2txyewy' } | "
+             "ForEach-Object { $_.InstallLocation }")
     try:
-        p = subprocess.run(["git", "archive", "--format=zip", baseline],
-                           cwd=factory.repo, stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE, stdin=subprocess.DEVNULL,
-                           check=False, timeout=60, shell=False)
-    except (OSError, subprocess.TimeoutExpired) as exc:
-        raise ContractError("sandbox source snapshot unavailable") from exc
-    if p.returncode or not p.stdout or len(p.stdout) > MAX_ARCHIVE:
-        raise ContractError("sandbox archive failed or exceeds configured source limit")
-    # export-ignore could silently remove protected acceptance tests. Require
-    # exact correspondence between Git's pinned commit tree and the archive.
+        result = subprocess.run(
+            [str(shell), "-NoProfile", "-NonInteractive", "-Command", query],
+            stdin=subprocess.DEVNULL, capture_output=True, timeout=15, check=True,
+            text=True,
+        )
+    except (OSError, UnicodeError, subprocess.SubprocessError):
+        return None
+    locations = result.stdout.strip().splitlines()
+    if len(locations) != 1:
+        return None
+    package = Path(locations[0])
+    cli = package / "wsb.exe"
+    return cli if package.is_absolute() and cli.is_file() else None
+
+
+def _native_sandbox_ids(cli: Path) -> set[str]:
+    result = subprocess.run(
+        [str(cli), "list", "--raw"], check=True, stdin=subprocess.DEVNULL,
+        capture_output=True, timeout=15,
+    )
+    environments = json.loads(result.stdout)["WindowsSandboxEnvironments"]
+    if (not isinstance(environments, list)
+            or any(not isinstance(item, dict) or not isinstance(item.get("Id"), str)
+                   for item in environments)):
+        raise ValueError("invalid native Sandbox enumeration")
+    return {str(UUID(environment["Id"])) for environment in environments}
+
+
+def _sandbox_running() -> bool:
+    # The classic client is the lifecycle indicator on Windows 10. The newer
+    # disconnected window can outlive the VM and is not a lifecycle signal.
+    client = system_directory() / "tasklist.exe"
+    result = subprocess.run([str(client), "/fo", "csv", "/nh"], check=True,
+                            stdin=subprocess.DEVNULL, capture_output=True, timeout=15)
+    lines = result.stdout.lower().splitlines()
+    classic = (b'"windowssandbox.exe"', b'"windowssandboxclient.exe"')
+    if any(line.startswith(classic) for line in lines):
+        return True
+    cli = _modern_sandbox_cli()
+    if cli is None:
+        return any(line.startswith(b'"windowssandboxremotesession.exe"') for line in lines)
     try:
-        inventory = subprocess.run(
-            ["git", "ls-tree", "-r", "--name-only", "-z", baseline],
-            cwd=factory.repo, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-            stdin=subprocess.DEVNULL, check=False, timeout=30, shell=False)
-        if inventory.returncode or len(inventory.stdout) > 8 * 1024 * 1024:
-            raise ContractError("sandbox baseline path inventory unavailable")
-        tracked = {name.decode("utf-8") for name in
-                   inventory.stdout.split(b"\0") if name}
-        with zipfile.ZipFile(io.BytesIO(p.stdout)) as archive:
-            in_archive = {entry.filename for entry in archive.infolist()
-                          if not entry.is_dir()}
-        if not tracked or in_archive != tracked:
-            raise ContractError("source snapshot omits a pinned tracked file")
-    except (UnicodeError, ValueError, zipfile.BadZipFile,
-            OSError, subprocess.TimeoutExpired) as exc:
-        raise ContractError("source snapshot cannot be inventoried") from exc
-    with path.open("xb") as out:
-        out.write(p.stdout)
-    return _hex_sha(path)
+        return bool(_native_sandbox_ids(cli))
+    except (KeyError, TypeError, ValueError, OSError, subprocess.SubprocessError):
+        return True
 
 
-def _wsb(input_dir: Path, bundle: Path, outbox: Path) -> bytes:
-    """Only the empty per-run outbox is writable; no host project mapping."""
+def _git_data(repo: Path, *args: str, index: Path | None = None, data: bytes | None = None,
+              limit: int = MAX_ARCHIVE) -> bytes:
+    # No hooks, filters, checked-out project code or Git replace objects.
+    environment = {k: v for k, v in os.environ.items() if not k.upper().startswith("GIT_")}
+    if index is not None:
+        environment["GIT_INDEX_FILE"] = str(index)
+    options = {"stdin": subprocess.DEVNULL} if data is None else {"input": data}
+    result = subprocess.run(
+        ["git", "--no-replace-objects", "-c", "commit.gpgsign=false", *args],
+        cwd=repo, env=environment, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        check=False, timeout=60, **options)
+    if result.returncode or len(result.stdout) > limit:
+        raise ContractError("sandbox Git object operation failed")
+    return result.stdout
+
+
+def _inventory(repo: Path, ref: str) -> dict[str, tuple[str, str]]:
+    result = _git_data(repo, "ls-tree", "-r", "-z", ref, limit=8 * 1024 * 1024)
+    tracked = {}
+    for entry in result.split(b"\0")[:-1]:
+        metadata, raw = entry.split(b"\t", 1)
+        mode, kind, digest = metadata.decode("ascii").split()
+        if kind != "blob" or mode not in ("100644", "100755") or not SHA40.fullmatch(digest):
+            raise ContractError("sandbox tracked snapshot contains a symlink or non-file entry")
+        tracked[raw.decode("utf-8")] = (mode, digest)
+    return tracked
+
+
+def _archive_verified_base(repo: Path, ref: str, path: Path) -> str:
+    tracked = _inventory(repo, ref)
+    if not 1 <= len(tracked) <= 6000:
+        raise ContractError("sandbox snapshot entry count invalid")
+    # git archive can apply export-ignore, export-subst and checkout EOL
+    # conversion. Read bounded blob bytes directly from Git objects instead.
+    ids = list(dict.fromkeys(digest for _, digest in tracked.values()))
+    query = ("\n".join(ids) + "\n").encode()
+    metadata = _git_data(repo, "cat-file", "--batch-check", data=query, limit=1024 * 1024)
+    sizes = {}
+    for row in metadata.decode("ascii").splitlines():
+        digest, kind, size = row.split()
+        if kind != "blob" or not SHA40.fullmatch(digest) or not size.isdecimal():
+            raise ContractError("sandbox Git object inventory invalid")
+        sizes[digest] = int(size)
+    if set(sizes) != set(ids) or sum(sizes[d] for _, d in tracked.values()) > MAX_ARCHIVE:
+        raise ContractError("sandbox snapshot exceeds source byte limit")
+    stream = io.BytesIO(_git_data(repo, "cat-file", "--batch", data=query,
+                                  limit=MAX_ARCHIVE + len(metadata) + len(ids)))
+    blobs = {}
+    for digest in ids:
+        size = sizes[digest]
+        if stream.readline() != f"{digest} blob {size}\n".encode():
+            raise ContractError("sandbox Git object header differs")
+        raw = stream.read(size)
+        if (stream.read(1) != b"\n" or
+                hashlib.sha1(f"blob {size}\0".encode() + raw).hexdigest() != digest):
+            raise ContractError("sandbox snapshot differs from the pinned Git blob")
+        blobs[digest] = raw
+    with zipfile.ZipFile(path, "x", compression=zipfile.ZIP_DEFLATED) as archive:
+        for name, (_, digest) in tracked.items():
+            archive.writestr(portable_path(name), blobs[digest])
+        list(snapshot_entries(archive))
+    if path.stat().st_size > MAX_ARCHIVE:
+        raise ContractError("sandbox snapshot file exceeds size limit")
+    return hex_sha(path)
+
+
+def _candidate_tree(factory: Factory, baseline: str, candidate: Path, task: dict) -> str:
+    sealed, _ = read_json(candidate, MAX_RECEIPT)
+    files = decode_files(sealed.get("files"), set(task["files"]))
+    tracked = _inventory(factory.repo, baseline)
+    with tempfile.TemporaryDirectory(prefix="index-", dir=candidate.parent) as directory:
+        index = Path(directory) / "index"
+        _git_data(factory.repo, "read-tree", baseline, index=index)
+        for name, content in files.items():
+            if content is None:
+                if name not in tracked:
+                    raise ContractError("sandbox candidate deletes a nonexistent file")
+                _git_data(factory.repo, "update-index", "--force-remove", "--", name, index=index)
+            else:
+                blob = _git_data(factory.repo, "hash-object", "-w", "--stdin", data=content).decode().strip()
+                mode = tracked.get(name, ("100644", ""))[0]
+                _git_data(factory.repo, "update-index", "--add", "--cacheinfo",
+                          mode, blob, name, index=index)
+        tree = _git_data(factory.repo, "write-tree", index=index).decode().strip()
+    after = _inventory(factory.repo, tree)
+    changed = {p for p in tracked.keys() | after.keys() if tracked.get(p) != after.get(p)}
+    if not changed or not changed <= files.keys():
+        raise ContractError("sandbox Git tree has no change or contains unapproved changes")
+    return tree
+
+
+def _wsb(input_dir: Path, bundle: Path, outbox: Path, *, memory_mb: int | None = None) -> bytes:
     root = ET.Element("Configuration")
     for name in ("Networking", "VGpu", "ClipboardRedirection",
                  "PrinterRedirection", "AudioInput", "VideoInput"):
         ET.SubElement(root, name).text = "Disable"
+    if memory_mb is not None:
+        ET.SubElement(root, "MemoryInMB").text = str(memory_mb)
     mappings = ET.SubElement(root, "MappedFolders")
-    for host_path, guest_path, readonly in (
+    for host, guest, readonly in (
         (input_dir, r"C:\AXDEV_INPUT", True),
         (bundle, r"C:\AXDEV_BUNDLE", True),
         (outbox, r"C:\AXDEV_OUTBOX", False),
     ):
-        mapped = ET.SubElement(mappings, "MappedFolder")
-        ET.SubElement(mapped, "HostFolder").text = str(_no_reparse(host_path))
-        ET.SubElement(mapped, "SandboxFolder").text = guest_path
-        ET.SubElement(mapped, "ReadOnly").text = "true" if readonly else "false"
-    command = ET.SubElement(root, "LogonCommand")
-    ET.SubElement(command, "Command").text = (
+        mapping = ET.SubElement(mappings, "MappedFolder")
+        ET.SubElement(mapping, "HostFolder").text = str(no_reparse(host))
+        ET.SubElement(mapping, "SandboxFolder").text = guest
+        ET.SubElement(mapping, "ReadOnly").text = str(readonly).lower()
+    ET.SubElement(ET.SubElement(root, "LogonCommand"), "Command").text = (
         r"powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass "
-        r"-File C:\AXDEV_INPUT\bootstrap.ps1"
-    )
+        r"-File C:\AXDEV_INPUT\bootstrap.ps1")
     return ET.tostring(root, encoding="utf-8", xml_declaration=True)
 
 
 def _bootstrap() -> str:
-    """Guest-only PowerShell. Runtime and model are inside Windows Sandbox."""
-    return (
-        "$ErrorActionPreference = 'Stop'\n"
-        "$env:PATH = 'C:\\AXDEV_BUNDLE\\python;C:\\AXDEV_BUNDLE\\git\\cmd;"
-        "C:\\AXDEV_BUNDLE\\ollama;C:\\AXDEV_BUNDLE\\opencode;' + $env:PATH\n"
-        "$env:PYTHONPATH = 'C:\\AXDEV_INPUT\\engine'\n"
-        "$env:PYTHONDONTWRITEBYTECODE = '1'\n"
-        "$env:OPENCODE_DISABLE_AUTOUPDATE = 'true'\n"
-        "$env:OPENCODE_DISABLE_FREE_MODELS = 'true'\n"
-        "$env:OPENCODE_AUTO_SHARE = 'false'\n"
-        "$env:HOME = 'C:\\AXDEV_RUN\\home'\n"
-        "$env:USERPROFILE = 'C:\\AXDEV_RUN\\home'\n"
-        "$env:APPDATA = 'C:\\AXDEV_RUN\\home\\AppData\\Roaming'\n"
-        "$env:LOCALAPPDATA = 'C:\\AXDEV_RUN\\home\\AppData\\Local'\n"
-        "New-Item -ItemType Directory -Force 'C:\\AXDEV_RUN\\home' | Out-Null\n"
-        "& 'C:\\AXDEV_BUNDLE\\python\\python.exe' "
-        "'C:\\AXDEV_INPUT\\engine\\scripts\\sandbox_guest.py' "
-        "--input 'C:\\AXDEV_INPUT' --bundle 'C:\\AXDEV_BUNDLE' "
-        "--outbox 'C:\\AXDEV_OUTBOX'\n"
-    )
+    return r"""
+$ErrorActionPreference = 'Stop'
+$env:PATH = 'C:\AXDEV_BUNDLE\python;C:\AXDEV_BUNDLE\git\cmd;C:\AXDEV_BUNDLE\ollama;C:\AXDEV_BUNDLE\opencode;' + $env:PATH
+$env:PYTHONPATH = 'C:\AXDEV_INPUT\engine'
+$env:PYTHONDONTWRITEBYTECODE = '1'
+$env:HOME = $env:USERPROFILE = 'C:\AXDEV_RUN\home'
+$env:APPDATA = 'C:\AXDEV_RUN\home\AppData\Roaming'
+$env:LOCALAPPDATA = 'C:\AXDEV_RUN\home\AppData\Local'
+New-Item -ItemType Directory -Force $env:HOME | Out-Null
+try {
+    & 'C:\AXDEV_BUNDLE\python\python.exe' 'C:\AXDEV_INPUT\engine\scripts\sandbox_guest.py'
+} finally {
+    & 'C:\Windows\System32\shutdown.exe' /s /t 0
+}
+"""
 
 
-def _prepare(factory: Factory, task: dict, bundle: Path, bundle_sha: str) -> tuple[str, Path, str]:
+def _prepare(factory: Factory, task: dict, bundle: Path, bundle_sha: str,
+             prior: Path | None = None) -> dict:
     baseline = git(factory.repo, "rev-parse", factory.integration_ref)
     if not SHA40.fullmatch(baseline):
         raise ContractError("unverified integration reference")
     run_id = secrets.token_hex(16)
-    root = _no_reparse(factory.state / "sandbox-runs" / run_id)
+    root = no_reparse(factory.state / "sandbox-runs" / run_id)
     input_dir, outbox = root / "input", root / "outbox"
-    input_dir.mkdir(parents=True, exist_ok=False)
-    outbox.mkdir(parents=False, exist_ok=False)
-    digest = _archive_verified_base(factory, baseline, input_dir / "source.zip")
-    _engine_copy(input_dir / "engine")
-    request = {
-        "version": 1, "run_id": run_id, "base_sha": baseline,
-        "task": task, "task_sha256": plan_hash(task),
-        "model": factory.model, "archive_sha256": digest,
-        "bundle_sha256": bundle_sha,
-    }
-    with (input_dir / "request.json").open("x", encoding="utf-8") as out:
-        json.dump(request, out, ensure_ascii=False)
+    input_dir.mkdir(parents=True)
+    outbox.mkdir()
+    digest = _archive_verified_base(factory.repo, baseline, input_dir / "source.zip")
+    source = Path(__file__).resolve().parent.parent
+    for relative in ENGINE:
+        origin = no_reparse(source / relative)
+        target = input_dir / "engine" / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(origin.read_bytes())
+    initial_sha = None
+    if prior is not None:
+        initial, _ = read_json(prior, MAX_RECEIPT)
+        initial_sha = write_json(input_dir / "initial.json", {"files": initial["files"]})
+    coding_task = {key: task[key] for key in ("id", "goal", "files")}
+    request = {"version": 2, "run_id": run_id, "base_sha": baseline,
+               "task": coding_task, "task_sha256": plan_hash(task),
+               "archive_sha256": digest, "bundle_sha256": bundle_sha,
+               "model": factory.model, "initial_sha256": initial_sha}
+    request_sha = write_json(input_dir / "request.json", request)
     (input_dir / "bootstrap.ps1").write_text(_bootstrap(), encoding="utf-8")
-    (root / "launch.wsb").write_bytes(_wsb(input_dir, bundle, outbox))
-    return run_id, root, baseline
+    (root / "launch.wsb").write_bytes(_wsb(input_dir, bundle, outbox, memory_mb=6144))
+    return {"backend": BACKEND, "run_id": run_id, "base_sha": baseline,
+            "request_sha256": request_sha, "bundle_sha256": bundle_sha}
 
 
 def _read_receipt(root: Path, run_id: str, task: dict, baseline: str) -> dict | None:
-    receipt_path = _no_reparse(root / "outbox" / "receipt.json")
-    if not receipt_path.is_file():
+    path = no_reparse(root / "outbox" / "receipt.json")
+    if not path.exists():
         return None
-    if receipt_path.stat().st_size > MAX_RECEIPT:
-        raise ContractError("oversized sandbox output")
-    try:
-        data = json.loads(receipt_path.read_text(encoding="utf-8"))
-    except (OSError, ValueError) as exc:
-        raise ContractError("invalid sandbox output") from exc
-    required = {"version", "run_id", "base_sha", "task_id",
-                "task_sha256", "status"}
-    if (not isinstance(data, dict) or not required <= set(data)
-            or data["version"] != 1 or data["run_id"] != run_id
-            or data["base_sha"] != baseline
-            or data["task_id"] != task["id"]
-            or data["task_sha256"] != plan_hash(task)):
-        raise ContractError("sandbox receipt is not bound to this approved task")
-    if data["status"] == "HOLD":
-        if set(data) != required | {"error_code"}:
-            raise ContractError("malformed sandbox hold receipt")
+    data, _ = read_json(path, MAX_RECEIPT)
+    keys = {"version", "run_id", "base_sha", "task_id", "task_sha256", "status"}
+    if (data.get("version") != 2 or data.get("run_id") != run_id or
+            data.get("base_sha") != baseline or data.get("task_id") != task["id"] or
+            data.get("task_sha256") != plan_hash(task)):
+        raise ContractError("sandbox candidate is not bound to the approved run and contract")
+    if data.get("status") == "HOLD" and set(data) == keys:
         return data
-    if (data["status"] != "VERIFIED" or
-            set(data) != required | {"files", "guest_commit"} or
-            not isinstance(data["guest_commit"], str)
-            or not SHA40.fullmatch(data["guest_commit"])):
-        raise ContractError("sandbox receipt did not prove guest verification")
-    files = data["files"]
-    if not isinstance(files, list) or not 1 <= len(files) <= 16:
-        raise ContractError("sandbox output file scope invalid")
-    approved = set(task["files"])
-    seen = set()
-    size_left = MAX_CODE
-    decoded = {}
-    for item in files:
-        if not isinstance(item, dict) or set(item) != {"path", "sha256", "data_b64"}:
-            raise ContractError("sandbox file receipt is malformed")
-        name = item["path"]
-        if (not isinstance(name, str) or safe_path(name) not in approved
-                or name.casefold() in seen):
-            raise ContractError("sandbox file outside approved allowlist")
-        seen.add(name.casefold())
-        value, digest = item["data_b64"], item["sha256"]
-        if value is None and digest is None:
-            decoded[name] = None
-            continue
-        if (not isinstance(value, str) or not isinstance(digest, str)
-                or not SHA256.fullmatch(digest)):
-            raise ContractError("sandbox file content invalid")
-        try:
-            content = base64.b64decode(value, validate=True)
-        except (ValueError, base64.binascii.Error) as exc:
-            raise ContractError("sandbox file base64 invalid") from exc
-        size_left -= len(content)
-        if size_left < 0 or hashlib.sha256(content).hexdigest() != digest:
-            raise ContractError("sandbox file bytes exceed budget or hash differs")
-        decoded[name] = content
-    data["decoded_files"] = decoded
+    if data.get("status") != "CANDIDATE" or set(data) != keys | {"files"}:
+        raise ContractError("sandbox accepts candidate bytes only")
+    decode_files(data["files"], set(task["files"]))
     return data
 
 
-def _reconcile(factory: Factory, task: dict, result: dict, baseline: str) -> dict:
-    """Never promote a guest-writable receipt as independent acceptance.
+def _read_state(factory: Factory, tid: str, bundle_sha: str) -> tuple[dict, Path]:
+    row = factory.db.execute("SELECT evidence FROM runs WHERE id=?", (tid,)).fetchone()
+    try:
+        record = json.loads(row[0])
+        if (record["backend"] != BACKEND or not RUN_ID.fullmatch(record["run_id"])
+                or not SHA40.fullmatch(record["base_sha"]) or record["bundle_sha256"] != bundle_sha):
+            raise ValueError
+    except (ValueError, TypeError, KeyError, IndexError) as exc:
+        raise ContractError("SANDBOX_UNATTESTED_LEGACY_STATE") from exc
+    return record, no_reparse(factory.state / "sandbox-runs" / record["run_id"])
 
-    The model and approved project tests run as the SAME Windows Sandbox
-    account that can write receipt.json. Matching run IDs, hashes, paths and
-    a claimed guest Git SHA authenticate the *payload*, not its test verdict.
-    Until the reviewer has a separately enforced OS identity/attestation
-    boundary, the host must never import/commit/promote these bytes.
-    """
-    raise ContractError("SANDBOX_RECEIPT_UNATTESTED")
 
+def _request_matches(root: Path, record: dict, task: dict) -> None:
+    request, digest = read_json(root / "input" / "request.json", 65536)
+    if (digest != record["request_sha256"] or request["task_sha256"] != plan_hash(task)
+            or request["run_id"] != record["run_id"] or request["base_sha"] != record["base_sha"]
+            or request["bundle_sha256"] != record["bundle_sha256"]):
+        raise ContractError("sandbox request no longer matches host state")
+
+
+def _hold(factory: Factory, tid: str, reason: str) -> dict:
+    factory._set(tid, "HOLD", reason)
+    return {"id": tid, "status": "HOLD", "verified": False, "reason": reason}
+
+
+def _launch(factory: Factory, task: dict, bundle: Path, bundle_sha: str,
+            executable: Path, prior: Path | None = None) -> tuple[dict, Path, object] | dict:
+    tid = task["id"]
+    cli = _modern_sandbox_cli()
+    deadline = time.monotonic() + (10 if cli is not None else 0)
+    while _sandbox_running():
+        if time.monotonic() >= deadline:
+            return {"id": tid, "status": "WAITING_SANDBOX_EXIT"}
+        time.sleep(1)
+    if not factory._reserve_model_call(tid, "SANDBOX_FIX_ONCE" if prior else "SANDBOX_CODING"):
+        return {"id": tid, "status": "BUDGET_WAIT"}
+    record = _prepare(factory, task, bundle, bundle_sha, prior)
+    root = factory.state / "sandbox-runs" / record["run_id"]
+    if cli is not None:
+        record["sandbox_id"] = str(UUID(hex=record["run_id"]))
+    if prior is not None:
+        factory.db.execute("UPDATE runs SET attempts=attempts+1 WHERE id=?", (tid,))
+    factory._set(tid, "CODING", json.dumps(record))
+    return record, root, _start_guest(executable, root)
+
+
+def _start_guest(executable: Path, root: Path) -> subprocess.Popen:
+    cli = _modern_sandbox_cli()
+    if cli is None:
+        command = [str(executable), str(root / "launch.wsb")]
+    else:
+        sandbox_id = str(UUID(hex=root.name))
+        config = no_reparse(root / "launch.wsb").read_text(encoding="utf-8")
+        result = subprocess.run(
+            [str(cli), "start", "--id", sandbox_id, "--config", config, "--raw"],
+            check=True, stdin=subprocess.DEVNULL, capture_output=True,
+            timeout=120, cwd=root,
+        )
+        response = json.loads(result.stdout)
+        if not isinstance(response, dict) or str(response.get("Id", "")).lower() != sandbox_id:
+            raise ContractError("native Sandbox returned a different identity")
+        # The configured LogonCommand starts when the guest session connects.
+        command = [str(cli), "connect", "--id", sandbox_id]
+    return subprocess.Popen(command,
+                            stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL, shell=False, cwd=root)
+
+
+def _wait_candidate(task: dict, record: dict, root: Path, process, timeout: int) -> dict | None:
+    _request_matches(root, record, task)
+    sandbox_id = record.get("sandbox_id")
+    if sandbox_id is not None and sandbox_id != str(UUID(hex=record["run_id"])):
+        raise ContractError("sandbox identity differs from the pinned run")
+    cli = _modern_sandbox_cli() if sandbox_id else None
+    receipt = root / "outbox" / "receipt.json"
+    end = time.monotonic() + timeout
+    idle_since = None
+    while time.monotonic() < end:
+        if cli is not None and receipt.is_file():
+            # The receipt is an untrusted lifecycle hint. Stop only the instance
+            # bound in host state, then verify the receipt after it is gone.
+            try:
+                if sandbox_id in _native_sandbox_ids(cli):
+                    subprocess.run(
+                        [str(cli), "stop", "--id", sandbox_id, "--raw"], check=True,
+                        stdin=subprocess.DEVNULL, capture_output=True, timeout=30,
+                    )
+                closed = sandbox_id not in _native_sandbox_ids(cli)
+            except (KeyError, TypeError, OSError, ValueError, subprocess.SubprocessError):
+                pass
+            else:
+                if closed:
+                    return _read_receipt(root, record["run_id"], task, record["base_sha"])
+        elif (process is not None and process.poll() is None) or _sandbox_running():
+            idle_since = None
+        else:
+            if receipt.is_file():
+                return _read_receipt(root, record["run_id"], task, record["base_sha"])
+            # The launcher can exit before the app has registered its guest.
+            # A transient gap must not abandon a run whose VM is still starting.
+            now = time.monotonic()
+            if idle_since is None:
+                idle_since = now
+            elif now - idle_since >= 45:
+                return None
+        time.sleep(2)
+    return None
+
+
+def _host_proof(task: dict, record: dict, root: Path, commit: str) -> dict:
+    proof, digest = read_json(root / "acceptance.json", 16384)
+    expected = {"backend": BACKEND, "task_sha256": plan_hash(task), "run_id": record["run_id"],
+                "base_sha": record.get("review_base_sha"), "commit": commit,
+                "candidate_sha256": record.get("candidate_sha256")}
+    if (not SHA40.fullmatch(commit) or digest != record.get("proof_sha256")
+            or any(not isinstance(v, str) or proof.get(k) != v for k, v in expected.items())
+            or proof.get("project_checks") != len(task["checks"])
+            or not task.get("acceptance") or proof.get("independent_probes") != len(task["acceptance"])):
+        raise ContractError("host acceptance evidence is absent or differs")
+    return proof
+
+
+def _promote(factory: Factory, task: dict, record: dict, root: Path) -> dict:
+    tid = task["id"]
+    row = factory.db.execute("SELECT commit_sha FROM runs WHERE id=?", (tid,)).fetchone()
+    proof = _host_proof(task, record, root, row[0])
+    if (_git_data(factory.repo, "rev-parse", row[0] + "^{tree}").decode().strip() != proof["tree"]
+            or _git_data(factory.repo, "rev-parse", row[0] + "^").decode().strip() != proof["base_sha"]):
+        raise ContractError("host acceptance commit does not match its reviewed tree and base")
+    return factory._promote_prepared(tid, evidence=json.dumps(record))
+
+
+def validate_history(repo: Path, state: Path, db, tasks: list[dict], ref: str,
+                     *, allow_prepared: bool) -> None:
+    """Fail if SQLite status, host proofs and the exact first-parent chain diverge."""
+    row = db.execute("SELECT value FROM meta WHERE key='base_sha'").fetchone()
+    if not row or not SHA40.fullmatch(row[0]):
+        raise ContractError("sandbox history baseline invalid")
+    base = row[0]
+    head = _git_data(repo, "rev-parse", "--verify", ref).decode().strip()
+    chain = _git_data(repo, "log", "--first-parent", "--reverse", "--format=%H %T %P",
+                      f"{base}..{head}", limit=32768).decode().splitlines()
+    approved = {task["id"]: task for task in tasks}
+    proofs = {}
+    for tid, spec, status, evidence, commit in db.execute(
+            "SELECT id,spec,status,evidence,commit_sha FROM runs WHERE status IN ('VERIFIED','PREPARED')"):
+        if status == "PREPARED" and (not allow_prepared or commit != head):
+            continue
+        task = approved.get(tid)
+        record = json.loads(evidence)
+        run_id = record.get("run_id") if isinstance(record, dict) else None
+        if (not task or spec != plan_hash(task) or not isinstance(run_id, str)
+                or not RUN_ID.fullmatch(run_id) or commit in proofs or record.get("backend") != BACKEND):
+            raise ContractError("sandbox history task or evidence identifiers differ")
+        proofs[commit] = _host_proof(task, record, state / "sandbox-runs" / run_id, commit)
+    for entry in chain:
+        fields = entry.split()
+        if len(fields) != 3:
+            raise ContractError("sandbox integration history is not linear")
+        commit, tree, parent = fields
+        proof = proofs.pop(commit, None)
+        if not proof or parent != base or tree != proof["tree"] or parent != proof["base_sha"]:
+            raise ContractError("sandbox integration history lacks matching host proof")
+        base = commit
+    if proofs or base != head:
+        raise ContractError("sandbox integration and checkpoint history differ")
+
+
+def _review(factory: Factory, task: dict, bundle: Path, record: dict, root: Path) -> dict:
+    _, digest = read_json(root / "candidate.json", MAX_RECEIPT)
+    if digest != record["candidate_sha256"]:
+        raise ContractError("host-sealed candidate changed")
+    base = git(factory.repo, "rev-parse", factory.integration_ref)
+    starting_base = record["base_sha"]
+    if base != starting_base:
+        _git_data(factory.repo, "merge-base", "--is-ancestor", starting_base, base)
+        previous, current = _inventory(factory.repo, starting_base), _inventory(factory.repo, base)
+        if any(previous.get(name) != current.get(name) for name in task["files"]):
+            raise ContractError("approved paths changed since sandbox coding")
+    tree = _candidate_tree(factory, base, root / "candidate.json", task)
+    with tempfile.TemporaryDirectory(prefix="snapshot-", dir=root) as scratch:
+        archive = Path(scratch) / "source.zip"
+        _archive_verified_base(factory.repo, tree, archive)
+        verdict = verify_candidate(task, archive, bundle, root)
+        if verdict["ok"]:
+            adapters = _review_adapters(factory, task, bundle, root, archive)
+            if adapters.get("status") == "BUDGET_WAIT" or adapters.get("ok") is False:
+                return adapters
+            verdict.update(adapters)
+    if not verdict["ok"]:
+        return verdict
+    if git(factory.repo, "rev-parse", factory.integration_ref) != base:
+        raise ContractError("sandbox integration changed during review")
+    commit = _git_data(factory.repo, "commit-tree", tree, "-p", base,
+                       "-m", f"axdev: {task['id']} independently reviewed local change").decode().strip()
+    proof = {"backend": BACKEND, "run_id": record["run_id"], "base_sha": base,
+             "candidate_sha256": digest, "tree": tree, "task_sha256": plan_hash(task),
+             "commit": commit, "project_checks": verdict["project_checks"],
+             "independent_probes": verdict["independent_probes"],
+             "semantic_review": verdict.get("semantic_review"), "eai_receipt_sha256": verdict.get("eai_receipt_sha256")}
+    record["review_base_sha"] = base
+    record["proof_sha256"] = write_json(root / "acceptance.json", proof)
+    factory._set(task["id"], "PREPARED", json.dumps(record), commit)
+    return _promote(factory, task, record, root)
+
+
+def run_isolated_eai(repo: Path, pin: str, goal: Path, approved: Path,
+                     bundle: Path, parent: Path, timeout: int) -> tuple[int, bytes]:
+    with tempfile.TemporaryDirectory(prefix="eai-", dir=parent) as directory:
+        stage = Path(directory)
+        snapshot = stage / "eai.zip"
+        _archive_verified_base(repo, pin, snapshot)
+        project = stage / "eai-project"
+        extract_snapshot(snapshot, project)
+        inputs = stage / "approved-inputs"
+        remaining = 8 * 1024 * 1024
+        count = 0
+        for current, folders, files in os.walk(approved, followlinks=False, onerror=_walk_error):
+            for name in folders:
+                no_reparse(Path(current) / name)
+            for name in files:
+                source = no_reparse(Path(current) / name)
+                count += 1
+                remaining -= source.stat().st_size
+                if count > 256 or remaining < 0 or not source.is_file():
+                    raise ContractError("EAI approved input directory exceeds isolated copy bounds")
+                relative = portable_path(source.relative_to(approved).as_posix())
+                output = inputs / relative
+                output.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(source, output)
+        copied_goal = inputs / goal.relative_to(approved)
+        if hex_sha(goal) != hex_sha(copied_goal):
+            raise ContractError("EAI input differs from isolated copy")
+        runtime = stage / "python"
+        shutil.copytree(bundle / "python", runtime)
+        launch = ("import runpy, sys; sys.path.append(sys.argv.pop(1)); "
+                  "runpy.run_module('eai', run_name='__main__')")
+        return run_restricted([str(runtime / "python.exe"), "-I", "-S", "-B", "-X", "utf8", "-c",
+                               launch, str(project), "solve-goal", str(copied_goal), "--json"],
+                              stage, project, timeout)
+
+
+def _review_adapters(factory: Factory, task: dict, bundle: Path, root: Path, archive: Path) -> dict:
+    tid = task["id"]
+    evidence = {}
+    if tid in factory.eai_tasks:
+        from .eai_adapter import run_eai_goal
+        rule = factory.eai_tasks[tid]
+        approved = no_reparse(Path(rule["approved_directory"])).resolve(strict=True)
+        def isolated(repo, pin, goal, timeout):
+            return run_isolated_eai(repo, pin, goal, approved, bundle, root, timeout)
+        receipt = run_eai_goal(Path(rule["eai_repo"]), rule["expected_sha"], Path(rule["goal"]),
+                               approved, runner=isolated)
+        if not receipt["independent_receipt_accepted"]:
+            return {"ok": False, "reason": "EAI_RECEIPT_DISAGREEMENT"}
+        factory.db.execute("INSERT OR IGNORE INTO eai_review_receipts VALUES (?,?,?,?,?)",
+                           (tid, plan_hash(task), receipt["goal_sha256"],
+                            receipt["receipt_sha256"], receipt["status"]))
+        factory.db.commit()
+        evidence["eai_receipt_sha256"] = receipt["receipt_sha256"]
+    if factory.semantic_review_enabled:
+        from .semantic_review import require_installed_model, review_semantics
+        require_installed_model(factory.model)
+        if not factory._reserve_model_call(tid, "SANDBOX_SEMANTIC_REVIEW"):
+            return {"status": "BUDGET_WAIT", "id": tid}
+        with tempfile.TemporaryDirectory(prefix="semantic-", dir=root) as directory:
+            source = Path(directory) / "candidate"
+            extract_snapshot(archive, source)
+            record, _ = read_json(root / "candidate.json", MAX_RECEIPT)
+            changed = set(decode_files(record["files"], set(task["files"])))
+            approved, reason = review_semantics(task, source, changed, factory.model)
+        if not approved:
+            return {"ok": False, "reason": reason}
+        evidence["semantic_review"] = reason
+    return evidence
 
 
 def run_sandbox_one(factory: Factory, task: dict, bundle: Path, manifest_sha: str,
-                    execute: bool, timeout: int = 1800) -> dict:
+                    execute: bool, timeout: int = 1800, executable: Path | None = None,
+                    stage_only: bool = False) -> dict:
     tid = task["id"]
     if not execute:
-        return {"id": tid, "status": "DRY_RUN", "backend": "WindowsSandbox",
-                "real_isolation_tested": False}
-    _sandbox_binary()  # Unsupported Windows edition must not consume a task.
-    _read_bundle(bundle, manifest_sha)  # No executable auto-download or installs.
-    state = factory.status()[tid]
-    if state == "PREPARED":
-        # Historical PREPARED entries may have been created from forged
-        # guest-controlled receipts. Do not silently complete that promotion.
-        factory._set(tid, "HOLD", "SANDBOX_UNATTESTED_PREPARED")
-        return {"id": tid, "status": "HOLD", "verified": False,
-                "reason": "SANDBOX_UNATTESTED_PREPARED"}
-    if state == "QUEUED":
-        # Reserve two bounded model calls for potential one-fix review.
-        if not factory._reserve_model_call(tid, "SANDBOX_CODING"):
-            return {"id": tid, "status": "BUDGET_WAIT"}
-        if not factory._reserve_model_call(tid, "SANDBOX_POSSIBLE_FIX"):
-            return {"id": tid, "status": "BUDGET_WAIT"}
-        run_id, root, baseline = _prepare(factory, task, bundle, manifest_sha)
-        factory._set(tid, "CODING", "SANDBOX_RUN:" + run_id)
-        try:
-            # Launch the trusted Windows System32 binary directly, rather
-            # than trusting a user-overridable .wsb file association.
-            subprocess.Popen(
-                [str(_sandbox_binary()), str(root / "launch.wsb")],
-                stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL, shell=False, cwd=root)
-        except OSError as exc:
-            factory._set(tid, "HOLD", "SANDBOX_LAUNCH_FAILED")
-            return {"id": tid, "status": "HOLD", "reason": type(exc).__name__}
-    elif state == "CODING":
-        row = factory.db.execute(
-            "SELECT evidence FROM runs WHERE id=?", (tid,)).fetchone()
-        evidence = row[0] if row else ""
-        if not evidence.startswith("SANDBOX_RUN:") or not RUN.fullmatch(evidence[12:]):
-            raise ContractError("interrupted coding lacks a pinned sandbox run")
-        run_id = evidence[len("SANDBOX_RUN:"):]
-        root = factory.state / "sandbox-runs" / run_id
-        request_path = _no_reparse(root / "input" / "request.json")
-        if not request_path.is_file():
-            raise ContractError("interrupted sandbox request missing")
-        request = json.loads(request_path.read_text(encoding="utf-8"))
-        baseline = request["base_sha"]
-        if (request.get("task_sha256") != plan_hash(task) or
-                request.get("run_id") != run_id or not SHA40.fullmatch(baseline)):
-            raise ContractError("interrupted sandbox request pin differs")
-    else:
-        raise ContractError("sandbox task state cannot be independently resumed")
-    deadline = time.monotonic() + timeout
-    reply = None
-    while time.monotonic() < deadline:
-        reply = _read_receipt(root, run_id, task, baseline)
-        if reply is not None:
-            break
-        time.sleep(1)
-    if reply is None:
-        # Sandbox could still be running. Never start a duplicate model call.
-        return {"id": tid, "status": "WAITING_RECEIPT", "verified": False,
-                "reason": "sandbox result absent; manual inspection required"}
-    if reply["status"] != "VERIFIED":
-        factory._set(tid, "HOLD", "SANDBOX_GUEST_HOLD:" + reply["error_code"])
-        return {"id": tid, "status": "HOLD",
-                "reason": "SANDBOX_GUEST_HOLD"}
-    # A malicious coding process can read request.json and write an entirely
-    # plausible receipt.json without ever executing acceptance commands.
-    # Preserve the receipt for offline inspection, but never turn it into a
-    # local VERIFIED Git commit or advance dependent tasks.
-    factory._set(tid, "HOLD", "SANDBOX_RECEIPT_UNATTESTED")
-    return {"id": tid, "status": "HOLD", "verified": False,
-            "guest_status": "CLAIMED_VERIFIED",
-            "reason": "SANDBOX_RECEIPT_UNATTESTED"}
-    # Any future promotion must first introduce an independently enforced
-    # reviewer identity and a host-verifiable approval proof, with tests.
+        return {"id": tid, "status": "DRY_RUN", "backend": BACKEND}
+    executable = executable or _sandbox_binary()
+    if not task.get("acceptance"):
+        return _hold(factory, tid, "INDEPENDENT_ACCEPTANCE_MISSING")
+    validate_acceptance(task["acceptance"])
+    # Existing baseline tests are a protected witness. New tests are permitted
+    # as evidence but cannot replace the host comparisons.
+    if any(cmd[2:4] == ["unittest", "discover"] for cmd in task["checks"]):
+        baseline = git(factory.repo, "rev-parse", factory.integration_ref)
+        protected = {p.casefold() for p in _inventory(factory.repo, baseline)
+                     if p.casefold().startswith("tests/")}
+        if any(p.casefold() in protected or p.casefold() == "tests" for p in task["files"]):
+            return _hold(factory, tid, "APPROVED_SCOPE_OVERLAPS_PROTECTED_TESTS")
+    try:
+        state = factory.status()[tid]
+        pending = _launch(factory, task, bundle, manifest_sha, executable) if state == "QUEUED" else None
+        if isinstance(pending, dict):
+            return pending
+        if pending is None:
+            record, root = _read_state(factory, tid, manifest_sha)
+            process = None
+        else:
+            record, root, process = pending
+            state = "CODING"
+        if state == "PREPARED":
+            return _promote(factory, task, record, root)
+        while True:
+            if state == "CODING":
+                reply = _wait_candidate(task, record, root, process, timeout)
+                if reply is None:
+                    if (process is not None and process.poll() is None) or _sandbox_running():
+                        return {"id": tid, "status": "WAITING_RECEIPT"}
+                    return _hold(factory, tid, "SANDBOX_EXITED_WITHOUT_CANDIDATE")
+                if reply["status"] == "HOLD":
+                    return _hold(factory, tid, "SANDBOX_CODER_FAILED")
+                record["candidate_sha256"] = write_json(root / "candidate.json", reply)
+                factory._set(tid, "REVIEW", json.dumps(record))
+            elif state != "REVIEW":
+                return _hold(factory, tid, "SANDBOX_UNATTESTED_LEGACY_STATE")
+            if stage_only:
+                return {"id": tid, "status": "IMPLEMENTED"}
+            result = _review(factory, task, bundle, record, root)
+            if result.get("status") in ("VERIFIED", "BUDGET_WAIT"):
+                return result
+            attempts = factory.db.execute("SELECT attempts FROM runs WHERE id=?", (tid,)).fetchone()[0]
+            if attempts >= 1:
+                return _hold(factory, tid, result["reason"])
+            pending = _launch(factory, task, bundle, manifest_sha, executable, root / "candidate.json")
+            if isinstance(pending, dict):
+                return pending
+            record, root, process = pending
+            state = "CODING"
+    except ContractError as exc:
+        if factory.status()[tid] == "PREPARED":
+            # Keep the journal when this call prepared it or Git has adopted
+            # its commit. Dropping the proof would leave Git ahead of SQLite.
+            if state != "PREPARED":
+                raise
+            prepared = factory.db.execute("SELECT commit_sha FROM runs WHERE id=?", (tid,)).fetchone()[0]
+            baseline = factory.db.execute("SELECT value FROM meta WHERE key='base_sha'").fetchone()[0]
+            if prepared != baseline and git(factory.repo, "rev-parse", factory.integration_ref) == prepared:
+                raise
+        return _hold(factory, tid, str(exc))
+    except (OSError, RuntimeError, ValueError, subprocess.SubprocessError, zipfile.BadZipFile) as exc:
+        if factory.status()[tid] == "PREPARED":
+            raise
+        return _hold(factory, tid, "SANDBOX_ERROR_" + type(exc).__name__)
 
 
 def run_sandbox_queue(repo: Path, plan: Path, state: Path, bundle: Path,
-                      manifest_sha: str, model: str, maximum: int,
-                      execute: bool) -> tuple[list[dict], dict]:
+                      manifest_sha: str, model: str, maximum: int, execute: bool,
+                      *, plan_sha256: str, daily_budget: int | None = None,
+                      eai_policy: Path | None = None, semantic_review: bool = False,
+                      implementation_batch: bool = False) -> tuple[list[dict], dict]:
     if not 1 <= maximum <= 100:
         raise ContractError("sandbox queue maximum 1..100")
-    # Optional mode. Ordinary RUN_QUEUE/RUN_BATCH remain unchanged.
-    factory = Factory(repo, plan, state, model=model)
-    try:
-        from .core import single_worker_lock
-        results: list[dict] = []
-        with single_worker_lock(factory.state):
-            for _ in range(maximum):
-                if (factory.state / "STOP.REQUESTED").exists():
-                    results.append({"status": "STOP_REQUESTED"})
+    if not plan_sha256 or not SHA256.fullmatch(plan_sha256) or hex_sha(no_reparse(plan)) != plan_sha256:
+        raise ContractError("local approved plan SHA256 differs")
+    repo, state, bundle = (no_reparse(p).resolve() for p in (repo, state, bundle))
+    for left, right in ((repo, state), (repo, bundle), (state, bundle), (plan.resolve(), bundle)):
+        if left == right or left in right.parents or right in left.parents:
+            raise ContractError("sandbox bundle, project and state require separate directories")
+    executable = _sandbox_binary() if execute else None
+    with ExitStack() as stack:
+        if execute:
+            stack.enter_context(single_sandbox_slot())
+            _read_bundle(bundle, manifest_sha)
+        stack.enter_context(single_worker_lock(state))
+        factory = Factory(repo, plan, state, model=model, max_daily_model_calls=daily_budget,
+                          eai_policy=eai_policy, semantic_review=semantic_review)
+        stack.callback(factory.close)
+        results = []
+        if execute:
+            factory.require_isolated_state(BACKEND, plan_sha256)
+            validate_history(repo, state, factory.db, factory.tasks, factory.integration_ref,
+                             allow_prepared=True)
+        while len(results) < maximum:
+            if (factory.state / "STOP.REQUESTED").exists():
+                results.append({"status": "STOP_REQUESTED"})
+                break
+            task = factory.next_task()
+            if task is None:
+                break
+            if execute and implementation_batch and factory.status()[task["id"]] == "QUEUED":
+                staged = _stage_batch(factory, bundle, manifest_sha, executable, maximum - len(results))
+                if staged and staged[-1]["status"] not in ("IMPLEMENTED", "HOLD"):
+                    results.extend(staged)
+                    break
+                results.extend(r for r in staged if r["status"] == "HOLD")
+                if len(results) >= maximum or (factory.state / "STOP.REQUESTED").exists():
                     break
                 task = factory.next_task()
                 if task is None:
                     break
-                result = run_sandbox_one(
-                    factory, task, bundle, manifest_sha, execute)
-                results.append(result)
-                if result["status"] not in ("VERIFIED", "HOLD"):
-                    break
+            began = time.monotonic()
+            result = run_sandbox_one(factory, task, bundle, manifest_sha, execute, executable=executable)
+            if execute:
+                _event(factory, result, time.monotonic() - began)
+            results.append(result)
+            if result["status"] not in ("VERIFIED", "HOLD"):
+                break
         return results, factory.status()
-    finally:
-        factory.close()
+
+
+def _stage_batch(factory: Factory, bundle: Path, manifest_sha: str, executable: Path,
+                 maximum: int) -> list[dict]:
+    states = factory.status()
+    results = []
+    used = set()
+    for task in factory.tasks:
+        if len(results) >= maximum or (factory.state / "STOP.REQUESTED").exists():
+            break
+        paths = {name.casefold() for name in task["files"]}
+        if (states[task["id"]] != "QUEUED" or used & paths
+                or any(states[key] != "VERIFIED" for key in task.get("depends_on", []))):
+            continue
+        began = time.monotonic()
+        result = run_sandbox_one(factory, task, bundle, manifest_sha, True,
+                                 executable=executable, stage_only=True)
+        _event(factory, result, time.monotonic() - began)
+        results.append(result)
+        if result["status"] not in ("IMPLEMENTED", "HOLD"):
+            break
+        used.update(paths)
+    return results

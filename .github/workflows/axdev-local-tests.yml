@@ -19,8 +19,10 @@ on:
       - tools/ax-dev-factory-local
     paths:
       - 'axdev/**'
+      - 'scripts/**'
       - 'tests/**'
-      - 'config/opencode-local-only.json'
+      - 'config/**'
+      - 'RUN_*.cmd'
       - '.github/workflows/axdev-local-tests.yml'
   workflow_dispatch:
 permissions:
@@ -31,6 +33,9 @@ jobs:
     timeout-minutes: 6
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -43,9 +48,9 @@ jobs:
       - name: CLI version
         run: python -m axdev --version
       # Public anonymous GitHub API is shared-rate-limited on CI runner IPs.
-      # Manual canary remains available; keep synthetic correctness gating on push.
+      # Only the source branch's SHA can approve its live plan import.
       - name: Public GitHub SHA-pinned live read-only import (manual canary)
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/tools/ax-dev-factory-local'
         env:
           APPROVED_SHA: ${{ github.sha }}
         run: |
@@ -63,6 +68,9 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -77,3 +85,52 @@ jobs:
           if errorlevel 1 exit /b 1
           python -m scripts.first_use_evidence --trial "%USERPROFILE%\AXDEV_TRIAL" --output "%RUNNER_TEMP%\axdev-trial-evidence.json"
           if errorlevel 1 exit /b 1
+      - name: Verify owner startup with a disposable hosted queue
+        shell: powershell
+        run: |
+          $axFixture = Join-Path $env:RUNNER_TEMP 'AXDEV startup fixture'
+          $axEngine = Join-Path $axFixture 'fixture engine'
+          New-Item -ItemType Directory -Path (Join-Path $axEngine 'axdev'), (Join-Path $axEngine 'scripts') | Out-Null
+          New-Item -ItemType File -Path (Join-Path $axEngine 'axdev/core.py'), (Join-Path $axEngine 'scripts/__init__.py') | Out-Null
+          $axSettings = Join-Path $axFixture 'settings.json'
+          $axDefinition = Join-Path $axFixture 'owner task.xml'
+          Set-Content -LiteralPath $axSettings '{}'
+          @'
+          import json
+          import sys
+          from pathlib import Path
+          marker = Path(sys.argv[2]).with_name('scheduled.json')
+          temporary = marker.with_suffix('.tmp')
+          temporary.write_text(json.dumps(sys.argv[1:]), encoding='utf-8')
+          temporary.replace(marker)
+          '@ | Set-Content -LiteralPath (Join-Path $axEngine 'scripts/run_configured_queue.py') -Encoding Ascii
+          python -m scripts.prepare_startup --repo $axEngine --settings $axSettings --output $axDefinition --max-tasks 7
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $axScheduler = New-Object -ComObject 'Schedule.Service'
+          $axScheduler.Connect()
+          $axFolder = $axScheduler.GetFolder('\')
+          $axUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+          $axTaskName = 'AXDevFactoryFixture-' + [Guid]::NewGuid().ToString('N')
+          $axXml = [IO.File]::ReadAllText($axDefinition)
+          [void]$axFolder.RegisterTask($axTaskName, $axXml, 1, $axUser, $null, 3, $null)
+          Write-Output 'Owner startup template accepted by native Windows Task Scheduler validation'
+          if ([Diagnostics.Process]::GetCurrentProcess().SessionId -eq 0) {
+            Write-Output 'Hosted scheduler launch NOT_RUN because the runner has a non-interactive session'
+            return
+          }
+          $axTask = $axFolder.RegisterTask($axTaskName, $axXml, 2, $axUser, $null, 3, $null)
+          try {
+            [void]$axTask.Run($null)
+            $axMarker = Join-Path $axFixture 'scheduled.json'
+            $axDeadline = [DateTime]::UtcNow.AddSeconds(20)
+            while (!(Test-Path -LiteralPath $axMarker) -and [DateTime]::UtcNow -lt $axDeadline) {
+              Start-Sleep -Milliseconds 250
+            }
+            if (!(Test-Path -LiteralPath $axMarker)) { throw 'Hosted task did not invoke the disposable queue' }
+            $axObserved = Get-Content -LiteralPath $axMarker -Raw | ConvertFrom-Json
+            $axExpected = @('--settings', $axSettings, '--max-tasks', '7', '--execute')
+            if (($axObserved -join '|') -cne ($axExpected -join '|')) { throw 'Unexpected hosted task arguments' }
+            Write-Output 'Hosted scheduler invoked the disposable queue with the approved arguments'
+          } finally {
+            $axFolder.DeleteTask($axTaskName, 0)
+          }

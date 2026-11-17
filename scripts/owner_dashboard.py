@@ -32,7 +32,9 @@ def handler_factory(settings: Path, port: int, secret: str):
             self.send_header("Content-Length", str(length))
             self.send_header("Cache-Control", "no-store")
             self.send_header("X-Content-Type-Options", "nosniff")
-            self.send_header("Referrer-Policy", "no-referrer")
+            # Browsers can send Origin: null for a form POST under no-referrer.
+            # Keep the exact loopback origin while suppressing cross-site referrers.
+            self.send_header("Referrer-Policy", "same-origin")
             self.send_header("X-Frame-Options", "DENY")
             self.send_header("Content-Security-Policy",
                 "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; "

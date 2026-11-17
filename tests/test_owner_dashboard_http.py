@@ -31,7 +31,7 @@ class DashboardHttpSecurityTests(unittest.TestCase):
         self.addCleanup(self.server.server_close)
         self.addCleanup(self.server.shutdown)
 
-    def request(self, method, path, *, host=None, data=None, origin=None):
+    def request(self, method, path, *, host=None, data=None, origin=None, response_header=None):
         connection = http.client.HTTPConnection("127.0.0.1", self.port, timeout=5)
         headers = {"Host": host or ("127.0.0.1:" + str(self.port))}
         if data is not None:
@@ -41,6 +41,8 @@ class DashboardHttpSecurityTests(unittest.TestCase):
         try:
             connection.request(method, path, body=data, headers=headers)
             response = connection.getresponse()
+            if response_header:
+                return response.status, response.getheader(response_header)
             return response.status, response.read().decode("utf-8")
         finally:
             connection.close()
@@ -85,6 +87,17 @@ class DashboardHttpSecurityTests(unittest.TestCase):
             origin="http://127.0.0.1:" + str(self.port))
         self.assertEqual(code, 303)
         self.stub.assert_called_once()
+
+    def test_form_page_keeps_origin_for_loopback_but_refuses_opaque_origin(self):
+        code, policy = self.request("GET", "/", response_header="Referrer-Policy")
+        self.assertEqual((code, policy), (200, "same-origin"))
+        self.stub.reset_mock()
+        try:
+            code, _ = self.request("POST", "/resume", data="csrf=" + self.token, origin="null")
+        except (ConnectionAbortedError, ConnectionResetError):
+            code = 403
+        self.assertEqual(code, 403)
+        self.stub.assert_not_called()
 
 
 if __name__ == "__main__":

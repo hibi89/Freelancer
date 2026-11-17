@@ -1,3 +1,26 @@
+# AX Dev Factory P2 handoff · 2026-11-17 KST
+
+1. **Windows 11 field verification candidate has F01–F20 = 20/20 PASS.** The earlier checkpoint passed 14/20. The six Windows 10 device checks remain NOT_RUN. Formal weighted completion remains UNASSESSED. Review runtime `448fcc34bb328b179f314af62c0d14afc94fc0a5` on `codex/axdev-full-verification`. The acceptance baseline before native testing was `9a74fd014e5b2a0a1a865e94ba203306a20903d7`. [PR #3](https://github.com/hibi89/Freelancer/pull/3)
+2. Compare the final source diff, the immutable fixture plan and the host AppContainer proof against the independent acceptance checks. Review the launch, shutdown and recovery boundaries in `axdev/windows_sandbox_runtime.py`. [Windows 11 physical verification](docs/WINDOWS11_VERIFICATION.md) · [Machine-readable evidence](docs/WINDOWS11_VERIFICATION.json)
+3. Reuse the final source-pinned CI and protect the Windows 10 fallback. The six Windows 10 field checks require a separate device run. [Linux and Windows CI](https://github.com/hibi89/Freelancer/actions/runs/43977508805) · [Windows 10 steps](docs/WINDOWS11_VERIFICATION.md#remaining-windows-10-device-work)
+4. Review the 3B coding failure, the accepted 4B observations and the separate host GPU and guest CPU measurements. The repository evidence contains only disposable fixture metadata.
+5. **Web GPT-6 Sol High F17 handoff.** Compare the 10:53:07 KST automatic start at checkout `3d920478802b216ca7e2f2acd4dfd55d512eb280`, the native owner token and Scheduler exit `0` with the one 4B reservation, AppContainer proof, verified Git/SQLite commit, duplicate-start results and confirmed removal of the scheduled task. Independent model review, final design acceptance and real-use approval remain separate. [F17 evidence](docs/P2_VERIFICATION_LEDGER.md#f17-windows-11-end-to-end-evidence) · [F17 PR record](https://github.com/hibi89/Freelancer/pull/3#issuecomment-6934793190)
+
+## Earlier checkpoint
+
+# AX Dev Factory P2 verification checkpoint · 2026-11-16 KST
+
+1. Read the [F01–F20 ledger](docs/P2_VERIFICATION_LEDGER.md), [Windows 11 physical checks](docs/WINDOWS11_VERIFICATION.md) and [Windows isolation runtime](docs/WINDOWS_SANDBOX_RUNTIME.md). Base `5ab94180471c7ea86344b691fc77ad5c29989071`. Functional source `2882e4c56a3a142df3e96beee1fddaa6a55b3756` on `codex/axdev-full-verification`. The previous verified checkpoint `8bd8267c32791c185d505843aba351d6b1878656` is the rollback reference. [PR #3 and source-pinned CI](https://github.com/hibi89/Freelancer/pull/3)
+2. Review the F18 boundary in `axdev/windows_sandbox_runtime.py`, `axdev/sandbox_review.py` and `axdev/windows_review_process.py`. Coding guest sends a candidate, acceptance executes under restricted OS identities, host compares outputs and binds exact Git objects to stored proof. Check the forgery, failed repair, recovery and network/filesystem regressions in `tests/test_windows_sandbox.py`.
+3. Acceptance **14/20** with six rows pending and owner real-use **HOLD**. Native Windows 11 checks passed for AppContainer, cold restart, temporary scheduler invocation and 3B/4B GTX 1050 Ti inference at 8K. Isolated WSL2 OpenCode plus native Windows Ollama completed the approved edit. Run the [remaining Windows 10 checks](docs/WINDOWS11_VERIFICATION.md#remaining-windows-10-device-work) on a disposable fixture with an enabled Sandbox and pinned offline runtime before readiness decisions.
+4. Keep device logs private and publish only safe evidence. Runtime publication requires approval tied to the proposed repository and commit. The owner-approved [synthetic draft PR](https://github.com/hibi89/Freelancer/pull/4) and [status write](https://github.com/hibi89/Freelancer/commit/f8d9a109839e02911afeda9d5ca6072253f57b06) passed.
+
+Earlier work verified the dashboard stop/resume loop in a real browser, repaired the two-project CLI exit and tested pinned EAI and native Ollama semantic inference. See the [P2 acceptance ledger](docs/P2_VERIFICATION_LEDGER.md).
+
+Historical snapshots follow.
+
+---
+
 > **[HANDOFF-STARTUP-V2 | ACTIVE | 2026-11-16]** **먼저** `Freelancer@tools/ax-dev-factory-local` 역할/최신 HEAD와 `AGENTS.md` 상단 [OWNER-DEV-EXECUTION-V2](https://github.com/hibi89/hackathon-command-center-2026/blob/kmong-productization/docs/strategy/OWNER_DEV_EXECUTION_CANONICAL_20261116.md)의 적용 범위 및 AX Dev Factory 로컬 도구 예외를 확정한 후 HANDOFF 최신 진행·차단/STATUS/REQUIREMENTS/확정 최종설계/실제 소스를 교차 검증하라. 오래된 HANDOFF 모델 담당·4슬롯 잠금·P85/95 지시는 역사일 뿐 현재 실행순서가 아니다. **웹 Sol High 최초 설계 → 웹 Sol Instant 주력 구현 → 구현 후보 후 전체 CI·수정(위험검사 유지) → Codex Sol Max/Astra Max 독립검수 → High 최종인수 → 사용자 GO 뒤 Luna Extra High 상품등록**. 이 브랜치는 상품이 아닌 개인 로컬 개발 도구로서 원래 F01–F20/격리/로컬 모델/Windows 검증이 우선한다. 원본/기능·데이터/보안·권리·검증 공식률/RELEASE HOLD 불변. 본 공시는 코드 검증 성공을 의미하지 않는다.
 
 ## Latest stage-1 P2 security checkpoint — 2026-11-16 KST

@@ -409,13 +409,21 @@ class FactoryTests(unittest.TestCase):
         f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
         f._active_allowed_files = ("src/feature.py",)
         intercepted = {}
+        executable = str(self.root / "fake-opencode")
         def capture(argv, cwd, timeout=60, env=None, output_limit=6000):
             intercepted.update({"argv": argv, "cwd": cwd, "env": env})
-            if argv == ["opencode", "debug", "config"]:
-                return 0, env["OPENCODE_CONFIG_CONTENT"]
+            if argv == [executable, "--version"]:
+                return 0, "opencode v2.3.0"
+            if argv == [executable, "--standalone", "debug", "config"]:
+                config = json.loads(env["OPENCODE_CONFIG_CONTENT"])
+                provider, model = config["model"].split("/", 1)
+                config["model"] = {"providerID": provider, "model": model}
+                return 0, json.dumps([{"type": "document", "info": config}])
             return 0, "synthetic"
-        with patch("axdev.core.shutil.which", return_value="/fake/opencode"), \
-             patch("axdev.core.call", side_effect=capture):
+        with patch("axdev.core.shutil.which", return_value=executable), \
+             patch("axdev.core.call", side_effect=capture), \
+             patch.dict("axdev.core.os.environ", {"OPENCODE_CONFIG": "owner-settings.json",
+                                                 "PWD": str(self.root)}):
             rc, out = f._opencode(self.repo, "synthetic only")
         self.assertEqual(rc, 0)
         settings = json.loads(intercepted["env"]["OPENCODE_CONFIG_CONTENT"])
@@ -423,17 +431,23 @@ class FactoryTests(unittest.TestCase):
         self.assertNotIn("package", settings["providers"]["ollama"])
         self.assertIn({"action": "plugin.use", "resource": "opencode.provider.ollama",
                        "effect": "allow"}, settings["policies"])
-        self.assertEqual(settings["policies"][:2], [
+        self.assertEqual(settings["policies"][:4], [
+            {"action": "tool.use", "resource": "edit:*", "effect": "deny"},
+            {"action": "tool.use", "resource": "edit:src/feature.py", "effect": "allow"},
             {"action": "provider.use", "resource": "*", "effect": "deny"},
             {"action": "provider.use", "resource": "ollama", "effect": "allow"}])
+        self.assertIn({"action": "tool.use", "resource": "edit:*.env*", "effect": "deny"},
+                      settings["policies"][4:])
         self.assertIn({"action": "tool.use", "resource": "shell:*", "effect": "deny"},
                       settings["policies"])
         edits = [rule for rule in settings["permissions"] if rule["action"] == "edit"]
         self.assertEqual(edits[-1],
                          {"action": "edit", "resource": "src/feature.py", "effect": "allow"})
         self.assertEqual(intercepted["env"]["OPENCODE_AUTO_SHARE"], "false")
+        self.assertEqual(intercepted["env"]["PWD"], str(self.repo.resolve()))
+        self.assertNotIn("OPENCODE_CONFIG", intercepted["env"])
         self.assertIn("--model", intercepted["argv"])
-        self.assertIn("--standalone", intercepted["argv"])
+        self.assertEqual(intercepted["argv"][:3], [executable, "--standalone", "run"])
         self.assertEqual(settings["permissions"][0],
                          {"action": "*", "resource": "*", "effect": "deny"})
         f.close()
@@ -443,21 +457,43 @@ class FactoryTests(unittest.TestCase):
         f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
         f._active_allowed_files = ("src/feature.py",)
         invoked = []
+        executable = str(self.root / "fake-opencode")
         def tampered(argv, cwd, timeout=60, env=None, output_limit=6000):
             invoked.append(argv)
-            if argv == ["opencode", "debug", "config"]:
+            if argv == [executable, "--version"]:
+                return 0, "opencode v2.3.0"
+            if argv == [executable, "--standalone", "debug", "config"]:
                 config = json.loads(env["OPENCODE_CONFIG_CONTENT"])
-                config["policies"].append(
-                    {"action": "provider.use", "resource": "openai", "effect": "allow"})
-                return 0, json.dumps(config)
+                provider, model = config["model"].split("/", 1)
+                config["model"] = {"providerID": provider, "model": model}
+                return 0, json.dumps([
+                    {"type": "document", "info": config},
+                    {"type": "document", "path": "/repo/opencode.json", "info": {
+                        "policies": [{"action": "provider.use", "resource": "openai",
+                                      "effect": "allow"}]}},
+                ])
             raise AssertionError("model run must be blocked")
-        with (patch("axdev.core.shutil.which", return_value="/fake/opencode"),
+        with (patch("axdev.core.shutil.which", return_value=executable),
               patch("axdev.core.call", side_effect=tampered)):
             rc, message = f._opencode(self.repo, "test only")
         self.assertEqual(rc, 125)
-        self.assertEqual(invoked, [["opencode", "debug", "config"]])
+        self.assertEqual(invoked, [[executable, "--version"], [executable, "--standalone", "debug", "config"]])
         self.assertIn("could not be verified", message)
         f.close()
+
+    def test_opencode_version_gate_precedes_config_and_coding(self):
+        self.write_plan([self.task()])
+        f = Factory(self.repo, self.plan, self.state, coder=self.fake_coder)
+        self.addCleanup(f.close)
+        f._active_allowed_files = ("src/feature.py",)
+        executable = str(self.root / "fake-opencode")
+        for old in ("opencode v2.2.5", "opencode v2.2.6-beta.1"):
+            with patch("axdev.core.shutil.which", return_value=executable), \
+                    patch("axdev.core.call", return_value=(0, old)) as call:
+                rc, _ = f._opencode(self.repo, "synthetic only")
+            self.assertEqual(rc, 125)
+            self.assertEqual(call.call_args.args[0], [executable, "--version"])
+            call.assert_called_once()
 
     def test_interrupted_coding_reviews_existing_diff_without_model(self):
         self.write_plan([self.task()])
@@ -620,16 +656,30 @@ class FactoryTests(unittest.TestCase):
         settings = self.root / "private" / "settings.json"
         with patch("builtins.print"):
             configure_queue(["--repo", str(self.repo), "--plan", str(self.plan),
-                             "--settings", str(settings)])
+                             "--settings", str(settings), "--offline-bundle", str(self.root / "bundle"),
+                             "--bundle-manifest-sha256", "0" * 64])
         configured = json.loads(settings.read_text(encoding="utf-8"))
         state = Path(configured["state"])
-        with patch("scripts.preflight.inspect",
-                   return_value={"ready_for_disposable_model_trial": False,
-                                 "blockers": ["synthetic local model missing"]}):
-            with self.assertRaisesRegex(ContractError, "prerequisites missing"):
+        with patch("axdev.windows_sandbox_runtime._sandbox_binary",
+                   side_effect=ContractError("Windows Sandbox unavailable")):
+            with self.assertRaisesRegex(ContractError, "Windows Sandbox unavailable"):
                 run_configured_queue(["--settings", str(settings), "--execute"])
         self.assertFalse((state / "factory.sqlite3").exists())
         self.assertFalse((state / "worktrees").exists())
+
+    def test_configured_budget_applies_to_unattended_and_manual_runs(self):
+        self.write_plan([self.task()])
+        settings = self.root / "private" / "settings.json"
+        with patch("builtins.print"):
+            configure_queue(["--repo", str(self.repo), "--plan", str(self.plan),
+                             "--settings", str(settings), "--offline-bundle", str(self.root / "bundle"),
+                             "--bundle-manifest-sha256", "0" * 64, "--daily-model-call-budget", "6"])
+            args = ["--settings", str(settings), "--execute"]
+            for override, expected in (([], 6), (["--daily-model-call-budget", "10"], 6),
+                                       (["--daily-model-call-budget", "2"], 2)):
+                with patch("axdev.windows_sandbox_runtime.run_sandbox_queue", return_value=([], {})) as run:
+                    self.assertEqual(run_configured_queue(args + override), 0)
+                    self.assertEqual(run.call_args.kwargs["daily_budget"], expected)
 
     def test_configure_queue_exclusive_create_preserves_original(self):
         self.write_plan([self.task()])

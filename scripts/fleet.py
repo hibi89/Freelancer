@@ -252,8 +252,7 @@ def main(argv=None):
         result = fleet_signal(args.manifest, args.command,
                               getattr(args, "confirm", False))
     print(json.dumps(result, ensure_ascii=False, indent=2))
-    return 0 if not any(x["status"] in ("TASK_HOLD", "ERROR", "PROCESS_ERROR", "CONFIG_CHANGED_HOLD")
-                        for x in result.get("projects", [])) else 2
+    return 2 if args.command == "run" and result["status"] == "FINISHED_WITH_HOLDS" else 0
 
 
 if __name__ == "__main__":

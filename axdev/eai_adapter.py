@@ -15,6 +15,7 @@ import sys
 from pathlib import Path
 
 from .core import ContractError, git
+from .repo_trust import assert_safe_git_checkout
 
 SHA40 = re.compile(r"[0-9a-f]{40}\Z")
 
@@ -33,7 +34,7 @@ def _trusted_file(root: Path, file: Path) -> Path:
 
 
 def run_eai_goal(eai_repo: Path, expected_commit: str, goal: Path,
-                 approved_directory: Path, timeout: int = 90) -> dict:
+                 approved_directory: Path, timeout: int = 90, *, runner=None) -> dict:
     repo = eai_repo.expanduser().absolute()
     if (repo.is_symlink() or any(p.is_symlink() for p in repo.parents)
             or not (repo / "eai" / "__main__.py").is_file()):
@@ -44,6 +45,7 @@ def run_eai_goal(eai_repo: Path, expected_commit: str, goal: Path,
         raise ContractError("EAI checkout root differs")
     if git(repo, "rev-parse", "HEAD") != expected_commit:
         raise ContractError("EAI checkout SHA does not match owner's pin")
+    assert_safe_git_checkout(repo)
     if git(repo, "status", "--porcelain", "--untracked-files=all"):
         raise ContractError("EAI code checkout has unreviewed changes")
     goal = _trusted_file(approved_directory, goal)
@@ -56,34 +58,45 @@ def run_eai_goal(eai_repo: Path, expected_commit: str, goal: Path,
     env["HTTP_PROXY"] = env["HTTPS_PROXY"] = env["ALL_PROXY"] = "http://127.0.0.1:9"
     env["NO_PROXY"] = "127.0.0.1,localhost"
     try:
-        proc = subprocess.run(
-            [sys.executable, "-m", "eai", "solve-goal", str(goal), "--json"],
-            cwd=repo, env=env, stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-            timeout=timeout, check=False, shell=False)
+        if runner is None:
+            proc = subprocess.run(
+                [sys.executable, "-m", "eai", "solve-goal", str(goal), "--json"],
+                cwd=repo, env=env, stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                timeout=timeout, check=False, shell=False)
+            code, raw, stderr = proc.returncode, proc.stdout, proc.stderr
+        else:
+            code, raw = runner(repo, expected_commit, goal, timeout)
+            stderr = b""
     except (OSError, subprocess.TimeoutExpired) as exc:
         raise ContractError("EAI local evidence invocation unavailable") from exc
-    if len(proc.stdout) > 128 * 1024 or len(proc.stderr) > 8 * 1024:
+    if len(raw) > 128 * 1024 or len(stderr) > 8 * 1024:
         raise ContractError("EAI evidence output exceeds configured bounds")
     if hashlib.sha256(goal.read_bytes()).hexdigest() != sha:
         raise ContractError("approved EAI input changed during execution")
-    if proc.returncode not in (0, 2, 3):
+    if code not in (0, 2, 3):
         raise ContractError("EAI invocation failed (no evidence accepted)")
     try:
-        report = json.loads(proc.stdout.decode("utf-8"))
+        report = json.loads(raw.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise ContractError("EAI evidence response is not strict JSON") from exc
     if not isinstance(report, dict) or report.get("status") not in (
             "AGREE", "DECIDED", "CONFLICT", "UNAVAILABLE"):
         raise ContractError("EAI evidence status missing or unsupported")
-    accepted = proc.returncode == 0 and report["status"] in ("AGREE", "DECIDED")
+    source, verification = report.get("input"), report.get("verification")
+    if (not isinstance(source, dict) or source.get("sha256") != sha
+            or not isinstance(verification, dict) or verification.get("status") != "PASS"
+            or verification.get("policy") != "READ_ONLY;NO_REMOTE;NO_AUTOMATIC_REPAIR"
+            or not verification.get("checks")):
+        raise ContractError("EAI independent verification or source binding is missing")
+    accepted = code == 0 and report["status"] in ("AGREE", "DECIDED")
     # Only hashes/metadata; no user goal contents or source rows in report.
     return {
         "adapter": "axdev.eai.v1", "eai_sha": expected_commit,
         "goal_sha256": sha,
-        "receipt_sha256": hashlib.sha256(proc.stdout).hexdigest(),
+        "receipt_sha256": hashlib.sha256(raw).hexdigest(),
         "status": report["status"],
-        "exit_code": proc.returncode,
+        "exit_code": code,
         "independent_receipt_accepted": accepted,
         "task_verification": "NOT_VERIFIED",
     }
