@@ -1,3 +1,14 @@
+# AX Dev Factory — Owner Console product UI verification checkpoint (2026-11-17 KST)
+
+- **UI source SHA:** `77f0dd9da5aa9dc6a7c9842573f778fe24949faa` on `feature/axdev-owner-product-ui-20261117`, [PR #5](https://github.com/hibi89/Freelancer/pull/5). Parent F01–F20 Windows 11 implementation and stage-1 evidence from PR #3 functional `448fcc34bb328b179f314af62c0d14afc94fc0a5`, acceptance doc SHA `663d2074cfad3e556d8c665a62fdef10c2342079` are preserved.
+- **New product UI implemented:** responsive Korean dashboard with local SQLite checkpoint counters, bounded/escaped task IDs, verified/hold ratio explicitly distinct from formal verification, safe Stop/Resume forms and manual refresh; local only, no model launch/remote APIs. New files `scripts/owner_dashboard_view.py`, `RUN_OWNER_DASHBOARD.cmd`, `docs/OWNER_DASHBOARD.md`; integration in `scripts/owner_dashboard.py` and 7 additional UI/HTTP tests.
+- **Verified:** [Linux+Windows CI #44003849486](https://github.com/hibi89/Freelancer/actions/runs/44003849486) SUCCESS on source SHA: Linux 164 tests / 2 skips (162 PASS), hosted Windows 164 / 1 skip (163 PASS); Windows CMD synthetic fixture and startup task validation passed. [Blueprint evidence gate #44003846959](https://github.com/hibi89/Freelancer/actions/runs/44003846959) SUCCESS.
+- **Browser:** local Chromium rendered HTML from the same view module using synthetic sample at 1440px and 390px, no horizontal overflow, both preview controls disabled. The real newly styled **Windows 11 owner loopback browser execution remains NOT_RUN**, and actual UI controls on the owner machine are not declared verified.
+- **Progress:** F01–F20 20/20 Windows 11 *acceptance-row candidate* from PR #3; product UI implementation complete for the approved owner dashboard scope; **formal weighted verification UNASSESSED**, independent model review NOT_RUN, real-use release HOLD, six Windows 10 gates NOT_RUN. No main merge or Production changes.
+- **Next gate:** native Windows 11 browser visual/keyboard and CSRF/stop/resume E2E using an existing approved disposable queue, then final owner acceptance. PR #5 is an unmerged draft; no customer data or permissions changed.
+
+---
+
 # AX Dev Factory P2 verification checkpoint · 2026-11-17 KST
 
 Functional source `448fcc34bb328b179f314af62c0d14afc94fc0a5` on `codex/axdev-full-verification`. **Windows 11 field verification candidate has F01–F20 = 20/20 PASS.** The six Windows 10 device checks remain NOT_RUN. Formal weighted completion remains UNASSESSED. [P2 acceptance ledger](docs/P2_VERIFICATION_LEDGER.md) · [PR #3](https://github.com/hibi89/Freelancer/pull/3)

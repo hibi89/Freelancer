@@ -1,3 +1,18 @@
+# AX Dev Factory Owner Console — High product UI handoff (2026-11-17 KST)
+
+1. **Mission/design:** Preserve personal local autonomous-development F01–F20 engine; add production-quality **local owner console**, not a new SaaS/Kmong product. No API/network execution from the UI.
+2. **Code:** `feature/axdev-owner-product-ui-20261117` [PR #5](https://github.com/hibi89/Freelancer/pull/5), code-reviewed UI SHA `77f0dd9da5aa9dc6a7c9842573f778fe24949faa`. Based on PR #3 evidence HEAD `663d2074cfad3e556d8c665a62fdef10c2342079`; original integration base `tools/ax-dev-factory-local` remains unchanged. UI renderer, integration, launcher, docs and tests only.
+3. **Tests:** `python -m unittest discover -s tests -p "test_*.py" -v` verified by [hosted CI #44003849486](https://github.com/hibi89/Freelancer/actions/runs/44003849486): Linux 162 PASS / 2 SKIP; Windows 163 PASS / 1 SKIP; original Windows CMD synthetic trial PASS. [Blueprint gate](https://github.com/hibi89/Freelancer/actions/runs/44003846959) SUCCESS. Local renderer 6/6 PASS; Chromium synthetic desktop/mobile render PASS without overflow.
+4. **Scope and gaps:** local counts and task-status table, stop/resume form flow, no auto-model-run endpoint. Screenshot/HTML preview is synthetic-only and both controls disabled. The new UI has **NOT_RUN** native owner Windows 11 interactive browser test. Original F01–F20 20/20 device-row candidate stands; Windows 10 six-device matrix NOT_RUN; weighted completion UNASSESSED; independent model audit NOT_RUN.
+5. **Errors/security:** invalid private SQLite state now fails closed 503 without leaking owner CSRF; Host, same-origin, CSRF and CSP protections retained. Browser render/HTTP tests passed in hosted CI; no risk acceptance by screenshot alone.
+6. **Paths/SHA:** `scripts/owner_dashboard.py`, `scripts/owner_dashboard_view.py`, `tests/test_owner_dashboard_http.py`, `tests/test_owner_dashboard_view.py`, `RUN_OWNER_DASHBOARD.cmd`, `docs/OWNER_DASHBOARD.md`; exact code SHA `77f0dd9da5aa9dc6a7c9842573f778fe24949faa`.
+7. **Environment:** local Windows 11 Pro GTX 1050 Ti, Python 3.11+; no Production URL or domain. Owner browser local address `http://127.0.0.1:8765` only when running dashboard. No live public deployment.
+8. **Original/backup:** previous Git HEAD and base PRs preserved, separate feature branch. Never move personal plans, model files, local SQLite, secrets or customer content into public GitHub.
+9. **Next READY/acceptance:** test on actual owner Win11 device in a disposable approved queue: start dashboard, confirm dynamic counts, pause→resume and CSRF/Origin denial, keyboard/mobile layout, exit cleanly. Then High reviews exact source SHA and PR; no merge or owner real-use claim before approval.
+10. **Verification basis:** 2026-11-17 KST, based on code SHA `77f0dd9da5aa9dc6a7c9842573f778fe24949faa`; do not confuse later documentation-only HEAD with a newly tested runtime.
+
+---
+
 # AX Dev Factory P2 handoff · 2026-11-17 KST
 
 1. **Windows 11 field verification candidate has F01–F20 = 20/20 PASS.** The earlier checkpoint passed 14/20. The six Windows 10 device checks remain NOT_RUN. Formal weighted completion remains UNASSESSED. Review runtime `448fcc34bb328b179f314af62c0d14afc94fc0a5` on `codex/axdev-full-verification`. The acceptance baseline before native testing was `9a74fd014e5b2a0a1a865e94ba203306a20903d7`. [PR #3](https://github.com/hibi89/Freelancer/pull/3)
